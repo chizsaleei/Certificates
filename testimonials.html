@@ -1,8 +1,4 @@
 <script>
-  const urls = [
-    "./data/testimonials.json",  // same repo
-    "https://raw.githubusercontent.com/chizsaleei/studentstestimonials/main/testimonials.json"
-  ];
   const target = document.getElementById("testi-grid");
 
   function render(list){
@@ -20,16 +16,11 @@
     });
   }
 
-  (async () => {
-    for (const u of urls) {
-      try {
-        const r = await fetch(u, {cache:"no-store"});
-        if (!r.ok) continue;
-        const data = await r.json();
-        render(data);
-        return;
-      } catch {}
-    }
-    target.innerHTML = "<p style='color: var(--muted)'>Unable to load testimonials.</p>";
-  })();
+  fetch("./data/testimonials.json", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : Promise.reject("JSON not found"))
+    .then(render)
+    .catch(err => {
+      console.error(err);
+      target.innerHTML = "<p style='color: var(--muted)'>Unable to load testimonials from ./data/testimonials.json</p>";
+    });
 </script>
