@@ -25,7 +25,12 @@
 
   <main class="container">
     <h1>Student Testimonials</h1>
-    <!-- This is the missing element the script needs -->
+    <p style="color: var(--muted); margin:.25rem 0 1rem;">
+      For screenshots and more reviews, visit
+      <a href="https://chizsaleei.github.io/studentstestimonials/" target="_blank" rel="noopener">
+        this gallery
+      </a>.
+    </p>
     <div id="testi-grid" class="testi-grid" aria-live="polite"></div>
   </main>
 
@@ -45,7 +50,7 @@
           <div class="testi-quote">“${t.quote}”</div>
           <div class="testi-meta">
             <div class="testi-name">${t.name}</div>
-            <div class="testi-role">${t.role || ""}</div>
+            <div class="testi-role">${t.role || ""}${t.goal ? " · " + t.goal : ""}</div>
           </div>`;
         target.appendChild(card);
       });
