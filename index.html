@@ -1,59 +1,58 @@
 <!DOCTYPE html>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Certificates | Lee Oi (Chiza)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" />
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Certificates | Chiza</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header class="site-header">
-<div class="container header-inner">
-<a class="brand" href="index.html">Chiza | Certificates</a>
-<nav class="nav">
-<a href="index.html" class="active">Certificates</a>
-<a href="about_me.html">About</a>
-</nav>
-</div>
-</header>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chiza | Certificates</a>
+      <nav class="nav">
+        <a href="index.html" class="active">Certificates</a>
+        <a href="about_me.html">About</a>
+      </nav>
+    </div>
+  </header>
 
+  <main class="container">
+    <section class="intro">
+      <h1>Verified Certificates</h1>
+      <p>Hover to enlarge. Click to open the verification page.</p>
+    </section>
 
-<main class="container">
-<section class="intro">
-<h1>Verified Certificates</h1>
-<p>Hover to preview. Click a card to open the verification link.</p>
-</section>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-filter="all" aria-selected="true">All</button>
+      <button class="tab" data-filter="spec">Specializations</button>
+      <button class="tab" data-filter="course">Courses</button>
+      <button class="tab" data-filter="other">Other</button>
+    </div>
 
+    <section id="grid" class="cert-grid" aria-live="polite"></section>
+  </main>
 
-<!-- Filter tabs if you want to view by group -->
-<div class="tabs" role="tablist">
-<button class="tab active" data-filter="all" aria-selected="true">All</button>
-<button class="tab" data-filter="spec">Specializations</button>
-<button class="tab" data-filter="course">Courses</button>
-<button class="tab" data-filter="other">Other</button>
-</div>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>Contact</strong>
+        <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
+        <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
+      </div>
+      <div>
+        <strong>Support</strong>
+        <div><a href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy me a coffee</a></div>
+      </div>
+    </div>
+  </footer>
 
-
-<section id="grid" class="cert-grid" aria-live="polite"></section>
-</main>
-
-
-<footer class="site-footer">
-<div class="container footer-inner">
-<div>
-<strong>Contact</strong>
-<div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
-<div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
-</div>
-<div>
-<strong>Support</strong>
-<div><a href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy me a coffee</a></div>
-</div>
-</div>
-</footer>
-
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
