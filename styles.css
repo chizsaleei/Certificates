@@ -16,6 +16,7 @@ body{
   color:var(--ink);
   font-family:Lora, Georgia, serif;
 }
+
 a{color:var(--ink); text-decoration:underline}
 a:hover{opacity:.9}
 
@@ -25,31 +26,55 @@ a:hover{opacity:.9}
 .site-header{position:sticky;top:0;z-index:10;background:rgba(30,27,24,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--ring)}
 .header-inner{display:flex;align-items:center;justify-content:space-between}
 .brand{font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:.3px}
-.nav{display:flex;gap:.5rem}
-.nav a{color:var(--muted);text-decoration:none;padding:.5rem .75rem;border-radius:.7rem}
+.nav{display:flex;gap:.5rem;flex-wrap:wrap}
+.nav a{color:var(--muted);text-decoration:none;padding:.5rem .75rem;border-radius:.7rem;outline:none}
+.nav a:focus-visible{box-shadow:0 0 0 3px rgba(178,123,67,.35)}
 .nav a.active,.nav a:hover{color:var(--ink);background:linear-gradient(90deg,rgba(178,123,67,.25),rgba(132,112,82,.25))}
 
 /* Intro */
 .intro h1{font-family:"Playfair Display",serif;font-size:2.25rem;margin:.35rem 0 .6rem}
 
 /* Tabs */
-.tabs{display:flex;gap:.5rem;margin:.5rem 0 1rem}
-.tab{background:var(--panel);color:var(--muted);border:1px solid var(--ring);padding:.5rem .75rem;border-radius:.7rem;cursor:pointer}
+.tabs{display:flex;gap:.5rem;margin:.5rem 0 1rem;flex-wrap:wrap}
+.tab{
+  background:var(--panel);
+  color:var(--muted);
+  border:1px solid var(--ring);
+  padding:.5rem .75rem;
+  border-radius:.7rem;
+  cursor:pointer;
+  outline:none;
+}
+.tab:focus-visible{box-shadow:0 0 0 3px rgba(178,123,67,.35)}
 .tab.active,.tab:hover{color:var(--ink);border-color:#4a3d32}
 
 /* Grid 4 x 7 */
-.cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cert-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
 @media(max-width:1000px){.cert-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.cert-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.cert-grid{grid-template-columns:1fr}}
 
 /* Cards */
-.card{background:var(--panel);border:1px solid var(--ring);border-radius:14px;overflow:hidden;transition:transform .18s, box-shadow .18s, border-color .18s}
+.card{
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:14px;
+  overflow:hidden;
+  transition:transform .18s, box-shadow .18s, border-color .18s;
+}
 .card:hover{transform:translateY(-2px) scale(1.01);border-color:#4a3d32;box-shadow:0 10px 24px rgba(0,0,0,.35)}
 .thumb-wrap{position:relative;aspect-ratio:4/3;overflow:hidden}
 .card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .18s}
 .card:hover img{transform:scale(1.06)}
-.badge{position:absolute;top:10px;left:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-size:.72rem;padding:.25rem .5rem;border-radius:.45rem}
+.badge{
+  position:absolute;top:10px;left:10px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:#fff;font-size:.72rem;padding:.25rem .5rem;border-radius:.45rem
+}
 .meta{padding:.9rem}
 .title{font-weight:600;line-height:1.25}
 .caption{color:var(--muted);font-size:.86rem;margin-top:.25rem}
@@ -58,14 +83,27 @@ a:hover{opacity:.9}
 
 /* Footer */
 .site-footer{border-top:1px solid var(--ring);margin-top:2rem}
-.footer-inner{display:flex;gap:2rem;justify-content:space-between;align-items:flex-start}
+.footer-inner{display:flex;gap:2rem;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
 .footer-inner a{color:var(--ink)}
 
 /* About layout */
-.about{display:grid;grid-template-columns:140px 1fr;gap:1rem;align-items:start}
+.about{
+  display:grid;
+  grid-template-columns:140px 1fr;
+  gap:1rem;
+  align-items:start
+}
 .about-head{display:flex;align-items:center}
 .avatar{width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid var(--ring)}
-.about-grid{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:.5rem}
+.about-grid{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1rem;
+  margin-top:.5rem
+}
+@media(max-width:900px){.about-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.about{grid-template-columns:1fr}.avatar{width:120px;height:120px}.about-grid{grid-template-columns:1fr}}
 .about-item{background:var(--panel);border:1px solid var(--ring);border-radius:.75rem;padding:1rem}
 .about-item h3{margin:.2rem 0 .4rem;font-family:"Playfair Display",serif}
 .contact-cards{grid-column:1 / -1;display:grid;gap:.6rem;margin-top:1rem}
@@ -73,10 +111,48 @@ a:hover{opacity:.9}
 .card-link:hover{border-color:#4a3d32}
 
 /* Testimonials */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.testi-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px
+}
 @media(max-width:900px){.testi-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.testi-grid{grid-template-columns:1fr}}
-.testi-card{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:1rem}
-.testi-quote{font-style:italic}
-.testi-meta{margin-top:.6rem;color:var(--muted)}
+.testi-card{
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:14px;
+  padding:1rem 1.1rem;
+  transition:border-color .18s, box-shadow .18s
+}
+.testi-card:hover{border-color:#4a3d32;box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.testi-quote{
+  font-style:italic;
+  font-size:1.02rem;
+  line-height:1.55;
+  position:relative;
+  padding-left:.6rem
+}
+/* subtle quote marks without changing your text */
+.testi-quote::before{
+  content:"“";
+  position:absolute;left:0;top:-.1rem;
+  color:var(--muted)
+}
+.testi-quote::after{
+  content:"”";
+  margin-left:2px;color:transparent /* keeps closing balance for screen readers */
+}
+.testi-meta{margin-top:.7rem;color:var(--muted);display:flex;gap:.5rem;flex-wrap:wrap}
 .testi-name{color:var(--ink);font-weight:600}
+.testi-role{color:var(--muted)}
+
+/* Small helper: button-like link if you add class="pill" */
+.pill{
+  display:inline-block;
+  padding:.45rem .7rem;
+  border:1px solid var(--ring);
+  border-radius:.6rem;
+  text-decoration:none
+}
+.pill:hover{border-color:#4a3d32}
