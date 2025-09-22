@@ -1,5 +1,121 @@
 [
-  {"name":"Eric, Ophthalmologist","role":"IELTS student","quote":"Clear, practical coaching that lifted my confidence and score."},
-  {"name":"Dr. Ron, ICU","role":"Medical English","quote":"Direct feedback and focused drills. My rounds became smoother."},
-  {"name":"Helen, Nurse","role":"OET/IELTS","quote":"Encouraging, structured, and precise. Exactly what I needed."}
+  {
+    "name": "Dr. Ron",
+    "role": "Cardiologist surgeon, ICU",
+    "goal": "OET preparation",
+    "quote": "Direct feedback and focused drills. My rounds became smoother.",
+    "quote_suggested": "Focused OET speaking drills and quick pattern notes helped me communicate clearly during ICU rounds."
+  },
+  {
+    "name": "Dr. Crystal",
+    "role": "Hematologist",
+    "goal": "Medical English",
+    "quote": "Encouraging, structured, and precise. Exactly what I needed.",
+    "quote_suggested": "Clear strategies for writing and speaking, plus gentle corrections that built my confidence for test day."
+  },
+  {
+    "name": "Dr. Kim",
+    "role": "Cardiologist",
+    "goal": "Medical and specialization English exam",
+    "quote": "",
+    "quote_suggested": "Case-based practice and concise vocabulary decks made complex cardiology topics easy to explain in English."
+  },
+  {
+    "name": "Helen",
+    "role": "Medical businesswoman",
+    "goal": "Business English",
+    "quote": "",
+    "quote_suggested": "We turned product notes into crisp pitches and emails that sound professional and warm."
+  },
+  {
+    "name": "Shirly",
+    "role": "Sales manager",
+    "goal": "Client communication and negotiations",
+    "quote": "",
+    "quote_suggested": "Role-plays for discovery calls and objections made my client meetings smoother and more productive."
+  },
+  {
+    "name": "Victor",
+    "role": "Salesperson",
+    "goal": "Business communication",
+    "quote": "",
+    "quote_suggested": "Short frameworks for openings, bridges, and closes helped me keep conversations on track."
+  },
+  {
+    "name": "William Wu",
+    "role": "Sales manager",
+    "goal": "Business communication",
+    "quote": "",
+    "quote_suggested": "Email rewrites and talk tracks improved clarity with overseas partners."
+  },
+  {
+    "name": "Dr. Cindy",
+    "role": "ICU doctor",
+    "goal": "Medical English",
+    "quote": "",
+    "quote_suggested": "Handovers and progress notes became faster after we practiced high-yield sentence starters."
+  },
+  {
+    "name": "Dr. Cherry",
+    "role": "Plastic surgeon",
+    "goal": "Medical English",
+    "quote": "",
+    "quote_suggested": "Patient-friendly explanations and consent discussions felt natural after our scripts and drills."
+  },
+  {
+    "name": "Hailey",
+    "role": "Product buyer",
+    "goal": "Business English",
+    "quote": "",
+    "quote_suggested": "Supplier calls were easier with the question bank and negotiation phrases we practiced."
+  },
+  {
+    "name": "Lucy",
+    "role": "Professional",
+    "goal": "Job interview preparation",
+    "quote": "",
+    "quote_suggested": "STAR stories and mock interviews helped me answer confidently and concisely."
+  },
+  {
+    "name": "Lily",
+    "role": "Researcher",
+    "goal": "PhD admission interview",
+    "quote": "",
+    "quote_suggested": "We refined research framing and anticipated committee questions which made the interview comfortable."
+  },
+  {
+    "name": "Anna",
+    "role": "Researcher",
+    "goal": "PhD admission, accepted",
+    "quote": "",
+    "quote_suggested": "Editing my statement and rehearsing the pitch made a big difference in the final round."
+  },
+  {
+    "name": "George",
+    "role": "Phd Candidate",
+    "goal": "IELTS preparation",
+    "quote": "",
+    "quote_suggested": "Band-by-band checklists and timed speaking rounds helped me break through a plateau."
+  },
+  {
+    "name": "Gaia",
+    "role": "Phd Candidate",
+    "goal": "IELTS preparation",
+    "quote": "",
+    "quote_suggested": "Writing feedback was specific and practical, so I knew exactly what to fix."
+  },
+  {
+    "name": "Sean",
+    "role": "Professional",
+    "goal": "Phd Candidate",
+    "quote": "",
+    "quote_suggested": "Simple templates for Task 1 and Task 2 reduced my exam stress."
+  },
+  {
+    "name": "Kristia",
+    "role": "Phd Candidate",
+    "goal": "IELTS preparation",
+    "quote": "",
+    "quote_suggested": "Speaking part 2 structures and connector lists improved my fluency quickly."
+  }
 ]
