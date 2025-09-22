@@ -1,26 +1,64 @@
-<script>
-  const target = document.getElementById("testi-grid");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Testimonials | Chiza</title>
 
-  function render(list){
-    target.innerHTML = "";
-    list.forEach(t => {
-      const card = document.createElement("article");
-      card.className = "testi-card";
-      card.innerHTML = `
-        <div class="testi-quote">“${t.quote}”</div>
-        <div class="testi-meta">
-          <div class="testi-name">${t.name}</div>
-          <div class="testi-role">${t.role || ""}</div>
-        </div>`;
-      target.appendChild(card);
-    });
-  }
+  <!-- same fonts and stylesheet the rest of the site uses -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chiza | Certificates</a>
+      <nav class="nav">
+        <a href="index.html">Certificates</a>
+        <a href="about_me.html">About</a>
+        <a href="testimonials.html" class="active">Testimonials</a>
+      </nav>
+    </div>
+  </header>
 
-  fetch("./data/testimonials.json", {cache:"no-store"})
-    .then(r => r.ok ? r.json() : Promise.reject("JSON not found"))
-    .then(render)
-    .catch(err => {
-      console.error(err);
-      target.innerHTML = "<p style='color: var(--muted)'>Unable to load testimonials from ./data/testimonials.json</p>";
-    });
-</script>
+  <main class="container">
+    <h1>Student Testimonials</h1>
+    <!-- This is the missing element the script needs -->
+    <div id="testi-grid" class="testi-grid" aria-live="polite"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner"></div>
+  </footer>
+
+  <script>
+    const target = document.getElementById("testi-grid");
+
+    function render(list){
+      target.innerHTML = "";
+      list.forEach(t => {
+        const card = document.createElement("article");
+        card.className = "testi-card";
+        card.innerHTML = `
+          <div class="testi-quote">“${t.quote}”</div>
+          <div class="testi-meta">
+            <div class="testi-name">${t.name}</div>
+            <div class="testi-role">${t.role || ""}</div>
+          </div>`;
+        target.appendChild(card);
+      });
+    }
+
+    // Load from local JSON in this repo
+    fetch("./data/testimonials.json", {cache: "no-store"})
+      .then(r => r.ok ? r.json() : Promise.reject("JSON not found"))
+      .then(render)
+      .catch(err => {
+        console.error(err);
+        target.innerHTML = "<p style='color: var(--muted)'>Unable to load testimonials from ./data/testimonials.json</p>";
+      });
+  </script>
+</body>
+</html>
