@@ -5,17 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Certificates | Chiza</title>
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
 
+  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html">Chiza | Certificates</a>
-      <nav class="nav">
+      <nav class="nav" role="navigation" aria-label="Primary">
         <a href="index.html" class="active">Certificates</a>
         <a href="about_me.html">About</a>
         <a href="testimonials.html">Testimonials</a>
@@ -23,21 +26,29 @@
     </div>
   </header>
 
-  <main class="container">
-    <section class="intro">
-      <h1>Verified Certificates</h1>
+  <!-- Main -->
+  <main class="container" id="main">
+    <!-- Intro -->
+    <section class="intro" aria-labelledby="heading-certs">
+      <h1 id="heading-certs">Verified Certificates</h1>
+      <p class="caption" style="margin-top:-.25rem">
+        Curated academic and professional learning — Specializations, individual Courses, and more.
+      </p>
     </section>
 
-    <div class="tabs" role="tablist">
+    <!-- Tabs -->
+    <div class="tabs" role="tablist" aria-label="Filter certificates">
       <button class="tab active" data-filter="all" aria-selected="true">All</button>
-      <button class="tab" data-filter="spec">Specializations</button>
-      <button class="tab" data-filter="course">Courses</button>
-      <button class="tab" data-filter="other">Other</button>
+      <button class="tab" data-filter="spec" aria-selected="false">Specializations</button>
+      <button class="tab" data-filter="course" aria-selected="false">Courses</button>
+      <button class="tab" data-filter="other" aria-selected="false">Other</button>
     </div>
 
+    <!-- Grid -->
     <section id="grid" class="cert-grid" aria-live="polite"></section>
   </main>
 
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="container footer-inner">
       <div>
@@ -47,11 +58,14 @@
       </div>
       <div>
         <strong>Support</strong>
-        <div><a href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy me a coffee</a></div>
+        <div>
+          <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+        </div>
       </div>
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
