@@ -93,8 +93,30 @@ a:hover{opacity:.9}
   gap:1rem;
   align-items:start
 }
-.about-head{display:flex;align-items:center}
+.about-head{
+  display:block;          /* stack title, subtitle, verse */
+}
+.about-head h1{
+  font-family:"Playfair Display",serif;
+  margin:.1rem 0 .25rem;
+  font-size:2rem;
+}
+.subtitle{
+  font-size:1.05rem;
+  opacity:.9;
+  margin:.15rem 0 .3rem;
+}
+.life-verse{
+  font-style:italic;
+  opacity:.9;
+  margin-top:.2rem;
+  padding-left:.75rem;
+  border-left:3px solid rgba(255,255,255,.12);
+}
+.life-verse .ref{opacity:.85}
+
 .avatar{width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid var(--ring)}
+
 .about-grid{
   grid-column:1 / -1;
   display:grid;
@@ -103,12 +125,55 @@ a:hover{opacity:.9}
   margin-top:.5rem
 }
 @media(max-width:900px){.about-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.about{grid-template-columns:1fr}.avatar{width:120px;height:120px}.about-grid{grid-template-columns:1fr}}
+@media(max-width:520px){
+  .about{grid-template-columns:1fr}
+  .avatar{width:120px;height:120px}
+  .about-grid{grid-template-columns:1fr}
+}
+
 .about-item{background:var(--panel);border:1px solid var(--ring);border-radius:.75rem;padding:1rem}
 .about-item h3{margin:.2rem 0 .4rem;font-family:"Playfair Display",serif}
+
+/* Old contact list (kept if used elsewhere) */
 .contact-cards{grid-column:1 / -1;display:grid;gap:.6rem;margin-top:1rem}
 .card-link{background:var(--panel);border:1px solid var(--ring);padding:.75rem;border-radius:.75rem;color:var(--ink);text-decoration:none}
 .card-link:hover{border-color:#4a3d32}
+
+/* New actions row for About page */
+.contact-actions{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,auto));
+  gap:.6rem;
+  margin-top:1.25rem;
+}
+.chip{
+  display:inline-block;
+  padding:.55rem .9rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  text-decoration:none;
+  font-weight:600;
+  background:rgba(255,255,255,.04);
+}
+.chip:hover{background:rgba(255,255,255,.08)}
+
+.btn{
+  display:inline-block;
+  padding:.6rem 1rem;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:700;
+  background:rgba(255,255,255,.06);
+}
+.btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
+
+.btn-support{
+  border-color:#ff5e5b;
+  background:rgba(255,94,91,.10);
+}
+.btn-support:hover{background:rgba(255,94,91,.18)}
 
 /* Testimonials */
 .testi-grid{
