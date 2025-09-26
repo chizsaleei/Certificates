@@ -10,34 +10,36 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
+  <!-- Theme styles -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Page-local helpers (kept minimal, matching your dark green theme) -->
   <style>
-    /* Page-local helpers that follow your theme tokens */
     .tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
     .tab{
-      background:var(--surface-2, #0f1916);
-      color:var(--muted,#B6C3BD);
+      background:var(--surface-2,#0f1916);
+      color:var(--muted,#b6c3bd);
       border:1px solid var(--ring,#1f2a27);
       padding:.5rem .75rem;border-radius:12px;cursor:pointer;outline:none
     }
-    .tab:hover,.tab.active{color:var(--ink,#EBF3EF);background:var(--surface,#0b1412);border-color:#3b5e53}
+    .tab:hover,.tab.active{color:var(--ink,#ebf3ef);background:var(--surface,#0b1412);border-color:#3b5e53}
 
     .grid-training{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:1rem}
     .card{background:var(--surface,#0b1412);border:1px solid var(--ring,#1f2a27);border-radius:14px;overflow:hidden;transition:border-color .18s,box-shadow .18s}
     .card:hover{border-color:#3b5e53;box-shadow:0 10px 24px rgba(0,0,0,.28)}
     .thumb-wrap{position:relative;aspect-ratio:4/3;background:#101a17;display:flex;align-items:center;justify-content:center;overflow:hidden}
     .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    /* higher-contrast badge so it doesn't disappear on pale certificates */
     .badge{
       position:absolute;left:.6rem;top:.6rem;
-      background:rgba(0,0,0,.72);
+      background:rgba(6,10,9,.88);
       color:#fff;border:1px solid rgba(255,255,255,.18);
       font-size:.72rem;letter-spacing:.02em;
       padding:.25rem .55rem;border-radius:.5rem
     }
     .meta{padding:.9rem}
     .title{font-weight:600;line-height:1.3}
-    .caption{color:var(--muted,#B6C3BD);font-size:.9rem;margin-top:.25rem}
+    .empty{color:var(--muted);padding:1rem;border:1px dashed var(--ring);border-radius:12px}
   </style>
 </head>
 <body>
@@ -65,7 +67,7 @@
       <p class="caption">Click to open the verification page.</p>
     </section>
 
-    <!-- Tabs -->
+    <!-- Filters -->
     <div class="tabs" role="tablist" aria-label="Filter training">
       <button class="tab active" data-filter="all" aria-selected="true">All</button>
       <button class="tab" data-filter="spec" aria-selected="false">Specializations</button>
@@ -95,9 +97,9 @@
   <script>
   "use strict";
 
+  // If any image still fails, hard-set its exact path here:
   const OVERRIDES = {
-    // Add exact filename (with 'certificates/' prefix) here if any card still fails to load.
-    // Example: "1_Foundations_of_Digital_Marketing_and_E-commerce": "certificates/1_Foundations_of_Digital_Marketing_and_E-commerce.JPG"
+    // "1_Foundations_of_Digital_Marketing_and_E-commerce": "certificates/1_Foundations_of_Digital_Marketing_and_E-commerce.JPG"
   };
 
   const LIST = [
@@ -137,104 +139,105 @@
   function buildSrcVariants(key){
     if (OVERRIDES[key]) return [OVERRIDES[key]];
 
-    // Possible filename bases
     const bases = new Set([
       `certificates/${key}`,
       `certificates/${key}`.replaceAll("_"," "),
-      `certificates/${key}`.replaceAll("_","-").replaceAll(",",""),
       `certificates/${key}`.replaceAll("&","and"),
+      `certificates/${key}`.replaceAll("_","-").replaceAll(",","")
     ]);
 
-    // Extensions to try
-    const exts = [".jpg",".JPG",".png",".PNG"];
-
-    // E-commerce spelling variants
-    const withE = new Set();
+    // E-commerce spelling options
+    const more = new Set();
     bases.forEach(b=>{
-      withE.add(b.replaceAll("E-commerce","E commerce"));
-      withE.add(b.replaceAll("E commerce","E-commerce"));
-      withE.add(b);
+      more.add(b);
+      more.add(b.replaceAll("E-commerce","E commerce"));
+      more.add(b.replaceAll("E commerce","E-commerce"));
     });
 
-    // Build candidates
+    const exts = [".jpg",".JPG",".jpeg",".JPEG",".png",".PNG"];
     const candidates = [];
-    withE.forEach(b => exts.forEach(e => candidates.push(`${b}${e}`)));
+    more.forEach(b => exts.forEach(e => candidates.push((b+e).replaceAll("__","_").replaceAll("  "," "))));
 
-    // Collapse double spaces/underscores
-    return Array.from(new Set(candidates.map(s =>
-      s.replaceAll("__","_").replaceAll("  "," ")
-    )));
+    return Array.from(new Set(candidates));
+  }
+
+  function makeCard(item){
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const link = document.createElement("a");
+    link.href = item.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.setAttribute("aria-label", `${item.title} — open verification`);
+
+    const wrap = document.createElement("div");
+    wrap.className = "thumb-wrap";
+
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.alt = item.title;
+
+    const candidates = buildSrcVariants(item.key);
+    let idx = 0;
+    function tryNext(){
+      if(idx >= candidates.length){
+        img.src = "images/certificate-fallback.jpg";
+        return;
+      }
+      img.src = candidates[idx++];
+    }
+    img.onerror = tryNext;
+    tryNext();
+
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = item.group === "spec" ? "Specialization" : (item.group === "course" ? "Course" : "Other");
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const title = document.createElement("div");
+    title.className = "title";
+    title.textContent = item.title;
+
+    wrap.appendChild(img);
+    wrap.appendChild(badge);
+    link.appendChild(wrap);
+    meta.appendChild(title);
+    link.appendChild(meta);
+    card.appendChild(link);
+    return card;
   }
 
   function render(filter="all"){
     grid.innerHTML = "";
-    const items = LIST.filter(i => filter==="all" ? true : i.group===filter)
-                      .sort((a,b)=>a.order-b.order);
+    const items = LIST
+      .filter(i => filter === "all" ? true : i.group === filter)
+      .sort((a,b)=>a.order - b.order);
 
-    for(const item of items){
-      const card = document.createElement("article");
-      card.className = "card";
-
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.setAttribute("aria-label", `${item.title} open verification`);
-
-      const wrap = document.createElement("div");
-      wrap.className = "thumb-wrap";
-
-      const img = document.createElement("img");
-      img.loading = "lazy";
-      img.alt = item.title;
-
-      const candidates = buildSrcVariants(item.key);
-      let idx = 0;
-      function tryNext(){
-        if(idx >= candidates.length){
-          img.src = "images/certificate-fallback.jpg";
-          return;
-        }
-        img.src = candidates[idx++];
-      }
-      img.onerror = tryNext;
-      tryNext();
-
-      const badge = document.createElement("span");
-      badge.className = "badge";
-      badge.textContent = item.group === "spec" ? "Specialization" : (item.group === "course" ? "Course" : "Other");
-
-      const meta = document.createElement("div");
-      meta.className = "meta";
-
-      const title = document.createElement("div");
-      title.className = "title";
-      title.textContent = item.title;
-
-      const cap = document.createElement("div");
-      cap.className = "caption";
-      cap.textContent = "Click to open the verification page.";
-
-      wrap.appendChild(img);
-      wrap.appendChild(badge);
-      link.appendChild(wrap);
-      meta.appendChild(title);
-      meta.appendChild(cap);
-      link.appendChild(meta);
-      card.appendChild(link);
-      grid.appendChild(card);
+    if(items.length === 0){
+      const note = document.createElement("div");
+      note.className = "empty";
+      note.textContent = "No items for this filter yet.";
+      grid.appendChild(note);
+      return;
     }
+    items.forEach(i => grid.appendChild(makeCard(i)));
   }
 
   tabs.forEach(t=>{
     t.addEventListener("click", ()=>{
-      tabs.forEach(x=>x.classList.remove("active"));
+      tabs.forEach(x=>{
+        x.classList.remove("active");
+        x.setAttribute("aria-selected","false");
+      });
       t.classList.add("active");
+      t.setAttribute("aria-selected","true");
       render(t.dataset.filter);
     });
   });
 
-  render();
+  render(); // initial load
   </script>
 
   <script src="script.js" defer></script>
