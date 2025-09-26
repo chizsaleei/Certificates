@@ -1,69 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Testimonials | Chiza</title>
+<script>
+  // Raw list you provided
+  const RAW_LIST = [
+    { "name":"Dr. Ron","role":"Cardiologist surgeon, ICU","goal":"OET preparation","quote":"Focused OET speaking drills and quick pattern notes helped me communicate clearly during ICU rounds."},
+    { "name":"Dr. Crystal","role":"Hematologist","goal":"Medical English","quote":"Clear strategies for writing and speaking, plus gentle corrections that built my confidence for test day."},
+    { "name":"Dr. Kim","role":"Cardiologist","goal":"Medical and specialization English exam","quote":"Case-based practice and concise vocabulary decks made complex cardiology topics easy to explain in English."},
+    { "name":"Helen","role":"Medical businesswoman","goal":"Business English","quote":"We turned product notes into crisp pitches and emails that sound professional and warm."},
+    { "name":"Shirly","role":"Sales manager","goal":"Client communication and negotiations","quote":"Role-plays for discovery calls and objections made my client meetings smoother and more productive."},
+    { "name":"Victor","role":"Salesperson","goal":"Business communication","quote":"Short frameworks for openings, bridges, and closes helped me keep conversations on track."},
+    { "name":"William Wu","role":"Sales manager","goal":"Business communication","quote":"Email rewrites and talk tracks improved clarity with overseas partners."},
+    { "name":"Dr. Cindy","role":"ICU doctor","goal":"Medical English","quote":"Handovers and progress notes became faster after we practiced high-yield sentence starters."},
+    { "name":"Dr. Cherry","role":"Plastic surgeon","goal":"Medical English","quote":"Patient-friendly explanations and consent discussions felt natural after our scripts and drills."},
+    { "name":"Hailey","role":"Product buyer","goal":"Business English","quote":"Supplier calls were easier with the question bank and negotiation phrases we practiced."},
+    { "name":"Lucy","role":"Professional","goal":"Job interview preparation","quote":"STAR stories and mock interviews helped me answer confidently and concisely."},
+    { "name":"Lily","role":"Researcher","goal":"PhD admission interview","quote":"We refined research framing and anticipated committee questions which made the interview comfortable."},
+    { "name":"Anna","role":"Researcher","goal":"PhD admission, accepted","quote":"Editing my statement and rehearsing the pitch made a big difference in the final round."},
+    { "name":"George","role":"PhD Candidate","goal":"IELTS preparation","quote":"Band-by-band checklists and timed speaking rounds helped me break through a plateau."},
+    { "name":"Gaia","role":"PhD Candidate","goal":"IELTS preparation","quote":"Writing feedback was specific and practical, so I knew exactly what to fix."},
+    { "name":"Sean","role":"Professional","goal":"PhD Candidate","quote":"Simple templates for Task 1 and Task 2 reduced my exam stress."},
+    { "name":"Kristia","role":"PhD Candidate","goal":"IELTS preparation","quote":"Speaking part 2 structures and connector lists improved my fluency quickly."}
+  ];
 
-  <!-- same fonts and stylesheet the rest of the site uses -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="index.html">Chiza | Certificates</a>
-      <nav class="nav">
-        <a href="index.html">Certificates</a>
-        <a href="about_me.html">About</a>
-        <a href="testimonials.html" class="active">Testimonials</a>
-      </nav>
-    </div>
-  </header>
+  // One more review added
+  const EXTRA_REVIEW = {
+    name: "Dr. Amy",
+    role: "Pediatrician",
+    goal: "Health routines and recovery planning",
+    quote: "The daily rhythm planner protected my energy during heavy weeks and made recovery predictable."
+  };
 
-  <main class="container">
-    <h1>Student Testimonials</h1>
-    <p style="color: var(--muted); margin:.25rem 0 1rem;">
-      For screenshots and more reviews, visit
-      <a href="https://testimonial.chizsaleei.com/" target="_blank" rel="noopener">
-        this gallery
-      </a>.
-    </p>
-    <div id="testi-grid" class="testi-grid" aria-live="polite"></div>
-  </main>
+  // Map your "goal" to site categories
+  function mapGoalToCategory(goal) {
+    const g = goal.toLowerCase();
+    if (g.includes("oet") || g.includes("ielts") || g.includes("medical english") || g.includes("specialization english") || g.includes("exam")) return "ielts";
+    if (g.includes("business")) return "business";
+    if (g.includes("negotiation") || g.includes("client") || g.includes("communication")) return "business";
+    if (g.includes("interview") || g.includes("phd")) return "career";
+    if (g.includes("health") || g.includes("recovery")) return "health";
+    return "life";
+  }
 
-  <footer class="site-footer">
-    <div class="container footer-inner"></div>
-  </footer>
+  // Optional avatar helper: put images in /assets/avatars/ with slug names if you have them
+  function slugify(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  }
+  function guessAvatar(name) {
+    const s = slugify(name);
+    return `assets/avatars/${s}.jpg`; // falls back to placeholder later if missing
+  }
 
-  <script>
-    const target = document.getElementById("testi-grid");
+  // Transform to page schema
+  function toCard(t) {
+    return {
+      name: t.name,
+      role: t.role,
+      category: mapGoalToCategory(t.goal || ""),
+      rating: 5,
+      quote: t.quote,
+      avatar: guessAvatar(t.name),
+      date: "" // add "YYYY-MM-DD" if you want
+    };
+  }
 
-    function render(list){
-      target.innerHTML = "";
-      list.forEach(t => {
-        const card = document.createElement("article");
-        card.className = "testi-card";
-        card.innerHTML = `
-          <div class="testi-quote">“${t.quote}”</div>
-          <div class="testi-meta">
-            <div class="testi-name">${t.name}</div>
-            <div class="testi-role">${t.role || ""}${t.goal ? " · " + t.goal : ""}</div>
-          </div>`;
-        target.appendChild(card);
-      });
-    }
+  // Build TESTIMONIALS used by the renderer below
+  const TESTIMONIALS = [...RAW_LIST, EXTRA_REVIEW].map(toCard);
 
-    // Load from local JSON in this repo
-    fetch("./data/testimonials.json", {cache: "no-store"})
-      .then(r => r.ok ? r.json() : Promise.reject("JSON not found"))
-      .then(render)
-      .catch(err => {
-        console.error(err);
-        target.innerHTML = "<p style='color: var(--muted)'>Unable to load testimonials from ./data/testimonials.json</p>";
-      });
-  </script>
-</body>
-</html>
+  // Optional: fetch more from your repo JSON (kept simple)
+  // Put a JSON file in your repo, for example: https://raw.githubusercontent.com/youruser/your-testimonials-repo/main/testimonials.json
+  const REMOTE_JSON_URL = "RAW_JSON_URL"; // replace with your raw JSON URL or leave as-is to skip
+  async function maybeFetchRemote() {
+    if (!REMOTE_JSON_URL || REMOTE_JSON_URL === "RAW_JSON_URL") return;
+    try {
+      const r = await fetch(REMOTE_JSON_URL, { cache: "no-store" });
+      if (!r.ok) return;
+      const extra = await r.json();
+      const more = Array.isArray(extra) ? extra.map(toCard) : [];
+      TESTIMONIALS.push(...more);
+      render(currentFilter); // re-render with merged data
+    } catch (_) {}
+  }
+
+  // Existing renderer from your page
+  const grid = document.getElementById("t-grid");
+  const tabs = document.querySelectorAll(".tab");
+  let currentFilter = "all";
+
+  function starRow(n) {
+    const stars = Math.max(0, Math.min(5, n|0));
+    const filled = "★".repeat(stars);
+    const empty = "☆".repeat(5 - stars);
+    return `<span class="stars" aria-label="${stars} out of 5 stars">${filled}${empty}</span>`;
+  }
+
+  function makeCard(t) {
+    const card = document.createElement("article");
+    card.className = "t-card";
+    card.setAttribute("data-category", t.category);
+
+    const head = document.createElement("div");
+    head.className = "t-head";
+
+    const img = document.createElement("img");
+    img.className = "t-avatar";
+    img.alt = t.name;
+    img.loading = "lazy";
+    img.src = t.avatar && t.avatar.length ? t.avatar : "assets/avatars/_placeholder.jpg";
+
+    const who = document.createElement("div");
+    const name = document.createElement("div");
+    name.className = "t-name";
+    name.textContent = t.name;
+    const role = document.createElement("div");
+    role.className = "t-role";
+    role.textContent = t.role;
+
+    who.appendChild(name);
+    who.appendChild(role);
+    head.appendChild(img);
+    head.appendChild(who);
+
+    const rating = document.createElement("div");
+    rating.innerHTML = starRow(t.rating);
+
+    const body = document.createElement("div");
+    body.className = "t-body";
+    body.textContent = t.quote;
+
+    const meta = document.createElement("div");
+    meta.className = "t-meta";
+    const cat = document.createElement("span");
+    cat.textContent = t.category.charAt(0).toUpperCase() + t.category.slice(1);
+    meta.appendChild(cat);
+
+    const cta = document.createElement("div");
+    cta.className = "t-cta";
+    const shop = document.createElement("a");
+    shop.className = "btn btn-link";
+    shop.href = "https://ko-fi.com/lifebalanceq/shop";
+    shop.target = "_blank";
+    shop.rel = "noopener";
+    shop.textContent = "View matching tools";
+    cta.appendChild(shop);
+
+    card.appendChild(head);
+    card.appendChild(rating);
+    card.appendChild(body);
+    card.appendChild(meta);
+    card.appendChild(cta);
+
+    // Per-card structured data
+    const ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Review",
+      "itemReviewed": { "@type": "Thing", "name": "Chiza Coaching Resources" },
+      "author": { "@type": "Person", "name": t.name },
+      "reviewRating": { "@type": "Rating", "ratingValue": String(t.rating), "bestRating": "5" },
+      "reviewBody": t.quote,
+    });
+    card.appendChild(ld);
+
+    return card;
+  }
+
+  function render(filter = "all") {
+    currentFilter = filter;
+    grid.innerHTML = "";
+    TESTIMONIALS
+      .filter(t => filter === "all" ? true : t.category === filter)
+      .forEach(t => grid.appendChild(makeCard(t)));
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      render(tab.dataset.filter);
+    });
+  });
+
+  render();
+  maybeFetchRemote();
+</script>
