@@ -1,1 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Freebie | Chiza</title>
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Chiza Home">Chiza</a>
+      <nav class="nav" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Quiz</a>
+        <a href="client-solutions.html">Solutions</a>
+        <a href="coaching.html">Categories</a>
+        <a href="about.html">About</a>
+        <a href="certificates.html">Certificates</a>
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Ko-fi</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main id="main" class="container" role="main">
+    <!-- Hero -->
+    <section class="hero small">
+      <div class="hero-inner">
+        <h1>Get your free template</h1>
+        <p class="subtitle">Choose a freebie, enter your email, and get an instant download link.</p>
+      </div>
+    </section>
+
+    <!-- Form -->
+    <section class="section" aria-labelledby="form-title">
+      <div class="section-head">
+        <h2 id="form-title">Free download</h2>
+        <p class="caption">No spam. Unsubscribe anytime.</p>
+      </div>
+
+      <!-- Replace the action with your Formspree endpoint or preferred form backend -->
+      <form id="freebie-form" class="form" action="https://formspree.io/f/your-endpoint" method="POST">
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" name="_replyto" type="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-row">
+          <label for="freebie">Choose your freebie</label>
+          <select id="freebie" name="freebie" required>
+            <option value="" disabled selected>Select one</option>
+            <option value="clarity-map">Clarity Map - goal setting template</option>
+            <option value="success-toolkit">Success Toolkit - one page checklist</option>
+            <option value="personality-sample">Personality Blueprint - sample guide</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="checkbox">
+            <input type="checkbox" name="consent" required>
+            <span>I agree to receive emails with practical tips and can unsubscribe anytime.</span>
+          </label>
+        </div>
+
+        <!-- Optional hidden fields -->
+        <input type="hidden" name="source" value="freebie-page" />
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Send my freebie</button>
+          <p class="microcopy">Having trouble? Use the fallback form:
+            <!-- Replace with your own Google Form link if you prefer -->
+            <a href="https://forms.gle/your-google-form" target="_blank" rel="noopener">Google Form</a>
+          </p>
+        </div>
+      </form>
+
+      <!-- Success message (shown after redirect with ?sent=1) -->
+      <div id="success" class="notice success" hidden>
+        <h3>Check your inbox</h3>
+        <p>Your download link is on the way. If you do not see it, check spam or promotions.</p>
+        <div class="hero-cta">
+          <a class="btn btn-outline" href="index.html">Back to Home</a>
+          <a class="btn btn-link" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Explore more tools</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- What you will get -->
+    <section class="section" aria-labelledby="get-title">
+      <div class="section-head">
+        <h2 id="get-title">What you will get</h2>
+      </div>
+      <div class="card-grid trio">
+        <article class="card">
+          <div class="card-body">
+            <h3>Clarity Map</h3>
+            <p>One page template to align vision, goals, and weekly actions.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-body">
+            <h3>Success Toolkit</h3>
+            <p>Quick checklist of tools and habits to boost progress fast.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-body">
+            <h3>Personality Sample</h3>
+            <p>Three actions and a mini checklist for your type.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-col">
+        <strong>Contact</strong>
+        <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
+        <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
+      </div>
+      <div class="footer-col">
+        <strong>Support</strong>
+        <div><a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy on Ko-fi</a></div>
+      </div>
+      <div class="footer-col">
+        <strong>Quick links</strong>
+        <div class="footer-links">
+          <a href="quiz.html">Quiz</a>
+          <a href="client-solutions.html">Solutions</a>
+          <a href="coaching.html">Categories</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Show success notice when redirected with ?sent=1
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('sent') === '1') {
+        document.getElementById('freebie-form').setAttribute('hidden', 'hidden');
+        document.getElementById('success').removeAttribute('hidden');
+      }
+    })();
+  </script>
+  <script src="script.js" defer></script>
+</body>
+</html>
