@@ -20,7 +20,7 @@
       display:grid;
       grid-template-columns:240px 1fr;
       gap:1.25rem;
-      align-items:center;
+      align-items:start;
     }
     .about-hero .hero-copy h1{ margin-bottom:.25rem }
     .strap{ font-weight:500; margin:.25rem 0; color:var(--ink) }
@@ -30,8 +30,7 @@
     .about-figure{
       width:100%;
       max-width:240px;
-      margin:0;                 /* aligns with top-left */
-      border-radius:9999px;     /* OVAL */
+      border-radius:9999px;     /* oval */
       overflow:hidden;
       border:1px solid var(--ring);
       box-shadow:0 6px 18px rgba(0,0,0,.25);
@@ -44,44 +43,44 @@
       display:block;
     }
 
-    @media(min-width:1100px){
-      .about-hero{ grid-template-columns:240px 1fr }
-    }
     @media(max-width:860px){
       .about-hero{ grid-template-columns:1fr; gap:1rem }
       .about-figure{ margin:0 auto }
     }
 
-    /* Mission / Vision / Values — horizontal cards */
+    /* Mission / Vision / Values — horizontal equal-height cards */
     .about-summary{
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:12px;
       margin-top:.5rem;
+      align-items:stretch;
     }
     .about-card{
       border:1px solid var(--ring);
       border-radius:12px;
       padding:.9rem;
       background:var(--surface);
+      display:flex; flex-direction:column;
     }
     .about-card h3{ margin:0 0 .35rem }
     .about-card p{ margin:0; color:var(--muted) }
     .about-card ul{ margin:.25rem 0 0 1rem }
     .about-card li{ margin:.25rem 0 }
-    @media(max-width:900px){ .about-summary{ grid-template-columns:1fr } }
 
-    /* Buttons row */
+    @media(max-width:900px){
+      .about-summary{ grid-template-columns:1fr }
+    }
+
+    /* Under-cards actions */
+    .under-cards{ margin-top:.9rem }
     .proof-cta{ display:flex; gap:.5rem; flex-wrap:wrap }
 
-    /* Visually hide text but keep link (for “Shop on Ko-fi”) */
+    /* Visually hide text but keep link (for Ko-fi) */
     .sr-only{
-      position:absolute !important;
-      width:1px; height:1px;
-      padding:0; margin:-1px;
-      overflow:hidden; clip:rect(0 0 0 0);
-      white-space:nowrap; border:0;
-      clip-path:inset(50%);
+      position:absolute !important; width:1px; height:1px;
+      padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0);
+      white-space:nowrap; border:0; clip-path:inset(50%);
     }
   </style>
 
@@ -138,7 +137,7 @@
             who have been called according to his purpose.” — Romans 8:28
           </div>
 
-          <!-- Mission / Vision / Values -->
+          <!-- Horizontal Mission / Vision / Values -->
           <div class="about-summary">
             <div class="about-card">
               <h3>Mission</h3>
@@ -158,9 +157,13 @@
             </div>
           </div>
 
-          <div class="hero-cta" style="margin-top:.9rem">
-            <a class="btn btn-primary" href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">Connect on LinkedIn</a>
-            <a class="btn btn-outline" href="mailto:chizsaleei@gmail.com">Email me</a>
+          <!-- Résumé (beneath the row) -->
+          <div class="under-cards">
+            <a class="btn btn-outline"
+               href="https://drive.google.com/file/d/1K1jwGBIrUpr12AGYuhcw4K3VtJEDWCSB/view?usp=sharing"
+               target="_blank" rel="noopener">
+              View Résumé
+            </a>
           </div>
         </div>
       </div>
@@ -196,13 +199,12 @@
           </div>
           <div class="card-cta">
             <a class="btn btn-primary" href="client-solutions.html">See Solutions</a>
-            <!-- Keep link but hide visible text -->
+            <!-- Keep link active, no visible text -->
             <a class="btn btn-link" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener" aria-label="Shop on Ko-fi">
               <span class="sr-only">Shop on Ko-fi</span>
             </a>
           </div>
         </article>
-
         <article class="card">
           <div class="card-body">
             <h3>Personality based guides</h3>
@@ -212,7 +214,6 @@
             <a class="btn btn-primary" href="quiz.html">Start with the Quiz</a>
           </div>
         </article>
-
         <article class="card">
           <div class="card-body">
             <h3>Focused categories</h3>
@@ -225,18 +226,6 @@
       </div>
     </section>
 
-    <!-- Freebie -->
-    <section class="section alt" aria-labelledby="freebie-title">
-      <div class="freebie-inner">
-        <h2 id="freebie-title">Get a free template</h2>
-        <p>Download the Clarity Map and get weekly practical tips.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="freebie.html">Send me the template</a>
-        </div>
-        <p class="microcopy">No spam. Unsubscribe anytime.</p>
-      </div>
-    </section>
-  </main>
 
   <!-- Footer -->
   <footer class="site-footer" role="contentinfo">
