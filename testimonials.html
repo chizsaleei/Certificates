@@ -12,22 +12,43 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Page-scoped helpers to keep everything on-theme -->
   <style>
-    /* Minimal helpers if not already in styles.css */
-    .tabs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem }
-    .tab { padding:.5rem .75rem; border:1px solid #ddd; border-radius:.5rem; background:#fff; cursor:pointer }
-    .tab.active { background:#111; color:#fff; border-color:#111 }
-    .t-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-top:1rem }
-    .t-card { border:1px solid #eee; border-radius:.9rem; background:#fff; padding:1rem; display:flex; flex-direction:column; gap:.75rem }
-    .t-head { display:flex; align-items:center; gap:.75rem }
-    .t-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; background:#f3f3f3 }
-    .t-name { font-weight:600 }
-    .t-role { font-size:.9rem; color:#666 }
-    .stars { color:#f5a623; font-size:.95rem; letter-spacing:.1rem }
-    .t-body { font-size:1rem; line-height:1.55 }
-    .t-meta { font-size:.85rem; color:#666; display:flex; gap:.5rem; flex-wrap:wrap }
-    .t-cta { margin-top:.25rem; display:flex; gap:.5rem; flex-wrap:wrap }
-    .notice.info { background:#f7faff; border:1px solid #d8e8ff; border-radius:.75rem; padding:1rem }
+    /* Tabs styled for dark theme */
+    .tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0 0}
+    .tab{
+      background:var(--surface-2);
+      color:var(--muted);
+      border:1px solid var(--ring);
+      padding:.5rem .75rem;border-radius:12px;cursor:pointer;outline:none
+    }
+    .tab:hover,.tab.active{color:var(--ink);background:var(--surface);border-color:#3b5e53}
+
+    /* 4-column testimonial grid */
+    .t-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:1rem}
+    @media(max-width:1100px){.t-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:780px){.t-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){.t-grid{grid-template-columns:1fr}}
+
+    /* Cards match site theme */
+    .t-card{
+      background:var(--surface);
+      border:1px solid var(--ring);
+      border-radius:var(--radius-lg);
+      padding:1rem 1.05rem;
+      color:var(--ink);
+      transition:border-color .18s, box-shadow .18s
+    }
+    .t-card:hover{border-color:#3b5e53;box-shadow:var(--shadow-1)}
+    .t-head{display:flex;align-items:center;gap:.75rem}
+    .t-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#0e1815;border:1px solid var(--ring)}
+    .t-name{font-weight:600}
+    .t-role{font-size:.92rem;color:var(--muted)}
+    .stars{color:#f2d58b;letter-spacing:.08rem}
+    .t-body{line-height:1.55}
+    .t-meta{font-size:.88rem;color:var(--muted);display:flex;gap:.5rem;flex-wrap:wrap}
+    .t-cta{display:flex;gap:.5rem;margin-top:.25rem}
   </style>
 </head>
 <body>
@@ -43,7 +64,7 @@
         <a href="about.html">About</a>
         <a href="training.html">Training</a>
         <a href="testimonials.html" class="active">Testimonials</a>
-        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Ko-fi</a>
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
   </header>
@@ -53,38 +74,22 @@
     <h1>Student Testimonials</h1>
     <p style="color: var(--muted); margin:.25rem 0 1rem;">
       For screenshots and more reviews, visit
-      <a href="https://chizsaleei.github.io/studentstestimonials/" target="_blank" rel="noopener">
-        this gallery
-      </a>.
+      <a href="https://chizsaleei.github.io/studentstestimonials/" target="_blank" rel="noopener">this gallery</a>.
     </p>
 
-    <!-- Filters -->
-    <section class="section" aria-labelledby="filter-title">
-      <div class="section-head">
-        <h2 id="filter-title">Browse by category</h2>
-        <p class="caption">Select a filter to see specific stories.</p>
-      </div>
-      <div class="tabs" role="tablist" aria-label="Filter testimonials">
-        <button class="tab active" data-filter="all" aria-selected="true">All</button>
-        <button class="tab" data-filter="career">Career</button>
-        <button class="tab" data-filter="leadership">Leadership</button>
-        <button class="tab" data-filter="business">Business</button>
-        <button class="tab" data-filter="health">Health and Wellness</button>
-        <button class="tab" data-filter="financial">Financial</button>
-        <button class="tab" data-filter="life">Life Vision</button>
-        <button class="tab" data-filter="ielts">IELTS and OET</button>
-      </div>
-    </section>
+    <!-- Optional filters (kept minimal) -->
+    <div class="tabs" role="tablist" aria-label="Filter testimonials">
+      <button class="tab active" data-filter="all" aria-selected="true">All</button>
+      <button class="tab" data-filter="career">Career</button>
+      <button class="tab" data-filter="business">Business</button>
+      <button class="tab" data-filter="health">Health and Wellness</button>
+      <button class="tab" data-filter="financial">Financial</button>
+      <button class="tab" data-filter="life">Life Vision</button>
+      <button class="tab" data-filter="ielts">IELTS and OET</button>
+    </div>
 
     <!-- Testimonials Grid -->
-    <section class="section" aria-labelledby="t-title">
-      <div class="section-head">
-        <h2 id="t-title">Recent testimonials</h2>
-        <p class="caption">Names and roles shown with permission.</p>
-      </div>
-      <!-- Use t-grid so the renderer and tabs work -->
-      <div id="t-grid" class="t-grid" aria-live="polite"></div>
-    </section>
+    <div id="t-grid" class="t-grid" aria-live="polite"></div>
 
     <!-- CTA -->
     <section class="section alt" aria-labelledby="cta-title">
@@ -98,25 +103,16 @@
     </section>
   </main>
 
-  <!-- Footer -->
+  <!-- Footer (two columns: Contact left, Support right) -->
   <footer class="site-footer" role="contentinfo">
-    <div class="container footer-inner">
+    <div class="container footer-inner footer-two-cols">
       <div class="footer-col">
         <strong>Contact</strong>
         <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
         <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
       </div>
-      <div class="footer-col">
-        <strong>Support</strong>
-        <div><a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy on Ko-fi</a></div>
-      </div>
-      <div class="footer-col">
-        <strong>Quick links</strong>
-        <div class="footer-links">
-          <a href="quiz.html">Quiz</a>
-          <a href="client-solutions.html">Solutions</a>
-          <a href="coaching.html">Categories</a>
-        </div>
+      <div class="footer-col footer-right">
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </div>
     </div>
   </footer>
@@ -152,7 +148,7 @@
       quote: "The daily rhythm planner protected my energy during heavy weeks and made recovery predictable."
     };
 
-    // Map your "goal" to site categories
+    // Map "goal" to site categories
     function mapGoalToCategory(goal) {
       const g = (goal || "").toLowerCase();
       if (g.includes("oet") || g.includes("ielts") || g.includes("medical english") || g.includes("specialization english") || g.includes("exam")) return "ielts";
@@ -163,59 +159,49 @@
       return "life";
     }
 
-    // Optional avatar helper: put images in /assets/avatars/ with slug names if you have them
-    function slugify(name) {
-      return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    }
-    function guessAvatar(name) {
-      const s = slugify(name);
-      return `assets/avatars/${s}.jpg`; // falls back to placeholder later if missing
-    }
+    // Optional avatar helper: /assets/avatars/{slug}.jpg
+    const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+    const guessAvatar = name => `assets/avatars/${slugify(name)}.jpg`;
 
-    // Transform to page schema
-    function toCard(t) {
+    // Normalize
+    function toCard(t){
       return {
         name: t.name,
         role: t.role,
         category: mapGoalToCategory(t.goal || ""),
         rating: 5,
         quote: t.quote,
-        avatar: guessAvatar(t.name),
-        date: "" // add "YYYY-MM-DD" if you want
+        avatar: guessAvatar(t.name)
       };
     }
 
-    // Build TESTIMONIALS used by the renderer below
     const TESTIMONIALS = [...RAW_LIST, EXTRA_REVIEW].map(toCard);
 
-    // Optional: fetch more from your repo JSON
-    // Example: https://raw.githubusercontent.com/youruser/your-testimonials-repo/main/testimonials.json
-    const REMOTE_JSON_URL = "RAW_JSON_URL"; // replace with your raw JSON URL or leave as is to skip
-    async function maybeFetchRemote() {
+    // Optional remote JSON merge
+    const REMOTE_JSON_URL = "RAW_JSON_URL"; // replace to enable
+    async function maybeFetchRemote(){
       if (!REMOTE_JSON_URL || REMOTE_JSON_URL === "RAW_JSON_URL") return;
-      try {
+      try{
         const r = await fetch(REMOTE_JSON_URL, { cache: "no-store" });
         if (!r.ok) return;
         const extra = await r.json();
         const more = Array.isArray(extra) ? extra.map(toCard) : [];
         TESTIMONIALS.push(...more);
-        render(currentFilter); // re-render with merged data
-      } catch (_) {}
+        render(currentFilter);
+      }catch(_){}
     }
 
     // Renderer
-    const grid = document.getElementById("t-grid");
-    const tabs = document.querySelectorAll(".tab");
+    const grid  = document.getElementById("t-grid");
+    const tabs  = document.querySelectorAll(".tab");
     let currentFilter = "all";
 
-    function starRow(n) {
-      const stars = Math.max(0, Math.min(5, n|0));
-      const filled = "★".repeat(stars);
-      const empty = "☆".repeat(5 - stars);
-      return `<span class="stars" aria-label="${stars} out of 5 stars">${filled}${empty}</span>`;
-    }
+    const starRow = n => {
+      const s = Math.max(0, Math.min(5, n|0));
+      return `<span class="stars" aria-label="${s} out of 5 stars">${"★".repeat(s)}${"☆".repeat(5-s)}</span>`;
+    };
 
-    function makeCard(t) {
+    function makeCard(t){
       const card = document.createElement("article");
       card.className = "t-card";
       card.setAttribute("data-category", t.category);
@@ -231,23 +217,18 @@
 
       const who = document.createElement("div");
       const name = document.createElement("div");
-      name.className = "t-name";
-      name.textContent = t.name;
+      name.className = "t-name"; name.textContent = t.name;
       const role = document.createElement("div");
-      role.className = "t-role";
-      role.textContent = t.role;
+      role.className = "t-role"; role.textContent = t.role;
 
-      who.appendChild(name);
-      who.appendChild(role);
-      head.appendChild(img);
-      head.appendChild(who);
+      who.appendChild(name); who.appendChild(role);
+      head.appendChild(img); head.appendChild(who);
 
       const rating = document.createElement("div");
       rating.innerHTML = starRow(t.rating);
 
       const body = document.createElement("div");
-      body.className = "t-body";
-      body.textContent = t.quote;
+      body.className = "t-body"; body.textContent = t.quote;
 
       const meta = document.createElement("div");
       meta.className = "t-meta";
@@ -271,23 +252,22 @@
       card.appendChild(meta);
       card.appendChild(cta);
 
-      // Per card structured data
       const ld = document.createElement("script");
       ld.type = "application/ld+json";
       ld.text = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Review",
-        "itemReviewed": { "@type": "Thing", "name": "Chiza Coaching Resources" },
-        "author": { "@type": "Person", "name": t.name },
-        "reviewRating": { "@type": "Rating", "ratingValue": String(t.rating), "bestRating": "5" },
-        "reviewBody": t.quote
+        "@context":"https://schema.org",
+        "@type":"Review",
+        "itemReviewed":{"@type":"Thing","name":"Chiza Coaching Resources"},
+        "author":{"@type":"Person","name":t.name},
+        "reviewRating":{"@type":"Rating","ratingValue":String(t.rating),"bestRating":"5"},
+        "reviewBody":t.quote
       });
       card.appendChild(ld);
 
       return card;
     }
 
-    function render(filter = "all") {
+    function render(filter="all"){
       currentFilter = filter;
       grid.innerHTML = "";
       TESTIMONIALS
