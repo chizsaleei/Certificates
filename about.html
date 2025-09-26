@@ -17,34 +17,34 @@
   <style>
     /* Hero split: compact portrait at right, neat spacing */
     .about-hero{display:grid;grid-template-columns:1.1fr 320px;gap:1.25rem;align-items:center}
-    .about-hero .hero-copy h1{margin-bottom:.35rem}
-    .about-hero .subtitle{margin:.25rem 0 .75rem}
+    .about-hero .hero-copy h1{margin-bottom:.25rem}
+    .about-hero .strap{font-weight:500;margin:.1rem 0 .4rem;color:var(--ink)}
+    .about-hero .subtitle{margin:.25rem 0 .6rem}
+    .about-hero .verse{font-size:.95rem;color:var(--muted);margin:.25rem 0 .9rem}
     .about-figure{
       width:100%;max-width:320px;margin:0 auto;border-radius:14px;overflow:hidden;
       border:1px solid var(--ring);box-shadow:0 6px 20px rgba(0,0,0,.25)
     }
     .about-figure img{display:block;width:100%;height:auto}
 
-    /* Make portrait smaller on large screens */
+    /* Keep the same compact portrait sizing as before */
     @media(min-width:1100px){ .about-hero{grid-template-columns:1.2fr 280px} }
     @media(max-width:860px){ .about-hero{grid-template-columns:1fr;gap:1rem} .about-figure{max-width:220px} }
 
-    /* Tight, readable sections */
+    /* Tidy summary grid under the hero */
+    .about-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:.5rem}
+    .about-card{border:1px solid var(--ring);border-radius:12px;padding:.9rem;background:var(--surface)}
+    .about-card h3{margin:0 0 .25rem}
+    .about-card p{margin:0;color:var(--muted)}
+    @media(max-width:900px){ .about-summary{grid-template-columns:1fr} }
+
+    /* Keep the rest compact */
     .section-head h2{margin-bottom:.25rem}
-    .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:1rem}
-    @media(max-width:860px){ .two-col{grid-template-columns:1fr} }
-
-    .checklist{margin:.25rem 0 0;padding-left:1.1rem}
-    .checklist li{margin:.25rem 0}
-
-    /* Value cards as small pills for minimalism */
+    .proof-cta{display:flex;gap:.5rem;flex-wrap:wrap}
     .card-grid.trio .card{padding:0}
     .card-grid.trio .card .card-body{padding:.9rem}
     .card-grid.trio h3{margin:.1rem 0 .25rem}
     .card-grid.trio p{margin:0;color:var(--muted)}
-
-    /* Proof row buttons wrap neatly */
-    .proof-cta{display:flex;gap:.5rem;flex-wrap:wrap}
   </style>
 
   <!-- Structured Data -->
@@ -91,55 +91,40 @@
       <div class="about-hero">
         <div class="hero-copy">
           <h1>About Chiza</h1>
+
+          <!-- New strapline next to the portrait -->
+          <div class="strap">RCh, LPT&nbsp;|&nbsp;Coach for Communication, Leadership, and Wellness&nbsp;|&nbsp;Medical and Business English</div>
+
           <p class="subtitle">Practical tools to act with clarity, protect your energy, and make steady progress.</p>
-          <div class="hero-cta">
+
+          <!-- Verse (stated) -->
+          <div class="verse">Romans 8:28</div>
+
+          <!-- Quick summary cards -->
+          <div class="about-summary">
+            <div class="about-card">
+              <h3>Bio</h3>
+              <p>I help people learn faster, heal better, and work smarter by combining science, coaching, and compassionate communication.</p>
+            </div>
+            <div class="about-card">
+              <h3>Vision</h3>
+              <p>Help people learn faster, heal better, and work smarter through science, design, and compassionate communication.</p>
+            </div>
+            <div class="about-card">
+              <h3>Values</h3>
+              <p>Curiosity, service, clarity, and integrity.</p>
+            </div>
+          </div>
+
+          <div class="hero-cta" style="margin-top:.9rem">
             <a class="btn btn-primary" href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">Connect on LinkedIn</a>
             <a class="btn btn-outline" href="mailto:chizsaleei@gmail.com">Email me</a>
           </div>
         </div>
+
         <figure class="about-figure">
           <img src="images/prof11.jpg" alt="Portrait of Chiza" loading="lazy" />
         </figure>
-      </div>
-    </section>
-
-    <!-- Bio -->
-    <section class="section" aria-labelledby="bio-title">
-      <div class="section-head">
-        <h2 id="bio-title">Short bio</h2>
-        <p class="caption">Clear work, kind process, practical outcomes.</p>
-      </div>
-      <div class="two-col">
-        <div>
-          <p>I’m a coach and educator with a background in chemistry and medical English. I help professionals turn complex goals into simple steps. Resources are concise, easy to follow, and built for real life.</p>
-          <p>Topics: career, leadership, business, health and wellness, financial basics, and life vision. Everything is designed to be used in minutes, not weeks.</p>
-        </div>
-        <div>
-          <ul class="checklist">
-            <li>Practical tools that fit your day</li>
-            <li>Simple systems you can sustain</li>
-            <li>Language that sounds natural</li>
-            <li>Focus on calm progress</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- Values -->
-    <section class="section" aria-labelledby="values-title">
-      <div class="section-head">
-        <h2 id="values-title">Values I work by</h2>
-      </div>
-      <div class="card-grid trio">
-        <article class="card"><div class="card-body">
-          <h3>Clarity</h3><p>Start with the outcome. Map the next three actions. Remove noise.</p>
-        </div></article>
-        <article class="card"><div class="card-body">
-          <h3>Kindness</h3><p>Respect time and energy. Keep language human. Keep steps light.</p>
-        </div></article>
-        <article class="card"><div class="card-body">
-          <h3>Consistency</h3><p>Small wins create momentum. Momentum builds trust. Trust compounds.</p>
-        </div></article>
       </div>
     </section>
 
@@ -155,12 +140,12 @@
       </div>
       <div class="badges minirow" style="margin-top:.75rem">
         <span class="badge">Chemist, Licensed Teacher</span>
-        <span class="badge">Medical & Business English</span>
-        <span class="badge">Interview & Presentation Coaching</span>
+        <span class="badge">Medical &amp; Business English</span>
+        <span class="badge">Interview &amp; Presentation Coaching</span>
       </div>
     </section>
 
-    <!-- What I offer -->
+    <!-- What I offer (unchanged) -->
     <section class="section" aria-labelledby="offer-title">
       <div class="section-head">
         <h2 id="offer-title">What I offer</h2>
@@ -176,6 +161,7 @@
             <a class="btn btn-link" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Shop on Ko-fi</a>
           </div>
         </article>
+
         <article class="card">
           <div class="card-body">
             <h3>Personality based guides</h3>
@@ -185,10 +171,11 @@
             <a class="btn btn-primary" href="quiz.html">Start with the Quiz</a>
           </div>
         </article>
+
         <article class="card">
           <div class="card-body">
             <h3>Focused categories</h3>
-            <p>Career, leadership, business, health & wellness, financial, and life vision.</p>
+            <p>Career, leadership, business, health &amp; wellness, financial, and life vision.</p>
           </div>
           <div class="card-cta">
             <a class="btn btn-primary" href="coaching.html">Explore Categories</a>
