@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Certificates | Chiza</title>
+  <title>Chiza | Coaching</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,35 +17,154 @@
   <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Chiza | Certificates</a>
+      <a class="brand" href="#coaching">Chiza | Coaching</a>
       <nav class="nav" role="navigation" aria-label="Primary">
-        <a href="index.html" class="active">Certificates</a>
-        <a href="about_me.html">About</a>
-        <a href="testimonials.html">Testimonials</a>
+        <a href="#coaching" class="navlink active" data-target="coaching">Coaching</a>
+        <a href="#coretype" class="navlink" data-target="coretype">Find your Core Type</a>
+        <a href="#about" class="navlink" data-target="about">About</a>
+        <a href="#training" class="navlink" data-target="training">Training</a>
       </nav>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="container" id="main">
-    <!-- Intro -->
-    <section class="intro" aria-labelledby="heading-certs">
-      <h1 id="heading-certs">Verified Certificates</h1>
-      <p class="caption" style="margin-top:-.25rem">
-        Curated academic and professional learning — Specializations, individual Courses, and more.
-      </p>
+  <main class="container">
+
+    <!-- Coaching -->
+    <section id="coaching" class="section active-section" aria-labelledby="coaching-title">
+      <h1 id="coaching-title">Book coaching or buy templates</h1>
+      <p class="caption">Pick a card to see offers matched to your goal. Each option is designed for clarity, results, and accountability.</p>
+
+      <!-- Category cards injected by script.js from CATALOG -->
+      <section class="grid" id="coachingGrid" aria-label="Client categories"></section>
+
+      <!-- Modal for Coaching offers -->
+      <div class="modal-backdrop" id="coachBackdrop" role="dialog" aria-modal="true" aria-labelledby="coachModalTitle">
+        <div class="modal" role="document">
+          <header>
+            <h2 id="coachModalTitle">Category</h2>
+            <button class="xbtn" id="coachCloseBtn" aria-label="Close">✕</button>
+          </header>
+          <div class="options" id="coachOptions"></div>
+          <div class="hint" id="coachHint"></div>
+        </div>
+      </div>
+
+      <h2 class="subhead">How it works</h2>
+      <pre class="mermaid" id="coachFlow">
+flowchart TD
+  A[Hero - Book coaching or buy templates] --> B[Browse categories]
+  B -->|Click card| C{Category selected}
+  C --> D1[Healthcare offers modal]
+  C --> D2[Science and Pharma offers modal]
+  C --> D3[Business and Corporate offers modal]
+  C --> D4[Academia and Admissions offers modal]
+  C --> D5[Tech and Data offers modal]
+  C --> D6[Education and Coaching offers modal]
+  C --> D7[Creators and Consultants offers modal]
+  C --> D8[Global Mobility offers modal]
+  C --> D9[Young Learners offers modal]
+
+  subgraph Offers
+    E1[Offer 1 - details + price + Buy or Book]
+    E2[Offer 2 - details + price + Buy or Book]
+    E3[Offer 3 - details + price + Buy or Book]
+  end
+
+  D1 --> E1
+  D1 --> E2
+  D1 --> E3
+  D2 --> E1
+  D2 --> E2
+  D2 --> E3
+  D3 --> E1
+  D3 --> E2
+  D3 --> E3
+  D4 --> E1
+  D4 --> E2
+  D4 --> E3
+  D5 --> E1
+  D5 --> E2
+  D5 --> E3
+  D6 --> E1
+  D6 --> E2
+  D6 --> E3
+  D7 --> E1
+  D7 --> E2
+  D7 --> E3
+  D8 --> E1
+  D8 --> E2
+  D8 --> E3
+  D9 --> E1
+  D9 --> E2
+  D9 --> E3
+
+  E1 --> F{Checkout or Calendar}
+  E2 --> F
+  E3 --> F
+  F -->|Checkout success| G[Order confirmation email]
+  F -->|Calendar booked| H[Booking confirmation email]
+  G --> I[Delivery - Zoom or Google Meet link]
+  H --> I
+  I --> J[Session delivered]
+  I --> K[Digital template delivered]
+
+  J --> L{Need to reschedule}
+  L -->|Yes| M[Use reschedule link in email]
+  L -->|No| N[Post session follow up email]
+
+  G -.-> P[Invoice on request]
+  H -.-> P
+  F -.-> Q{Refund or credit rules}
+  Q -->|Cancel 24h before| R[Full credit]
+  Q -->|Session not delivered| S[Full refund]
+
+  A -.-> T[Free 10 minute fit check link]
+      </pre>
     </section>
 
-    <!-- Tabs -->
-    <div class="tabs" role="tablist" aria-label="Filter certificates">
-      <button class="tab active" data-filter="all" aria-selected="true">All</button>
-      <button class="tab" data-filter="spec" aria-selected="false">Specializations</button>
-      <button class="tab" data-filter="course" aria-selected="false">Courses</button>
-      <button class="tab" data-filter="other" aria-selected="false">Other</button>
-    </div>
+    <!-- Core Type Quiz landing with 10 cards -->
+    <section id="coretype" class="section" aria-labelledby="coretype-title">
+      <h1 id="coretype-title">Find your Core Type</h1>
+      <p class="caption">Take the quick quiz to see your core type. Open your card to get the matched plan, then buy on Ko-fi or book a call.</p>
 
-    <!-- Grid -->
-    <section id="grid" class="cert-grid" aria-live="polite"></section>
+      <section id="typeCards" class="type-grid" aria-label="Core type cards"><!-- built by script.js --></section>
+    </section>
+
+    <!-- About with lead magnet form -->
+    <section id="about" class="section" aria-labelledby="about-title">
+      <h1 id="about-title">About</h1>
+      <p class="caption">Ask for a resource, request a plan, or get a free 10 minute fit check.</p>
+
+      <form id="leadForm" class="lead-form" action="https://formspree.io/f/your-id" method="POST">
+        <label>Email
+          <input type="email" name="email" required placeholder="you@example.com" />
+        </label>
+        <label>Name
+          <input type="text" name="name" required placeholder="Your name" />
+        </label>
+        <label>Message or request
+          <textarea name="message" rows="5" placeholder="What result do you want in the next 30 days"></textarea>
+        </label>
+        <button class="btn" type="submit">Send</button>
+        <p class="tiny">By sending this form you agree to email follow up. You can unsubscribe any time.</p>
+      </form>
+    </section>
+
+    <!-- Training replaces Certificates -->
+    <section id="training" class="section" aria-labelledby="training-title">
+      <h1 id="training-title">Training</h1>
+      <p class="caption">Curated academic and professional learning. Specializations, courses, and more.</p>
+
+      <div class="tabs" role="tablist" aria-label="Filter training">
+        <button class="tab active" data-filter="all" aria-selected="true">All</button>
+        <button class="tab" data-filter="spec" aria-selected="false">Specializations</button>
+        <button class="tab" data-filter="course" aria-selected="false">Courses</button>
+        <button class="tab" data-filter="other" aria-selected="false">Other</button>
+      </div>
+
+      <section id="trainingGrid" class="cert-grid" aria-live="polite"></section>
+    </section>
+
   </main>
 
   <!-- Footer -->
@@ -59,13 +178,17 @@
       <div>
         <strong>Support</strong>
         <div>
-          <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+          <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Ko-fi</a>
         </div>
       </div>
     </div>
   </footer>
 
   <!-- Scripts -->
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
