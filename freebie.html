@@ -24,7 +24,7 @@
         <a href="client-solutions.html">Solutions</a>
         <a href="coaching.html">Categories</a>
         <a href="about.html">About</a>
-        <a href="certificates.html">Certificates</a>
+        <a href="training.html">Training</a>
         <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
@@ -36,7 +36,7 @@
     <section class="hero small">
       <div class="hero-inner">
         <h1>Get your free template</h1>
-        <p class="subtitle">Choose a freebie, enter your email, and get an instant download link.</p>
+        <p class="subtitle">Enter your email to receive an instant download link.</p>
       </div>
     </section>
 
@@ -47,7 +47,7 @@
         <p class="caption">No spam. Unsubscribe anytime.</p>
       </div>
 
-      <!-- Replace the action with your Formspree endpoint or preferred form backend -->
+      <!-- Replace action with your Formspree endpoint -->
       <form id="freebie-form" class="form" action="https://formspree.io/f/your-endpoint" method="POST">
         <div class="form-row">
           <label for="name">Name</label>
@@ -60,30 +60,26 @@
         </div>
 
         <div class="form-row">
-          <label for="freebie">Choose your freebie</label>
+          <label for="freebie">Choose a freebie</label>
           <select id="freebie" name="freebie" required>
             <option value="" disabled selected>Select one</option>
-            <option value="clarity-map">Clarity Map - goal setting template</option>
-            <option value="success-toolkit">Success Toolkit - one page checklist</option>
-            <option value="personality-sample">Personality Blueprint - sample guide</option>
+            <option value="clarity-map">Clarity Map</option>
+            <option value="success-toolkit">Success Toolkit</option>
+            <option value="personality-sample">Personality Sample</option>
           </select>
         </div>
 
-        <div class="form-row">
-          <label class="checkbox">
-            <input type="checkbox" name="consent" required>
-            <span>I agree to receive emails with practical tips and can unsubscribe anytime.</span>
-          </label>
-        </div>
+        <label class="checkbox" style="display:flex;gap:.5rem;align-items:flex-start">
+          <input type="checkbox" name="consent" required />
+          <span>I agree to receive practical tips and can unsubscribe anytime.</span>
+        </label>
 
-        <!-- Optional hidden fields -->
         <input type="hidden" name="source" value="freebie-page" />
 
         <div class="form-actions">
           <button class="btn btn-primary" type="submit">Send my freebie</button>
-          <p class="microcopy">Having trouble? Use the fallback form:
-            <!-- Replace with your own Google Form link if you prefer -->
-            <a href="https://forms.gle/your-google-form" target="_blank" rel="noopener">Google Form</a>
+          <p class="microcopy">Trouble receiving it
+            <a href="https://forms.gle/your-google-form" target="_blank" rel="noopener">try the fallback form</a>.
           </p>
         </div>
       </form>
@@ -102,19 +98,19 @@
     <!-- What you will get -->
     <section class="section" aria-labelledby="get-title">
       <div class="section-head">
-        <h2 id="get-title">What you will get</h2>
+        <h2 id="get-title">What you get</h2>
       </div>
       <div class="card-grid trio">
         <article class="card">
           <div class="card-body">
             <h3>Clarity Map</h3>
-            <p>One page template to align vision, goals, and weekly actions.</p>
+            <p>One page to align vision, goals, and weekly actions.</p>
           </div>
         </article>
         <article class="card">
           <div class="card-body">
             <h3>Success Toolkit</h3>
-            <p>Quick checklist of tools and habits to boost progress fast.</p>
+            <p>Short checklist of habits and tools that work.</p>
           </div>
         </article>
         <article class="card">
@@ -127,7 +123,7 @@
     </section>
   </main>
 
-   <!-- Footer -->
+  <!-- Footer -->
   <footer class="site-footer" role="contentinfo">
     <div class="container footer-inner footer-two-cols">
       <div class="footer-col">
@@ -147,8 +143,9 @@
     (function () {
       const params = new URLSearchParams(window.location.search);
       if (params.get('sent') === '1') {
-        document.getElementById('freebie-form').setAttribute('hidden', 'hidden');
-        document.getElementById('success').removeAttribute('hidden');
+        const form = document.getElementById('freebie-form');
+        const ok   = document.getElementById('success');
+        if (form && ok) { form.hidden = true; ok.hidden = false; }
       }
     })();
   </script>
