@@ -2,87 +2,213 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Coaching | Chiza</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coaching Categories | Chiza</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header">
+  <!-- Header -->
+  <header class="site-header" role="banner">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Chiza</a>
-      <nav class="nav">
-        <a href="index.html">Certificates</a>
-        <a href="about_me.html">About</a>
-        <a href="projects.html">Projects</a>
-        <a href="coaching.html" class="active">Coaching</a>
-        <a href="testimonials.html">Testimonials</a>
+      <a class="brand" href="index.html" aria-label="Chiza Home">Chiza</a>
+      <nav class="nav" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Quiz</a>
+        <a href="client-solutions.html">Solutions</a>
+        <a href="coaching.html" class="active">Categories</a>
+        <a href="about.html">About</a>
+        <a href="certificates.html">Certificates</a>
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Ko-fi</a>
       </nav>
     </div>
   </header>
 
-  <main class="container">
-    <section class="intro">
-      <h1>Digital Coaching Platform</h1>
-      <p>Playbooks, templates, and a simple way to book sessions.</p>
+  <!-- Main -->
+  <main id="main" class="container" role="main">
+    <!-- Hero -->
+    <section class="hero small">
+      <div class="hero-inner">
+        <h1>Focused growth categories</h1>
+        <p class="subtitle">Each category has one starter resource you can download on Ko-fi. No calls. Instant files.</p>
+      </div>
     </section>
 
-    <section class="cards">
-      <article class="card">
-        <h2>Book a Session</h2>
-        <p>International students can book directly via Calendly.</p>
-        <p>
-          <a class="btn" target="_blank" rel="noopener"
-             href="https://calendly.com/chizsaleeiglobalconsulting/new-meeting">
-            Book on Calendly
-          </a>
-        </p>
-        <p class="note">
-          Note: Calendly’s native payments use Stripe or PayPal. Since we’re using Ko-fi for support,
-          booking is scheduled on Calendly and support/purchases happen via Ko-fi.
-        </p>
-      </article>
-
-      <article class="card">
-        <h2>Support & Templates</h2>
-        <p>Get my playbooks and templates or leave support via Ko-fi.</p>
-        <p>
-          <a class="btn btn-kofi" target="_blank" rel="noopener"
-             href="https://ko-fi.com/lifebalanceq">
-            Support on Ko-fi
-          </a>
-        </p>
-      </article>
-
-      <article class="card">
-        <h2>For Chinese Students</h2>
-        <p>WeChat ID: <strong>Chizyle</strong></p>
-        <p class="muted">Add me on WeChat and send your availability.</p>
-      </article>
+    <!-- How it works -->
+    <section class="section" aria-labelledby="how-title">
+      <div class="section-head">
+        <h2 id="how-title">How it works</h2>
+        <p class="caption">Choose a category, skim the pain points, grab the matching resource. Simple and practical.</p>
+      </div>
     </section>
 
-    <section class="section">
-      <h2>Playbooks & Templates</h2>
-      <ul class="resource-list">
-        <li><a href="data/playbooks/getting-started.pdf">Getting Started Coaching Playbook</a></li>
-        <li><a href="data/templates/goal-tracker.xlsx">Goal Tracker Template</a></li>
-        <li><a href="data/templates/session-notes.docx">Session Notes Template</a></li>
-      </ul>
-      <p class="muted">Place your real files under <code>/data/playbooks</code> and <code>/data/templates</code>.</p>
+    <!-- Categories Grid -->
+    <section class="section" aria-labelledby="cats-title">
+      <div class="section-head">
+        <h2 id="cats-title">Six categories</h2>
+        <p class="caption">Replace links with exact Ko-fi product URLs once uploaded.</p>
+      </div>
+
+      <div class="card-grid">
+        <!-- Career -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Career Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>Lack of clarity on next role</li>
+              <li>Weak interview stories</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Career Clarity Pack: role map, strengths grid, 30 day action plan</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Career Pack</a>
+          </div>
+        </article>
+
+        <!-- Leadership -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Leadership Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>Unclear expectations with team</li>
+              <li>Hard conversations avoided</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Leadership Sprint Kit: 1 on 1 template, feedback script, decision log</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Leadership Kit</a>
+          </div>
+        </article>
+
+        <!-- Business -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Business Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>No clear offer or messaging</li>
+              <li>Inconsistent content to sales flow</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Offer Builder: ICP sheet, value ladder, content to CTA map</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Offer Builder</a>
+          </div>
+        </article>
+
+        <!-- Health and Wellness -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Health and Wellness Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>Overwhelm with routines</li>
+              <li>Low energy and sleep drift</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Daily Rhythm Planner: habit stack, meal basics, sleep guardrails</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Rhythm Planner</a>
+          </div>
+        </article>
+
+        <!-- Financial -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Financial Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>Spending leaks and no buffer</li>
+              <li>Scattered income streams</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Money Starter Kit: zero based budget, 3 bucket plan, savings ladder</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Money Kit</a>
+          </div>
+        </article>
+
+        <!-- Life Vision and Enhancement -->
+        <article class="card">
+          <div class="card-body">
+            <h3>Life Vision and Enhancement Coaching</h3>
+            <p class="minihead">Common pain points</p>
+            <ul class="mini">
+              <li>Vague goals with no traction</li>
+              <li>Misaligned daily actions</li>
+            </ul>
+            <p class="minihead">Included resource</p>
+            <ul class="mini">
+              <li>Clarity Map: vision to goals path, weekly review, one page dashboard</li>
+            </ul>
+          </div>
+          <div class="card-cta">
+            <a class="btn btn-primary" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Get Clarity Map</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Freebie CTA -->
+    <section class="section alt" aria-labelledby="freebie-title">
+      <div class="freebie-inner">
+        <h2 id="freebie-title">Try a free template</h2>
+        <p>Download the Clarity Map sample and get weekly practical tips.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="freebie.html">Send me the template</a>
+        </div>
+        <p class="microcopy">No spam. Unsubscribe anytime.</p>
+      </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
     <div class="container footer-inner">
-      <div>
+      <div class="footer-col">
         <strong>Contact</strong>
         <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
         <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
       </div>
-      <div>
+      <div class="footer-col">
         <strong>Support</strong>
-        <div><a class="btn btn-kofi" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support on Ko-fi</a></div>
+        <div><a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy on Ko-fi</a></div>
+      </div>
+      <div class="footer-col">
+        <strong>Quick links</strong>
+        <div class="footer-links">
+          <a href="quiz.html">Quiz</a>
+          <a href="client-solutions.html">Solutions</a>
+          <a href="about.html">About</a>
+        </div>
       </div>
     </div>
   </footer>
+
+  <!-- Scripts -->
+  <script src="script.js" defer></script>
 </body>
 </html>
