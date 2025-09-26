@@ -13,25 +13,15 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Page-scoped helpers to keep everything on-theme -->
+  <!-- Page-scoped helpers -->
   <style>
-    /* Tabs styled for dark theme */
-    .tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0 0}
-    .tab{
-      background:var(--surface-2);
-      color:var(--muted);
-      border:1px solid var(--ring);
-      padding:.5rem .75rem;border-radius:12px;cursor:pointer;outline:none
-    }
-    .tab:hover,.tab.active{color:var(--ink);background:var(--surface);border-color:#3b5e53}
-
-    /* 4-column testimonial grid */
+    /* 4 column grid */
     .t-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:1rem}
     @media(max-width:1100px){.t-grid{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:780px){.t-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:520px){.t-grid{grid-template-columns:1fr}}
 
-    /* Cards match site theme */
+    /* Cards */
     .t-card{
       background:var(--surface);
       border:1px solid var(--ring);
@@ -41,14 +31,16 @@
       transition:border-color .18s, box-shadow .18s
     }
     .t-card:hover{border-color:#3b5e53;box-shadow:var(--shadow-1)}
-    .t-head{display:flex;align-items:center;gap:.75rem}
-    .t-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#0e1815;border:1px solid var(--ring)}
+
+    /* Head: name + role only, no avatar */
+    .t-head{display:flex;align-items:baseline;gap:.6rem}
     .t-name{font-weight:600}
     .t-role{font-size:.92rem;color:var(--muted)}
     .stars{color:#f2d58b;letter-spacing:.08rem}
-    .t-body{line-height:1.55}
-    .t-meta{font-size:.88rem;color:var(--muted);display:flex;gap:.5rem;flex-wrap:wrap}
-    .t-cta{display:flex;gap:.5rem;margin-top:.25rem}
+    .t-body{line-height:1.55;margin-top:.35rem}
+    .t-meta{font-size:.88rem;color:var(--muted);margin-top:.35rem}
+    .t-cta{margin-top:.35rem}
+    .t-cta .btn-link{padding:0}
   </style>
 </head>
 <body>
@@ -77,17 +69,6 @@
       <a href="https://chizsaleei.github.io/studentstestimonials/" target="_blank" rel="noopener">this gallery</a>.
     </p>
 
-    <!-- Optional filters (kept minimal) -->
-    <div class="tabs" role="tablist" aria-label="Filter testimonials">
-      <button class="tab active" data-filter="all" aria-selected="true">All</button>
-      <button class="tab" data-filter="career">Career</button>
-      <button class="tab" data-filter="business">Business</button>
-      <button class="tab" data-filter="health">Health and Wellness</button>
-      <button class="tab" data-filter="financial">Financial</button>
-      <button class="tab" data-filter="life">Life Vision</button>
-      <button class="tab" data-filter="ielts">IELTS and OET</button>
-    </div>
-
     <!-- Testimonials Grid -->
     <div id="t-grid" class="t-grid" aria-live="polite"></div>
 
@@ -103,7 +84,7 @@
     </section>
   </main>
 
-  <!-- Footer (two columns: Contact left, Support right) -->
+  <!-- Footer -->
   <footer class="site-footer" role="contentinfo">
     <div class="container footer-inner footer-two-cols">
       <div class="footer-col">
@@ -119,82 +100,61 @@
 
   <!-- Scripts -->
   <script>
-    // Raw list you provided
+    // Base list (17)
     const RAW_LIST = [
-      { "name":"Dr. Ron","role":"Cardiologist surgeon, ICU","goal":"OET preparation","quote":"Focused OET speaking drills and quick pattern notes helped me communicate clearly during ICU rounds."},
-      { "name":"Dr. Crystal","role":"Hematologist","goal":"Medical English","quote":"Clear strategies for writing and speaking, plus gentle corrections that built my confidence for test day."},
-      { "name":"Dr. Kim","role":"Cardiologist","goal":"Medical and specialization English exam","quote":"Case-based practice and concise vocabulary decks made complex cardiology topics easy to explain in English."},
-      { "name":"Helen","role":"Medical businesswoman","goal":"Business English","quote":"We turned product notes into crisp pitches and emails that sound professional and warm."},
-      { "name":"Shirly","role":"Sales manager","goal":"Client communication and negotiations","quote":"Role-plays for discovery calls and objections made my client meetings smoother and more productive."},
-      { "name":"Victor","role":"Salesperson","goal":"Business communication","quote":"Short frameworks for openings, bridges, and closes helped me keep conversations on track."},
-      { "name":"William Wu","role":"Sales manager","goal":"Business communication","quote":"Email rewrites and talk tracks improved clarity with overseas partners."},
-      { "name":"Dr. Cindy","role":"ICU doctor","goal":"Medical English","quote":"Handovers and progress notes became faster after we practiced high-yield sentence starters."},
-      { "name":"Dr. Cherry","role":"Plastic surgeon","goal":"Medical English","quote":"Patient-friendly explanations and consent discussions felt natural after our scripts and drills."},
-      { "name":"Hailey","role":"Product buyer","goal":"Business English","quote":"Supplier calls were easier with the question bank and negotiation phrases we practiced."},
-      { "name":"Lucy","role":"Professional","goal":"Job interview preparation","quote":"STAR stories and mock interviews helped me answer confidently and concisely."},
-      { "name":"Lily","role":"Researcher","goal":"PhD admission interview","quote":"We refined research framing and anticipated committee questions which made the interview comfortable."},
-      { "name":"Anna","role":"Researcher","goal":"PhD admission, accepted","quote":"Editing my statement and rehearsing the pitch made a big difference in the final round."},
-      { "name":"George","role":"PhD Candidate","goal":"IELTS preparation","quote":"Band by band checklists and timed speaking rounds helped me break through a plateau."},
-      { "name":"Gaia","role":"PhD Candidate","goal":"IELTS preparation","quote":"Writing feedback was specific and practical, so I knew exactly what to fix."},
-      { "name":"Sean","role":"Professional","goal":"PhD Candidate","quote":"Simple templates for Task 1 and Task 2 reduced my exam stress."},
-      { "name":"Kristia","role":"PhD Candidate","goal":"IELTS preparation","quote":"Speaking part 2 structures and connector lists improved my fluency quickly."}
+      { name:"Dr. Ron", role:"Cardiologist surgeon, ICU", goal:"OET preparation", quote:"Focused OET speaking drills and quick pattern notes helped me communicate clearly during ICU rounds."},
+      { name:"Dr. Crystal", role:"Hematologist", goal:"Medical English", quote:"Clear strategies for writing and speaking, plus gentle corrections that built my confidence for test day."},
+      { name:"Dr. Kim", role:"Cardiologist", goal:"Medical and specialization English exam", quote:"Case-based practice and concise vocabulary decks made complex cardiology topics easy to explain in English."},
+      { name:"Helen", role:"Medical businesswoman", goal:"Business English", quote:"We turned product notes into crisp pitches and emails that sound professional and warm."},
+      { name:"Shirly", role:"Sales manager", goal:"Client communication and negotiations", quote:"Role plays for discovery calls and objections made my client meetings smoother and more productive."},
+      { name:"Victor", role:"Salesperson", goal:"Business communication", quote:"Short frameworks for openings, bridges, and closes helped me keep conversations on track."},
+      { name:"William Wu", role:"Sales manager", goal:"Business communication", quote:"Email rewrites and talk tracks improved clarity with overseas partners."},
+      { name:"Dr. Cindy", role:"ICU doctor", goal:"Medical English", quote:"Handovers and progress notes became faster after we practiced high yield sentence starters."},
+      { name:"Dr. Cherry", role:"Plastic surgeon", goal:"Medical English", quote:"Patient friendly explanations and consent discussions felt natural after our scripts and drills."},
+      { name:"Hailey", role:"Product buyer", goal:"Business English", quote:"Supplier calls were easier with the question bank and negotiation phrases we practiced."},
+      { name:"Lucy", role:"Professional", goal:"Job interview preparation", quote:"STAR stories and mock interviews helped me answer confidently and concisely."},
+      { name:"Lily", role:"Researcher", goal:"PhD admission interview", quote:"We refined research framing and anticipated committee questions which made the interview comfortable."},
+      { name:"Anna", role:"Researcher", goal:"PhD admission, accepted", quote:"Editing my statement and rehearsing the pitch made a big difference in the final round."},
+      { name:"George", role:"PhD Candidate", goal:"IELTS preparation", quote:"Band by band checklists and timed speaking rounds helped me break through a plateau."},
+      { name:"Gaia", role:"PhD Candidate", goal:"IELTS preparation", quote:"Writing feedback was specific and practical, so I knew exactly what to fix."},
+      { name:"Sean", role:"Professional", goal:"PhD Candidate", quote:"Simple templates for Task 1 and Task 2 reduced my exam stress."},
+      { name:"Kristia", role:"PhD Candidate", goal:"IELTS preparation", quote:"Speaking part 2 structures and connector lists improved my fluency quickly."}
     ];
 
-    // One more review added
-    const EXTRA_REVIEW = {
-      name: "Dr. Amy",
-      role: "Pediatrician",
-      goal: "Health routines and recovery planning",
-      quote: "The daily rhythm planner protected my energy during heavy weeks and made recovery predictable."
-    };
+    // Add 3 more to reach 20
+    const EXTRA = [
+      {
+        name: "Dr. Amy",
+        role: "Pediatrician",
+        goal: "Health routines and recovery planning",
+        quote: "The daily rhythm planner protected my energy during heavy weeks and made recovery predictable."
+      },
+      {
+        name: "Dr. Ying",
+        role: "TCM doctor",
+        goal: "Patient communication and clinic flow",
+        quote: "Short consultation scripts and a simple notes template kept visits clear and unhurried."
+      },
+      {
+        name: "Joey",
+        role: "Employee",
+        goal: "Workplace communication",
+        quote: "Email and meeting frameworks helped me speak up and keep updates focused."
+      }
+    ];
 
-    // Map "goal" to site categories
-    function mapGoalToCategory(goal) {
-      const g = (goal || "").toLowerCase();
-      if (g.includes("oet") || g.includes("ielts") || g.includes("medical english") || g.includes("specialization english") || g.includes("exam")) return "ielts";
-      if (g.includes("business")) return "business";
-      if (g.includes("negotiation") || g.includes("client") || g.includes("communication")) return "business";
-      if (g.includes("interview") || g.includes("phd")) return "career";
-      if (g.includes("health") || g.includes("recovery")) return "health";
-      return "life";
-    }
-
-    // Optional avatar helper: /assets/avatars/{slug}.jpg
-    const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
-    const guessAvatar = name => `assets/avatars/${slugify(name)}.jpg`;
-
-    // Normalize
+    // Normalize to cards
     function toCard(t){
       return {
         name: t.name,
         role: t.role,
-        category: mapGoalToCategory(t.goal || ""),
         rating: 5,
-        quote: t.quote,
-        avatar: guessAvatar(t.name)
+        quote: t.quote
       };
     }
+    const TESTIMONIALS = [...RAW_LIST, ...EXTRA].map(toCard); // total 20
 
-    const TESTIMONIALS = [...RAW_LIST, EXTRA_REVIEW].map(toCard);
-
-    // Optional remote JSON merge
-    const REMOTE_JSON_URL = "RAW_JSON_URL"; // replace to enable
-    async function maybeFetchRemote(){
-      if (!REMOTE_JSON_URL || REMOTE_JSON_URL === "RAW_JSON_URL") return;
-      try{
-        const r = await fetch(REMOTE_JSON_URL, { cache: "no-store" });
-        if (!r.ok) return;
-        const extra = await r.json();
-        const more = Array.isArray(extra) ? extra.map(toCard) : [];
-        TESTIMONIALS.push(...more);
-        render(currentFilter);
-      }catch(_){}
-    }
-
-    // Renderer
-    const grid  = document.getElementById("t-grid");
-    const tabs  = document.querySelectorAll(".tab");
-    let currentFilter = "all";
+    const grid = document.getElementById("t-grid");
 
     const starRow = n => {
       const s = Math.max(0, Math.min(5, n|0));
@@ -204,37 +164,20 @@
     function makeCard(t){
       const card = document.createElement("article");
       card.className = "t-card";
-      card.setAttribute("data-category", t.category);
 
       const head = document.createElement("div");
       head.className = "t-head";
-
-      const img = document.createElement("img");
-      img.className = "t-avatar";
-      img.alt = t.name;
-      img.loading = "lazy";
-      img.src = t.avatar && t.avatar.length ? t.avatar : "assets/avatars/_placeholder.jpg";
-
-      const who = document.createElement("div");
       const name = document.createElement("div");
       name.className = "t-name"; name.textContent = t.name;
       const role = document.createElement("div");
       role.className = "t-role"; role.textContent = t.role;
-
-      who.appendChild(name); who.appendChild(role);
-      head.appendChild(img); head.appendChild(who);
+      head.appendChild(name); head.appendChild(role);
 
       const rating = document.createElement("div");
       rating.innerHTML = starRow(t.rating);
 
       const body = document.createElement("div");
       body.className = "t-body"; body.textContent = t.quote;
-
-      const meta = document.createElement("div");
-      meta.className = "t-meta";
-      const cat = document.createElement("span");
-      cat.textContent = t.category.charAt(0).toUpperCase() + t.category.slice(1);
-      meta.appendChild(cat);
 
       const cta = document.createElement("div");
       cta.className = "t-cta";
@@ -246,12 +189,7 @@
       shop.textContent = "View matching tools";
       cta.appendChild(shop);
 
-      card.appendChild(head);
-      card.appendChild(rating);
-      card.appendChild(body);
-      card.appendChild(meta);
-      card.appendChild(cta);
-
+      // Structured data per card
       const ld = document.createElement("script");
       ld.type = "application/ld+json";
       ld.text = JSON.stringify({
@@ -262,29 +200,21 @@
         "reviewRating":{"@type":"Rating","ratingValue":String(t.rating),"bestRating":"5"},
         "reviewBody":t.quote
       });
-      card.appendChild(ld);
 
+      card.appendChild(head);
+      card.appendChild(rating);
+      card.appendChild(body);
+      card.appendChild(cta);
+      card.appendChild(ld);
       return card;
     }
 
-    function render(filter="all"){
-      currentFilter = filter;
+    function render(){
       grid.innerHTML = "";
-      TESTIMONIALS
-        .filter(t => filter === "all" ? true : t.category === filter)
-        .forEach(t => grid.appendChild(makeCard(t)));
+      TESTIMONIALS.forEach(t => grid.appendChild(makeCard(t)));
     }
 
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        render(tab.dataset.filter);
-      });
-    });
-
     render();
-    maybeFetchRemote();
   </script>
   <script src="script.js" defer></script>
 </body>
