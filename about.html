@@ -10,41 +10,40 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
+  <!-- Site styles -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Page-scoped tweaks for a tidy, minimalist layout -->
+  <!-- Page tweaks -->
   <style>
-    /* Hero split: compact portrait at right, neat spacing */
-    .about-hero{display:grid;grid-template-columns:1.1fr 320px;gap:1.25rem;align-items:center}
+    /* Split hero */
+    .about-hero{display:grid;grid-template-columns:1.1fr 240px;gap:1.25rem;align-items:center}
     .about-hero .hero-copy h1{margin-bottom:.25rem}
-    .about-hero .strap{font-weight:500;margin:.1rem 0 .4rem;color:var(--ink)}
-    .about-hero .subtitle{margin:.25rem 0 .6rem}
-    .about-hero .verse{font-size:.95rem;color:var(--muted);margin:.25rem 0 .9rem}
-    .about-figure{
-      width:100%;max-width:320px;margin:0 auto;border-radius:14px;overflow:hidden;
-      border:1px solid var(--ring);box-shadow:0 6px 20px rgba(0,0,0,.25)
-    }
-    .about-figure img{display:block;width:100%;height:auto}
+    .strap{font-weight:500;margin:.25rem 0;color:var(--ink)}
+    .verse{font-size:.95rem;color:var(--muted);margin:.25rem 0 .9rem;max-width:52ch}
 
-    /* Keep the same compact portrait sizing as before */
-    @media(min-width:1100px){ .about-hero{grid-template-columns:1.2fr 280px} }
-    @media(max-width:860px){ .about-hero{grid-template-columns:1fr;gap:1rem} .about-figure{max-width:220px} }
+    /* Portrait: smaller, head & shoulders crop */
+    .about-figure{width:100%;max-width:240px;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid var(--ring);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .about-figure img{display:block;width:100%;height:260px;object-fit:cover;object-position:50% 18%}
 
-    /* Tidy summary grid under the hero */
+    @media(min-width:1100px){ .about-hero{grid-template-columns:1.2fr 240px} }
+    @media(max-width:860px){ .about-hero{grid-template-columns:1fr;gap:1rem} }
+
+    /* Mission / Vision / Values */
     .about-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:.5rem}
     .about-card{border:1px solid var(--ring);border-radius:12px;padding:.9rem;background:var(--surface)}
-    .about-card h3{margin:0 0 .25rem}
+    .about-card h3{margin:0 0 .35rem}
     .about-card p{margin:0;color:var(--muted)}
+    .about-card ul{margin:.25rem 0 0 1rem}
+    .about-card li{margin:.25rem 0}
     @media(max-width:900px){ .about-summary{grid-template-columns:1fr} }
 
-    /* Keep the rest compact */
+    /* Fun chips */
+    .fun{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+    .chip{display:inline-block;padding:.4rem .65rem;border:1px solid var(--ring);border-radius:999px;background:var(--surface-2);font-size:.92rem;color:var(--ink)}
+
+    /* Compact section spacing */
     .section-head h2{margin-bottom:.25rem}
     .proof-cta{display:flex;gap:.5rem;flex-wrap:wrap}
-    .card-grid.trio .card{padding:0}
-    .card-grid.trio .card .card-body{padding:.9rem}
-    .card-grid.trio h3{margin:.1rem 0 .25rem}
-    .card-grid.trio p{margin:0;color:var(--muted)}
   </style>
 
   <!-- Structured Data -->
@@ -60,10 +59,7 @@
       "https://ko-fi.com/lifebalanceq"
     ],
     "jobTitle": "Coach and Educator",
-    "knowsAbout": [
-      "Career Coaching","Leadership","Business Communication",
-      "Health and Wellness","Financial Basics","IELTS and OET"
-    ]
+    "knowsAbout": ["Career Coaching","Leadership","Business Communication","Health and Wellness","Financial Basics","IELTS and OET"]
   }
   </script>
 </head>
@@ -86,25 +82,28 @@
 
   <!-- Main -->
   <main id="main" class="container" role="main">
-    <!-- Hero (compact) -->
+    <!-- Hero -->
     <section class="hero small">
       <div class="about-hero">
         <div class="hero-copy">
           <h1>About Chiza</h1>
+          <div class="strap">RCh, LPT | Coach for Communication, Leadership, and Wellness | Medical and Business English</div>
 
-          <!-- New strapline next to the portrait -->
-          <div class="strap">RCh, LPT&nbsp;|&nbsp;Coach for Communication, Leadership, and Wellness&nbsp;|&nbsp;Medical and Business English</div>
+          <!-- Exact verse -->
+          <div class="verse">
+            “And we know that in all things God works for the good of those who love him,
+            who have been called according to his purpose.” — Romans 8:28
+          </div>
 
-          <p class="subtitle">Practical tools to act with clarity, protect your energy, and make steady progress.</p>
-
-          <!-- Verse (stated) -->
-          <div class="verse">Romans 8:28</div>
-
-          <!-- Quick summary cards -->
+          <!-- Mission / Vision / Values -->
           <div class="about-summary">
             <div class="about-card">
-              <h3>Bio</h3>
-              <p>I help people learn faster, heal better, and work smarter by combining science, coaching, and compassionate communication.</p>
+              <h3>Mission</h3>
+              <ul>
+                <li>Empower professionals to communicate with clarity and confidence.</li>
+                <li>Blend science, coaching, and spirituality for practical growth.</li>
+                <li>Deliver simple tools, lessons, and support that create real results.</li>
+              </ul>
             </div>
             <div class="about-card">
               <h3>Vision</h3>
@@ -120,7 +119,6 @@
             <a class="btn btn-primary" href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">Connect on LinkedIn</a>
             <a class="btn btn-outline" href="mailto:chizsaleei@gmail.com">Email me</a>
           </div>
-        </div>
 
         <figure class="about-figure">
           <img src="images/prof11.jpg" alt="Portrait of Chiza" loading="lazy" />
@@ -145,7 +143,7 @@
       </div>
     </section>
 
-    <!-- What I offer (unchanged) -->
+    <!-- What I offer (kept) -->
     <section class="section" aria-labelledby="offer-title">
       <div class="section-head">
         <h2 id="offer-title">What I offer</h2>
@@ -161,7 +159,6 @@
             <a class="btn btn-link" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener">Shop on Ko-fi</a>
           </div>
         </article>
-
         <article class="card">
           <div class="card-body">
             <h3>Personality based guides</h3>
@@ -171,7 +168,6 @@
             <a class="btn btn-primary" href="quiz.html">Start with the Quiz</a>
           </div>
         </article>
-
         <article class="card">
           <div class="card-body">
             <h3>Focused categories</h3>
