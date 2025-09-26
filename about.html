@@ -13,6 +13,40 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 
+  <!-- Page-scoped tweaks for a tidy, minimalist layout -->
+  <style>
+    /* Hero split: compact portrait at right, neat spacing */
+    .about-hero{display:grid;grid-template-columns:1.1fr 320px;gap:1.25rem;align-items:center}
+    .about-hero .hero-copy h1{margin-bottom:.35rem}
+    .about-hero .subtitle{margin:.25rem 0 .75rem}
+    .about-figure{
+      width:100%;max-width:320px;margin:0 auto;border-radius:14px;overflow:hidden;
+      border:1px solid var(--ring);box-shadow:0 6px 20px rgba(0,0,0,.25)
+    }
+    .about-figure img{display:block;width:100%;height:auto}
+
+    /* Make portrait smaller on large screens */
+    @media(min-width:1100px){ .about-hero{grid-template-columns:1.2fr 280px} }
+    @media(max-width:860px){ .about-hero{grid-template-columns:1fr;gap:1rem} .about-figure{max-width:220px} }
+
+    /* Tight, readable sections */
+    .section-head h2{margin-bottom:.25rem}
+    .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:1rem}
+    @media(max-width:860px){ .two-col{grid-template-columns:1fr} }
+
+    .checklist{margin:.25rem 0 0;padding-left:1.1rem}
+    .checklist li{margin:.25rem 0}
+
+    /* Value cards as small pills for minimalism */
+    .card-grid.trio .card{padding:0}
+    .card-grid.trio .card .card-body{padding:.9rem}
+    .card-grid.trio h3{margin:.1rem 0 .25rem}
+    .card-grid.trio p{margin:0;color:var(--muted)}
+
+    /* Proof row buttons wrap neatly */
+    .proof-cta{display:flex;gap:.5rem;flex-wrap:wrap}
+  </style>
+
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
@@ -27,12 +61,8 @@
     ],
     "jobTitle": "Coach and Educator",
     "knowsAbout": [
-      "Career Coaching",
-      "Leadership",
-      "Business Communication",
-      "Health and Wellness",
-      "Financial Basics",
-      "IELTS and OET"
+      "Career Coaching","Leadership","Business Communication",
+      "Health and Wellness","Financial Basics","IELTS and OET"
     ]
   }
   </script>
@@ -56,18 +86,18 @@
 
   <!-- Main -->
   <main id="main" class="container" role="main">
-    <!-- Hero -->
+    <!-- Hero (compact) -->
     <section class="hero small">
-      <div class="hero-inner hero-split">
+      <div class="about-hero">
         <div class="hero-copy">
           <h1>About Chiza</h1>
-          <p class="subtitle">I build practical tools that help you act with clarity, protect your energy, and make steady progress.</p>
+          <p class="subtitle">Practical tools to act with clarity, protect your energy, and make steady progress.</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">Connect on LinkedIn</a>
             <a class="btn btn-outline" href="mailto:chizsaleei@gmail.com">Email me</a>
           </div>
         </div>
-        <figure class="hero-figure">
+        <figure class="about-figure">
           <img src="images/prof11.jpg" alt="Portrait of Chiza" loading="lazy" />
         </figure>
       </div>
@@ -81,8 +111,8 @@
       </div>
       <div class="two-col">
         <div>
-          <p>I am a coach and educator with a background in chemistry and medical English. I help professionals turn complex goals into simple steps. My resources are concise, easy to follow, and built for real life.</p>
-          <p>You will find checklists, templates, and action guides across career, leadership, business, health and wellness, financial basics, and life vision. Everything is designed to be used in minutes, not weeks.</p>
+          <p>I’m a coach and educator with a background in chemistry and medical English. I help professionals turn complex goals into simple steps. Resources are concise, easy to follow, and built for real life.</p>
+          <p>Topics: career, leadership, business, health and wellness, financial basics, and life vision. Everything is designed to be used in minutes, not weeks.</p>
         </div>
         <div>
           <ul class="checklist">
@@ -102,13 +132,13 @@
       </div>
       <div class="card-grid trio">
         <article class="card"><div class="card-body">
-          <h3>Clarity</h3><p>Start with the outcome, map the next three actions, remove noise.</p>
+          <h3>Clarity</h3><p>Start with the outcome. Map the next three actions. Remove noise.</p>
         </div></article>
         <article class="card"><div class="card-body">
-          <h3>Kindness</h3><p>Respect your time and energy, keep language human, keep steps light.</p>
+          <h3>Kindness</h3><p>Respect time and energy. Keep language human. Keep steps light.</p>
         </div></article>
         <article class="card"><div class="card-body">
-          <h3>Consistency</h3><p>Small wins create momentum, momentum creates trust, trust compounds.</p>
+          <h3>Consistency</h3><p>Small wins create momentum. Momentum builds trust. Trust compounds.</p>
         </div></article>
       </div>
     </section>
@@ -123,10 +153,10 @@
         <a class="btn btn-outline" href="training.html">View Training and Certificates</a>
         <a class="btn btn-outline" href="testimonials.html">Read Testimonials</a>
       </div>
-      <div class="badges minirow">
+      <div class="badges minirow" style="margin-top:.75rem">
         <span class="badge">Chemist, Licensed Teacher</span>
-        <span class="badge">Medical and Business English</span>
-        <span class="badge">Interview and Presentation Coaching</span>
+        <span class="badge">Medical & Business English</span>
+        <span class="badge">Interview & Presentation Coaching</span>
       </div>
     </section>
 
@@ -149,7 +179,7 @@
         <article class="card">
           <div class="card-body">
             <h3>Personality based guides</h3>
-            <p>Ten concise PDFs that match your quiz result, each with three steps and a checklist.</p>
+            <p>Ten concise PDFs that match your quiz result—three steps and a checklist each.</p>
           </div>
           <div class="card-cta">
             <a class="btn btn-primary" href="quiz.html">Start with the Quiz</a>
@@ -158,7 +188,7 @@
         <article class="card">
           <div class="card-body">
             <h3>Focused categories</h3>
-            <p>Career, leadership, business, health and wellness, financial, life vision and enhancement.</p>
+            <p>Career, leadership, business, health & wellness, financial, and life vision.</p>
           </div>
           <div class="card-cta">
             <a class="btn btn-primary" href="coaching.html">Explore Categories</a>
@@ -171,11 +201,11 @@
     <section class="section alt" aria-labelledby="freebie-title">
       <div class="freebie-inner">
         <h2 id="freebie-title">Get a free template</h2>
-        <p>Download the Clarity Map and get weekly practical tips that help you move forward.</p>
+        <p>Download the Clarity Map and get weekly practical tips.</p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="freebie.html">Send me the template</a>
         </div>
-        <p class="microcopy">No spam, unsubscribe anytime.</p>
+        <p class="microcopy">No spam. Unsubscribe anytime.</p>
       </div>
     </section>
 
