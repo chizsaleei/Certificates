@@ -13,18 +13,31 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* Light helpers in case styles.css does not already include these */
-    .tabs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem }
-    .tab { padding:.5rem .75rem; border:1px solid #ddd; border-radius:.5rem; background:#fff; cursor:pointer }
-    .tab.active { background:#111; color:#fff; border-color:#111 }
-    .grid-training { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; margin-top:1rem }
-    .card { border:1px solid #eee; border-radius:.9rem; overflow:hidden; background:#fff }
-    .thumb-wrap { position:relative; aspect-ratio:4/3; background:#f7f7f7; display:flex; align-items:center; justify-content:center; overflow:hidden }
-    .thumb-wrap img { width:100%; height:100%; object-fit:cover; display:block }
-    .badge { position:absolute; left:.5rem; top:.5rem; background:#111; color:#fff; font-size:.75rem; padding:.2rem .5rem; border-radius:.4rem }
-    .meta { padding:.75rem }
-    .title { font-weight:600 }
-    .caption { color:#666; font-size:.92rem }
+    /* Page-local helpers that follow your theme tokens */
+    .tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+    .tab{
+      background:var(--surface-2, #0f1916);
+      color:var(--muted,#B6C3BD);
+      border:1px solid var(--ring,#1f2a27);
+      padding:.5rem .75rem;border-radius:12px;cursor:pointer;outline:none
+    }
+    .tab:hover,.tab.active{color:var(--ink,#EBF3EF);background:var(--surface,#0b1412);border-color:#3b5e53}
+
+    .grid-training{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:1rem}
+    .card{background:var(--surface,#0b1412);border:1px solid var(--ring,#1f2a27);border-radius:14px;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+    .card:hover{border-color:#3b5e53;box-shadow:0 10px 24px rgba(0,0,0,.28)}
+    .thumb-wrap{position:relative;aspect-ratio:4/3;background:#101a17;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .badge{
+      position:absolute;left:.6rem;top:.6rem;
+      background:rgba(0,0,0,.72);
+      color:#fff;border:1px solid rgba(255,255,255,.18);
+      font-size:.72rem;letter-spacing:.02em;
+      padding:.25rem .55rem;border-radius:.5rem
+    }
+    .meta{padding:.9rem}
+    .title{font-weight:600;line-height:1.3}
+    .caption{color:var(--muted,#B6C3BD);font-size:.9rem;margin-top:.25rem}
   </style>
 </head>
 <body>
@@ -40,17 +53,16 @@
         <a href="about.html">About</a>
         <a href="training.html" class="active">Training</a>
         <a href="testimonials.html">Testimonials</a>
-        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Ko-fi</a>
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
   </header>
 
   <!-- Main -->
   <main class="container" id="main" role="main">
-    <!-- Intro -->
     <section class="intro" aria-labelledby="heading-train">
       <h1 id="heading-train">Training and Certificates</h1>
-      <p class="caption">All previews load from <code>/certificates/</code> in this repo. Click any card to open the verification page.</p>
+      <p class="caption">Click to open the verification page.</p>
     </section>
 
     <!-- Tabs -->
@@ -67,38 +79,25 @@
 
   <!-- Footer -->
   <footer class="site-footer" role="contentinfo">
-    <div class="container footer-inner">
+    <div class="container footer-inner footer-two-cols">
       <div class="footer-col">
         <strong>Contact</strong>
         <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
         <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
       </div>
-      <div class="footer-col">
-        <strong>Support</strong>
-        <div><a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Buy on Ko-fi</a></div>
-      </div>
-      <div class="footer-col">
-        <strong>Quick links</strong>
-        <div class="footer-links">
-          <a href="certificates.html">Certificates (static view)</a>
-          <a href="testimonials.html">Testimonials</a>
-        </div>
+      <div class="footer-col footer-right">
+        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </div>
     </div>
   </footer>
 
-  <!-- The moved script from your original script.js -->
+  <!-- Certificates renderer -->
   <script>
   "use strict";
 
-  /* Manual overrides:
-     If a card still fails to find its image, paste the exact filename from your
-     certificates folder here (value must include the 'certificates/' prefix).
-     Example:
-     "1_Foundations_of_Digital_Marketing_and_E-commerce": "certificates/1_Foundations_of_Digital Marketing_and_E-commerce.jpg"
-  */
   const OVERRIDES = {
-    // add entries only if something fails to load
+    // Add exact filename (with 'certificates/' prefix) here if any card still fails to load.
+    // Example: "1_Foundations_of_Digital_Marketing_and_E-commerce": "certificates/1_Foundations_of_Digital_Marketing_and_E-commerce.JPG"
   };
 
   const LIST = [
@@ -117,7 +116,7 @@
     {group:"course", order:13, title:"Leadership Through Marketing", key:"17_Leadership_Through_Marketing", url:"https://coursera.org/verify/2WKNKZ2SYV84"},
     {group:"course", order:14, title:"Leadership Through Design Innovation", key:"18_Leadership_Through_Design_Innovation", url:"https://coursera.org/verify/ZOEY4S79TMQN"},
     {group:"course", order:15, title:"Organizational Leadership Capstone", key:"19_Organizational_Leadership_Capstone", url:"https://coursera.org/verify/55WTX8PE08IG"},
-    {group:"spec", order:16, title:"Building AI Agents and Agentic Workflows - Specialization", key:"26_Building_AI_Agents_and_Agentic_Workflows", url:"https://coursera.org/verify/specialization/V8WOU8TOCPNM"},
+    {group:"spec", order:16, title:"Building AI Agents and Agentic Workflows - Specialization", key:"26_BuildING_AI_Agents_and_Agentic_Workflows".toLowerCase().replace("ing","ing"), url:"https://coursera.org/verify/specialization/V8WOU8TOCPNM"},
     {group:"course", order:17, title:"Fundamentals of Building AI Agents", key:"23_Fundamentals_of_Building_AI_Agents", url:"https://coursera.org/verify/FT2JAV8QC5I9"},
     {group:"course", order:18, title:"Agentic AI with LangChain and LangGraph", key:"24_Agentic_AI_with_LangChain_and_LangGraph", url:"https://coursera.org/verify/FQGRMFA1FD41"},
     {group:"course", order:19, title:"Agentic AI with LangGraph, CrewAI, AutoGen and BeeAI", key:"25_Agentic_AI_with_LangGraph,_CrewAI,_AutoGen_and_BeeAI", url:"https://coursera.org/verify/DOBGBW0VXH3D"},
@@ -138,29 +137,33 @@
   function buildSrcVariants(key){
     if (OVERRIDES[key]) return [OVERRIDES[key]];
 
-    // base with underscores
-    const base = `certificates/${key}.jpg`;
-    const variants = new Set([base]);
+    // Possible filename bases
+    const bases = new Set([
+      `certificates/${key}`,
+      `certificates/${key}`.replaceAll("_"," "),
+      `certificates/${key}`.replaceAll("_","-").replaceAll(",",""),
+      `certificates/${key}`.replaceAll("&","and"),
+    ]);
 
-    // helper transforms
-    const reps = s => s
-        .replaceAll("__","_")
-        .replaceAll(" ,", ",")
-        .replaceAll(",","")
-        .replaceAll("&","and");
+    // Extensions to try
+    const exts = [".jpg",".JPG",".png",".PNG"];
 
-    // underscores -> spaces
-    variants.add(reps(base.replaceAll("_"," ")));
-    // keep underscores, drop commas
-    variants.add(reps(base));
-    // spaces + keep ampersands
-    variants.add(base.replaceAll("_"," ").replaceAll("__","_"));
-    // e commerce spelling variants
-    variants.add(base.replaceAll("E-commerce","E commerce"));
-    variants.add(base.replaceAll("E commerce","E-commerce"));
-    // collapse multiple spaces
-    variants.add(reps(base.replaceAll("_","  "))); // double spaces
-    return Array.from(variants);
+    // E-commerce spelling variants
+    const withE = new Set();
+    bases.forEach(b=>{
+      withE.add(b.replaceAll("E-commerce","E commerce"));
+      withE.add(b.replaceAll("E commerce","E-commerce"));
+      withE.add(b);
+    });
+
+    // Build candidates
+    const candidates = [];
+    withE.forEach(b => exts.forEach(e => candidates.push(`${b}${e}`)));
+
+    // Collapse double spaces/underscores
+    return Array.from(new Set(candidates.map(s =>
+      s.replaceAll("__","_").replaceAll("  "," ")
+    )));
   }
 
   function render(filter="all"){
@@ -210,7 +213,7 @@
 
       const cap = document.createElement("div");
       cap.className = "caption";
-      cap.textContent = "Click to verify";
+      cap.textContent = "Click to open the verification page.";
 
       wrap.appendChild(img);
       wrap.appendChild(badge);
@@ -223,18 +226,17 @@
     }
   }
 
-  for(const t of tabs){
+  tabs.forEach(t=>{
     t.addEventListener("click", ()=>{
       tabs.forEach(x=>x.classList.remove("active"));
       t.classList.add("active");
       render(t.dataset.filter);
     });
-  }
+  });
 
   render();
   </script>
 
-  <!-- Site script if needed -->
   <script src="script.js" defer></script>
 </body>
 </html>
