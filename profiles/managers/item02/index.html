@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManagerSpeak Pro - Business English Communication Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .recording-pulse {
+            animation: recordingPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); 
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); 
+            }
+        }
+        
+        .voice-wave {
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: voiceWave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        .voice-wave:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+        
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--medium-gold) 0deg, var(--pale-gold) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background 0.1s ease;
+        }
+        
+        .timer-inner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.1s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .cefr-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .cefr-a1 { background: #e3f2fd; color: #1976d2; }
+        .cefr-a2 { background: #e8f5e8; color: #388e3c; }
+        .cefr-b1 { background: #fff3e0; color: #f57c00; }
+        .cefr-b2 { background: #fce4ec; color: #c2185b; }
+        .cefr-c1 { background: #f3e5f5; color: #7b1fa2; }
+        .cefr-c2 { background: #e8eaf6; color: #303f9f; }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .motivational-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .motivational-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:active {
+            transform: translateY(0);
+        }
+        
+        .phrase-card {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.2);
+        }
+        
+        .phrase-card.selected {
+            border-color: var(--medium-gold);
+            background: var(--pale-gold);
+        }
+        
+        .transcript-area {
+            background: var(--cream);
+            border: 2px solid var(--pale-gold);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .timer-circle {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .timer-inner {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        /* Accessibility improvements */
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .phrase-card {
+                border-width: 3px;
+            }
+            
+            .action-button {
+                border: 2px solid white;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">ManagerSpeak Pro</h1>
+                        <p class="text-accent-green text-sm">Business English Communication Training</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="analyticsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Analytics
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Motivational Message -->
+            <div class="motivational-card fade-in">
+                <h2 class="text-xl font-bold text-dark-green mb-2">Daily Motivation</h2>
+                <p id="motivationalMessage" class="text-medium-green text-lg italic">
+                    "Clear communication is the bridge between confusion and clarity."
+                </p>
+                <button id="newMotivationBtn" class="mt-4 px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                    New Message
+                </button>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Focus Timer -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">⏰</span>
+                        Focus Timer
+                    </h3>
+                    
+                    <div class="flex justify-center mb-4">
+                        <div class="timer-circle" id="timerCircle">
+                            <div class="timer-inner">
+                                <div class="text-2xl font-bold text-dark-green" id="timerDisplay">25:00</div>
+                                <div class="text-xs text-medium-green">minutes</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button id="startTimerBtn" class="flex-1 action-button focus-visible">
+                            Start
+                        </button>
+                        <button id="resetTimerBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Practice -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">🎤</span>
+                        Quick Practice
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button id="quickUpdateBtn" class="w-full action-button focus-visible">
+                            Practice Update
+                        </button>
+                        <button id="quickDelegationBtn" class="w-full action-button focus-visible">
+                            Practice Delegation
+                        </button>
+                        <button id="quickFeedbackBtn" class="w-full action-button focus-visible">
+                            Practice Feedback
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Daily Actions -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">✅</span>
+                        Daily Actions
+                    </h3>
+                    
+                    <div id="dailyActions" class="space-y-2">
+                        <!-- Daily actions will be populated here -->
+                    </div>
+                    
+                    <button id="addActionBtn" class="w-full mt-4 px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                        + Add Action
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Sessions -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-dark-green">Recent Sessions</h3>
+                    <button id="newSessionBtn" class="action-button focus-visible">
+                        + New Session
+                    </button>
+                </div>
+                
+                <div id="recentSessions" class="space-y-3">
+                    <!-- Recent sessions will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Session View -->
+        <div id="sessionView" class="hidden space-y-6">
+            <!-- Session Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green" id="sessionTitle">Practice Session</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="cefr-badge" id="cefrLevel">B2</span>
+                            <span class="text-sm text-medium-green" id="sessionType">Team Update</span>
+                            <span class="text-sm text-gray-600" id="sessionDuration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="saveSessionBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Save
+                        </button>
+                        <button id="exportPdfBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                        <button id="backToDashboardBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Back
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CEFR Can-Do Goals -->
+                <div class="bg-pale-gold p-4 rounded-lg border-l-4 border-medium-gold">
+                    <h4 class="font-bold text-dark-green mb-2">CEFR Can-Do Goals</h4>
+                    <ul id="cefrGoals" class="text-sm text-medium-green space-y-1">
+                        <!-- CEFR goals will be populated here -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Practice Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recording & Transcript -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Recording Controls -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Recording</h3>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button id="recordBtn" class="w-20 h-20 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl hover:bg-red-700 transition-colors focus-visible" aria-label="Start recording">
+                                🎤
+                            </button>
+                        </div>
+                        
+                        <!-- Voice Status -->
+                        <div id="voiceStatus" class="hidden text-center mb-4">
+                            <div class="flex justify-center items-center space-x-1 mb-2">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                            </div>
+                            <p class="text-sm text-red-600 font-semibold">Recording in progress...</p>
+                        </div>
+                        
+                        <!-- Recording Timer -->
+                        <div class="text-center">
+                            <span class="text-2xl font-mono text-dark-green" id="recordingTimer">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Transcript -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Transcript</h3>
+                            <div class="flex space-x-2">
+                                <button id="editTranscriptBtn" class="px-3 py-1 bg-accent-green text-white rounded text-sm hover:bg-medium-green transition-colors focus-visible">
+                                    Edit
+                                </button>
+                                <button id="clearTranscriptBtn" class="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors focus-visible">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="transcript-area" id="transcriptArea" contenteditable="false">
+                            <p class="text-gray-500 italic">Your speech will appear here...</p>
+                        </div>
+                        
+                        <!-- Email Format Toggle -->
+                        <div class="mt-4 flex items-center space-x-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="emailFormatToggle" class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                                <span class="text-sm text-medium-green">Format as email</span>
+                            </label>
+                            <button id="copyTranscriptBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors text-sm focus-visible">
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phrase Bank & Tools -->
+                <div class="space-y-6">
+                    <!-- Phrase Bank -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Phrase Bank</h3>
+                        
+                        <!-- Category Tabs -->
+                        <div class="flex space-x-1 mb-4 overflow-x-auto">
+                            <button class="phrase-tab px-3 py-1 text-sm rounded bg-medium-gold text-white" data-category="updates">
+                                Updates
+                            </button>
+                            <button class="phrase-tab px-3 py-1 text-sm rounded bg-gray-200 text-gray-700 hover:bg-gray-300" data-category="delegation">
+                                Delegation
+                            </button>
+                            <button class="phrase-tab px-3 py-1 text-sm rounded bg-gray-200 text-gray-700 hover:bg-gray-300" data-category="feedback">
+                                Feedback
+                            </button>
+                        </div>
+                        
+                        <!-- Phrases -->
+                        <div id="phraseContainer" class="max-h-64 overflow-y-auto">
+                            <!-- Phrases will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Session Tools -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Session Tools</h3>
+                        
+                        <div class="space-y-3">
+                            <button id="playbackBtn" class="w-full px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible" disabled>
+                                🔊 Playback Recording
+                            </button>
+                            
+                            <button id="analyzeBtn" class="w-full px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                                📊 Analyze Speech
+                            </button>
+                            
+                            <button id="practiceAgainBtn" class="w-full px-4 py-2 bg-light-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                🔄 Practice Again
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Actions</h3>
+                        
+                        <div class="space-y-2">
+                            <button id="doItNowBtn" class="w-full action-button focus-visible">
+                                ⚡ Do It Now
+                            </button>
+                            
+                            <div class="text-xs text-gray-600 text-center mt-2">
+                                One-tap action execution
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analyticsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Progress Analytics</h2>
+                
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalSessions">0</div>
+                        <div class="text-sm text-medium-green">Total Sessions</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalMinutes">0</div>
+                        <div class="text-sm text-medium-green">Minutes Practiced</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averageScore">0%</div>
+                        <div class="text-sm text-medium-green">Average Score</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                        <div class="text-sm text-medium-green">Longest Streak</div>
+                    </div>
+                </div>
+
+                <!-- Progress Chart Placeholder -->
+                <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Weekly Progress</h3>
+                    <div class="h-64 flex items-center justify-center text-medium-green">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">📈</div>
+                            <p>Progress visualization coming soon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Preferences</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Timer Duration (minutes)</label>
+                                <select id="timerDurationSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="15">15</option>
+                                    <option value="25" selected>25</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Default CEFR Level</label>
+                                <select id="cefrLevelSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="A1">A1 - Beginner</option>
+                                    <option value="A2">A2 - Elementary</option>
+                                    <option value="B1">B1 - Intermediate</option>
+                                    <option value="B2" selected>B2 - Upper Intermediate</option>
+                                    <option value="C1">C1 - Advanced</option>
+                                    <option value="C2">C2 - Proficient</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-sync</label>
+                                <input type="checkbox" id="autoSyncToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Sound Notifications</label>
+                                <input type="checkbox" id="soundToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motivational Messages -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Custom Motivational Messages</h3>
+                        <div class="space-y-3">
+                            <textarea id="customMessageInput" placeholder="Add your own motivational message..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                            <button id="addMessageBtn" class="action-button focus-visible">
+                                Add Message
+                            </button>
+                        </div>
+                        
+                        <div id="customMessages" class="mt-4 space-y-2">
+                            <!-- Custom messages will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- New Session Modal -->
+    <div id="newSessionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Start New Session</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Session Type</label>
+                    <select id="sessionTypeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="update">Team Update</option>
+                        <option value="delegation">Task Delegation</option>
+                        <option value="feedback">Performance Feedback</option>
+                        <option value="meeting">Meeting Leadership</option>
+                        <option value="presentation">Presentation</option>
+                        <option value="negotiation">Negotiation</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">CEFR Level</label>
+                    <select id="sessionCefrSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="A1">A1 - Beginner</option>
+                        <option value="A2">A2 - Elementary</option>
+                        <option value="B1">B1 - Intermediate</option>
+                        <option value="B2" selected>B2 - Upper Intermediate</option>
+                        <option value="C1">C1 - Advanced</option>
+                        <option value="C2">C2 - Proficient</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Session Title (Optional)</label>
+                    <input type="text" id="sessionTitleInput" placeholder="e.g., Weekly Team Standup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="startSessionBtn" class="flex-1 action-button focus-visible">
+                    Start Session
+                </button>
+                <button id="cancelSessionBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Action Modal -->
+    <div id="addActionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Daily Action</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Action Description</label>
+                    <input type="text" id="actionDescInput" placeholder="e.g., Review team performance metrics" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Priority</label>
+                    <select id="actionPrioritySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveActionBtn" class="flex-1 action-button focus-visible">
+                    Add Action
+                </button>
+                <button id="cancelActionBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <!-- Audio element for timer alert -->
+    <audio id="timerAlert" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentSession: null,
+            isRecording: false,
+            recordingStartTime: null,
+            recordingTimer: null,
+            focusTimer: {
+                isRunning: false,
+                timeLeft: 25 * 60, // 25 minutes in seconds
+                interval: null,
+                duration: 25 * 60
+            },
+            voiceRecognition: {
+                recognition: null,
+                isSupported: false,
+                transcript: ''
+            },
+            userData: {
+                sessions: [],
+                dailyActions: [],
+                customMessages: [],
+                streak: 0,
+                lastActiveDate: null,
+                totalSessions: 0,
+                totalMinutes: 0,
+                averageScore: 0,
+                longestStreak: 0,
+                settings: {
+                    timerDuration: 25,
+                    cefrLevel: 'B2',
+                    autoSync: true,
+                    soundNotifications: true
+                }
+            }
+        };
+
+        // Phrase bank data
+        const phraseBanks = {
+            updates: {
+                title: "Team Updates",
+                phrases: [
+                    {
+                        text: "I'd like to update you on our progress with...",
+                        cefr: "B1",
+                        context: "Opening an update"
+                    },
+                    {
+                        text: "We've made significant headway in...",
+                        cefr: "B2",
+                        context: "Reporting progress"
+                    },
+                    {
+                        text: "I'm pleased to report that we've successfully...",
+                        cefr: "B2",
+                        context: "Positive update"
+                    },
+                    {
+                        text: "We're currently facing some challenges with...",
+                        cefr: "B1",
+                        context: "Reporting issues"
+                    },
+                    {
+                        text: "Moving forward, our next steps will be...",
+                        cefr: "B2",
+                        context: "Future planning"
+                    },
+                    {
+                        text: "The key metrics show that...",
+                        cefr: "C1",
+                        context: "Data presentation"
+                    }
+                ]
+            },
+            delegation: {
+                title: "Task Delegation",
+                phrases: [
+                    {
+                        text: "I need you to take ownership of...",
+                        cefr: "B2",
+                        context: "Assigning responsibility"
+                    },
+                    {
+                        text: "Could you please handle... by [deadline]?",
+                        cefr: "B1",
+                        context: "Polite delegation"
+                    },
+                    {
+                        text: "This task requires your expertise in...",
+                        cefr: "B2",
+                        context: "Skill-based assignment"
+                    },
+                    {
+                        text: "I'm confident you can deliver excellent results on...",
+                        cefr: "B2",
+                        context: "Encouraging delegation"
+                    },
+                    {
+                        text: "The success of this project depends on...",
+                        cefr: "C1",
+                        context: "Emphasizing importance"
+                    },
+                    {
+                        text: "Please keep me updated on your progress with...",
+                        cefr: "B1",
+                        context: "Follow-up request"
+                    }
+                ]
+            },
+            feedback: {
+                title: "Performance Feedback",
+                phrases: [
+                    {
+                        text: "I've noticed some excellent work on...",
+                        cefr: "B1",
+                        context: "Positive feedback"
+                    },
+                    {
+                        text: "Your performance in... has been outstanding",
+                        cefr: "B2",
+                        context: "Strong praise"
+                    },
+                    {
+                        text: "I'd like to discuss an area for improvement...",
+                        cefr: "B2",
+                        context: "Constructive feedback"
+                    },
+                    {
+                        text: "Going forward, I suggest you focus on...",
+                        cefr: "B2",
+                        context: "Development advice"
+                    },
+                    {
+                        text: "Your contribution to the team has been...",
+                        cefr: "B2",
+                        context: "Team feedback"
+                    },
+                    {
+                        text: "I believe you have the potential to...",
+                        cefr: "C1",
+                        context: "Growth encouragement"
+                    }
+                ]
+            }
+        };
+
+        // CEFR Can-Do statements
+        const cefrCanDo = {
+            A1: [
+                "Can give simple updates about work progress",
+                "Can ask for help with basic tasks",
+                "Can understand simple instructions"
+            ],
+            A2: [
+                "Can describe work activities and results",
+                "Can give basic feedback to team members",
+                "Can participate in simple meetings"
+            ],
+            B1: [
+                "Can lead team meetings effectively",
+                "Can delegate tasks with clear instructions",
+                "Can give constructive feedback"
+            ],
+            B2: [
+                "Can present complex information clearly",
+                "Can negotiate and persuade effectively",
+                "Can handle difficult conversations professionally"
+            ],
+            C1: [
+                "Can adapt communication style to different audiences",
+                "Can lead strategic discussions",
+                "Can influence and inspire teams"
+            ],
+            C2: [
+                "Can communicate with native-like fluency",
+                "Can handle any business situation confidently",
+                "Can mentor others in communication skills"
+            ]
+        };
+
+        // Motivational messages
+        const defaultMotivationalMessages = [
+            "Clear communication is the bridge between confusion and clarity.",
+            "Every conversation is an opportunity to lead and inspire.",
+            "Great managers are made through practice and persistence.",
+            "Your words have the power to motivate and transform teams.",
+            "Effective communication is the cornerstone of successful leadership.",
+            "Practice makes progress, and progress makes leaders.",
+            "Confidence in communication comes from consistent practice.",
+            "Every feedback session is a chance to help someone grow.",
+            "Clear delegation creates empowered teams.",
+            "Your communication skills are your leadership superpowers."
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeVoiceRecognition();
+            loadUserData();
+            updateUI();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize daily actions if empty
+            if (appState.userData.dailyActions.length === 0) {
+                generateDailyActions();
+            }
+            
+            // Set random motivational message
+            updateMotivationalMessage();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('analyticsBtn').addEventListener('click', () => showView('analytics'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+            document.getElementById('backToDashboardBtn').addEventListener('click', () => showView('dashboard'));
+
+            // Dashboard actions
+            document.getElementById('newMotivationBtn').addEventListener('click', updateMotivationalMessage);
+            document.getElementById('quickUpdateBtn').addEventListener('click', () => startQuickSession('update'));
+            document.getElementById('quickDelegationBtn').addEventListener('click', () => startQuickSession('delegation'));
+            document.getElementById('quickFeedbackBtn').addEventListener('click', () => startQuickSession('feedback'));
+            document.getElementById('newSessionBtn').addEventListener('click', showNewSessionModal);
+            document.getElementById('addActionBtn').addEventListener('click', showAddActionModal);
+
+            // Timer controls
+            document.getElementById('startTimerBtn').addEventListener('click', toggleFocusTimer);
+            document.getElementById('resetTimerBtn').addEventListener('click', resetFocusTimer);
+
+            // Session controls
+            document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+            document.getElementById('editTranscriptBtn').addEventListener('click', toggleTranscriptEdit);
+            document.getElementById('clearTranscriptBtn').addEventListener('click', clearTranscript);
+            document.getElementById('copyTranscriptBtn').addEventListener('click', copyTranscript);
+            document.getElementById('saveSessionBtn').addEventListener('click', saveCurrentSession);
+            document.getElementById('exportPdfBtn').addEventListener('click', exportSessionToPdf);
+            document.getElementById('playbackBtn').addEventListener('click', playbackRecording);
+            document.getElementById('analyzeBtn').addEventListener('click', analyzeSession);
+            document.getElementById('practiceAgainBtn').addEventListener('click', practiceAgain);
+            document.getElementById('doItNowBtn').addEventListener('click', executeDoItNow);
+
+            // Modal controls
+            document.getElementById('startSessionBtn').addEventListener('click', startNewSession);
+            document.getElementById('cancelSessionBtn').addEventListener('click', hideNewSessionModal);
+            document.getElementById('saveActionBtn').addEventListener('click', saveNewAction);
+            document.getElementById('cancelActionBtn').addEventListener('click', hideAddActionModal);
+
+            // Settings
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+            document.getElementById('timerDurationSelect').addEventListener('change', updateTimerDuration);
+            document.getElementById('cefrLevelSelect').addEventListener('change', updateCefrLevel);
+            document.getElementById('autoSyncToggle').addEventListener('change', updateAutoSync);
+            document.getElementById('soundToggle').addEventListener('change', updateSoundSettings);
+            document.getElementById('addMessageBtn').addEventListener('click', addCustomMessage);
+
+            // Phrase bank tabs
+            document.querySelectorAll('.phrase-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => switchPhraseCategory(e.target.dataset.category));
+            });
+
+            // Email format toggle
+            document.getElementById('emailFormatToggle').addEventListener('change', updateTranscriptFormat);
+        }
+
+        function initializeVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.voiceRecognition.recognition = new SpeechRecognition();
+                appState.voiceRecognition.isSupported = true;
+
+                const recognition = appState.voiceRecognition.recognition;
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    console.log('Voice recognition started');
+                };
+
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        appState.voiceRecognition.transcript += finalTranscript;
+                        updateTranscript();
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showNotification('Voice recognition error: ' + event.error, 'error');
+                };
+
+                recognition.onend = function() {
+                    if (appState.isRecording) {
+                        // Restart recognition if still recording
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.log('Recognition restart failed:', e);
+                        }
+                    }
+                };
+            } else {
+                appState.voiceRecognition.isSupported = false;
+                console.log('Speech recognition not supported');
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('managerSpeakData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('managerSpeakData', JSON.stringify(appState.userData));
+                if (appState.userData.settings.autoSync && appState.isOnline) {
+                    // Auto-sync functionality would go here
+                    console.log('Auto-sync triggered');
+                }
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('sessionView').classList.add('hidden');
+            document.getElementById('analyticsView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'analytics') {
+                updateAnalytics();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updateFocusTimerDisplay();
+        }
+
+        function updateDashboard() {
+            // Update recent sessions
+            const recentSessionsContainer = document.getElementById('recentSessions');
+            const recentSessions = appState.userData.sessions.slice(-5).reverse();
+
+            if (recentSessions.length === 0) {
+                recentSessionsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🎤</div>
+                        <p>No sessions yet. Start your first practice session!</p>
+                    </div>
+                `;
+            } else {
+                recentSessionsContainer.innerHTML = recentSessions.map(session => `
+                    <div class="flex items-center justify-between p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${session.title || session.type}</div>
+                            <div class="text-sm text-medium-green">
+                                ${new Date(session.date).toLocaleDateString()} • 
+                                ${Math.round(session.duration / 60)} min • 
+                                <span class="cefr-badge cefr-${session.cefr.toLowerCase()}">${session.cefr}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="reviewSession('${session.id}')" class="px-3 py-1 bg-accent-green text-white rounded text-sm hover:bg-medium-green transition-colors">
+                                Review
+                            </button>
+                            <button onclick="deleteSession('${session.id}')" class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update daily actions
+            updateDailyActions();
+        }
+
+        function updateDailyActions() {
+            const dailyActionsContainer = document.getElementById('dailyActions');
+            const actions = appState.userData.dailyActions;
+
+            if (actions.length === 0) {
+                dailyActionsContainer.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <p class="text-sm">No actions for today</p>
+                    </div>
+                `;
+            } else {
+                dailyActionsContainer.innerHTML = actions.map(action => `
+                    <div class="flex items-center justify-between p-3 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" ${action.completed ? 'checked' : ''} 
+                                   onchange="toggleAction('${action.id}')"
+                                   class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            <span class="text-sm ${action.completed ? 'line-through text-gray-500' : 'text-dark-green'}">${action.description}</span>
+                            <span class="text-xs px-2 py-1 rounded ${getPriorityClass(action.priority)}">${action.priority}</span>
+                        </div>
+                        <button onclick="deleteAction('${action.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getPriorityClass(priority) {
+            switch (priority) {
+                case 'high': return 'bg-red-100 text-red-800';
+                case 'medium': return 'bg-yellow-100 text-yellow-800';
+                case 'low': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    // Already active today, maintain streak
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    // Active yesterday, can continue streak
+                    return;
+                } else {
+                    // Streak broken
+                    appState.userData.streak = 0;
+                }
+            }
+
+            // Update last active date when user performs an action
+            appState.userData.lastActiveDate = today;
+            saveUserData();
+        }
+
+        function updateMotivationalMessage() {
+            const allMessages = [...defaultMotivationalMessages, ...appState.userData.customMessages];
+            const randomMessage = allMessages[Math.floor(Math.random() * allMessages.length)];
+            document.getElementById('motivationalMessage').textContent = randomMessage;
+        }
+
+        function generateDailyActions() {
+            const defaultActions = [
+                { description: "Review team performance metrics", priority: "high" },
+                { description: "Prepare for upcoming team meeting", priority: "medium" },
+                { description: "Practice delegation phrases", priority: "medium" },
+                { description: "Give feedback to a team member", priority: "high" },
+                { description: "Update project status", priority: "low" }
+            ];
+
+            const todayActions = defaultActions.slice(0, 3).map(action => ({
+                id: generateId(),
+                ...action,
+                completed: false,
+                date: new Date().toDateString()
+            }));
+
+            appState.userData.dailyActions = todayActions;
+            saveUserData();
+        }
+
+        // Focus Timer Functions
+        function toggleFocusTimer() {
+            if (appState.focusTimer.isRunning) {
+                pauseFocusTimer();
+            } else {
+                startFocusTimer();
+            }
+        }
+
+        function startFocusTimer() {
+            appState.focusTimer.isRunning = true;
+            document.getElementById('startTimerBtn').textContent = 'Pause';
+            
+            appState.focusTimer.interval = setInterval(() => {
+                appState.focusTimer.timeLeft--;
+                updateFocusTimerDisplay();
+                
+                if (appState.focusTimer.timeLeft <= 0) {
+                    completeFocusTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseFocusTimer() {
+            appState.focusTimer.isRunning = false;
+            document.getElementById('startTimerBtn').textContent = 'Start';
+            clearInterval(appState.focusTimer.interval);
+        }
+
+        function resetFocusTimer() {
+            pauseFocusTimer();
+            appState.focusTimer.timeLeft = appState.focusTimer.duration;
+            updateFocusTimerDisplay();
+        }
+
+        function completeFocusTimer() {
+            pauseFocusTimer();
+            
+            // Play alert sound
+            if (appState.userData.settings.soundNotifications) {
+                playTimerAlert();
+            }
+            
+            showNotification('Focus session completed! Great work!', 'success');
+            
+            // Reset timer
+            appState.focusTimer.timeLeft = appState.focusTimer.duration;
+            updateFocusTimerDisplay();
+        }
+
+        function updateFocusTimerDisplay() {
+            const minutes = Math.floor(appState.focusTimer.timeLeft / 60);
+            const seconds = appState.focusTimer.timeLeft % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timerDisplay').textContent = display;
+            
+            // Update circular progress
+            const progress = (appState.focusTimer.duration - appState.focusTimer.timeLeft) / appState.focusTimer.duration;
+            const degrees = progress * 360;
+            const timerCircle = document.getElementById('timerCircle');
+            timerCircle.style.background = `conic-gradient(var(--medium-gold) ${degrees}deg, var(--pale-gold) ${degrees}deg)`;
+        }
+
+        function playTimerAlert() {
+            const audio = document.getElementById('timerAlert');
+            audio.play().catch(e => console.log('Could not play alert sound:', e));
+        }
+
+        // Session Management
+        function startQuickSession(type) {
+            const sessionData = {
+                type: type,
+                cefr: appState.userData.settings.cefrLevel,
+                title: `Quick ${type.charAt(0).toUpperCase() + type.slice(1)} Practice`
+            };
+            
+            createNewSession(sessionData);
+        }
+
+        function showNewSessionModal() {
+            document.getElementById('newSessionModal').classList.remove('hidden');
+            document.getElementById('newSessionModal').classList.add('flex');
+        }
+
+        function hideNewSessionModal() {
+            document.getElementById('newSessionModal').classList.add('hidden');
+            document.getElementById('newSessionModal').classList.remove('flex');
+        }
+
+        function startNewSession() {
+            const type = document.getElementById('sessionTypeSelect').value;
+            const cefr = document.getElementById('sessionCefrSelect').value;
+            const title = document.getElementById('sessionTitleInput').value;
+            
+            const sessionData = {
+                type: type,
+                cefr: cefr,
+                title: title || getDefaultSessionTitle(type)
+            };
+            
+            createNewSession(sessionData);
+            hideNewSessionModal();
+        }
+
+        function createNewSession(sessionData) {
+            appState.currentSession = {
+                id: generateId(),
+                ...sessionData,
+                startTime: new Date(),
+                transcript: '',
+                duration: 0,
+                recordings: []
+            };
+            
+            showView('session');
+            loadSessionData();
+        }
+
+        function loadSessionData() {
+            const session = appState.currentSession;
+            
+            // Update session header
+            document.getElementById('sessionTitle').textContent = session.title;
+            document.getElementById('cefrLevel').textContent = session.cefr;
+            document.getElementById('cefrLevel').className = `cefr-badge cefr-${session.cefr.toLowerCase()}`;
+            document.getElementById('sessionType').textContent = getSessionTypeLabel(session.type);
+            
+            // Load CEFR goals
+            loadCefrGoals(session.cefr);
+            
+            // Load phrase bank
+            switchPhraseCategory(session.type === 'update' ? 'updates' : session.type);
+            
+            // Reset transcript
+            document.getElementById('transcriptArea').innerHTML = '<p class="text-gray-500 italic">Your speech will appear here...</p>';
+            
+            // Start session timer
+            startSessionTimer();
+        }
+
+        function loadCefrGoals(level) {
+            const goals = cefrCanDo[level] || [];
+            const goalsContainer = document.getElementById('cefrGoals');
+            
+            goalsContainer.innerHTML = goals.map(goal => `
+                <li>• ${goal}</li>
+            `).join('');
+        }
+
+        function startSessionTimer() {
+            if (appState.currentSession) {
+                const updateTimer = () => {
+                    const elapsed = Math.floor((new Date() - appState.currentSession.startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('sessionDuration').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                };
+                
+                updateTimer();
+                appState.currentSession.timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        // Recording Functions
+        function toggleRecording() {
+            if (appState.isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        function startRecording() {
+            if (!appState.voiceRecognition.isSupported) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+            
+            appState.isRecording = true;
+            appState.recordingStartTime = new Date();
+            appState.voiceRecognition.transcript = '';
+            
+            // Update UI
+            const recordBtn = document.getElementById('recordBtn');
+            recordBtn.classList.add('recording-pulse');
+            recordBtn.innerHTML = '⏹️';
+            recordBtn.setAttribute('aria-label', 'Stop recording');
+            
+            document.getElementById('voiceStatus').classList.remove('hidden');
+            
+            // Start voice recognition
+            try {
+                appState.voiceRecognition.recognition.start();
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                stopRecording();
+                showNotification('Could not start voice recognition', 'error');
+                return;
+            }
+            
+            // Start recording timer
+            startRecordingTimer();
+            
+            showNotification('Recording started', 'success');
+        }
+
+        function stopRecording() {
+            appState.isRecording = false;
+            
+            // Update UI
+            const recordBtn = document.getElementById('recordBtn');
+            recordBtn.classList.remove('recording-pulse');
+            recordBtn.innerHTML = '🎤';
+            recordBtn.setAttribute('aria-label', 'Start recording');
+            
+            document.getElementById('voiceStatus').classList.add('hidden');
+            
+            // Stop voice recognition
+            if (appState.voiceRecognition.recognition) {
+                appState.voiceRecognition.recognition.stop();
+            }
+            
+            // Stop recording timer
+            stopRecordingTimer();
+            
+            // Enable playback button
+            document.getElementById('playbackBtn').disabled = false;
+            
+            showNotification('Recording stopped', 'success');
+            
+            // Update session streak
+            updateSessionStreak();
+        }
+
+        function startRecordingTimer() {
+            let seconds = 0;
+            appState.recordingTimer = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('recordingTimer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopRecordingTimer() {
+            if (appState.recordingTimer) {
+                clearInterval(appState.recordingTimer);
+                appState.recordingTimer = null;
+            }
+        }
+
+        function updateTranscript() {
+            const transcriptArea = document.getElementById('transcriptArea');
+            const transcript = appState.voiceRecognition.transcript;
+            
+            if (transcript.trim()) {
+                if (document.getElementById('emailFormatToggle').checked) {
+                    transcriptArea.innerHTML = formatAsEmail(transcript);
+                } else {
+                    transcriptArea.innerHTML = formatTranscript(transcript);
+                }
+                
+                // Update current session
+                if (appState.currentSession) {
+                    appState.currentSession.transcript = transcript;
+                }
+            }
+        }
+
+        function formatTranscript(text) {
+            // Basic formatting: capitalize sentences, add periods
+            return text.replace(/([.!?]\s*)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase())
+                      .replace(/^([a-z])/, (match, p1) => p1.toUpperCase());
+        }
+
+        function formatAsEmail(text) {
+            const lines = text.split(/[.!?]+/).filter(line => line.trim());
+            
+            let email = "Subject: [Your Subject Here]\n\n";
+            email += "Dear [Recipient],\n\n";
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    email += line.trim() + ".\n\n";
+                }
+            });
+            
+            email += "Best regards,\n[Your Name]";
+            
+            return email.replace(/\n/g, '<br>');
+        }
+
+        function toggleTranscriptEdit() {
+            const transcriptArea = document.getElementById('transcriptArea');
+            const editBtn = document.getElementById('editTranscriptBtn');
+            
+            if (transcriptArea.contentEditable === 'true') {
+                transcriptArea.contentEditable = 'false';
+                editBtn.textContent = 'Edit';
+                editBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                editBtn.classList.add('bg-accent-green', 'hover:bg-medium-green');
+            } else {
+                transcriptArea.contentEditable = 'true';
+                transcriptArea.focus();
+                editBtn.textContent = 'Done';
+                editBtn.classList.remove('bg-accent-green', 'hover:bg-medium-green');
+                editBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+            }
+        }
+
+        function clearTranscript() {
+            if (confirm('Are you sure you want to clear the transcript?')) {
+                document.getElementById('transcriptArea').innerHTML = '<p class="text-gray-500 italic">Your speech will appear here...</p>';
+                appState.voiceRecognition.transcript = '';
+                if (appState.currentSession) {
+                    appState.currentSession.transcript = '';
+                }
+            }
+        }
+
+        function copyTranscript() {
+            const transcriptArea = document.getElementById('transcriptArea');
+            const text = transcriptArea.innerText || transcriptArea.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Transcript copied to clipboard', 'success');
+            }).catch(() => {
+                showNotification('Could not copy transcript', 'error');
+            });
+        }
+
+        // Phrase Bank Functions
+        function switchPhraseCategory(category) {
+            // Update tab appearance
+            document.querySelectorAll('.phrase-tab').forEach(tab => {
+                tab.classList.remove('bg-medium-gold', 'text-white');
+                tab.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            const activeTab = document.querySelector(`[data-category="${category}"]`);
+            if (activeTab) {
+                activeTab.classList.remove('bg-gray-200', 'text-gray-700');
+                activeTab.classList.add('bg-medium-gold', 'text-white');
+            }
+            
+            // Load phrases
+            loadPhrases(category);
+        }
+
+        function loadPhrases(category) {
+            const phraseContainer = document.getElementById('phraseContainer');
+            const phrases = phraseBanks[category]?.phrases || [];
+            
+            phraseContainer.innerHTML = phrases.map(phrase => `
+                <div class="phrase-card" onclick="insertPhrase('${phrase.text.replace(/'/g, "\\'")}')">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="cefr-badge cefr-${phrase.cefr.toLowerCase()}">${phrase.cefr}</span>
+                        <span class="text-xs text-gray-500">${phrase.context}</span>
+                    </div>
+                    <p class="text-sm text-dark-green">${phrase.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function insertPhrase(phraseText) {
+            const transcriptArea = document.getElementById('transcriptArea');
+            
+            // If transcript is empty or has placeholder text
+            if (transcriptArea.innerHTML.includes('Your speech will appear here')) {
+                transcriptArea.innerHTML = phraseText;
+            } else {
+                // Append to existing text
+                const currentText = transcriptArea.innerHTML;
+                transcriptArea.innerHTML = currentText + ' ' + phraseText;
+            }
+            
+            // Update voice recognition transcript
+            appState.voiceRecognition.transcript += ' ' + phraseText;
+            
+            // Update current session
+            if (appState.currentSession) {
+                appState.currentSession.transcript = appState.voiceRecognition.transcript;
+            }
+            
+            showNotification('Phrase inserted', 'success');
+        }
+
+        // Session Actions
+        function saveCurrentSession() {
+            if (!appState.currentSession) return;
+            
+            const session = appState.currentSession;
+            session.endTime = new Date();
+            session.duration = Math.floor((session.endTime - session.startTime) / 1000);
+            session.date = session.startTime.toISOString();
+            
+            // Stop session timer
+            if (session.timerInterval) {
+                clearInterval(session.timerInterval);
+            }
+            
+            // Add to user data
+            appState.userData.sessions.push(session);
+            appState.userData.totalSessions++;
+            appState.userData.totalMinutes += Math.floor(session.duration / 60);
+            
+            // Update streak
+            updateSessionStreak();
+            
+            saveUserData();
+            showNotification('Session saved successfully', 'success');
+        }
+
+        function updateSessionStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+            
+            if (lastActive !== today) {
+                appState.userData.streak++;
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+                saveUserData();
+            }
+        }
+
+        function exportSessionToPdf() {
+            if (!appState.currentSession) return;
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('ManagerSpeak Pro - Session Report', 20, 30);
+                
+                // Session details
+                doc.setFontSize(12);
+                doc.text(`Session: ${appState.currentSession.title}`, 20, 50);
+                doc.text(`Type: ${getSessionTypeLabel(appState.currentSession.type)}`, 20, 60);
+                doc.text(`CEFR Level: ${appState.currentSession.cefr}`, 20, 70);
+                doc.text(`Date: ${new Date(appState.currentSession.startTime).toLocaleDateString()}`, 20, 80);
+                doc.text(`Duration: ${Math.floor(appState.currentSession.duration / 60)} minutes`, 20, 90);
+                
+                // Transcript
+                doc.text('Transcript:', 20, 110);
+                const transcript = appState.currentSession.transcript || 'No transcript available';
+                const splitText = doc.splitTextToSize(transcript, 170);
+                doc.text(splitText, 20, 120);
+                
+                // Save
+                doc.save(`session-${appState.currentSession.id}.pdf`);
+                showNotification('PDF exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        function playbackRecording() {
+            // Placeholder for audio playback functionality
+            showNotification('Playback feature coming soon', 'info');
+        }
+
+        function analyzeSession() {
+            if (!appState.currentSession || !appState.currentSession.transcript) {
+                showNotification('No transcript to analyze', 'warning');
+                return;
+            }
+            
+            const transcript = appState.currentSession.transcript;
+            const wordCount = transcript.split(/\s+/).length;
+            const sentenceCount = transcript.split(/[.!?]+/).length - 1;
+            const avgWordsPerSentence = sentenceCount > 0 ? Math.round(wordCount / sentenceCount) : 0;
+            
+            const analysis = `
+                Analysis Results:
+                • Word count: ${wordCount}
+                • Sentences: ${sentenceCount}
+                • Average words per sentence: ${avgWordsPerSentence}
+                • Estimated speaking time: ${Math.round(wordCount / 150)} minutes
+            `;
+            
+            showNotification(analysis, 'info');
+        }
+
+        function practiceAgain() {
+            if (appState.currentSession) {
+                // Reset transcript and recording
+                clearTranscript();
+                document.getElementById('recordingTimer').textContent = '00:00';
+                document.getElementById('playbackBtn').disabled = true;
+                
+                showNotification('Ready for another practice session', 'success');
+            }
+        }
+
+        function executeDoItNow() {
+            const actions = appState.userData.dailyActions.filter(action => !action.completed);
+            
+            if (actions.length === 0) {
+                showNotification('All actions completed! Great work!', 'success');
+                return;
+            }
+            
+            const nextAction = actions[0];
+            const confirmed = confirm(`Execute this action now?\n\n"${nextAction.description}"`);
+            
+            if (confirmed) {
+                toggleAction(nextAction.id);
+                showNotification('Action marked as completed!', 'success');
+            }
+        }
+
+        // Daily Actions Management
+        function showAddActionModal() {
+            document.getElementById('addActionModal').classList.remove('hidden');
+            document.getElementById('addActionModal').classList.add('flex');
+        }
+
+        function hideAddActionModal() {
+            document.getElementById('addActionModal').classList.add('hidden');
+            document.getElementById('addActionModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('actionDescInput').value = '';
+            document.getElementById('actionPrioritySelect').value = 'medium';
+        }
+
+        function saveNewAction() {
+            const description = document.getElementById('actionDescInput').value.trim();
+            const priority = document.getElementById('actionPrioritySelect').value;
+            
+            if (!description) {
+                showNotification('Please enter an action description', 'warning');
+                return;
+            }
+            
+            const newAction = {
+                id: generateId(),
+                description: description,
+                priority: priority,
+                completed: false,
+                date: new Date().toDateString()
+            };
+            
+            appState.userData.dailyActions.push(newAction);
+            saveUserData();
+            updateDailyActions();
+            hideAddActionModal();
+            
+            showNotification('Action added successfully', 'success');
+        }
+
+        function toggleAction(actionId) {
+            const action = appState.userData.dailyActions.find(a => a.id === actionId);
+            if (action) {
+                action.completed = !action.completed;
+                saveUserData();
+                updateDailyActions();
+            }
+        }
+
+        function deleteAction(actionId) {
+            if (confirm('Are you sure you want to delete this action?')) {
+                appState.userData.dailyActions = appState.userData.dailyActions.filter(a => a.id !== actionId);
+                saveUserData();
+                updateDailyActions();
+                showNotification('Action deleted', 'success');
+            }
+        }
+
+        // Session Management Functions
+        function reviewSession(sessionId) {
+            const session = appState.userData.sessions.find(s => s.id === sessionId);
+            if (session) {
+                appState.currentSession = session;
+                showView('session');
+                loadSessionData();
+                
+                // Load the transcript
+                if (session.transcript) {
+                    document.getElementById('transcriptArea').innerHTML = formatTranscript(session.transcript);
+                }
+            }
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm('Are you sure you want to delete this session?')) {
+                appState.userData.sessions = appState.userData.sessions.filter(s => s.id !== sessionId);
+                appState.userData.totalSessions = appState.userData.sessions.length;
+                
+                // Recalculate total minutes
+                appState.userData.totalMinutes = appState.userData.sessions.reduce((total, session) => {
+                    return total + Math.floor(session.duration / 60);
+                }, 0);
+                
+                saveUserData();
+                updateDashboard();
+                showNotification('Session deleted', 'success');
+            }
+        }
+
+        // Analytics Functions
+        function updateAnalytics() {
+            document.getElementById('totalSessions').textContent = appState.userData.totalSessions;
+            document.getElementById('totalMinutes').textContent = appState.userData.totalMinutes;
+            document.getElementById('averageScore').textContent = Math.round(appState.userData.averageScore) + '%';
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('timerDurationSelect').value = appState.userData.settings.timerDuration;
+            document.getElementById('cefrLevelSelect').value = appState.userData.settings.cefrLevel;
+            document.getElementById('autoSyncToggle').checked = appState.userData.settings.autoSync;
+            document.getElementById('soundToggle').checked = appState.userData.settings.soundNotifications;
+            
+            loadCustomMessages();
+        }
+
+        function updateTimerDuration() {
+            const duration = parseInt(document.getElementById('timerDurationSelect').value);
+            appState.userData.settings.timerDuration = duration;
+            appState.focusTimer.duration = duration * 60;
+            appState.focusTimer.timeLeft = duration * 60;
+            updateFocusTimerDisplay();
+            saveUserData();
+        }
+
+        function updateCefrLevel() {
+            appState.userData.settings.cefrLevel = document.getElementById('cefrLevelSelect').value;
+            saveUserData();
+        }
+
+        function updateAutoSync() {
+            appState.userData.settings.autoSync = document.getElementById('autoSyncToggle').checked;
+            saveUserData();
+        }
+
+        function updateSoundSettings() {
+            appState.userData.settings.soundNotifications = document.getElementById('soundToggle').checked;
+            saveUserData();
+        }
+
+        function addCustomMessage() {
+            const messageInput = document.getElementById('customMessageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                showNotification('Please enter a message', 'warning');
+                return;
+            }
+            
+            appState.userData.customMessages.push(message);
+            messageInput.value = '';
+            saveUserData();
+            loadCustomMessages();
+            
+            showNotification('Custom message added', 'success');
+        }
+
+        function loadCustomMessages() {
+            const container = document.getElementById('customMessages');
+            const messages = appState.userData.customMessages;
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No custom messages yet</p>';
+            } else {
+                container.innerHTML = messages.map((message, index) => `
+                    <div class="flex items-center justify-between p-3 bg-pale-gold rounded-lg border border-medium-gold">
+                        <span class="text-sm text-dark-green">${message}</span>
+                        <button onclick="deleteCustomMessage(${index})" class="text-red-500 hover:text-red-700 text-sm">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function deleteCustomMessage(index) {
+            if (confirm('Are you sure you want to delete this message?')) {
+                appState.userData.customMessages.splice(index, 1);
+                saveUserData();
+                loadCustomMessages();
+                showNotification('Message deleted', 'success');
+            }
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `managerspeak-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('managerSpeakData');
+                    
+                    // Reset app state
+                    appState.userData = {
+                        sessions: [],
+                        dailyActions: [],
+                        customMessages: [],
+                        streak: 0,
+                        lastActiveDate: null,
+                        totalSessions: 0,
+                        totalMinutes: 0,
+                        averageScore: 0,
+                        longestStreak: 0,
+                        settings: {
+                            timerDuration: 25,
+                            cefrLevel: 'B2',
+                            autoSync: true,
+                            soundNotifications: true
+                        }
+                    };
+                    
+                    generateDailyActions();
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        function updateTranscriptFormat() {
+            if (appState.voiceRecognition.transcript) {
+                updateTranscript();
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function getDefaultSessionTitle(type) {
+            const titles = {
+                update: 'Team Update Session',
+                delegation: 'Task Delegation Practice',
+                feedback: 'Performance Feedback Session',
+                meeting: 'Meeting Leadership Practice',
+                presentation: 'Presentation Skills Session',
+                negotiation: 'Negotiation Practice'
+            };
+            return titles[type] || 'Practice Session';
+        }
+
+        function getSessionTypeLabel(type) {
+            const labels = {
+                update: 'Team Update',
+                delegation: 'Task Delegation',
+                feedback: 'Performance Feedback',
+                meeting: 'Meeting Leadership',
+                presentation: 'Presentation',
+                negotiation: 'Negotiation'
+            };
+            return labels[type] || type;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' : 
+                type === 'warning' ? 'bg-yellow-600 text-white' : 
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Initialize focus timer display
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFocusTimerDisplay();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'987366d396c7b9fb',t:'MTc1OTIzMTk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
