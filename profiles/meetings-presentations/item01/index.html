@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting English Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3d2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .phrase-pad {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .phrase-pad:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .agenda-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #d4af37;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .timer-circle {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .vocab-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .action-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid #d4af37;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+        }
+        
+        .nav-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-btn.active {
+            background-color: #d4af37;
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #d4af37;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Sync Indicator -->
+    <div id="syncIndicator" class="sync-indicator hidden">
+        <div class="bg-green-600 text-white px-2 py-1 rounded-full">
+            ✓ Synced
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="p-4 text-center border-b border-gray-700">
+        <h1 class="text-2xl font-bold text-accent">🎯 Meeting English Runner</h1>
+        <div class="mt-2 flex justify-center gap-4 text-xs">
+            <span>Streak: <span id="currentStreak" class="text-accent">0</span></span>
+            <span>Meetings: <span id="totalMeetings" class="text-accent">0</span></span>
+            <span>Actions: <span id="completedActions" class="text-accent">0</span></span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-2 flex-wrap">
+        <button onclick="showScreen('home')" id="homeBtn" class="nav-btn active">Home</button>
+        <button onclick="showScreen('plan')" id="planBtn" class="nav-btn">Plan</button>
+        <button onclick="showScreen('run')" id="runBtn" class="nav-btn">Run</button>
+        <button onclick="showScreen('wrap')" id="wrapBtn" class="nav-btn">Wrap</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Vocab</button>
+        <button onclick="showScreen('breathing')" id="breathingBtn" class="nav-btn">Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">Stats</button>
+    </nav>
+
+    <!-- Floating Quick Add -->
+    <button onclick="quickAdd()" class="floating-btn">+</button>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <!-- Current Meeting -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h2 class="text-lg font-bold text-accent mb-3">Current Meeting</h2>
+                <div id="currentMeetingInfo">
+                    <div class="text-gray-400 text-center py-8">No active meeting</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="showScreen('plan')" class="bg-accent text-black p-4 rounded-lg font-semibold">
+                    📝 Plan Meeting
+                </button>
+                <button onclick="startQuickMeeting()" class="bg-green-600 p-4 rounded-lg font-semibold">
+                    ▶️ Quick Start
+                </button>
+                <button onclick="showScreen('vocabulary')" class="bg-blue-600 p-4 rounded-lg font-semibold">
+                    📚 Study Vocab
+                </button>
+                <button onclick="showScreen('breathing')" class="bg-purple-600 p-4 rounded-lg font-semibold">
+                    🧘 Reset Focus
+                </button>
+            </div>
+
+            <!-- Recent Meetings -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h2 class="text-lg font-bold text-accent mb-3">Recent Meetings</h2>
+                <div id="recentMeetings" class="space-y-2">
+                    <!-- Recent meetings will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Screen -->
+    <div id="planScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <h2 class="text-xl font-bold text-accent text-center">Plan Meeting</h2>
+            
+            <div class="bg-black bg-opacity-40 rounded-lg p-4 space-y-4">
+                <div>
+                    <label class="block text-accent mb-2 font-semibold">Title</label>
+                    <input type="text" id="meetingTitle" placeholder="Weekly team sync..."
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-accent mb-2 font-semibold">Purpose</label>
+                    <textarea id="meetingPurpose" rows="3" placeholder="Our purpose is to..."
+                            class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="mt-2 flex gap-2 flex-wrap">
+                        <button onclick="usePurposeTemplate('align')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Align</button>
+                        <button onclick="usePurposeTemplate('decide')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Decide</button>
+                        <button onclick="usePurposeTemplate('review')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Review</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-accent mb-2 font-semibold">Attendees</label>
+                    <input type="text" id="meetingAttendees" placeholder="John, Sarah, Mike..."
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-accent mb-2 font-semibold">Duration (minutes)</label>
+                    <select id="meetingDuration" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60" selected>60 minutes</option>
+                        <option value="90">90 minutes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Agenda Items -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-accent">Agenda Items</h3>
+                    <button onclick="addAgendaItem()" class="bg-accent text-black px-3 py-1 rounded text-sm font-semibold">+ Add</button>
+                </div>
+                <div id="agendaItems" class="space-y-2">
+                    <!-- Agenda items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button onclick="saveMeeting()" class="flex-1 bg-accent text-black p-3 rounded-lg font-semibold">
+                    💾 Save Meeting
+                </button>
+                <button onclick="startMeeting()" class="flex-1 bg-green-600 p-3 rounded-lg font-semibold">
+                    ▶️ Start Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Run Screen -->
+    <div id="runScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <div class="text-center">
+                <h2 id="runMeetingTitle" class="text-xl font-bold text-accent">Meeting in Progress</h2>
+                <div class="mt-2">
+                    <div class="timer-circle mx-auto">
+                        <span id="meetingTimer">60:00</span>
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-center gap-2">
+                    <button onclick="pauseTimer()" id="pauseBtn" class="bg-yellow-600 text-white px-4 py-2 rounded font-semibold">⏸️ Pause</button>
+                    <button onclick="endMeeting()" class="bg-red-600 text-white px-4 py-2 rounded font-semibold">⏹️ End</button>
+                </div>
+            </div>
+
+            <!-- Current Agenda Item -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-accent">Current Item</h3>
+                    <div class="timer-circle">
+                        <span id="itemTimer">10:00</span>
+                    </div>
+                </div>
+                <div id="currentAgendaItem">
+                    <div class="text-gray-400">No agenda item selected</div>
+                </div>
+                <div class="mt-3 flex gap-2">
+                    <button onclick="prevItem()" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">← Prev</button>
+                    <button onclick="nextItem()" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">Next →</button>
+                </div>
+            </div>
+
+            <!-- Phrase Pads -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Quick Phrases</h3>
+                <div class="grid grid-cols-1 gap-2">
+                    <!-- Alignment -->
+                    <div class="phrase-pad" onclick="usePhrase('To confirm, we are prioritizing')">
+                        <div class="font-semibold text-accent text-xs">ALIGNMENT</div>
+                        <div>To confirm, we are prioritizing...</div>
+                    </div>
+                    <div class="phrase-pad" onclick="usePhrase('My understanding is that we will')">
+                        <div class="font-semibold text-accent text-xs">ALIGNMENT</div>
+                        <div>My understanding is that we will...</div>
+                    </div>
+                    
+                    <!-- Clarification -->
+                    <div class="phrase-pad" onclick="usePhrase('Can you restate that in one sentence?')">
+                        <div class="font-semibold text-accent text-xs">CLARIFICATION</div>
+                        <div>Can you restate that in one sentence?</div>
+                    </div>
+                    <div class="phrase-pad" onclick="usePhrase('What does success look like for this?')">
+                        <div class="font-semibold text-accent text-xs">CLARIFICATION</div>
+                        <div>What does success look like for this?</div>
+                    </div>
+                    
+                    <!-- Next Steps -->
+                    <div class="phrase-pad" onclick="usePhrase('Let us capture that as an action for')">
+                        <div class="font-semibold text-accent text-xs">NEXT STEPS</div>
+                        <div>Let us capture that as an action for...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes & Actions -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-accent">Notes & Actions</h3>
+                    <div class="flex gap-2">
+                        <button onclick="startVoiceNote()" id="voiceBtn" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">🎤</button>
+                        <button onclick="addAction()" class="bg-green-600 text-white px-2 py-1 rounded text-xs">+ Action</button>
+                    </div>
+                </div>
+                <textarea id="currentNotes" rows="4" placeholder="Notes for current item..."
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white text-sm"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wrap Screen -->
+    <div id="wrapScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <h2 class="text-xl font-bold text-accent text-center">Meeting Wrap-up</h2>
+            
+            <!-- Meeting Summary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Meeting Summary</h3>
+                <div id="meetingSummary">
+                    <!-- Summary will be populated here -->
+                </div>
+            </div>
+
+            <!-- Actions Review -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Action Items</h3>
+                <div id="actionsList" class="space-y-2">
+                    <!-- Actions will be populated here -->
+                </div>
+                <button onclick="addAction()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded font-semibold w-full">+ Add Action</button>
+            </div>
+
+            <!-- Export Options -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="generateMinutes()" class="bg-accent text-black p-3 rounded-lg font-semibold">
+                    📧 Email Minutes
+                </button>
+                <button onclick="exportPDF()" class="bg-red-600 p-3 rounded-lg font-semibold">
+                    📄 Export PDF
+                </button>
+                <button onclick="saveRecording()" class="bg-purple-600 p-3 rounded-lg font-semibold">
+                    🎤 Save Audio
+                </button>
+                <button onclick="backupData()" class="bg-blue-600 p-3 rounded-lg font-semibold">
+                    💾 Backup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <h2 class="text-xl font-bold text-accent text-center">Vocabulary Review</h2>
+            
+            <!-- Daily Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-accent">Today's Progress</h3>
+                    <span id="dailyProgress" class="text-accent">0/10</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div id="progressBar" class="bg-accent h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Review Card -->
+            <div id="reviewCard" class="vocab-card">
+                <div class="text-center">
+                    <div id="vocabTerm" class="text-2xl font-bold text-accent mb-3">facilitate</div>
+                    <div id="vocabNote" class="text-gray-300 mb-4">to make easier or help bring about</div>
+                    <div class="flex justify-center gap-2">
+                        <button onclick="rateVocab('again')" class="bg-red-600 text-white px-3 py-2 rounded text-sm">Again</button>
+                        <button onclick="rateVocab('hard')" class="bg-orange-600 text-white px-3 py-2 rounded text-sm">Hard</button>
+                        <button onclick="rateVocab('good')" class="bg-green-600 text-white px-3 py-2 rounded text-sm">Good</button>
+                        <button onclick="rateVocab('easy')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm">Easy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Vocab -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Add New Term</h3>
+                <div class="space-y-2">
+                    <input type="text" id="newVocabTerm" placeholder="Term..."
+                           class="w-full p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                    <input type="text" id="newVocabNote" placeholder="Definition or note..."
+                           class="w-full p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                    <button onclick="addVocab()" class="w-full bg-accent text-black p-2 rounded font-semibold">Add Term</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breathing Screen -->
+    <div id="breathingScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto text-center space-y-6">
+            <h2 class="text-xl font-bold text-accent">Focus Reset</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-xl" id="breathingInstruction">Breathe</div>
+            </div>
+            
+            <div class="text-accent text-2xl font-bold" id="breathingTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-lg italic px-4">
+                "Take a moment to center yourself and refocus your energy."
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startBreathing()" id="startBreathingBtn" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                    ▶️ Start
+                </button>
+                <button onclick="pauseBreathing()" id="pauseBreathingBtn" class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold" disabled>
+                    ⏸️ Pause
+                </button>
+                <button onclick="stopBreathing()" id="stopBreathingBtn" class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Your Messages</h3>
+                <div class="space-y-2">
+                    <input type="text" id="newMessage" placeholder="Add your motivational message..."
+                           class="w-full p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                    <button onclick="addMessage()" class="w-full bg-accent text-black p-2 rounded font-semibold">Add Message</button>
+                </div>
+                <div id="customMessages" class="mt-3 space-y-1">
+                    <!-- Custom messages will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <h2 class="text-xl font-bold text-accent text-center">Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-accent" id="totalMeetingsCount">0</div>
+                    <div class="text-sm text-gray-400">Meetings Run</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-accent" id="actionsOnTime">0%</div>
+                    <div class="text-sm text-gray-400">Actions On Time</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-accent" id="currentStreakCount">0</div>
+                    <div class="text-sm text-gray-400">Current Streak</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-accent" id="vocabReviews">0</div>
+                    <div class="text-sm text-gray-400">Vocab Reviews</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Recent Activity</h3>
+                <div id="recentActivity" class="space-y-2 text-sm">
+                    <!-- Recent activity will be populated here -->
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <h3 class="font-bold text-accent mb-3">Data Management</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="exportData()" class="bg-blue-600 text-white p-2 rounded text-sm">Export Data</button>
+                    <button onclick="importData()" class="bg-green-600 text-white p-2 rounded text-sm">Import Data</button>
+                    <button onclick="clearData()" class="bg-red-600 text-white p-2 rounded text-sm">Clear All</button>
+                    <button onclick="syncData()" class="bg-purple-600 text-white p-2 rounded text-sm">Sync Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg max-w-sm w-full mx-4">
+            <h3 class="text-lg font-bold text-accent mb-4">Quick Add</h3>
+            <div class="space-y-3">
+                <input type="text" id="quickTitle" placeholder="Meeting title..."
+                       class="w-full p-3 rounded bg-gray-700 border border-accent text-white">
+                <div class="flex gap-2">
+                    <button onclick="createQuickMeeting()" class="flex-1 bg-accent text-black p-2 rounded font-semibold">Create</button>
+                    <button onclick="closeQuickAdd()" class="flex-1 bg-gray-600 text-white p-2 rounded font-semibold">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Modal -->
+    <div id="actionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg max-w-sm w-full mx-4">
+            <h3 class="text-lg font-bold text-accent mb-4">Add Action Item</h3>
+            <div class="space-y-3">
+                <input type="text" id="actionText" placeholder="Action description..."
+                       class="w-full p-3 rounded bg-gray-700 border border-accent text-white">
+                <input type="text" id="actionOwner" placeholder="Owner..."
+                       class="w-full p-3 rounded bg-gray-700 border border-accent text-white">
+                <input type="date" id="actionDue"
+                       class="w-full p-3 rounded bg-gray-700 border border-accent text-white">
+                <div class="flex gap-2">
+                    <button onclick="saveAction()" class="flex-1 bg-accent text-black p-2 rounded font-semibold">Save</button>
+                    <button onclick="closeActionModal()" class="flex-1 bg-gray-600 text-white p-2 rounded font-semibold">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Recording Indicator -->
+    <div id="voiceIndicator" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white p-4 rounded-lg hidden z-50">
+        <div class="text-center">
+            <div class="text-2xl mb-2">🎤</div>
+            <div>Recording...</div>
+            <button onclick="stopVoiceNote()" class="mt-2 bg-white text-red-600 px-4 py-2 rounded font-semibold">Stop</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentMeeting = null;
+        let currentAgendaIndex = 0;
+        let meetingTimer = null;
+        let itemTimer = null;
+        let meetingTimeLeft = 0;
+        let itemTimeLeft = 0;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recognition = null;
+        let breathingTimer = null;
+        let breathingInterval = null;
+        let breathingTimeLeft = 25 * 60;
+        let breathingPhase = 'inhale';
+        let isOnline = navigator.onLine;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadHomeScreen();
+            updateStats();
+            setupOfflineHandling();
+        });
+
+        // Data management
+        function initializeData() {
+            if (!localStorage.getItem('meetingRunnerData')) {
+                const defaultData = {
+                    meetings: [],
+                    vocabulary: getDefaultVocabulary(),
+                    actions: [],
+                    phrases: getDefaultPhrases(),
+                    messages: getDefaultMessages(),
+                    analytics: {
+                        totalMeetings: 0,
+                        completedActions: 0,
+                        currentStreak: 0,
+                        vocabReviews: 0,
+                        lastMeetingDate: null
+                    },
+                    settings: {
+                        theme: 'dark',
+                        autoSync: true
+                    }
+                };
+                saveData(defaultData);
+            }
+        }
+
+        function getData() {
+            return JSON.parse(localStorage.getItem('meetingRunnerData') || '{}');
+        }
+
+        function saveData(data) {
+            localStorage.setItem('meetingRunnerData', JSON.stringify(data));
+            if (isOnline) {
+                showSyncIndicator();
+            }
+        }
+
+        function getDefaultVocabulary() {
+            return [
+                { id: '1', term: 'facilitate', note: 'to make easier or help bring about', due: Date.now(), ease: 2.5, interval: 1 },
+                { id: '2', term: 'synthesize', note: 'to combine different ideas into a coherent whole', due: Date.now(), ease: 2.5, interval: 1 },
+                { id: '3', term: 'articulate', note: 'to express thoughts clearly and effectively', due: Date.now(), ease: 2.5, interval: 1 },
+                { id: '4', term: 'consensus', note: 'general agreement among group members', due: Date.now(), ease: 2.5, interval: 1 },
+                { id: '5', term: 'stakeholder', note: 'person with interest or concern in something', due: Date.now(), ease: 2.5, interval: 1 }
+            ];
+        }
+
+        function getDefaultPhrases() {
+            return [
+                { id: '1', type: 'alignment', text: 'To confirm, we are prioritizing' },
+                { id: '2', type: 'alignment', text: 'My understanding is that we will' },
+                { id: '3', type: 'clarification', text: 'Can you restate that in one sentence?' },
+                { id: '4', type: 'clarification', text: 'What does success look like for this?' },
+                { id: '5', type: 'next-step', text: 'Let us capture that as an action for' }
+            ];
+        }
+
+        function getDefaultMessages() {
+            return [
+                "Take a moment to center yourself and refocus your energy.",
+                "Great facilitators create space for others to shine.",
+                "Every meeting is an opportunity to build stronger connections.",
+                "Your calm presence sets the tone for productive discussions.",
+                "Focus on progress, not perfection."
+            ];
+        }
+
+        // Screen management
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            if (screenName === 'home') loadHomeScreen();
+            else if (screenName === 'plan') loadPlanScreen();
+            else if (screenName === 'run') loadRunScreen();
+            else if (screenName === 'wrap') loadWrapScreen();
+            else if (screenName === 'vocabulary') loadVocabularyScreen();
+            else if (screenName === 'breathing') loadBreathingScreen();
+            else if (screenName === 'analytics') loadAnalyticsScreen();
+        }
+
+        // Home screen
+        function loadHomeScreen() {
+            const data = getData();
+            
+            // Load current meeting
+            if (currentMeeting) {
+                document.getElementById('currentMeetingInfo').innerHTML = `
+                    <div class="text-center">
+                        <div class="font-bold text-accent text-lg">${currentMeeting.title}</div>
+                        <div class="text-sm text-gray-400 mt-1">${currentMeeting.purpose}</div>
+                        <div class="mt-3">
+                            <button onclick="showScreen('run')" class="bg-green-600 text-white px-4 py-2 rounded font-semibold">Continue Meeting</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('currentMeetingInfo').innerHTML = '<div class="text-gray-400 text-center py-8">No active meeting</div>';
+            }
+            
+            // Load recent meetings
+            const recentMeetings = data.meetings.slice(0, 3);
+            const recentContainer = document.getElementById('recentMeetings');
+            
+            if (recentMeetings.length === 0) {
+                recentContainer.innerHTML = '<div class="text-gray-400 text-center py-4">No meetings yet</div>';
+            } else {
+                recentContainer.innerHTML = recentMeetings.map(meeting => `
+                    <div class="bg-gray-800 p-3 rounded-lg">
+                        <div class="font-semibold text-accent">${meeting.title}</div>
+                        <div class="text-xs text-gray-400">${new Date(meeting.createdAt).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Plan screen
+        function loadPlanScreen() {
+            loadAgendaItems();
+        }
+
+        function usePurposeTemplate(type) {
+            const templates = {
+                'align': 'Our purpose is to align on priorities and confirm next steps',
+                'decide': 'Today we need decisions on key items and clear action plans',
+                'review': 'Our purpose is to review progress and identify any adjustments needed'
+            };
+            
+            document.getElementById('meetingPurpose').value = templates[type];
+        }
+
+        function addAgendaItem() {
+            const topic = prompt('Agenda item topic:');
+            if (!topic) return;
+            
+            const time = prompt('Time allocation (minutes):', '10');
+            if (!time) return;
+            
+            if (!currentMeeting) {
+                currentMeeting = { agendaItems: [] };
+            }
+            if (!currentMeeting.agendaItems) {
+                currentMeeting.agendaItems = [];
+            }
+            
+            currentMeeting.agendaItems.push({
+                id: Date.now().toString(),
+                topic: topic,
+                time: parseInt(time),
+                notes: '',
+                completed: false
+            });
+            
+            loadAgendaItems();
+        }
+
+        function loadAgendaItems() {
+            const container = document.getElementById('agendaItems');
+            
+            if (!currentMeeting || !currentMeeting.agendaItems || currentMeeting.agendaItems.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No agenda items yet</div>';
+                return;
+            }
+            
+            container.innerHTML = currentMeeting.agendaItems.map((item, index) => `
+                <div class="agenda-item">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-accent">${item.topic}</div>
+                            <div class="text-sm text-gray-400">${item.time} minutes</div>
+                        </div>
+                        <button onclick="removeAgendaItem(${index})" class="text-red-400 text-sm">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeAgendaItem(index) {
+            if (currentMeeting && currentMeeting.agendaItems) {
+                currentMeeting.agendaItems.splice(index, 1);
+                loadAgendaItems();
+            }
+        }
+
+        function saveMeeting() {
+            const title = document.getElementById('meetingTitle').value.trim();
+            const purpose = document.getElementById('meetingPurpose').value.trim();
+            const attendees = document.getElementById('meetingAttendees').value.trim();
+            const duration = parseInt(document.getElementById('meetingDuration').value);
+            
+            if (!title) {
+                alert('Please enter a meeting title');
+                return;
+            }
+            
+            const meeting = {
+                id: Date.now().toString(),
+                title: title,
+                purpose: purpose || 'Meeting purpose to be defined',
+                attendees: attendees,
+                duration: duration,
+                createdAt: new Date().toISOString(),
+                agendaItems: currentMeeting?.agendaItems || [],
+                actions: [],
+                notes: {},
+                status: 'planned'
+            };
+            
+            const data = getData();
+            data.meetings.unshift(meeting);
+            saveData(data);
+            
+            currentMeeting = meeting;
+            
+            // Clear form
+            document.getElementById('meetingTitle').value = '';
+            document.getElementById('meetingPurpose').value = '';
+            document.getElementById('meetingAttendees').value = '';
+            
+            showNotification('Meeting saved!');
+            showScreen('home');
+        }
+
+        function startMeeting() {
+            if (!currentMeeting) {
+                saveMeeting();
+            }
+            
+            if (currentMeeting) {
+                currentMeeting.status = 'in-progress';
+                currentMeeting.startTime = new Date().toISOString();
+                meetingTimeLeft = currentMeeting.duration * 60;
+                currentAgendaIndex = 0;
+                
+                const data = getData();
+                const meetingIndex = data.meetings.findIndex(m => m.id === currentMeeting.id);
+                if (meetingIndex !== -1) {
+                    data.meetings[meetingIndex] = currentMeeting;
+                    saveData(data);
+                }
+                
+                showScreen('run');
+                startMeetingTimer();
+            }
+        }
+
+        function startQuickMeeting() {
+            currentMeeting = {
+                id: Date.now().toString(),
+                title: 'Quick Meeting',
+                purpose: 'Quick discussion and alignment',
+                attendees: '',
+                duration: 30,
+                createdAt: new Date().toISOString(),
+                agendaItems: [
+                    { id: '1', topic: 'Main discussion', time: 20, notes: '', completed: false },
+                    { id: '2', topic: 'Next steps', time: 10, notes: '', completed: false }
+                ],
+                actions: [],
+                notes: {},
+                status: 'in-progress',
+                startTime: new Date().toISOString()
+            };
+            
+            meetingTimeLeft = 30 * 60;
+            currentAgendaIndex = 0;
+            
+            const data = getData();
+            data.meetings.unshift(currentMeeting);
+            saveData(data);
+            
+            showScreen('run');
+            startMeetingTimer();
+        }
+
+        // Run screen
+        function loadRunScreen() {
+            if (!currentMeeting) {
+                showNotification('No active meeting');
+                showScreen('home');
+                return;
+            }
+            
+            document.getElementById('runMeetingTitle').textContent = currentMeeting.title;
+            updateCurrentAgendaItem();
+        }
+
+        function startMeetingTimer() {
+            if (meetingTimer) clearInterval(meetingTimer);
+            
+            meetingTimer = setInterval(() => {
+                meetingTimeLeft--;
+                updateTimerDisplay();
+                
+                if (meetingTimeLeft <= 0) {
+                    endMeeting();
+                }
+            }, 1000);
+            
+            // Start item timer if there's a current item
+            if (currentMeeting.agendaItems && currentMeeting.agendaItems[currentAgendaIndex]) {
+                startItemTimer();
+            }
+        }
+
+        function startItemTimer() {
+            if (itemTimer) clearInterval(itemTimer);
+            
+            const currentItem = currentMeeting.agendaItems[currentAgendaIndex];
+            if (!currentItem) return;
+            
+            itemTimeLeft = currentItem.time * 60;
+            
+            itemTimer = setInterval(() => {
+                itemTimeLeft--;
+                updateItemTimerDisplay();
+                
+                if (itemTimeLeft <= 0) {
+                    // Auto-advance to next item
+                    nextItem();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(meetingTimeLeft / 60);
+            const seconds = meetingTimeLeft % 60;
+            document.getElementById('meetingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateItemTimerDisplay() {
+            const minutes = Math.floor(itemTimeLeft / 60);
+            const seconds = itemTimeLeft % 60;
+            document.getElementById('itemTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateCurrentAgendaItem() {
+            const container = document.getElementById('currentAgendaItem');
+            
+            if (!currentMeeting.agendaItems || currentMeeting.agendaItems.length === 0) {
+                container.innerHTML = '<div class="text-gray-400">No agenda items</div>';
+                return;
+            }
+            
+            const currentItem = currentMeeting.agendaItems[currentAgendaIndex];
+            if (!currentItem) {
+                container.innerHTML = '<div class="text-gray-400">All items completed</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="font-semibold text-accent text-lg">${currentItem.topic}</div>
+                <div class="text-sm text-gray-400 mt-1">${currentItem.time} minutes allocated</div>
+                <div class="text-xs text-gray-500 mt-2">Item ${currentAgendaIndex + 1} of ${currentMeeting.agendaItems.length}</div>
+            `;
+            
+            // Load notes for current item
+            const notes = currentMeeting.notes[currentItem.id] || '';
+            document.getElementById('currentNotes').value = notes;
+        }
+
+        function nextItem() {
+            saveCurrentNotes();
+            
+            if (currentAgendaIndex < currentMeeting.agendaItems.length - 1) {
+                currentAgendaIndex++;
+                updateCurrentAgendaItem();
+                startItemTimer();
+            } else {
+                // All items completed
+                if (itemTimer) {
+                    clearInterval(itemTimer);
+                    itemTimer = null;
+                }
+                showNotification('All agenda items completed!');
+            }
+        }
+
+        function prevItem() {
+            saveCurrentNotes();
+            
+            if (currentAgendaIndex > 0) {
+                currentAgendaIndex--;
+                updateCurrentAgendaItem();
+                startItemTimer();
+            }
+        }
+
+        function saveCurrentNotes() {
+            const currentItem = currentMeeting.agendaItems[currentAgendaIndex];
+            if (currentItem) {
+                const notes = document.getElementById('currentNotes').value;
+                currentMeeting.notes[currentItem.id] = notes;
+                
+                // Save to storage
+                const data = getData();
+                const meetingIndex = data.meetings.findIndex(m => m.id === currentMeeting.id);
+                if (meetingIndex !== -1) {
+                    data.meetings[meetingIndex] = currentMeeting;
+                    saveData(data);
+                }
+            }
+        }
+
+        function pauseTimer() {
+            if (meetingTimer) {
+                clearInterval(meetingTimer);
+                meetingTimer = null;
+                document.getElementById('pauseBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseBtn').onclick = resumeTimer;
+            }
+            
+            if (itemTimer) {
+                clearInterval(itemTimer);
+                itemTimer = null;
+            }
+        }
+
+        function resumeTimer() {
+            startMeetingTimer();
+            document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseBtn').onclick = pauseTimer;
+        }
+
+        function endMeeting() {
+            saveCurrentNotes();
+            
+            if (meetingTimer) {
+                clearInterval(meetingTimer);
+                meetingTimer = null;
+            }
+            
+            if (itemTimer) {
+                clearInterval(itemTimer);
+                itemTimer = null;
+            }
+            
+            currentMeeting.status = 'completed';
+            currentMeeting.endTime = new Date().toISOString();
+            currentMeeting.actualDuration = Math.round((new Date() - new Date(currentMeeting.startTime)) / 60000);
+            
+            // Save meeting
+            const data = getData();
+            const meetingIndex = data.meetings.findIndex(m => m.id === currentMeeting.id);
+            if (meetingIndex !== -1) {
+                data.meetings[meetingIndex] = currentMeeting;
+            }
+            
+            // Update analytics
+            data.analytics.totalMeetings++;
+            data.analytics.lastMeetingDate = new Date().toISOString();
+            saveData(data);
+            
+            showNotification('Meeting completed!');
+            showScreen('wrap');
+        }
+
+        function usePhrase(phraseText) {
+            const currentNotes = document.getElementById('currentNotes');
+            const cursorPos = currentNotes.selectionStart;
+            const textBefore = currentNotes.value.substring(0, cursorPos);
+            const textAfter = currentNotes.value.substring(cursorPos);
+            
+            currentNotes.value = textBefore + phraseText + ' ' + textAfter;
+            currentNotes.focus();
+            currentNotes.setSelectionRange(cursorPos + phraseText.length + 1, cursorPos + phraseText.length + 1);
+            
+            saveCurrentNotes();
+        }
+
+        // Voice recording
+        function startVoiceNote() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Voice recording not supported in this browser');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    const chunks = [];
+                    
+                    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'audio/webm' });
+                        // In a real app, you'd save this blob
+                        showNotification('Voice note recorded');
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    document.getElementById('voiceIndicator').classList.remove('hidden');
+                    document.getElementById('voiceBtn').textContent = '⏹️';
+                    document.getElementById('voiceBtn').onclick = stopVoiceNote;
+                })
+                .catch(err => {
+                    alert('Could not access microphone');
+                    console.error('Voice recording error:', err);
+                });
+        }
+
+        function stopVoiceNote() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('voiceIndicator').classList.add('hidden');
+                document.getElementById('voiceBtn').textContent = '🎤';
+                document.getElementById('voiceBtn').onclick = startVoiceNote;
+            }
+        }
+
+        // Actions
+        function addAction() {
+            document.getElementById('actionModal').classList.remove('hidden');
+        }
+
+        function saveAction() {
+            const text = document.getElementById('actionText').value.trim();
+            const owner = document.getElementById('actionOwner').value.trim();
+            const due = document.getElementById('actionDue').value;
+            
+            if (!text) {
+                alert('Please enter action description');
+                return;
+            }
+            
+            const action = {
+                id: Date.now().toString(),
+                text: text,
+                owner: owner || 'Unassigned',
+                due: due || null,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                meetingId: currentMeeting?.id
+            };
+            
+            const data = getData();
+            if (!data.actions) data.actions = [];
+            data.actions.push(action);
+            
+            if (currentMeeting) {
+                if (!currentMeeting.actions) currentMeeting.actions = [];
+                currentMeeting.actions.push(action);
+                
+                const meetingIndex = data.meetings.findIndex(m => m.id === currentMeeting.id);
+                if (meetingIndex !== -1) {
+                    data.meetings[meetingIndex] = currentMeeting;
+                }
+            }
+            
+            saveData(data);
+            closeActionModal();
+            showNotification('Action item added');
+            
+            if (document.getElementById('wrapScreen').classList.contains('hidden') === false) {
+                loadWrapScreen();
+            }
+        }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').classList.add('hidden');
+            document.getElementById('actionText').value = '';
+            document.getElementById('actionOwner').value = '';
+            document.getElementById('actionDue').value = '';
+        }
+
+        // Wrap screen
+        function loadWrapScreen() {
+            if (!currentMeeting) return;
+            
+            // Meeting summary
+            const summaryContainer = document.getElementById('meetingSummary');
+            summaryContainer.innerHTML = `
+                <div class="space-y-2 text-sm">
+                    <div><strong>Title:</strong> ${currentMeeting.title}</div>
+                    <div><strong>Duration:</strong> ${currentMeeting.actualDuration || currentMeeting.duration} minutes</div>
+                    <div><strong>Attendees:</strong> ${currentMeeting.attendees || 'Not specified'}</div>
+                    <div><strong>Items Covered:</strong> ${currentMeeting.agendaItems?.length || 0}</div>
+                </div>
+            `;
+            
+            // Actions list
+            loadActionsList();
+        }
+
+        function loadActionsList() {
+            const container = document.getElementById('actionsList');
+            const actions = currentMeeting?.actions || [];
+            
+            if (actions.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No action items yet</div>';
+                return;
+            }
+            
+            container.innerHTML = actions.map(action => `
+                <div class="action-item">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold">${action.text}</div>
+                            <div class="text-sm text-gray-400">
+                                Owner: ${action.owner} • Due: ${action.due ? new Date(action.due).toLocaleDateString() : 'No due date'}
+                            </div>
+                        </div>
+                        <input type="checkbox" ${action.status === 'completed' ? 'checked' : ''} 
+                               onchange="toggleAction('${action.id}')" class="ml-2">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleAction(actionId) {
+            const data = getData();
+            const action = data.actions.find(a => a.id === actionId);
+            
+            if (action) {
+                action.status = action.status === 'completed' ? 'pending' : 'completed';
+                
+                if (currentMeeting) {
+                    const meetingAction = currentMeeting.actions.find(a => a.id === actionId);
+                    if (meetingAction) {
+                        meetingAction.status = action.status;
+                    }
+                }
+                
+                saveData(data);
+                updateStats();
+            }
+        }
+
+        function generateMinutes() {
+            if (!currentMeeting) return;
+            
+            const minutes = `Subject: Minutes for ${currentMeeting.title} on ${new Date().toLocaleDateString()}
+
+Purpose: ${currentMeeting.purpose}
+
+Attendees: ${currentMeeting.attendees || 'Not specified'}
+
+Agenda and notes:
+${currentMeeting.agendaItems?.map(item => `
+${item.topic}
+${currentMeeting.notes[item.id] || 'No notes'}
+`).join('\n') || 'No agenda items'}
+
+Decisions: [To be filled]
+
+Actions:
+${currentMeeting.actions?.map(action => `${action.owner} - ${action.text} due ${action.due ? new Date(action.due).toLocaleDateString() : 'TBD'}`).join('\n') || 'No action items'}
+
+Files: [Links to be added]
+
+Thank you`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(minutes).then(() => {
+                showNotification('Minutes copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = minutes;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Minutes copied to clipboard!');
+            });
+        }
+
+        function exportPDF() {
+            if (!window.jsPDF) {
+                alert('PDF export not available');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text(currentMeeting?.title || 'Meeting Minutes', 20, 20);
+            
+            doc.setFontSize(12);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 35);
+            doc.text(`Purpose: ${currentMeeting?.purpose || 'N/A'}`, 20, 45);
+            doc.text(`Attendees: ${currentMeeting?.attendees || 'Not specified'}`, 20, 55);
+            
+            let yPos = 70;
+            
+            if (currentMeeting?.agendaItems) {
+                doc.setFontSize(16);
+                doc.text('Agenda Items:', 20, yPos);
+                yPos += 15;
+                
+                doc.setFontSize(12);
+                currentMeeting.agendaItems.forEach(item => {
+                    doc.text(`• ${item.topic}`, 25, yPos);
+                    yPos += 10;
+                });
+                yPos += 10;
+            }
+            
+            if (currentMeeting?.actions && currentMeeting.actions.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Action Items:', 20, yPos);
+                yPos += 15;
+                
+                doc.setFontSize(12);
+                currentMeeting.actions.forEach(action => {
+                    doc.text(`• ${action.text} (${action.owner})`, 25, yPos);
+                    yPos += 10;
+                });
+            }
+            
+            doc.save(`${currentMeeting?.title || 'meeting'}-minutes.pdf`);
+        }
+
+        function saveRecording() {
+            // Placeholder for saving audio recording
+            showNotification('Recording saved (feature in development)');
+        }
+
+        function backupData() {
+            const data = getData();
+            const backup = {
+                ...data,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `meeting-runner-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Backup downloaded!');
+        }
+
+        // Vocabulary screen
+        function loadVocabularyScreen() {
+            loadVocabularyReview();
+            updateVocabularyProgress();
+        }
+
+        function loadVocabularyReview() {
+            const data = getData();
+            const vocabulary = data.vocabulary || [];
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            
+            if (dueWords.length === 0) {
+                document.getElementById('reviewCard').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-2xl text-accent mb-4">🎉</div>
+                        <div class="text-lg font-bold text-accent">All caught up!</div>
+                        <div class="text-gray-400">No vocabulary due for review</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currentWord = dueWords[0];
+            document.getElementById('vocabTerm').textContent = currentWord.term;
+            document.getElementById('vocabNote').textContent = currentWord.note;
+        }
+
+        function updateVocabularyProgress() {
+            const data = getData();
+            const vocabulary = data.vocabulary || [];
+            const reviewedToday = vocabulary.filter(word => {
+                const lastReview = new Date(word.lastReview || 0);
+                const today = new Date();
+                return lastReview.toDateString() === today.toDateString();
+            }).length;
+            
+            const dailyGoal = 10;
+            const progress = Math.min((reviewedToday / dailyGoal) * 100, 100);
+            
+            document.getElementById('dailyProgress').textContent = `${reviewedToday}/${dailyGoal}`;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function rateVocab(rating) {
+            const data = getData();
+            const vocabulary = data.vocabulary || [];
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            
+            if (dueWords.length === 0) return;
+            
+            const currentWord = dueWords[0];
+            const wordIndex = vocabulary.findIndex(w => w.id === currentWord.id);
+            
+            if (wordIndex === -1) return;
+            
+            // Simple spaced repetition algorithm
+            let newEase = currentWord.ease;
+            let newInterval = currentWord.interval;
+            
+            switch (rating) {
+                case 'again':
+                    newEase = Math.max(1.3, newEase - 0.2);
+                    newInterval = 1;
+                    break;
+                case 'hard':
+                    newEase = Math.max(1.3, newEase - 0.15);
+                    newInterval = Math.max(1, Math.round(newInterval * 1.2));
+                    break;
+                case 'good':
+                    newInterval = Math.round(newInterval * newEase);
+                    break;
+                case 'easy':
+                    newEase = newEase + 0.15;
+                    newInterval = Math.round(newInterval * newEase * 1.3);
+                    break;
+            }
+            
+            vocabulary[wordIndex] = {
+                ...currentWord,
+                ease: newEase,
+                interval: newInterval,
+                due: Date.now() + (newInterval * 24 * 60 * 60 * 1000),
+                lastReview: Date.now()
+            };
+            
+            data.analytics.vocabReviews++;
+            saveData(data);
+            
+            loadVocabularyReview();
+            updateVocabularyProgress();
+            updateStats();
+        }
+
+        function addVocab() {
+            const term = document.getElementById('newVocabTerm').value.trim();
+            const note = document.getElementById('newVocabNote').value.trim();
+            
+            if (!term || !note) {
+                alert('Please enter both term and definition');
+                return;
+            }
+            
+            const data = getData();
+            if (!data.vocabulary) data.vocabulary = [];
+            
+            data.vocabulary.push({
+                id: Date.now().toString(),
+                term: term,
+                note: note,
+                due: Date.now(),
+                ease: 2.5,
+                interval: 1,
+                lastReview: null
+            });
+            
+            saveData(data);
+            
+            document.getElementById('newVocabTerm').value = '';
+            document.getElementById('newVocabNote').value = '';
+            
+            showNotification('Vocabulary term added!');
+            loadVocabularyReview();
+        }
+
+        // Breathing screen
+        function loadBreathingScreen() {
+            loadCustomMessages();
+        }
+
+        function startBreathing() {
+            breathingTimeLeft = 25 * 60;
+            breathingPhase = 'inhale';
+            
+            document.getElementById('startBreathingBtn').disabled = true;
+            document.getElementById('pauseBreathingBtn').disabled = false;
+            document.getElementById('stopBreathingBtn').disabled = false;
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                updateBreathingTimer();
+                
+                if (breathingTimeLeft <= 0) {
+                    stopBreathing();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateBreathingTimer() {
+            const minutes = Math.floor(breathingTimeLeft / 60);
+            const seconds = breathingTimeLeft % 60;
+            document.getElementById('breathingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMessage() {
+            const data = getData();
+            const messages = data.messages || [];
+            
+            if (messages.length > 0) {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function pauseBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+                
+                document.getElementById('pauseBreathingBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseBreathingBtn').onclick = resumeBreathing;
+            }
+        }
+
+        function resumeBreathing() {
+            startBreathing();
+            document.getElementById('pauseBreathingBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseBreathingBtn').onclick = pauseBreathing;
+        }
+
+        function stopBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startBreathingBtn').disabled = false;
+            document.getElementById('pauseBreathingBtn').disabled = true;
+            document.getElementById('stopBreathingBtn').disabled = true;
+            
+            showNotification('Breathing session completed! 🧘');
+        }
+
+        function addMessage() {
+            const message = document.getElementById('newMessage').value.trim();
+            if (!message) return;
+            
+            const data = getData();
+            if (!data.messages) data.messages = [];
+            data.messages.push(message);
+            saveData(data);
+            
+            document.getElementById('newMessage').value = '';
+            loadCustomMessages();
+            showNotification('Message added!');
+        }
+
+        function loadCustomMessages() {
+            const data = getData();
+            const messages = data.messages || [];
+            const container = document.getElementById('customMessages');
+            
+            const customMessages = messages.slice(5); // Skip default messages
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-2 rounded text-sm flex justify-between items-center">
+                    <span>"${message}"</span>
+                    <button onclick="removeMessage(${index + 5})" class="text-red-400 text-xs ml-2">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMessage(index) {
+            const data = getData();
+            if (data.messages && data.messages[index]) {
+                data.messages.splice(index, 1);
+                saveData(data);
+                loadCustomMessages();
+                showNotification('Message removed');
+            }
+        }
+
+        // Analytics screen
+        function loadAnalyticsScreen() {
+            updateAnalyticsDisplay();
+            loadRecentActivity();
+        }
+
+        function updateAnalyticsDisplay() {
+            const data = getData();
+            const analytics = data.analytics || {};
+            
+            document.getElementById('totalMeetingsCount').textContent = analytics.totalMeetings || 0;
+            document.getElementById('currentStreakCount').textContent = analytics.currentStreak || 0;
+            document.getElementById('vocabReviews').textContent = analytics.vocabReviews || 0;
+            
+            // Calculate actions on time percentage
+            const actions = data.actions || [];
+            const completedActions = actions.filter(a => a.status === 'completed');
+            const onTimeActions = completedActions.filter(a => {
+                if (!a.due) return true; // No due date = on time
+                return new Date(a.completedAt || a.createdAt) <= new Date(a.due);
+            });
+            
+            const onTimePercentage = completedActions.length > 0 ? 
+                Math.round((onTimeActions.length / completedActions.length) * 100) : 0;
+            
+            document.getElementById('actionsOnTime').textContent = `${onTimePercentage}%`;
+        }
+
+        function loadRecentActivity() {
+            const data = getData();
+            const activities = [];
+            
+            // Add recent meetings
+            if (data.meetings) {
+                data.meetings.slice(0, 3).forEach(meeting => {
+                    activities.push({
+                        text: `Meeting: ${meeting.title}`,
+                        date: new Date(meeting.createdAt),
+                        type: 'meeting'
+                    });
+                });
+            }
+            
+            // Add recent vocab reviews
+            if (data.vocabulary) {
+                const recentReviews = data.vocabulary
+                    .filter(word => word.lastReview)
+                    .sort((a, b) => new Date(b.lastReview) - new Date(a.lastReview))
+                    .slice(0, 2);
+                
+                recentReviews.forEach(word => {
+                    activities.push({
+                        text: `Reviewed: ${word.term}`,
+                        date: new Date(word.lastReview),
+                        type: 'vocab'
+                    });
+                });
+            }
+            
+            // Sort by date
+            activities.sort((a, b) => b.date - a.date);
+            
+            const container = document.getElementById('recentActivity');
+            
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="text-gray-400">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 5).map(activity => `
+                <div class="flex justify-between items-center">
+                    <span>${activity.text}</span>
+                    <span class="text-xs text-gray-400">${activity.date.toLocaleDateString()}</span>
+                </div>
+            `).join('');
+        }
+
+        // Data management
+        function exportData() {
+            const data = getData();
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `meeting-runner-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('This will replace all current data. Are you sure?')) {
+                            saveData(importedData);
+                            showNotification('Data imported successfully!');
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    } catch (error) {
+                        alert('Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function clearData() {
+            if (confirm('This will delete all data. Are you sure?')) {
+                localStorage.removeItem('meetingRunnerData');
+                showNotification('All data cleared');
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        function syncData() {
+            // Placeholder for sync functionality
+            showSyncIndicator();
+            showNotification('Sync completed (offline mode)');
+        }
+
+        // Quick add
+        function quickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function createQuickMeeting() {
+            const title = document.getElementById('quickTitle').value.trim();
+            if (!title) {
+                alert('Please enter a meeting title');
+                return;
+            }
+            
+            currentMeeting = {
+                id: Date.now().toString(),
+                title: title,
+                purpose: 'Quick meeting for immediate discussion',
+                attendees: '',
+                duration: 30,
+                createdAt: new Date().toISOString(),
+                agendaItems: [
+                    { id: '1', topic: 'Main discussion', time: 20, notes: '', completed: false },
+                    { id: '2', topic: 'Next steps', time: 10, notes: '', completed: false }
+                ],
+                actions: [],
+                notes: {},
+                status: 'planned'
+            };
+            
+            const data = getData();
+            data.meetings.unshift(currentMeeting);
+            saveData(data);
+            
+            closeQuickAdd();
+            showNotification('Quick meeting created!');
+            showScreen('plan');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+            document.getElementById('quickTitle').value = '';
+        }
+
+        // Utility functions
+        function updateStats() {
+            const data = getData();
+            const analytics = data.analytics || {};
+            
+            document.getElementById('currentStreak').textContent = analytics.currentStreak || 0;
+            document.getElementById('totalMeetings').textContent = analytics.totalMeetings || 0;
+            
+            const completedActions = (data.actions || []).filter(a => a.status === 'completed').length;
+            document.getElementById('completedActions').textContent = completedActions;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-4 py-2 rounded-lg font-semibold z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        function showSyncIndicator() {
+            document.getElementById('syncIndicator').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('syncIndicator').classList.add('hidden');
+            }, 2000);
+        }
+
+        function setupOfflineHandling() {
+            window.addEventListener('online', () => {
+                isOnline = true;
+                showSyncIndicator();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                showNotification('Working offline');
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9882374d434b0890',t:'MTc1OTM4NzMwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
