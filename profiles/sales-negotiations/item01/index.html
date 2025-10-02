@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NegotiateWrite Pro - English Writing for Negotiators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .writing-area {
+            min-height: 400px;
+            border: 2px solid var(--pale-gold);
+            border-radius: 12px;
+            padding: 24px;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            font-size: 16px;
+            background: white;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+        
+        .writing-area:focus {
+            outline: none;
+            border-color: var(--medium-gold);
+            box-shadow: 0 0 0 4px rgba(218, 165, 32, 0.1);
+        }
+        
+        .tone-preset {
+            padding: 12px 20px;
+            border: 2px solid var(--pale-green);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .tone-preset:hover {
+            border-color: var(--medium-gold);
+            background: var(--pale-gold);
+            transform: translateY(-2px);
+        }
+        
+        .tone-preset.active {
+            border-color: var(--dark-gold);
+            background: var(--light-gold);
+            color: var(--dark-green);
+            font-weight: bold;
+        }
+        
+        .negotiation-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .negotiation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .concession-item {
+            background: white;
+            border: 1px solid var(--pale-green);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .concession-item:hover {
+            border-color: var(--medium-gold);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .template-card {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .template-card.selected {
+            border-color: var(--dark-gold);
+            background: var(--pale-gold);
+        }
+        
+        .word-count {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 12px;
+            color: var(--medium-green);
+            background: rgba(255,255,255,0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .recording-pulse {
+            animation: recordingPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); 
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); 
+            }
+        }
+        
+        .voice-wave {
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: voiceWave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        .voice-wave:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--pale-gold);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--medium-gold), var(--dark-gold));
+            transition: width 0.3s ease;
+        }
+        
+        .shareable-summary {
+            background: white;
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 20px 0;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+        
+        .summary-header {
+            border-bottom: 2px solid var(--pale-gold);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .concession-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .concession-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--medium-gold);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--medium-gold);
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .writing-area {
+                min-height: 300px;
+                padding: 16px;
+                font-size: 14px;
+            }
+            
+            .negotiation-card {
+                padding: 16px;
+            }
+            
+            .shareable-summary {
+                padding: 20px;
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            .tone-preset {
+                border-width: 3px;
+            }
+            
+            .action-button {
+                border: 2px solid white;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🤝</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">NegotiateWrite Pro</h1>
+                        <p class="text-accent-green text-sm">Professional English Writing for Negotiators</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="writerBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Writer
+                        </button>
+                        <button id="concessionsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Concessions
+                        </button>
+                        <button id="templatesBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Templates
+                        </button>
+                        <button id="analyticsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Analytics
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Quick Write -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">✍️</span>
+                        Quick Write
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button id="quickOfferBtn" class="w-full action-button focus-visible">
+                            Draft Offer
+                        </button>
+                        <button id="quickCounterBtn" class="w-full action-button focus-visible">
+                            Counter Proposal
+                        </button>
+                        <button id="quickSummaryBtn" class="w-full action-button focus-visible">
+                            Meeting Summary
+                        </button>
+                        <button id="quickFollowupBtn" class="w-full action-button focus-visible">
+                            Follow-up Email
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Writing Assistant -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">🤖</span>
+                        Writing Assistant
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button id="improveBtn" class="w-full action-button focus-visible">
+                            Improve Text
+                        </button>
+                        <button id="formalizeBtn" class="w-full action-button focus-visible">
+                            Make Formal
+                        </button>
+                        <button id="softenBtn" class="w-full action-button focus-visible">
+                            Soften Tone
+                        </button>
+                        <button id="strengthenBtn" class="w-full action-button focus-visible">
+                            Strengthen Position
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Documents -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">📄</span>
+                        Recent Documents
+                    </h3>
+                    
+                    <div id="recentDocs" class="space-y-2">
+                        <!-- Recent documents will be populated here -->
+                    </div>
+                    
+                    <button id="newDocBtn" class="w-full mt-4 px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                        + New Document
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Negotiations -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-dark-green">Active Negotiations</h3>
+                    <button id="newNegotiationBtn" class="action-button focus-visible">
+                        + New Negotiation
+                    </button>
+                </div>
+                
+                <div id="activeNegotiations" class="space-y-4">
+                    <!-- Active negotiations will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Writer View -->
+        <div id="writerView" class="hidden space-y-6">
+            <!-- Writer Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green" id="documentTitle">New Document</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="text-sm text-gray-600" id="documentType">Draft</span>
+                            <span class="text-sm text-gray-600" id="lastSaved">Not saved</span>
+                            <span class="text-sm text-gray-600" id="wordCount">0 words</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="saveDocBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Save
+                        </button>
+                        <button id="shareDocBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Share
+                        </button>
+                        <button id="exportDocBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                        <button id="backToDashboardBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Writing Tools -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Main Writing Area -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Tone Presets -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Tone Presets</h3>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="tone-preset" data-tone="professional">
+                                <div class="text-2xl mb-2">👔</div>
+                                <div class="text-sm font-semibold">Professional</div>
+                            </div>
+                            <div class="tone-preset" data-tone="collaborative">
+                                <div class="text-2xl mb-2">🤝</div>
+                                <div class="text-sm font-semibold">Collaborative</div>
+                            </div>
+                            <div class="tone-preset" data-tone="assertive">
+                                <div class="text-2xl mb-2">💪</div>
+                                <div class="text-sm font-semibold">Assertive</div>
+                            </div>
+                            <div class="tone-preset" data-tone="diplomatic">
+                                <div class="text-2xl mb-2">🕊️</div>
+                                <div class="text-sm font-semibold">Diplomatic</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Area -->
+                    <div class="bg-white rounded-xl shadow-lg border-2 border-pale-green relative">
+                        <div class="flex justify-between items-center p-4 border-b border-pale-gold">
+                            <div class="flex items-center space-x-4">
+                                <select id="documentTypeSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="offer">Initial Offer</option>
+                                    <option value="counter">Counter Proposal</option>
+                                    <option value="summary">Meeting Summary</option>
+                                    <option value="followup">Follow-up Email</option>
+                                    <option value="agreement">Agreement Draft</option>
+                                    <option value="memo">Internal Memo</option>
+                                </select>
+                                
+                                <input type="text" id="documentTitleInput" placeholder="Document title..." class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <button id="voiceInputBtn" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                    🎤 Voice
+                                </button>
+                                <button id="clearTextBtn" class="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Voice Status -->
+                        <div id="voiceStatus" class="hidden text-center p-4 border-b border-pale-gold">
+                            <div class="flex justify-center items-center space-x-1 mb-2">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                            </div>
+                            <p class="text-sm text-red-600 font-semibold">Recording in progress...</p>
+                        </div>
+                        
+                        <textarea 
+                            id="writingArea" 
+                            class="writing-area w-full border-0 focus:ring-0" 
+                            placeholder="Start writing your negotiation document here..."
+                            aria-label="Main writing area"
+                        ></textarea>
+                        
+                        <div class="word-count" id="wordCountDisplay">0 words</div>
+                    </div>
+                </div>
+
+                <!-- Writing Tools Sidebar -->
+                <div class="space-y-6">
+                    <!-- Quick Phrases -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Phrases</h3>
+                        
+                        <div id="quickPhrases" class="space-y-2">
+                            <!-- Phrases will be populated based on document type -->
+                        </div>
+                    </div>
+
+                    <!-- Concession Tracker -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Concessions</h3>
+                        
+                        <div class="space-y-3">
+                            <button id="addConcessionBtn" class="w-full action-button focus-visible">
+                                + Add Concession
+                            </button>
+                            <div id="quickConcessions" class="space-y-2">
+                                <!-- Recent concessions will show here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Stats -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Writing Stats</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Words:</span>
+                                <span class="text-sm font-semibold text-dark-green" id="statsWordCount">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Characters:</span>
+                                <span class="text-sm font-semibold text-dark-green" id="statsCharCount">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Paragraphs:</span>
+                                <span class="text-sm font-semibold text-dark-green" id="statsParagraphs">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Reading Time:</span>
+                                <span class="text-sm font-semibold text-dark-green" id="statsReadTime">0 min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concessions View -->
+        <div id="concessionsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Concession Log</h2>
+                    <div class="flex space-x-2">
+                        <button id="addNewConcessionBtn" class="action-button focus-visible">
+                            + Add Concession
+                        </button>
+                        <button id="exportConcessionsBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Export Log
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Concession Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalConcessions">0</div>
+                        <div class="text-sm text-medium-green">Total Concessions</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="ourConcessions">0</div>
+                        <div class="text-sm text-medium-green">Our Concessions</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="theirConcessions">0</div>
+                        <div class="text-sm text-medium-green">Their Concessions</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="concessionValue">$0</div>
+                        <div class="text-sm text-medium-green">Net Value</div>
+                    </div>
+                </div>
+
+                <!-- Concession Timeline -->
+                <div class="concession-timeline" id="concessionTimeline">
+                    <!-- Concessions will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Templates View -->
+        <div id="templatesView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Recap Templates</h2>
+                    <button id="createTemplateBtn" class="action-button focus-visible">
+                        + Create Template
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="templatesGrid">
+                    <!-- Templates will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analyticsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Writing Analytics</h2>
+                
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalDocuments">0</div>
+                        <div class="text-sm text-medium-green">Documents Written</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalWords">0</div>
+                        <div class="text-sm text-medium-green">Words Written</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="avgWordsPerDoc">0</div>
+                        <div class="text-sm text-medium-green">Avg Words/Doc</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                        <div class="text-sm text-medium-green">Longest Streak</div>
+                    </div>
+                </div>
+
+                <!-- Document Type Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Most Used Types</h3>
+                        <div id="documentTypes" class="space-y-2">
+                            <!-- Document type stats will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Tone Usage</h3>
+                        <div id="toneUsage" class="space-y-2">
+                            <!-- Tone usage stats will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Recent Activity</h3>
+                        <div id="recentActivity" class="space-y-2">
+                            <!-- Recent activity will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Writing Preferences -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Writing Preferences</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Default Tone</label>
+                                <select id="defaultToneSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="professional">Professional</option>
+                                    <option value="collaborative" selected>Collaborative</option>
+                                    <option value="assertive">Assertive</option>
+                                    <option value="diplomatic">Diplomatic</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-save Interval (minutes)</label>
+                                <select id="autoSaveSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="1">1</option>
+                                    <option value="2" selected>2</option>
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Word Count Display</label>
+                                <input type="checkbox" id="wordCountToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-sync</label>
+                                <input type="checkbox" id="autoSyncToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- New Negotiation Modal -->
+    <div id="newNegotiationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Start New Negotiation</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Negotiation Title</label>
+                    <input type="text" id="negotiationTitleInput" placeholder="e.g., Contract Renewal with ABC Corp" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Counterpart</label>
+                    <input type="text" id="counterpartInput" placeholder="Company or person name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Type</label>
+                    <select id="negotiationTypeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="contract">Contract Negotiation</option>
+                        <option value="price">Price Negotiation</option>
+                        <option value="partnership">Partnership Agreement</option>
+                        <option value="employment">Employment Terms</option>
+                        <option value="vendor">Vendor Agreement</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Priority</label>
+                    <select id="negotiationPrioritySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="createNegotiationBtn" class="flex-1 action-button focus-visible">
+                    Create Negotiation
+                </button>
+                <button id="cancelNegotiationBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Concession Modal -->
+    <div id="addConcessionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Concession</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Who Made Concession</label>
+                    <select id="concessionPartySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="us">We Made Concession</option>
+                        <option value="them">They Made Concession</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Concession Description</label>
+                    <textarea id="concessionDescInput" placeholder="Describe the concession..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Estimated Value ($)</label>
+                    <input type="number" id="concessionValueInput" placeholder="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="concessionCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="price">Price</option>
+                        <option value="timeline">Timeline</option>
+                        <option value="scope">Scope</option>
+                        <option value="terms">Terms & Conditions</option>
+                        <option value="delivery">Delivery</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveConcessionBtn" class="flex-1 action-button focus-visible">
+                    Add Concession
+                </button>
+                <button id="cancelConcessionBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Document Modal -->
+    <div id="shareDocModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Shareable Summary</h3>
+            
+            <div class="shareable-summary" id="shareableContent">
+                <!-- Shareable content will be generated here -->
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="copyShareLinkBtn" class="flex-1 action-button focus-visible">
+                    Copy Share Link
+                </button>
+                <button id="downloadSummaryBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                    Download PDF
+                </button>
+                <button id="closeShareModalBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentDocument: null,
+            isRecording: false,
+            autoSaveInterval: null,
+            voiceRecognition: {
+                recognition: null,
+                isSupported: false
+            },
+            userData: {
+                documents: [],
+                negotiations: [],
+                concessions: [],
+                templates: [],
+                streak: 0,
+                lastActiveDate: null,
+                totalDocuments: 0,
+                totalWords: 0,
+                longestStreak: 0,
+                documentTypes: {},
+                toneUsage: {},
+                settings: {
+                    defaultTone: 'collaborative',
+                    autoSaveInterval: 2,
+                    wordCountDisplay: true,
+                    autoSync: true
+                }
+            }
+        };
+
+        // Writing templates and phrases
+        const writingTemplates = {
+            offer: {
+                template: `Subject: [Proposal Title]
+
+Dear [Recipient],
+
+I hope this message finds you well. Following our recent discussions, I am pleased to present our proposal for [Project/Agreement].
+
+**Our Offer:**
+- [Key Point 1]
+- [Key Point 2]
+- [Key Point 3]
+
+**Terms:**
+- Timeline: [Timeline]
+- Investment: [Amount]
+- Deliverables: [What's included]
+
+We believe this proposal offers significant value and aligns with your objectives. I look forward to your thoughts and am happy to discuss any aspects in detail.
+
+Best regards,
+[Your Name]`,
+                phrases: [
+                    "We are pleased to propose...",
+                    "Our offer includes the following terms...",
+                    "We believe this represents excellent value because...",
+                    "This proposal is valid until...",
+                    "We look forward to your consideration of this offer"
+                ]
+            },
+            counter: {
+                template: `Subject: Re: [Original Proposal Title] - Counter Proposal
+
+Dear [Recipient],
+
+Thank you for your proposal dated [Date]. We have carefully reviewed your offer and appreciate the time and effort you've invested.
+
+**Our Counter Proposal:**
+While we find merit in your proposal, we would like to suggest the following modifications:
+
+- [Modification 1]: [Explanation]
+- [Modification 2]: [Explanation]
+- [Modification 3]: [Explanation]
+
+**Rationale:**
+[Explain the reasoning behind your counter-offer]
+
+We believe these adjustments will create a more balanced agreement that serves both parties' interests. We remain committed to reaching a mutually beneficial arrangement.
+
+Best regards,
+[Your Name]`,
+                phrases: [
+                    "We appreciate your proposal, however...",
+                    "We would like to suggest the following modifications...",
+                    "Our counter-proposal addresses...",
+                    "We believe this adjustment would be more suitable because...",
+                    "We remain open to further discussion on..."
+                ]
+            },
+            summary: {
+                template: `Subject: Meeting Summary - [Meeting Title]
+
+Date: [Date]
+Attendees: [List of attendees]
+Duration: [Duration]
+
+**Key Discussion Points:**
+1. [Point 1]
+2. [Point 2]
+3. [Point 3]
+
+**Decisions Made:**
+- [Decision 1]
+- [Decision 2]
+- [Decision 3]
+
+**Action Items:**
+- [Action 1] - Responsible: [Person] - Due: [Date]
+- [Action 2] - Responsible: [Person] - Due: [Date]
+- [Action 3] - Responsible: [Person] - Due: [Date]
+
+**Next Steps:**
+[Outline next steps and follow-up meeting if applicable]
+
+Please let me know if I've missed anything or if you have any corrections.
+
+Best regards,
+[Your Name]`,
+                phrases: [
+                    "To summarize our discussion...",
+                    "The key points we covered were...",
+                    "We agreed on the following...",
+                    "Action items moving forward include...",
+                    "Our next meeting is scheduled for..."
+                ]
+            },
+            followup: {
+                template: `Subject: Follow-up on [Topic]
+
+Dear [Recipient],
+
+I wanted to follow up on our recent [meeting/discussion/proposal] regarding [topic].
+
+**Recap:**
+[Brief summary of previous interaction]
+
+**Current Status:**
+[Update on any developments]
+
+**Next Steps:**
+[What needs to happen next]
+
+**Questions/Clarifications:**
+[Any outstanding questions or items needing clarification]
+
+I look forward to your response and continuing our productive dialogue.
+
+Best regards,
+[Your Name]`,
+                phrases: [
+                    "Following up on our recent discussion...",
+                    "I wanted to check in regarding...",
+                    "As promised, here is the information about...",
+                    "Please let me know if you need any clarification on...",
+                    "I look forward to hearing your thoughts on..."
+                ]
+            }
+        };
+
+        const tonePresets = {
+            professional: {
+                style: "formal, business-appropriate language with clear structure",
+                phrases: [
+                    "We respectfully propose...",
+                    "Please consider the following...",
+                    "We would appreciate your feedback on...",
+                    "Thank you for your time and consideration"
+                ]
+            },
+            collaborative: {
+                style: "partnership-focused, inclusive language that emphasizes mutual benefit",
+                phrases: [
+                    "Let's work together to...",
+                    "We believe this benefits both parties by...",
+                    "How can we make this work for everyone?",
+                    "We're open to exploring alternatives that..."
+                ]
+            },
+            assertive: {
+                style: "confident, direct language that clearly states positions and expectations",
+                phrases: [
+                    "We require the following terms...",
+                    "This is essential for our agreement...",
+                    "We cannot proceed without...",
+                    "Our position on this matter is..."
+                ]
+            },
+            diplomatic: {
+                style: "tactful, respectful language that acknowledges different perspectives",
+                phrases: [
+                    "We understand your perspective, and...",
+                    "While we appreciate your position...",
+                    "Perhaps we could find a middle ground by...",
+                    "We respect your concerns and suggest..."
+                ]
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeVoiceRecognition();
+            loadUserData();
+            updateUI();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize default templates if empty
+            if (appState.userData.templates.length === 0) {
+                initializeDefaultTemplates();
+            }
+            
+            // Set up auto-save
+            setupAutoSave();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('writerBtn').addEventListener('click', () => showView('writer'));
+            document.getElementById('concessionsBtn').addEventListener('click', () => showView('concessions'));
+            document.getElementById('templatesBtn').addEventListener('click', () => showView('templates'));
+            document.getElementById('analyticsBtn').addEventListener('click', () => showView('analytics'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+            document.getElementById('backToDashboardBtn').addEventListener('click', () => showView('dashboard'));
+
+            // Dashboard actions
+            document.getElementById('quickOfferBtn').addEventListener('click', () => startQuickWrite('offer'));
+            document.getElementById('quickCounterBtn').addEventListener('click', () => startQuickWrite('counter'));
+            document.getElementById('quickSummaryBtn').addEventListener('click', () => startQuickWrite('summary'));
+            document.getElementById('quickFollowupBtn').addEventListener('click', () => startQuickWrite('followup'));
+            document.getElementById('newDocBtn').addEventListener('click', () => startNewDocument());
+            document.getElementById('newNegotiationBtn').addEventListener('click', showNewNegotiationModal);
+
+            // AI Writing Assistant
+            document.getElementById('improveBtn').addEventListener('click', () => improveText());
+            document.getElementById('formalizeBtn').addEventListener('click', () => adjustTone('professional'));
+            document.getElementById('softenBtn').addEventListener('click', () => adjustTone('diplomatic'));
+            document.getElementById('strengthenBtn').addEventListener('click', () => adjustTone('assertive'));
+
+            // Writer controls
+            document.getElementById('saveDocBtn').addEventListener('click', saveCurrentDocument);
+            document.getElementById('shareDocBtn').addEventListener('click', shareDocument);
+            document.getElementById('exportDocBtn').addEventListener('click', exportDocumentToPdf);
+            document.getElementById('voiceInputBtn').addEventListener('click', toggleVoiceInput);
+            document.getElementById('clearTextBtn').addEventListener('click', clearWritingArea);
+            document.getElementById('documentTypeSelect').addEventListener('change', updateDocumentType);
+            document.getElementById('documentTitleInput').addEventListener('input', updateDocumentTitle);
+            document.getElementById('writingArea').addEventListener('input', updateWordCount);
+
+            // Tone presets
+            document.querySelectorAll('.tone-preset').forEach(preset => {
+                preset.addEventListener('click', () => selectTonePreset(preset.dataset.tone));
+            });
+
+            // Concessions
+            document.getElementById('addConcessionBtn').addEventListener('click', showAddConcessionModal);
+            document.getElementById('addNewConcessionBtn').addEventListener('click', showAddConcessionModal);
+            document.getElementById('exportConcessionsBtn').addEventListener('click', exportConcessions);
+
+            // Templates
+            document.getElementById('createTemplateBtn').addEventListener('click', createNewTemplate);
+
+            // Modal controls
+            document.getElementById('createNegotiationBtn').addEventListener('click', createNewNegotiation);
+            document.getElementById('cancelNegotiationBtn').addEventListener('click', hideNewNegotiationModal);
+            document.getElementById('saveConcessionBtn').addEventListener('click', saveNewConcession);
+            document.getElementById('cancelConcessionBtn').addEventListener('click', hideAddConcessionModal);
+            document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
+            document.getElementById('downloadSummaryBtn').addEventListener('click', downloadSummary);
+            document.getElementById('closeShareModalBtn').addEventListener('click', hideShareModal);
+
+            // Settings
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+            document.getElementById('defaultToneSelect').addEventListener('change', updateDefaultTone);
+            document.getElementById('autoSaveSelect').addEventListener('change', updateAutoSaveInterval);
+            document.getElementById('wordCountToggle').addEventListener('change', updateWordCountDisplay);
+            document.getElementById('autoSyncToggle').addEventListener('change', updateAutoSync);
+        }
+
+        function initializeVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.voiceRecognition.recognition = new SpeechRecognition();
+                appState.voiceRecognition.isSupported = true;
+
+                const recognition = appState.voiceRecognition.recognition;
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        const writingArea = document.getElementById('writingArea');
+                        const cursorPos = writingArea.selectionStart;
+                        const textBefore = writingArea.value.substring(0, cursorPos);
+                        const textAfter = writingArea.value.substring(cursorPos);
+                        writingArea.value = textBefore + finalTranscript + textAfter;
+                        writingArea.selectionStart = writingArea.selectionEnd = cursorPos + finalTranscript.length;
+                        updateWordCount();
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showNotification('Voice recognition error: ' + event.error, 'error');
+                    stopVoiceInput();
+                };
+
+                recognition.onend = function() {
+                    if (appState.isRecording) {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.log('Recognition restart failed:', e);
+                            stopVoiceInput();
+                        }
+                    }
+                };
+            } else {
+                appState.voiceRecognition.isSupported = false;
+                console.log('Speech recognition not supported');
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('negotiateWriteData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('negotiateWriteData', JSON.stringify(appState.userData));
+                if (appState.userData.settings.autoSync && appState.isOnline) {
+                    console.log('Auto-sync triggered');
+                }
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('writerView').classList.add('hidden');
+            document.getElementById('concessionsView').classList.add('hidden');
+            document.getElementById('templatesView').classList.add('hidden');
+            document.getElementById('analyticsView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'concessions') {
+                updateConcessionsView();
+            } else if (viewName === 'templates') {
+                updateTemplatesView();
+            } else if (viewName === 'analytics') {
+                updateAnalytics();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+        }
+
+        function updateDashboard() {
+            // Update recent documents
+            const recentDocsContainer = document.getElementById('recentDocs');
+            const recentDocs = appState.userData.documents.slice(-5).reverse();
+
+            if (recentDocs.length === 0) {
+                recentDocsContainer.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <p class="text-sm">No documents yet</p>
+                    </div>
+                `;
+            } else {
+                recentDocsContainer.innerHTML = recentDocs.map(doc => `
+                    <div class="flex items-center justify-between p-2 bg-pale-gold rounded border border-medium-gold cursor-pointer hover:bg-light-gold transition-colors" onclick="openDocument('${doc.id}')">
+                        <div>
+                            <div class="text-sm font-semibold text-dark-green">${doc.title || 'Untitled'}</div>
+                            <div class="text-xs text-medium-green">${doc.type} • ${new Date(doc.lastModified).toLocaleDateString()}</div>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteDocument('${doc.id}')" class="text-red-500 hover:text-red-700 text-xs">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Update active negotiations
+            updateActiveNegotiations();
+        }
+
+        function updateActiveNegotiations() {
+            const activeNegotiationsContainer = document.getElementById('activeNegotiations');
+            const activeNegotiations = appState.userData.negotiations.filter(n => n.status !== 'completed');
+
+            if (activeNegotiations.length === 0) {
+                activeNegotiationsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🤝</div>
+                        <p>No active negotiations. Start a new one!</p>
+                    </div>
+                `;
+            } else {
+                activeNegotiationsContainer.innerHTML = activeNegotiations.map(negotiation => `
+                    <div class="negotiation-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="text-lg font-bold text-dark-green">${negotiation.title}</h4>
+                                <p class="text-sm text-medium-green">with ${negotiation.counterpart}</p>
+                                <div class="flex items-center space-x-2 mt-2">
+                                    <span class="text-xs px-2 py-1 rounded ${getPriorityClass(negotiation.priority)}">${negotiation.priority}</span>
+                                    <span class="text-xs text-gray-600">${negotiation.type}</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="openNegotiation('${negotiation.id}')" class="px-3 py-1 bg-accent-green text-white rounded text-sm hover:bg-medium-green transition-colors">
+                                    Open
+                                </button>
+                                <button onclick="deleteNegotiation('${negotiation.id}')" class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-sm text-medium-green">
+                            <p>Documents: ${appState.userData.documents.filter(d => d.negotiationId === negotiation.id).length}</p>
+                            <p>Concessions: ${appState.userData.concessions.filter(c => c.negotiationId === negotiation.id).length}</p>
+                            <p>Last Updated: ${new Date(negotiation.lastModified).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            appState.userData.lastActiveDate = today;
+            saveUserData();
+        }
+
+        function initializeDefaultTemplates() {
+            const defaultTemplates = [
+                {
+                    id: generateId(),
+                    name: "Contract Negotiation Summary",
+                    type: "summary",
+                    content: "Meeting Summary - Contract Negotiation\n\nDate: [Date]\nParties: [Your Company] and [Counterpart]\n\nKey Points Discussed:\n- [Point 1]\n- [Point 2]\n- [Point 3]\n\nAgreements Reached:\n- [Agreement 1]\n- [Agreement 2]\n\nOutstanding Issues:\n- [Issue 1]\n- [Issue 2]\n\nNext Steps:\n- [Action 1] - Due: [Date]\n- [Action 2] - Due: [Date]\n\nNext Meeting: [Date and Time]",
+                    dateCreated: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    name: "Price Negotiation Counter",
+                    type: "counter",
+                    content: "Subject: Counter Proposal - [Project Name]\n\nDear [Name],\n\nThank you for your proposal. After careful consideration, we would like to present the following counter-proposal:\n\nOriginal Offer: $[Amount]\nOur Counter: $[Amount]\n\nJustification:\n- [Reason 1]\n- [Reason 2]\n- [Reason 3]\n\nWe believe this adjustment reflects fair market value while ensuring quality delivery. We remain committed to working together and look forward to your response.\n\nBest regards,\n[Your Name]",
+                    dateCreated: new Date().toISOString()
+                }
+            ];
+
+            appState.userData.templates = defaultTemplates;
+            saveUserData();
+        }
+
+        // Writing Functions
+        function startQuickWrite(type) {
+            createNewDocument(type);
+            showView('writer');
+        }
+
+        function startNewDocument() {
+            createNewDocument('offer');
+            showView('writer');
+        }
+
+        function createNewDocument(type = 'offer') {
+            const newDoc = {
+                id: generateId(),
+                title: '',
+                type: type,
+                content: writingTemplates[type]?.template || '',
+                tone: appState.userData.settings.defaultTone,
+                wordCount: 0,
+                dateCreated: new Date().toISOString(),
+                lastModified: new Date().toISOString(),
+                negotiationId: null
+            };
+
+            appState.currentDocument = newDoc;
+            loadDocumentIntoWriter();
+            updateDocumentStreak();
+        }
+
+        function loadDocumentIntoWriter() {
+            if (!appState.currentDocument) return;
+
+            const doc = appState.currentDocument;
+            document.getElementById('documentTitle').textContent = doc.title || 'New Document';
+            document.getElementById('documentTitleInput').value = doc.title || '';
+            document.getElementById('documentTypeSelect').value = doc.type;
+            document.getElementById('writingArea').value = doc.content || '';
+            document.getElementById('documentType').textContent = doc.type.charAt(0).toUpperCase() + doc.type.slice(1);
+            
+            selectTonePreset(doc.tone);
+            updateWordCount();
+            updateQuickPhrases();
+        }
+
+        function updateDocumentType() {
+            if (!appState.currentDocument) return;
+
+            const newType = document.getElementById('documentTypeSelect').value;
+            appState.currentDocument.type = newType;
+            document.getElementById('documentType').textContent = newType.charAt(0).toUpperCase() + newType.slice(1);
+            
+            // Load template if content is empty
+            if (!appState.currentDocument.content.trim()) {
+                appState.currentDocument.content = writingTemplates[newType]?.template || '';
+                document.getElementById('writingArea').value = appState.currentDocument.content;
+            }
+            
+            updateQuickPhrases();
+            updateWordCount();
+        }
+
+        function updateDocumentTitle() {
+            if (!appState.currentDocument) return;
+
+            const newTitle = document.getElementById('documentTitleInput').value;
+            appState.currentDocument.title = newTitle;
+            document.getElementById('documentTitle').textContent = newTitle || 'New Document';
+        }
+
+        function updateWordCount() {
+            const writingArea = document.getElementById('writingArea');
+            const content = writingArea.value;
+            
+            const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+            const characters = content.length;
+            const paragraphs = content.trim() ? content.split(/\n\s*\n/).length : 0;
+            const readingTime = Math.ceil(words / 200); // Average reading speed
+
+            // Update displays
+            document.getElementById('wordCount').textContent = `${words} words`;
+            document.getElementById('wordCountDisplay').textContent = `${words} words`;
+            document.getElementById('statsWordCount').textContent = words;
+            document.getElementById('statsCharCount').textContent = characters;
+            document.getElementById('statsParagraphs').textContent = paragraphs;
+            document.getElementById('statsReadTime').textContent = `${readingTime} min`;
+
+            // Update current document
+            if (appState.currentDocument) {
+                appState.currentDocument.content = content;
+                appState.currentDocument.wordCount = words;
+                appState.currentDocument.lastModified = new Date().toISOString();
+            }
+        }
+
+        function selectTonePreset(tone) {
+            // Update UI
+            document.querySelectorAll('.tone-preset').forEach(preset => {
+                preset.classList.remove('active');
+            });
+            
+            const selectedPreset = document.querySelector(`[data-tone="${tone}"]`);
+            if (selectedPreset) {
+                selectedPreset.classList.add('active');
+            }
+
+            // Update current document
+            if (appState.currentDocument) {
+                appState.currentDocument.tone = tone;
+            }
+
+            updateQuickPhrases();
+        }
+
+        function updateQuickPhrases() {
+            if (!appState.currentDocument) return;
+
+            const container = document.getElementById('quickPhrases');
+            const docType = appState.currentDocument.type;
+            const tone = appState.currentDocument.tone;
+            
+            const phrases = [
+                ...(writingTemplates[docType]?.phrases || []),
+                ...(tonePresets[tone]?.phrases || [])
+            ];
+
+            container.innerHTML = phrases.map(phrase => `
+                <div class="p-2 bg-pale-gold rounded border border-medium-gold text-sm cursor-pointer hover:bg-light-gold transition-colors" onclick="insertPhrase('${phrase}')">
+                    "${phrase}"
+                </div>
+            `).join('');
+        }
+
+        function insertPhrase(phrase) {
+            const writingArea = document.getElementById('writingArea');
+            const cursorPos = writingArea.selectionStart;
+            const textBefore = writingArea.value.substring(0, cursorPos);
+            const textAfter = writingArea.value.substring(cursorPos);
+            
+            writingArea.value = textBefore + phrase + textAfter;
+            writingArea.selectionStart = writingArea.selectionEnd = cursorPos + phrase.length;
+            writingArea.focus();
+            
+            updateWordCount();
+        }
+
+        function saveCurrentDocument() {
+            if (!appState.currentDocument) return;
+
+            const existingIndex = appState.userData.documents.findIndex(d => d.id === appState.currentDocument.id);
+            
+            if (existingIndex >= 0) {
+                appState.userData.documents[existingIndex] = { ...appState.currentDocument };
+            } else {
+                appState.userData.documents.push({ ...appState.currentDocument });
+                appState.userData.totalDocuments++;
+            }
+
+            // Update total words
+            appState.userData.totalWords = appState.userData.documents.reduce((total, doc) => total + (doc.wordCount || 0), 0);
+
+            // Update document type stats
+            const docType = appState.currentDocument.type;
+            appState.userData.documentTypes[docType] = (appState.userData.documentTypes[docType] || 0) + 1;
+
+            // Update tone usage stats
+            const tone = appState.currentDocument.tone;
+            appState.userData.toneUsage[tone] = (appState.userData.toneUsage[tone] || 0) + 1;
+
+            document.getElementById('lastSaved').textContent = 'Saved ' + new Date().toLocaleTimeString();
+            saveUserData();
+            showNotification('Document saved successfully', 'success');
+        }
+
+        function setupAutoSave() {
+            if (appState.autoSaveInterval) {
+                clearInterval(appState.autoSaveInterval);
+            }
+
+            const intervalMinutes = appState.userData.settings.autoSaveInterval;
+            appState.autoSaveInterval = setInterval(() => {
+                if (appState.currentDocument && appState.currentView === 'writer') {
+                    saveCurrentDocument();
+                }
+            }, intervalMinutes * 60 * 1000);
+        }
+
+        function updateDocumentStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive !== today) {
+                appState.userData.streak++;
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+                saveUserData();
+            }
+        }
+
+        // Voice Functions
+        function toggleVoiceInput() {
+            if (!appState.voiceRecognition.isSupported) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+            
+            if (appState.isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            appState.isRecording = true;
+            
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            voiceBtn.classList.add('recording-pulse');
+            voiceBtn.innerHTML = '⏹️ Stop';
+            
+            document.getElementById('voiceStatus').classList.remove('hidden');
+            
+            try {
+                appState.voiceRecognition.recognition.start();
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                stopVoiceInput();
+                showNotification('Could not start voice recognition', 'error');
+                return;
+            }
+            
+            showNotification('Voice input started', 'success');
+        }
+
+        function stopVoiceInput() {
+            appState.isRecording = false;
+            
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            voiceBtn.classList.remove('recording-pulse');
+            voiceBtn.innerHTML = '🎤 Voice';
+            
+            document.getElementById('voiceStatus').classList.add('hidden');
+            
+            if (appState.voiceRecognition.recognition) {
+                appState.voiceRecognition.recognition.stop();
+            }
+            
+            showNotification('Voice input stopped', 'success');
+        }
+
+        function clearWritingArea() {
+            if (confirm('Are you sure you want to clear all text?')) {
+                document.getElementById('writingArea').value = '';
+                updateWordCount();
+            }
+        }
+
+        // AI Writing Assistant Functions
+        function improveText() {
+            const writingArea = document.getElementById('writingArea');
+            const selectedText = writingArea.value.substring(writingArea.selectionStart, writingArea.selectionEnd);
+            
+            if (!selectedText && !writingArea.value.trim()) {
+                showNotification('Please write some text first', 'warning');
+                return;
+            }
+            
+            const textToImprove = selectedText || writingArea.value;
+            const improvedText = simulateTextImprovement(textToImprove);
+            
+            if (selectedText) {
+                const before = writingArea.value.substring(0, writingArea.selectionStart);
+                const after = writingArea.value.substring(writingArea.selectionEnd);
+                writingArea.value = before + improvedText + after;
+            } else {
+                writingArea.value = improvedText;
+            }
+            
+            updateWordCount();
+            showNotification('Text improved!', 'success');
+        }
+
+        function adjustTone(targetTone) {
+            const writingArea = document.getElementById('writingArea');
+            
+            if (!writingArea.value.trim()) {
+                showNotification('Please write some text first', 'warning');
+                return;
+            }
+            
+            selectTonePreset(targetTone);
+            const adjustedText = simulateToneAdjustment(writingArea.value, targetTone);
+            writingArea.value = adjustedText;
+            
+            updateWordCount();
+            showNotification(`Tone adjusted to ${targetTone}`, 'success');
+        }
+
+        function simulateTextImprovement(text) {
+            // Simple text improvement simulation
+            return text
+                .replace(/\b(very|really|quite)\s+/gi, '')
+                .replace(/\b(I think|I believe)\s+/gi, '')
+                .replace(/\b(maybe|perhaps)\s+/gi, '')
+                .replace(/\.\s+/g, '. ')
+                .replace(/,\s+/g, ', ')
+                .trim();
+        }
+
+        function simulateToneAdjustment(text, tone) {
+            // Simple tone adjustment simulation
+            const adjustments = {
+                professional: text.replace(/\b(we'll|can't|won't)\b/gi, match => {
+                    return match.replace("'", ' ');
+                }),
+                diplomatic: text.replace(/\b(must|need to|have to)\b/gi, 'would appreciate if we could'),
+                assertive: text.replace(/\b(maybe|perhaps|possibly)\b/gi, 'will'),
+                collaborative: text.replace(/\b(I|we)\b/gi, 'we')
+            };
+            
+            return adjustments[tone] || text;
+        }
+
+        // Document Management
+        function openDocument(docId) {
+            const doc = appState.userData.documents.find(d => d.id === docId);
+            if (doc) {
+                appState.currentDocument = { ...doc };
+                showView('writer');
+                loadDocumentIntoWriter();
+            }
+        }
+
+        function deleteDocument(docId) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                appState.userData.documents = appState.userData.documents.filter(d => d.id !== docId);
+                appState.userData.totalDocuments = appState.userData.documents.length;
+                appState.userData.totalWords = appState.userData.documents.reduce((total, doc) => total + (doc.wordCount || 0), 0);
+                
+                saveUserData();
+                updateDashboard();
+                showNotification('Document deleted', 'success');
+            }
+        }
+
+        function shareDocument() {
+            if (!appState.currentDocument) {
+                showNotification('No document to share', 'warning');
+                return;
+            }
+
+            generateShareableContent();
+            document.getElementById('shareDocModal').classList.remove('hidden');
+            document.getElementById('shareDocModal').classList.add('flex');
+        }
+
+        function generateShareableContent() {
+            const doc = appState.currentDocument;
+            const shareableContent = document.getElementById('shareableContent');
+            
+            shareableContent.innerHTML = `
+                <div class="summary-header">
+                    <h2 class="text-2xl font-bold text-dark-green">${doc.title || 'Untitled Document'}</h2>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-medium-green">Type: ${doc.type.charAt(0).toUpperCase() + doc.type.slice(1)}</span>
+                        <span class="text-medium-green">Tone: ${doc.tone.charAt(0).toUpperCase() + doc.tone.slice(1)}</span>
+                        <span class="text-medium-green">Words: ${doc.wordCount || 0}</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-2">
+                        Created: ${new Date(doc.dateCreated).toLocaleDateString()} | 
+                        Modified: ${new Date(doc.lastModified).toLocaleDateString()}
+                    </div>
+                </div>
+                
+                <div class="document-content">
+                    <div class="whitespace-pre-wrap">${doc.content}</div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-pale-gold text-center text-sm text-gray-500">
+                    Generated by NegotiateWrite Pro
+                </div>
+            `;
+        }
+
+        function copyShareLink() {
+            // In a real app, this would generate a shareable link
+            const shareText = document.getElementById('shareableContent').innerText;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showNotification('Content copied to clipboard', 'success');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Content copied to clipboard', 'success');
+            }
+        }
+
+        function downloadSummary() {
+            if (!appState.currentDocument) return;
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text(appState.currentDocument.title || 'Untitled Document', 20, 30);
+                
+                // Document details
+                doc.setFontSize(12);
+                doc.text(`Type: ${appState.currentDocument.type}`, 20, 50);
+                doc.text(`Tone: ${appState.currentDocument.tone}`, 20, 60);
+                doc.text(`Words: ${appState.currentDocument.wordCount || 0}`, 20, 70);
+                doc.text(`Created: ${new Date(appState.currentDocument.dateCreated).toLocaleDateString()}`, 20, 80);
+                
+                // Content
+                doc.text('Content:', 20, 100);
+                const contentLines = doc.splitTextToSize(appState.currentDocument.content, 170);
+                doc.text(contentLines, 20, 110);
+                
+                // Save
+                doc.save(`${appState.currentDocument.title || 'document'}.pdf`);
+                showNotification('PDF downloaded successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        function hideShareModal() {
+            document.getElementById('shareDocModal').classList.add('hidden');
+            document.getElementById('shareDocModal').classList.remove('flex');
+        }
+
+        function exportDocumentToPdf() {
+            if (!appState.currentDocument) {
+                showNotification('No document to export', 'warning');
+                return;
+            }
+
+            downloadSummary();
+        }
+
+        // Negotiation Management
+        function showNewNegotiationModal() {
+            document.getElementById('newNegotiationModal').classList.remove('hidden');
+            document.getElementById('newNegotiationModal').classList.add('flex');
+        }
+
+        function hideNewNegotiationModal() {
+            document.getElementById('newNegotiationModal').classList.add('hidden');
+            document.getElementById('newNegotiationModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('negotiationTitleInput').value = '';
+            document.getElementById('counterpartInput').value = '';
+            document.getElementById('negotiationTypeSelect').value = 'contract';
+            document.getElementById('negotiationPrioritySelect').value = 'medium';
+        }
+
+        function createNewNegotiation() {
+            const title = document.getElementById('negotiationTitleInput').value.trim();
+            const counterpart = document.getElementById('counterpartInput').value.trim();
+            const type = document.getElementById('negotiationTypeSelect').value;
+            const priority = document.getElementById('negotiationPrioritySelect').value;
+            
+            if (!title || !counterpart) {
+                showNotification('Please enter title and counterpart', 'warning');
+                return;
+            }
+            
+            const newNegotiation = {
+                id: generateId(),
+                title: title,
+                counterpart: counterpart,
+                type: type,
+                priority: priority,
+                status: 'active',
+                dateCreated: new Date().toISOString(),
+                lastModified: new Date().toISOString()
+            };
+            
+            appState.userData.negotiations.push(newNegotiation);
+            saveUserData();
+            updateActiveNegotiations();
+            hideNewNegotiationModal();
+            
+            showNotification('Negotiation created successfully', 'success');
+        }
+
+        function openNegotiation(negotiationId) {
+            // In a full app, this would open a detailed negotiation view
+            showNotification('Opening negotiation details...', 'info');
+        }
+
+        function deleteNegotiation(negotiationId) {
+            if (confirm('Are you sure you want to delete this negotiation? This will also delete all related documents and concessions.')) {
+                // Delete negotiation
+                appState.userData.negotiations = appState.userData.negotiations.filter(n => n.id !== negotiationId);
+                
+                // Delete related documents
+                appState.userData.documents = appState.userData.documents.filter(d => d.negotiationId !== negotiationId);
+                
+                // Delete related concessions
+                appState.userData.concessions = appState.userData.concessions.filter(c => c.negotiationId !== negotiationId);
+                
+                saveUserData();
+                updateActiveNegotiations();
+                showNotification('Negotiation deleted', 'success');
+            }
+        }
+
+        function getPriorityClass(priority) {
+            switch (priority) {
+                case 'high': return 'bg-red-100 text-red-800';
+                case 'medium': return 'bg-yellow-100 text-yellow-800';
+                case 'low': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Concessions Management
+        function updateConcessionsView() {
+            const totalConcessions = appState.userData.concessions.length;
+            const ourConcessions = appState.userData.concessions.filter(c => c.party === 'us').length;
+            const theirConcessions = appState.userData.concessions.filter(c => c.party === 'them').length;
+            const netValue = appState.userData.concessions.reduce((total, c) => {
+                return total + (c.party === 'us' ? -c.value : c.value);
+            }, 0);
+            
+            document.getElementById('totalConcessions').textContent = totalConcessions;
+            document.getElementById('ourConcessions').textContent = ourConcessions;
+            document.getElementById('theirConcessions').textContent = theirConcessions;
+            document.getElementById('concessionValue').textContent = `$${netValue.toLocaleString()}`;
+            
+            // Update timeline
+            updateConcessionTimeline();
+        }
+
+        function updateConcessionTimeline() {
+            const timeline = document.getElementById('concessionTimeline');
+            const concessions = appState.userData.concessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (concessions.length === 0) {
+                timeline.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📝</div>
+                        <p>No concessions logged yet</p>
+                    </div>
+                `;
+            } else {
+                timeline.innerHTML = concessions.map(concession => `
+                    <div class="timeline-item">
+                        <div class="concession-item">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-semibold ${concession.party === 'us' ? 'text-red-600' : 'text-green-600'}">
+                                        ${concession.party === 'us' ? 'We conceded' : 'They conceded'}
+                                    </span>
+                                    <span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">${concession.category}</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold ${concession.party === 'us' ? 'text-red-600' : 'text-green-600'}">
+                                        ${concession.party === 'us' ? '-' : '+'}$${concession.value.toLocaleString()}
+                                    </span>
+                                    <button onclick="deleteConcession('${concession.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-2">${concession.description}</p>
+                            <p class="text-xs text-gray-500">${new Date(concession.date).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showAddConcessionModal() {
+            document.getElementById('addConcessionModal').classList.remove('hidden');
+            document.getElementById('addConcessionModal').classList.add('flex');
+        }
+
+        function hideAddConcessionModal() {
+            document.getElementById('addConcessionModal').classList.add('hidden');
+            document.getElementById('addConcessionModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('concessionPartySelect').value = 'us';
+            document.getElementById('concessionDescInput').value = '';
+            document.getElementById('concessionValueInput').value = '';
+            document.getElementById('concessionCategorySelect').value = 'price';
+        }
+
+        function saveNewConcession() {
+            const party = document.getElementById('concessionPartySelect').value;
+            const description = document.getElementById('concessionDescInput').value.trim();
+            const value = parseFloat(document.getElementById('concessionValueInput').value) || 0;
+            const category = document.getElementById('concessionCategorySelect').value;
+            
+            if (!description) {
+                showNotification('Please enter a description', 'warning');
+                return;
+            }
+            
+            const newConcession = {
+                id: generateId(),
+                party: party,
+                description: description,
+                value: value,
+                category: category,
+                date: new Date().toISOString(),
+                negotiationId: null // Could be linked to a specific negotiation
+            };
+            
+            appState.userData.concessions.push(newConcession);
+            saveUserData();
+            updateConcessionsView();
+            hideAddConcessionModal();
+            
+            showNotification('Concession added successfully', 'success');
+        }
+
+        function deleteConcession(concessionId) {
+            if (confirm('Are you sure you want to delete this concession?')) {
+                appState.userData.concessions = appState.userData.concessions.filter(c => c.id !== concessionId);
+                saveUserData();
+                updateConcessionsView();
+                showNotification('Concession deleted', 'success');
+            }
+        }
+
+        function exportConcessions() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('Concession Log', 20, 30);
+                
+                // Summary
+                doc.setFontSize(12);
+                const totalConcessions = appState.userData.concessions.length;
+                const ourConcessions = appState.userData.concessions.filter(c => c.party === 'us').length;
+                const theirConcessions = appState.userData.concessions.filter(c => c.party === 'them').length;
+                const netValue = appState.userData.concessions.reduce((total, c) => {
+                    return total + (c.party === 'us' ? -c.value : c.value);
+                }, 0);
+                
+                doc.text(`Total Concessions: ${totalConcessions}`, 20, 50);
+                doc.text(`Our Concessions: ${ourConcessions}`, 20, 60);
+                doc.text(`Their Concessions: ${theirConcessions}`, 20, 70);
+                doc.text(`Net Value: $${netValue.toLocaleString()}`, 20, 80);
+                
+                // Concessions list
+                let yPosition = 100;
+                doc.text('Concession Details:', 20, yPosition);
+                yPosition += 10;
+                
+                appState.userData.concessions.forEach(concession => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 30;
+                    }
+                    
+                    doc.setFontSize(10);
+                    doc.text(`${concession.party === 'us' ? 'WE' : 'THEY'} - ${concession.category.toUpperCase()}`, 20, yPosition);
+                    yPosition += 5;
+                    
+                    const descText = doc.splitTextToSize(concession.description, 170);
+                    doc.text(descText, 25, yPosition);
+                    yPosition += (descText.length * 4) + 2;
+                    
+                    doc.text(`Value: $${concession.value.toLocaleString()} | Date: ${new Date(concession.date).toLocaleDateString()}`, 25, yPosition);
+                    yPosition += 10;
+                });
+                
+                // Save
+                doc.save('concession-log.pdf');
+                showNotification('Concession log exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting concession log', 'error');
+            }
+        }
+
+        // Templates Management
+        function updateTemplatesView() {
+            const templatesGrid = document.getElementById('templatesGrid');
+            const templates = appState.userData.templates;
+            
+            if (templates.length === 0) {
+                templatesGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📄</div>
+                        <p>No templates yet. Create your first template!</p>
+                    </div>
+                `;
+            } else {
+                templatesGrid.innerHTML = templates.map(template => `
+                    <div class="template-card" onclick="useTemplate('${template.id}')">
+                        <div class="flex justify-between items-start mb-3">
+                            <h4 class="font-bold text-dark-green">${template.name}</h4>
+                            <button onclick="event.stopPropagation(); deleteTemplate('${template.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                ✕
+                            </button>
+                        </div>
+                        <div class="text-sm text-medium-green mb-3">
+                            Type: ${template.type.charAt(0).toUpperCase() + template.type.slice(1)}
+                        </div>
+                        <div class="text-xs text-gray-600 bg-gray-50 p-2 rounded max-h-20 overflow-hidden">
+                            ${template.content.substring(0, 150)}...
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2">
+                            Created: ${new Date(template.dateCreated).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function createNewTemplate() {
+            if (!appState.currentDocument) {
+                showNotification('Please create a document first to save as template', 'warning');
+                return;
+            }
+            
+            const templateName = prompt('Enter template name:');
+            if (!templateName) return;
+            
+            const newTemplate = {
+                id: generateId(),
+                name: templateName,
+                type: appState.currentDocument.type,
+                content: appState.currentDocument.content,
+                dateCreated: new Date().toISOString()
+            };
+            
+            appState.userData.templates.push(newTemplate);
+            saveUserData();
+            updateTemplatesView();
+            
+            showNotification('Template created successfully', 'success');
+        }
+
+        function useTemplate(templateId) {
+            const template = appState.userData.templates.find(t => t.id === templateId);
+            if (template) {
+                createNewDocument(template.type);
+                appState.currentDocument.content = template.content;
+                showView('writer');
+                loadDocumentIntoWriter();
+                showNotification('Template loaded', 'success');
+            }
+        }
+
+        function deleteTemplate(templateId) {
+            if (confirm('Are you sure you want to delete this template?')) {
+                appState.userData.templates = appState.userData.templates.filter(t => t.id !== templateId);
+                saveUserData();
+                updateTemplatesView();
+                showNotification('Template deleted', 'success');
+            }
+        }
+
+        // Analytics Functions
+        function updateAnalytics() {
+            const avgWordsPerDoc = appState.userData.totalDocuments > 0 ? 
+                Math.round(appState.userData.totalWords / appState.userData.totalDocuments) : 0;
+            
+            document.getElementById('totalDocuments').textContent = appState.userData.totalDocuments;
+            document.getElementById('totalWords').textContent = appState.userData.totalWords.toLocaleString();
+            document.getElementById('avgWordsPerDoc').textContent = avgWordsPerDoc;
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Update document types
+            updateDocumentTypeStats();
+            updateToneUsageStats();
+            updateRecentActivityStats();
+        }
+
+        function updateDocumentTypeStats() {
+            const container = document.getElementById('documentTypes');
+            const types = appState.userData.documentTypes;
+            
+            if (Object.keys(types).length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No documents yet</p>';
+            } else {
+                const sortedTypes = Object.entries(types).sort((a, b) => b[1] - a[1]);
+                container.innerHTML = sortedTypes.map(([type, count]) => `
+                    <div class="flex justify-between">
+                        <span class="text-sm text-medium-green">${type.charAt(0).toUpperCase() + type.slice(1)}:</span>
+                        <span class="text-sm font-semibold text-dark-green">${count}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateToneUsageStats() {
+            const container = document.getElementById('toneUsage');
+            const tones = appState.userData.toneUsage;
+            
+            if (Object.keys(tones).length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No tone data yet</p>';
+            } else {
+                const sortedTones = Object.entries(tones).sort((a, b) => b[1] - a[1]);
+                container.innerHTML = sortedTones.map(([tone, count]) => `
+                    <div class="flex justify-between">
+                        <span class="text-sm text-medium-green">${tone.charAt(0).toUpperCase() + tone.slice(1)}:</span>
+                        <span class="text-sm font-semibold text-dark-green">${count}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateRecentActivityStats() {
+            const container = document.getElementById('recentActivity');
+            const recentDocs = appState.userData.documents
+                .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+                .slice(0, 5);
+            
+            if (recentDocs.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No recent activity</p>';
+            } else {
+                container.innerHTML = recentDocs.map(doc => `
+                    <div class="text-sm">
+                        <div class="font-semibold text-dark-green">${doc.title || 'Untitled'}</div>
+                        <div class="text-xs text-gray-600">${new Date(doc.lastModified).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('defaultToneSelect').value = appState.userData.settings.defaultTone;
+            document.getElementById('autoSaveSelect').value = appState.userData.settings.autoSaveInterval;
+            document.getElementById('wordCountToggle').checked = appState.userData.settings.wordCountDisplay;
+            document.getElementById('autoSyncToggle').checked = appState.userData.settings.autoSync;
+        }
+
+        function updateDefaultTone() {
+            appState.userData.settings.defaultTone = document.getElementById('defaultToneSelect').value;
+            saveUserData();
+        }
+
+        function updateAutoSaveInterval() {
+            appState.userData.settings.autoSaveInterval = parseInt(document.getElementById('autoSaveSelect').value);
+            saveUserData();
+            setupAutoSave();
+        }
+
+        function updateWordCountDisplay() {
+            appState.userData.settings.wordCountDisplay = document.getElementById('wordCountToggle').checked;
+            const wordCountDisplay = document.getElementById('wordCountDisplay');
+            wordCountDisplay.style.display = appState.userData.settings.wordCountDisplay ? 'block' : 'none';
+            saveUserData();
+        }
+
+        function updateAutoSync() {
+            appState.userData.settings.autoSync = document.getElementById('autoSyncToggle').checked;
+            saveUserData();
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `negotiatewrite-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('negotiateWriteData');
+                    
+                    appState.userData = {
+                        documents: [],
+                        negotiations: [],
+                        concessions: [],
+                        templates: [],
+                        streak: 0,
+                        lastActiveDate: null,
+                        totalDocuments: 0,
+                        totalWords: 0,
+                        longestStreak: 0,
+                        documentTypes: {},
+                        toneUsage: {},
+                        settings: {
+                            defaultTone: 'collaborative',
+                            autoSaveInterval: 2,
+                            wordCountDisplay: true,
+                            autoSync: true
+                        }
+                    };
+                    
+                    initializeDefaultTemplates();
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9873c5f093a31072',t:'MTc1OTIzNTg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
