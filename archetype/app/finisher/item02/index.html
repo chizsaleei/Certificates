@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Logger - Celebrate Every Finish</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #2d5a3d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: celebrate-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes celebrate-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.6; transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.6rem;
+            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff, #daa520);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            animation: title-shine 4s ease-in-out infinite;
+        }
+
+        @keyframes title-shine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .trophy-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: trophy-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes trophy-bounce {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.1); }
+        }
+
+        .achievement-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.3);
+            border-color: #daa520;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            color: #e0e0e0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .achievements-section {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-log-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .quick-log-form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+            background: rgba(45, 90, 61, 0.8);
+        }
+
+        .form-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .voice-btn, .add-btn, .action-btn, .celebrate-btn {
+            padding: 14px 18px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover, .celebrate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+            background: linear-gradient(45deg, #b8941c, #e6c200);
+        }
+
+        .celebrate-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            color: white;
+            animation: celebrate-pulse 2s infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes celebrate-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 107, 107, 0.8); }
+        }
+
+        .voice-btn.recording {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .photo-upload-area {
+            border: 2px dashed rgba(218, 165, 32, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(45, 90, 61, 0.3);
+        }
+
+        .photo-upload-area:hover {
+            border-color: #daa520;
+            background: rgba(45, 90, 61, 0.5);
+        }
+
+        .photo-upload-area.dragover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .photo-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .achievement-card {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #daa520, #ffd700, #daa520);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .achievement-card:hover::before {
+            opacity: 1;
+        }
+
+        .achievement-card:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(218, 165, 32, 0.4);
+        }
+
+        .achievement-card.celebrating {
+            animation: celebration-bounce 0.6s ease-in-out;
+            border-color: #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes celebration-bounce {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05) rotate(1deg); }
+            75% { transform: scale(1.05) rotate(-1deg); }
+        }
+
+        .achievement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .achievement-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .achievement-meta {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .achievement-photo {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .achievement-photo:hover {
+            transform: scale(1.02);
+        }
+
+        .achievement-description {
+            color: #e0e0e0;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        .reward-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .reward-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .closure-habits {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(13, 40, 24, 0.4);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .habit-item:hover {
+            background: rgba(13, 40, 24, 0.6);
+            transform: translateX(5px);
+        }
+
+        .habit-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #daa520;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .habit-checkbox.checked {
+            background: #daa520;
+            color: #0d2818;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(45, 90, 61, 0.95);
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            border: 2px solid #daa520;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(102, 187, 106, 0.95);
+            color: white;
+            border-radius: 10px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .celebration-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 8px 15px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .offline-indicator.online {
+            background: rgba(102, 187, 106, 0.9);
+        }
+
+        .focus-timer {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-display {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 10px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+        }
+
+        .timer-btn.active {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .reward-suggestions {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .reward-item {
+            background: rgba(13, 40, 24, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reward-item:hover {
+            background: rgba(13, 40, 24, 0.6);
+            transform: translateX(5px);
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .progress-ring-circle {
+            stroke: rgba(218, 165, 32, 0.3);
+            stroke-width: 8;
+            fill: transparent;
+            r: 52;
+            cx: 60;
+            cy: 60;
+        }
+
+        .progress-ring-progress {
+            stroke: #ffd700;
+            stroke-width: 8;
+            fill: transparent;
+            r: 52;
+            cx: 60;
+            cy: 60;
+            stroke-dasharray: 327;
+            stroke-dashoffset: 327;
+            transition: stroke-dashoffset 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 60px 60px;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+            
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-log-form {
+                flex-direction: column;
+            }
+            
+            .form-input {
+                min-width: auto;
+            }
+            
+            .timer-display {
+                font-size: 2.2rem;
+            }
+            
+            .achievement-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+    <div class="celebration-animation" id="celebrationAnimation"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <span class="trophy-icon">🏆</span>
+            <h1>Achievement Logger</h1>
+            <p>Record • Celebrate • Build Closure Habits • Finish Strong</p>
+            <div style="margin-top: 15px;">
+                <button class="action-btn" onclick="exportToPDF()" style="margin: 0 5px;">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()" style="margin: 0 5px;">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()" style="margin: 0 5px;">📥 Import Data</button>
+            </div>
+        </div>
+
+        <!-- Achievement Stats Dashboard -->
+        <div class="achievement-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAchievements">0</div>
+                <div class="stat-label">Total Achievements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="thisWeekCount">0</div>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentStreak">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="rewardsEarned">0</div>
+                <div class="stat-label">Rewards Earned</div>
+            </div>
+        </div>
+
+        <!-- Quick Achievement Log -->
+        <div class="quick-log-section">
+            <div class="section-title">
+                <span>⚡</span> Quick Achievement Log
+            </div>
+            <div class="quick-log-form">
+                <input type="text" class="form-input" id="quickAchievementInput" placeholder="What did you finish today?" aria-label="Quick achievement input">
+                <button class="voice-btn" onclick="startVoiceInput('quickAchievementInput')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickLogAchievement()">Log It!</button>
+                <button class="celebrate-btn" onclick="triggerCelebration()">🎉 CELEBRATE!</button>
+            </div>
+            
+            <div class="photo-upload-area" id="quickPhotoUpload" onclick="document.getElementById('quickPhotoInput').click()">
+                <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📸</span>
+                <p>Click or drag to add a victory photo!</p>
+                <input type="file" id="quickPhotoInput" accept="image/*" style="display: none;" onchange="handleQuickPhoto(event)">
+                <img id="quickPhotoPreview" class="photo-preview" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <div class="achievements-section">
+                <div class="section-title">
+                    <span>🏆</span> Achievement Gallery
+                    <div style="margin-left: auto;">
+                        <button class="action-btn" onclick="openAchievementModal()">+ New Achievement</button>
+                    </div>
+                </div>
+                
+                <div id="achievementsList">
+                    <!-- Achievements will be populated here -->
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <!-- Focus Timer -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>🍅</span> Focus Timer
+                    </div>
+                    <div class="focus-timer">
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="timer-controls">
+                            <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                            <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                            <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Closure Habits -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>✅</span> Closure Habits
+                    </div>
+                    <div class="closure-habits" id="closureHabits">
+                        <!-- Habits will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Reward Suggestions -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>🎁</span> Reward Yourself
+                        <button class="action-btn" onclick="openRewardModal()" style="margin-left: auto; padding: 6px 10px; font-size: 0.8rem;">⚙️ Manage</button>
+                    </div>
+                    <div class="reward-suggestions" id="rewardSuggestions">
+                        <!-- Rewards will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Progress Ring -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>📊</span> Weekly Progress
+                    </div>
+                    <svg class="progress-ring">
+                        <circle class="progress-ring-circle"></circle>
+                        <circle class="progress-ring-progress" id="progressRing"></circle>
+                    </svg>
+                    <div style="text-align: center; color: #ffd700; font-weight: bold;" id="progressText">0% Complete</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Modal -->
+    <div id="achievementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="achievementModalTitle">Log New Achievement</h3>
+                <span class="close" onclick="closeAchievementModal()">&times;</span>
+            </div>
+            
+            <div id="achievementModalContent">
+                <div style="margin-bottom: 20px;">
+                    <input type="text" class="form-input" id="achievementTitle" placeholder="What did you accomplish?" style="width: 100%;" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <textarea class="form-textarea" id="achievementDescription" placeholder="Describe your achievement and how it feels to complete it..." rows="4" style="width: 100%;"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <select class="form-select" id="achievementCategory" style="flex: 1;">
+                        <option value="work">Work Project</option>
+                        <option value="personal">Personal Goal</option>
+                        <option value="learning">Learning & Skills</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="creative">Creative Project</option>
+                        <option value="relationship">Relationships</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select class="form-select" id="achievementImpact" style="flex: 1;">
+                        <option value="small">Small Win</option>
+                        <option value="medium">Significant Achievement</option>
+                        <option value="large">Major Milestone</option>
+                        <option value="huge">Life-Changing</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">📸 Victory Photo</h4>
+                    <div class="photo-upload-area" id="achievementPhotoUpload" onclick="document.getElementById('achievementPhotoInput').click()">
+                        <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📸</span>
+                        <p>Add a photo to commemorate this achievement!</p>
+                        <input type="file" id="achievementPhotoInput" accept="image/*" style="display: none;" onchange="handleAchievementPhoto(event)">
+                        <img id="achievementPhotoPreview" class="photo-preview" style="display: none;">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">🎁 Reward Yourself</h4>
+                    <input type="text" class="form-input" id="achievementReward" placeholder="How will you celebrate this win?" style="width: 100%;">
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <button class="action-btn" onclick="saveAchievement()" style="flex: 1;">🏆 Log Achievement</button>
+                    <button class="action-btn" onclick="closeAchievementModal()" style="background: rgba(45, 90, 61, 0.8); color: #ffd700;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Viewer Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content" style="max-width: 90%; text-align: center;">
+            <div class="modal-header">
+                <h3 class="modal-title">Achievement Photo</h3>
+                <span class="close" onclick="closePhotoModal()">&times;</span>
+            </div>
+            <img id="photoModalImage" style="max-width: 100%; max-height: 70vh; border-radius: 10px;">
+        </div>
+    </div>
+
+    <!-- Reward Management Modal -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Manage Rewards</h3>
+                <span class="close" onclick="closeRewardModal()">&times;</span>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <h4 style="color: #ffd700; margin-bottom: 15px;">Add New Reward</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" class="form-input" id="newRewardText" placeholder="Enter reward description..." style="flex: 1;">
+                    <select class="form-select" id="newRewardCategory">
+                        <option value="small">Small Win</option>
+                        <option value="medium">Medium Achievement</option>
+                        <option value="large">Large Milestone</option>
+                        <option value="huge">Huge Success</option>
+                    </select>
+                    <button class="action-btn" onclick="addCustomReward()">+ Add</button>
+                </div>
+            </div>
+            
+            <div>
+                <h4 style="color: #ffd700; margin-bottom: 15px;">Your Custom Rewards</h4>
+                <div id="customRewardsList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Custom rewards will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let achievements = [];
+        let currentAchievement = null;
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let currentStreak = 0;
+        let rewardsEarned = 0;
+        let quickPhotoData = null;
+        let achievementPhotoData = null;
+
+        // Closure habits for finishers
+        const closureHabits = [
+            { id: 1, text: "Take a victory photo", icon: "📸" },
+            { id: 2, text: "Write 3 things you learned", icon: "📝" },
+            { id: 3, text: "Share your win with someone", icon: "📢" },
+            { id: 4, text: "Plan your reward/celebration", icon: "🎉" },
+            { id: 5, text: "Reflect on the journey", icon: "🤔" },
+            { id: 6, text: "Archive project materials", icon: "📁" },
+            { id: 7, text: "Update your portfolio/resume", icon: "📋" },
+            { id: 8, text: "Thank people who helped", icon: "🙏" }
+        ];
+
+        // Reward suggestions - now customizable
+        let customRewards = [
+            { id: 1, text: "Favorite coffee/tea", category: "small" },
+            { id: 2, text: "15-min break", category: "small" },
+            { id: 3, text: "Listen to favorite song", category: "small" },
+            { id: 4, text: "Quick walk outside", category: "small" },
+            { id: 5, text: "Healthy snack", category: "small" },
+            { id: 6, text: "Movie night", category: "medium" },
+            { id: 7, text: "Dinner at favorite restaurant", category: "medium" },
+            { id: 8, text: "Buy something you've wanted", category: "medium" },
+            { id: 9, text: "Spa/massage", category: "medium" },
+            { id: 10, text: "Day trip", category: "medium" },
+            { id: 11, text: "Weekend getaway", category: "large" },
+            { id: 12, text: "New gadget/tool", category: "large" },
+            { id: 13, text: "Professional course", category: "large" },
+            { id: 14, text: "Concert/event tickets", category: "large" },
+            { id: 15, text: "Home upgrade", category: "large" },
+            { id: 16, text: "Vacation", category: "huge" },
+            { id: 17, text: "Major purchase", category: "huge" },
+            { id: 18, text: "Career celebration", category: "huge" },
+            { id: 19, text: "Share with community", category: "huge" },
+            { id: 20, text: "Document the journey", category: "huge" }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            renderAchievements();
+            renderClosureHabits();
+            renderRewardSuggestions();
+            checkOnlineStatus();
+            updateProgressRing();
+            
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Initialize with sample data if empty
+            if (achievements.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Set up drag and drop for photo uploads
+            setupDragAndDrop();
+        });
+
+        function initializeSampleData() {
+            achievements = [
+                {
+                    id: 1,
+                    title: 'Completed Website Redesign Project',
+                    description: 'After 3 months of hard work, finally launched the new company website. The client loved it and we got great feedback from users!',
+                    category: 'work',
+                    impact: 'large',
+                    photo: null,
+                    reward: 'Weekend getaway to celebrate',
+                    completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    closureHabits: [1, 3, 4, 7]
+                },
+                {
+                    id: 2,
+                    title: 'Finished Reading "Atomic Habits"',
+                    description: 'Completed this amazing book on building better habits. Already started implementing some of the strategies!',
+                    category: 'learning',
+                    impact: 'medium',
+                    photo: null,
+                    reward: 'Bought the next book on my reading list',
+                    completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                    closureHabits: [2, 5]
+                }
+            ];
+            
+            updateStats();
+            renderAchievements();
+        }
+
+        // Achievement management
+        function quickLogAchievement() {
+            const input = document.getElementById('quickAchievementInput');
+            const title = input.value.trim();
+            
+            if (!title) {
+                showNotification('Please enter what you accomplished', 'error');
+                return;
+            }
+            
+            const achievement = {
+                id: Date.now(),
+                title: title,
+                description: '',
+                category: 'other',
+                impact: 'small',
+                photo: quickPhotoData,
+                reward: '',
+                completedAt: new Date(),
+                closureHabits: []
+            };
+            
+            achievements.unshift(achievement);
+            input.value = '';
+            quickPhotoData = null;
+            document.getElementById('quickPhotoPreview').style.display = 'none';
+            
+            updateStats();
+            renderAchievements();
+            saveData();
+            showNotification('🏆 Achievement logged! You\'re building a great finish habit!');
+            triggerCelebration();
+        }
+
+        function openAchievementModal(achievementId = null) {
+            currentAchievement = achievementId ? achievements.find(a => a.id === achievementId) : null;
+            
+            if (currentAchievement) {
+                document.getElementById('achievementModalTitle').textContent = 'Edit Achievement';
+                document.getElementById('achievementTitle').value = currentAchievement.title;
+                document.getElementById('achievementDescription').value = currentAchievement.description;
+                document.getElementById('achievementCategory').value = currentAchievement.category;
+                document.getElementById('achievementImpact').value = currentAchievement.impact;
+                document.getElementById('achievementReward').value = currentAchievement.reward;
+                
+                if (currentAchievement.photo) {
+                    document.getElementById('achievementPhotoPreview').src = currentAchievement.photo;
+                    document.getElementById('achievementPhotoPreview').style.display = 'block';
+                    achievementPhotoData = currentAchievement.photo;
+                }
+            } else {
+                document.getElementById('achievementModalTitle').textContent = 'Log New Achievement';
+                clearAchievementForm();
+            }
+            
+            document.getElementById('achievementModal').style.display = 'block';
+            document.getElementById('achievementTitle').focus();
+        }
+
+        function saveAchievement() {
+            const title = document.getElementById('achievementTitle').value.trim();
+            const description = document.getElementById('achievementDescription').value.trim();
+            const category = document.getElementById('achievementCategory').value;
+            const impact = document.getElementById('achievementImpact').value;
+            const reward = document.getElementById('achievementReward').value.trim();
+            
+            if (!title) {
+                showNotification('Please enter what you accomplished', 'error');
+                return;
+            }
+            
+            const achievementData = {
+                title,
+                description,
+                category,
+                impact,
+                photo: achievementPhotoData,
+                reward,
+                closureHabits: []
+            };
+            
+            if (currentAchievement) {
+                // Update existing achievement
+                Object.assign(currentAchievement, achievementData);
+                showNotification('Achievement updated successfully! 📝');
+            } else {
+                // Create new achievement
+                const newAchievement = {
+                    id: Date.now(),
+                    ...achievementData,
+                    completedAt: new Date()
+                };
+                achievements.unshift(newAchievement);
+                showNotification('🏆 Achievement logged! Time to celebrate your finish!');
+                triggerCelebration();
+            }
+            
+            closeAchievementModal();
+            updateStats();
+            renderAchievements();
+            saveData();
+        }
+
+        function clearAchievementForm() {
+            document.getElementById('achievementTitle').value = '';
+            document.getElementById('achievementDescription').value = '';
+            document.getElementById('achievementCategory').value = 'work';
+            document.getElementById('achievementImpact').value = 'small';
+            document.getElementById('achievementReward').value = '';
+            document.getElementById('achievementPhotoPreview').style.display = 'none';
+            achievementPhotoData = null;
+        }
+
+        function closeAchievementModal() {
+            document.getElementById('achievementModal').style.display = 'none';
+            currentAchievement = null;
+            achievementPhotoData = null;
+        }
+
+        function deleteAchievement(achievementId) {
+            const achievement = achievements.find(a => a.id === achievementId);
+            if (confirm(`Are you sure you want to delete "${achievement.title}"?`)) {
+                achievements = achievements.filter(a => a.id !== achievementId);
+                renderAchievements();
+                updateStats();
+                saveData();
+                showNotification('Achievement deleted 🗑️');
+            }
+        }
+
+        function renderAchievements() {
+            const container = document.getElementById('achievementsList');
+            
+            if (achievements.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #e0e0e0;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">🏆</span>
+                        <h3>No achievements yet</h3>
+                        <p>Log your first completion to start building your success story!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort achievements by completion date (newest first)
+            const sortedAchievements = [...achievements].sort((a, b) => 
+                new Date(b.completedAt) - new Date(a.completedAt)
+            );
+            
+            container.innerHTML = sortedAchievements.map(achievement => createAchievementCard(achievement)).join('');
+        }
+
+        function createAchievementCard(achievement) {
+            const impactIcons = {
+                small: '⭐',
+                medium: '🌟',
+                large: '✨',
+                huge: '💫'
+            };
+            
+            const categoryIcons = {
+                work: '💼',
+                personal: '🎯',
+                learning: '📚',
+                health: '💪',
+                creative: '🎨',
+                relationship: '❤️',
+                other: '🏆'
+            };
+            
+            return `
+                <div class="achievement-card" data-achievement-id="${achievement.id}">
+                    <div class="achievement-header">
+                        <div>
+                            <div class="achievement-title">${achievement.title}</div>
+                            <div class="achievement-meta">
+                                <span>${categoryIcons[achievement.category]} ${achievement.category.toUpperCase()}</span>
+                                <span>${impactIcons[achievement.impact]} ${achievement.impact.toUpperCase()}</span>
+                                <span>📅 ${new Date(achievement.completedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="color: #ffd700; font-size: 1.5rem;">🏆</span>
+                        </div>
+                    </div>
+                    
+                    ${achievement.description ? `<div class="achievement-description">${achievement.description}</div>` : ''}
+                    
+                    ${achievement.photo ? `
+                        <img src="${achievement.photo}" alt="Achievement photo" class="achievement-photo" onclick="openPhotoModal('${achievement.photo}')">
+                    ` : ''}
+                    
+                    ${achievement.reward ? `
+                        <div class="reward-section">
+                            <div class="reward-title">
+                                <span>🎁</span> Reward
+                            </div>
+                            <div style="color: #e0e0e0;">${achievement.reward}</div>
+                        </div>
+                    ` : ''}
+                    
+                    ${achievement.closureHabits.length > 0 ? `
+                        <div style="margin: 15px 0;">
+                            <div style="color: #ffd700; font-weight: bold; margin-bottom: 8px;">✅ Closure Habits Completed:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${achievement.closureHabits.map(habitId => {
+                                    const habit = closureHabits.find(h => h.id === habitId);
+                                    return habit ? `<span style="background: rgba(218, 165, 32, 0.2); color: #ffd700; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">${habit.icon} ${habit.text}</span>` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                        <button class="action-btn" onclick="openAchievementModal(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem;">✏️ Edit</button>
+                        <button class="action-btn" onclick="celebrateAchievement(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem;">🎉 Celebrate</button>
+                        <button class="action-btn" onclick="deleteAchievement(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem; background: rgba(255, 107, 107, 0.2); color: #ff6b6b;">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function celebrateAchievement(achievementId) {
+            const achievement = achievements.find(a => a.id === achievementId);
+            const card = document.querySelector(`[data-achievement-id="${achievementId}"]`);
+            
+            if (card) {
+                card.classList.add('celebrating');
+                setTimeout(() => {
+                    card.classList.remove('celebrating');
+                }, 600);
+            }
+            
+            triggerCelebration();
+            showNotification(`🎉 Celebrating: "${achievement.title}"! You're a finisher!`);
+        }
+
+        // Photo handling
+        function handleQuickPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    quickPhotoData = e.target.result;
+                    document.getElementById('quickPhotoPreview').src = quickPhotoData;
+                    document.getElementById('quickPhotoPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleAchievementPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    achievementPhotoData = e.target.result;
+                    document.getElementById('achievementPhotoPreview').src = achievementPhotoData;
+                    document.getElementById('achievementPhotoPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openPhotoModal(photoSrc) {
+            document.getElementById('photoModalImage').src = photoSrc;
+            document.getElementById('photoModal').style.display = 'block';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+
+        function setupDragAndDrop() {
+            const uploadAreas = [
+                document.getElementById('quickPhotoUpload'),
+                document.getElementById('achievementPhotoUpload')
+            ];
+            
+            uploadAreas.forEach(area => {
+                if (area) {
+                    area.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        area.classList.add('dragover');
+                    });
+                    
+                    area.addEventListener('dragleave', function(e) {
+                        e.preventDefault();
+                        area.classList.remove('dragover');
+                    });
+                    
+                    area.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        area.classList.remove('dragover');
+                        
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0 && files[0].type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                if (area.id === 'quickPhotoUpload') {
+                                    quickPhotoData = event.target.result;
+                                    document.getElementById('quickPhotoPreview').src = quickPhotoData;
+                                    document.getElementById('quickPhotoPreview').style.display = 'block';
+                                } else {
+                                    achievementPhotoData = event.target.result;
+                                    document.getElementById('achievementPhotoPreview').src = achievementPhotoData;
+                                    document.getElementById('achievementPhotoPreview').style.display = 'block';
+                                }
+                            };
+                            reader.readAsDataURL(files[0]);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Closure habits
+        function renderClosureHabits() {
+            const container = document.getElementById('closureHabits');
+            container.innerHTML = closureHabits.map(habit => `
+                <div class="habit-item" onclick="toggleClosureHabit(${habit.id})">
+                    <div class="habit-checkbox" id="habit-${habit.id}">
+                        <span style="display: none;">✓</span>
+                    </div>
+                    <span>${habit.icon} ${habit.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleClosureHabit(habitId) {
+            const checkbox = document.getElementById(`habit-${habitId}`);
+            const checkmark = checkbox.querySelector('span');
+            
+            if (checkbox.classList.contains('checked')) {
+                checkbox.classList.remove('checked');
+                checkmark.style.display = 'none';
+            } else {
+                checkbox.classList.add('checked');
+                checkmark.style.display = 'block';
+                showNotification('Great closure habit! Building the finisher mindset! 🎯');
+            }
+        }
+
+        // Reward suggestions
+        function renderRewardSuggestions() {
+            const container = document.getElementById('rewardSuggestions');
+            const randomRewards = getRandomRewards();
+            
+            container.innerHTML = randomRewards.map(reward => `
+                <div class="reward-item" onclick="claimReward('${reward.text}')">
+                    <span>${reward.text}</span>
+                    <span style="color: #ffd700;">🎁</span>
+                </div>
+            `).join('');
+        }
+
+        function getRandomRewards() {
+            return customRewards.sort(() => 0.5 - Math.random()).slice(0, 4);
+        }
+
+        function claimReward(rewardText) {
+            rewardsEarned++;
+            showNotification(`🎁 Reward claimed: ${rewardText}! You've earned it!`);
+            updateStats();
+            saveData();
+        }
+
+        // Reward management functions
+        function openRewardModal() {
+            renderCustomRewardsList();
+            document.getElementById('rewardModal').style.display = 'block';
+            document.getElementById('newRewardText').focus();
+        }
+
+        function closeRewardModal() {
+            document.getElementById('rewardModal').style.display = 'none';
+            document.getElementById('newRewardText').value = '';
+        }
+
+        function addCustomReward() {
+            const text = document.getElementById('newRewardText').value.trim();
+            const category = document.getElementById('newRewardCategory').value;
+            
+            if (!text) {
+                showNotification('Please enter a reward description', 'error');
+                return;
+            }
+            
+            const newReward = {
+                id: Date.now(),
+                text: text,
+                category: category
+            };
+            
+            customRewards.push(newReward);
+            document.getElementById('newRewardText').value = '';
+            
+            renderCustomRewardsList();
+            renderRewardSuggestions();
+            saveData();
+            showNotification('🎁 New reward added!');
+        }
+
+        function editCustomReward(rewardId) {
+            const reward = customRewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            
+            const newText = prompt('Edit reward:', reward.text);
+            if (newText && newText.trim()) {
+                reward.text = newText.trim();
+                renderCustomRewardsList();
+                renderRewardSuggestions();
+                saveData();
+                showNotification('Reward updated! ✏️');
+            }
+        }
+
+        function deleteCustomReward(rewardId) {
+            const reward = customRewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            
+            if (confirm(`Delete reward: "${reward.text}"?`)) {
+                customRewards = customRewards.filter(r => r.id !== rewardId);
+                renderCustomRewardsList();
+                renderRewardSuggestions();
+                saveData();
+                showNotification('Reward deleted 🗑️');
+            }
+        }
+
+        function renderCustomRewardsList() {
+            const container = document.getElementById('customRewardsList');
+            
+            if (customRewards.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #e0e0e0; padding: 20px;">No custom rewards yet. Add some above!</p>';
+                return;
+            }
+            
+            // Group rewards by category
+            const groupedRewards = customRewards.reduce((acc, reward) => {
+                if (!acc[reward.category]) acc[reward.category] = [];
+                acc[reward.category].push(reward);
+                return acc;
+            }, {});
+            
+            const categoryLabels = {
+                small: 'Small Wins',
+                medium: 'Medium Achievements', 
+                large: 'Large Milestones',
+                huge: 'Huge Successes'
+            };
+            
+            container.innerHTML = Object.entries(groupedRewards).map(([category, rewards]) => `
+                <div style="margin-bottom: 20px;">
+                    <h5 style="color: #ffd700; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;">${categoryLabels[category]}</h5>
+                    ${rewards.map(reward => `
+                        <div class="reward-item" style="justify-content: space-between;">
+                            <span style="flex: 1;">${reward.text}</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="editCustomReward(${reward.id})" style="background: none; border: none; color: #ffd700; cursor: pointer; padding: 4px;">✏️</button>
+                                <button onclick="deleteCustomReward(${reward.id})" style="background: none; border: none; color: #ff6b6b; cursor: pointer; padding: 4px;">🗑️</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Celebration effects
+        function triggerCelebration() {
+            createConfetti();
+            playSuccessSound();
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('celebrationAnimation');
+            const colors = ['#ffd700', '#daa520', '#ff6b6b', '#66bb6a', '#42a5f5'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        function playSuccessSound() {
+            // Create a simple success sound using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (error) {
+                // Fallback: no sound if Web Audio API is not supported
+                console.log('Audio not supported');
+            }
+        }
+
+        // Focus Timer
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('🍅 Focus session started! Time to create something worth celebrating!');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused ⏸️');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset 🔄');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            
+            // Play timer completion sound
+            playTimerSound();
+            
+            resetTimer();
+            showNotification('🎉 Focus session complete! Ready to log an achievement? 🏆');
+            triggerCelebration();
+        }
+
+        function playTimerSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a more prominent timer sound - bell-like chimes
+                const frequencies = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                frequencies.forEach((freq, index) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    const startTime = audioContext.currentTime + (index * 0.3);
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 1);
+                    
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 1);
+                });
+                
+                // Add a notification sound after the chimes
+                setTimeout(() => {
+                    if (Notification.permission === 'granted') {
+                        new Notification('🍅 Focus Timer Complete!', {
+                            body: 'Great job! Time to celebrate your focused work session.',
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏆</text></svg>'
+                        });
+                    }
+                }, 1200);
+                
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Statistics and progress
+        function updateStats() {
+            const totalAchievements = achievements.length;
+            const thisWeekCount = calculateThisWeekCount();
+            const currentStreakValue = calculateStreak();
+            
+            document.getElementById('totalAchievements').textContent = totalAchievements;
+            document.getElementById('thisWeekCount').textContent = thisWeekCount;
+            document.getElementById('currentStreak').textContent = currentStreakValue;
+            document.getElementById('rewardsEarned').textContent = rewardsEarned;
+            
+            currentStreak = currentStreakValue;
+        }
+
+        function calculateThisWeekCount() {
+            const now = new Date();
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+            weekStart.setHours(0, 0, 0, 0);
+            
+            return achievements.filter(achievement => 
+                new Date(achievement.completedAt) >= weekStart
+            ).length;
+        }
+
+        function calculateStreak() {
+            if (achievements.length === 0) return 0;
+            
+            const sortedAchievements = [...achievements].sort((a, b) => 
+                new Date(b.completedAt) - new Date(a.completedAt)
+            );
+            
+            let streak = 0;
+            let currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            
+            for (let achievement of sortedAchievements) {
+                const achievementDate = new Date(achievement.completedAt);
+                achievementDate.setHours(0, 0, 0, 0);
+                
+                const diffTime = currentDate - achievementDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays <= streak + 1) {
+                    if (diffDays === streak) {
+                        streak++;
+                        currentDate.setDate(currentDate.getDate() - 1);
+                    }
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        function updateProgressRing() {
+            const thisWeekCount = calculateThisWeekCount();
+            const weeklyGoal = 7; // Goal: 1 achievement per day
+            const progress = Math.min((thisWeekCount / weeklyGoal) * 100, 100);
+            
+            const circle = document.getElementById('progressRing');
+            const circumference = 2 * Math.PI * 52;
+            const offset = circumference - (progress / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressText').textContent = `${Math.round(progress)}% Complete`;
+        }
+
+        // Data management
+        function saveData() {
+            const data = {
+                achievements: achievements,
+                currentStreak: currentStreak,
+                rewardsEarned: rewardsEarned,
+                customRewards: customRewards
+            };
+            localStorage.setItem('achievementLogger_data', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('achievementLogger_data');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                achievements = data.achievements || [];
+                currentStreak = data.currentStreak || 0;
+                rewardsEarned = data.rewardsEarned || 0;
+                customRewards = data.customRewards || customRewards; // Keep default if no custom rewards saved
+            }
+        }
+
+        function exportToPDF() {
+            const totalAchievements = achievements.length;
+            const thisWeekCount = calculateThisWeekCount();
+            const currentStreakValue = calculateStreak();
+            
+            const content = `
+ACHIEVEMENT LOGGER - SUCCESS REPORT
+Generated: ${new Date().toLocaleDateString()}
+
+SUMMARY
+=======
+Total Achievements: ${totalAchievements}
+This Week: ${thisWeekCount}
+Current Streak: ${currentStreakValue} days
+Rewards Earned: ${rewardsEarned}
+
+RECENT ACHIEVEMENTS
+==================
+${achievements.slice(0, 20).map(achievement => `
+🏆 ${achievement.title}
+   Category: ${achievement.category.toUpperCase()}
+   Impact: ${achievement.impact.toUpperCase()}
+   Completed: ${new Date(achievement.completedAt).toLocaleDateString()}
+   ${achievement.description ? `Description: ${achievement.description}` : ''}
+   ${achievement.reward ? `Reward: ${achievement.reward}` : ''}
+`).join('\n')}
+
+ACHIEVEMENT BREAKDOWN BY CATEGORY
+=================================
+${Object.entries(
+    achievements.reduce((acc, achievement) => {
+        acc[achievement.category] = (acc[achievement.category] || 0) + 1;
+        return acc;
+    }, {})
+).map(([category, count]) => `${category.toUpperCase()}: ${count} achievements`).join('\n')}
+
+IMPACT ANALYSIS
+===============
+${Object.entries(
+    achievements.reduce((acc, achievement) => {
+        acc[achievement.impact] = (acc[achievement.impact] || 0) + 1;
+        return acc;
+    }, {})
+).map(([impact, count]) => `${impact.toUpperCase()}: ${count} achievements`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `achievement-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Achievement report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                achievements: achievements,
+                currentStreak: currentStreak,
+                rewardsEarned: rewardsEarned,
+                customRewards: customRewards,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `achievement-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        achievements = data.achievements || [];
+                        currentStreak = data.currentStreak || 0;
+                        rewardsEarned = data.rewardsEarned || 0;
+                        customRewards = data.customRewards || customRewards;
+                        
+                        renderAchievements();
+                        renderRewardSuggestions();
+                        updateStats();
+                        updateProgressRing();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+            } else {
+                notification.style.background = 'rgba(102, 187, 106, 0.95)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const achievementModal = document.getElementById('achievementModal');
+            const photoModal = document.getElementById('photoModal');
+            const rewardModal = document.getElementById('rewardModal');
+            
+            if (event.target === achievementModal) {
+                closeAchievementModal();
+            }
+            if (event.target === photoModal) {
+                closePhotoModal();
+            }
+            if (event.target === rewardModal) {
+                closeRewardModal();
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        openAchievementModal();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        exportToPDF();
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        backupData();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                closeAchievementModal();
+                closePhotoModal();
+                closeRewardModal();
+            }
+            
+            if (e.key === 'Enter' && document.getElementById('newRewardText') === document.activeElement) {
+                e.preventDefault();
+                addCustomReward();
+            }
+        });
+
+        // Update progress ring periodically
+        setInterval(updateProgressRing, 60000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871ce235403bc4b',t:'MTc1OTIxNTIyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
