@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEIC Finance Booster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #0f2027, #203a43, #2c5530); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .question-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .answer-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .answer-option:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+        }
+        
+        .answer-option.selected {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .answer-option.correct {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #22c55e;
+        }
+        
+        .answer-option.incorrect {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+        }
+        
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border: 6px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .timer-progress {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 6px solid transparent;
+            border-top-color: #d4af37;
+            transition: transform 1s linear;
+        }
+        
+        .score-card {
+            background: rgba(15, 32, 39, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 12px 0;
+        }
+        
+        .part-score {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #d4af37;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .vocab-flashcard {
+            background: rgba(15, 32, 39, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocab-flashcard:hover {
+            transform: scale(1.02);
+            border-color: #d4af37;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background-color: #d4af37;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .audio-player {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            font-size: 12px;
+        }
+        
+        .error-review-item {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .phrase-chip {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .phrase-chip:hover {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Sync Indicator -->
+    <div id="syncIndicator" class="sync-indicator hidden">
+        <div class="bg-green-600 text-white px-3 py-1 rounded-full flex items-center">
+            <span class="mr-1">✓</span> Synced
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="p-4 text-center border-b border-gray-700">
+        <h1 class="text-3xl font-bold text-accent">📊 TOEIC Finance Booster</h1>
+        <p class="text-sm text-gray-300 mt-1">Master TOEIC with Financial Context</p>
+        <div class="mt-3 flex justify-center gap-6 text-xs">
+            <span>Streak: <span id="currentStreak" class="text-accent font-bold">0</span></span>
+            <span>Total Score: <span id="totalScore" class="text-accent font-bold">0</span></span>
+            <span>Tests Taken: <span id="testsTaken" class="text-accent font-bold">0</span></span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-2 flex-wrap">
+        <button onclick="showScreen('home')" id="homeBtn" class="nav-btn active">Home</button>
+        <button onclick="showScreen('listening')" id="listeningBtn" class="nav-btn">Listening</button>
+        <button onclick="showScreen('reading')" id="readingBtn" class="nav-btn">Reading</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Vocab</button>
+        <button onclick="showScreen('phrases')" id="phrasesBtn" class="nav-btn">Phrases</button>
+        <button onclick="showScreen('scores')" id="scoresBtn" class="nav-btn">Scores</button>
+        <button onclick="showScreen('errors')" id="errorsBtn" class="nav-btn">Review</button>
+        <button onclick="showScreen('breathing')" id="breathingBtn" class="nav-btn">Focus</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">Analytics</button>
+    </nav>
+
+    <!-- Floating Quick Add -->
+    <div onclick="quickStart()" class="floating-btn">⚡</div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Quick Start Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="question-card cursor-pointer" onclick="startTimedSet('listening', 10)">
+                    <div class="text-accent font-bold text-xl mb-3">🎧 Listening Practice</div>
+                    <div class="text-gray-300 mb-4">10-minute timed listening set with financial contexts</div>
+                    <div class="text-sm text-gray-400">Parts 1-4 • Audio + Transcripts</div>
+                </div>
+                <div class="question-card cursor-pointer" onclick="startTimedSet('reading', 15)">
+                    <div class="text-accent font-bold text-xl mb-3">📖 Reading Practice</div>
+                    <div class="text-gray-300 mb-4">15-minute timed reading set with business scenarios</div>
+                    <div class="text-sm text-gray-400">Parts 5-7 • Grammar + Comprehension</div>
+                </div>
+            </div>
+
+            <!-- Today's Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Today's Progress</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayListening">0</div>
+                        <div class="text-sm text-gray-400">Listening Sets</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayReading">0</div>
+                        <div class="text-sm text-gray-400">Reading Sets</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayVocab">0</div>
+                        <div class="text-sm text-gray-400">Vocab Reviews</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayAccuracy">0%</div>
+                        <div class="text-sm text-gray-400">Accuracy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Scores -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-accent">Recent Scores</h2>
+                    <button onclick="showScreen('scores')" class="text-accent text-sm hover:underline">View All</button>
+                </div>
+                <div id="recentScores" class="space-y-3">
+                    <!-- Recent scores will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Vocabulary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Finance Vocabulary Spotlight</h2>
+                <div id="spotlightVocab" class="vocab-flashcard" onclick="flipCard()">
+                    <div id="vocabFront" class="text-center">
+                        <div class="text-3xl font-bold text-accent mb-4">Click to reveal</div>
+                        <div class="text-lg text-gray-300">Daily vocabulary practice</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listening Screen -->
+    <div id="listeningScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Listening Practice</h2>
+                <div class="timer-circle" id="listeningTimer">
+                    <div class="timer-progress" id="listeningProgress"></div>
+                    <div class="text-accent font-bold text-xl" id="listeningTime">10:00</div>
+                </div>
+            </div>
+
+            <!-- Audio Player -->
+            <div class="audio-player">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-accent font-bold" id="audioTitle">Audio Track</div>
+                    <div class="flex gap-2">
+                        <button onclick="recordAudio()" id="recordBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            🎤 Record
+                        </button>
+                        <button onclick="playAudio()" id="playBtn" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                            ▶️ Play
+                        </button>
+                        <button onclick="pauseAudio()" id="pauseBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ⏸️ Pause
+                        </button>
+                        <button onclick="replayAudio()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            🔄 Replay
+                        </button>
+                        <button onclick="showAddListeningContent()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ➕ Add Content
+                        </button>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="audioProgress" style="width: 0%"></div>
+                </div>
+                <div class="text-sm text-gray-400 mt-2" id="audioInfo">Financial Meeting Discussion - Part 3</div>
+                
+                <!-- Transcript Display -->
+                <div class="mt-4 bg-black bg-opacity-40 rounded-lg p-4" id="transcriptSection">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-accent font-bold">Transcript</h4>
+                        <button onclick="toggleTranscript()" id="transcriptToggle" class="text-accent text-sm hover:underline">
+                            Show Transcript
+                        </button>
+                    </div>
+                    <div id="transcriptContent" class="text-gray-300 text-sm leading-relaxed hidden">
+                        <p>Welcome to today's quarterly financial review meeting. We'll be discussing our EBITDA performance, cash flow analysis, and budget variance reports for Q3.</p>
+                        <p>Our revenue increased by 18% compared to the same period last year, with particularly strong performance in our technology and healthcare portfolios.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question -->
+            <div id="listeningQuestion" class="question-card">
+                <div class="text-lg font-semibold text-accent mb-4">Question 1 of 10</div>
+                <div class="text-white mb-6">What is the main topic of the financial meeting?</div>
+                <div class="space-y-3">
+                    <div class="answer-option" onclick="selectAnswer(this, 'A')">
+                        <span class="font-bold text-accent mr-3">A)</span>
+                        Quarterly budget review and variance analysis
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'B')">
+                        <span class="font-bold text-accent mr-3">B)</span>
+                        New product launch financial projections
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'C')">
+                        <span class="font-bold text-accent mr-3">C)</span>
+                        Annual audit preparation timeline
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'D')">
+                        <span class="font-bold text-accent mr-3">D)</span>
+                        Investment portfolio rebalancing strategy
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button onclick="previousQuestion()" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold">
+                        ← Previous
+                    </button>
+                    <button onclick="nextQuestion()" class="bg-accent text-black px-6 py-2 rounded-lg font-semibold">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-accent font-semibold">Progress</span>
+                    <span class="text-gray-400" id="questionProgress">1/10</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="setProgress" style="width: 10%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reading Screen -->
+    <div id="readingScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Reading Practice</h2>
+                <div class="timer-circle" id="readingTimer">
+                    <div class="timer-progress" id="readingProgress"></div>
+                    <div class="text-accent font-bold text-xl" id="readingTime">15:00</div>
+                </div>
+            </div>
+
+            <!-- Reading Passage -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-accent font-bold text-lg" id="readingTitle">Financial Report Analysis</div>
+                    <button onclick="showAddReadingContent()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        ➕ Add Content
+                    </button>
+                </div>
+                <div class="text-white leading-relaxed" id="readingPassage">
+                    <p class="mb-4">
+                        The quarterly financial results demonstrate significant improvement in operational efficiency and revenue growth. 
+                        Our EBITDA margin expanded by 250 basis points year-over-year, primarily driven by cost optimization 
+                        initiatives and favorable market conditions.
+                    </p>
+                    <p class="mb-4">
+                        Revenue increased 18% compared to the same period last year, with particularly strong performance in 
+                        our core business segments. The variance analysis reveals that higher-than-expected demand in the 
+                        technology sector contributed significantly to this outperformance.
+                    </p>
+                    <p class="mb-4">
+                        Working capital management improved substantially, with days sales outstanding decreasing from 45 to 38 days. 
+                        This improvement reflects enhanced collection processes and better customer credit assessment procedures 
+                        implemented during the previous quarter.
+                    </p>
+                </div>
+                
+                <!-- Reading Content Management -->
+                <div class="mt-4 pt-4 border-t border-gray-600">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-accent font-bold">Content Library</h4>
+                        <select id="readingContentSelect" onchange="loadSelectedReading()" class="bg-gray-800 border border-accent text-white px-3 py-1 rounded">
+                            <option value="default">Default Financial Report</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question -->
+            <div id="readingQuestion" class="question-card">
+                <div class="text-lg font-semibold text-accent mb-4">Question 1 of 15</div>
+                <div class="text-white mb-6">According to the passage, what was the primary driver of EBITDA margin expansion?</div>
+                <div class="space-y-3">
+                    <div class="answer-option" onclick="selectAnswer(this, 'A')">
+                        <span class="font-bold text-accent mr-3">A)</span>
+                        Increased revenue from technology sector
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'B')">
+                        <span class="font-bold text-accent mr-3">B)</span>
+                        Cost optimization initiatives and favorable market conditions
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'C')">
+                        <span class="font-bold text-accent mr-3">C)</span>
+                        Improved working capital management
+                    </div>
+                    <div class="answer-option" onclick="selectAnswer(this, 'D')">
+                        <span class="font-bold text-accent mr-3">D)</span>
+                        Enhanced collection processes
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button onclick="previousQuestion()" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold">
+                        ← Previous
+                    </button>
+                    <button onclick="nextQuestion()" class="bg-accent text-black px-6 py-2 rounded-lg font-semibold">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-accent font-semibold">Progress</span>
+                    <span class="text-gray-400" id="readingQuestionProgress">1/15</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="readingSetProgress" style="width: 6.67%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Finance Vocabulary Mastery</h2>
+            
+            <!-- Daily Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-accent">Today's Progress</h3>
+                    <span id="vocabProgress" class="text-accent font-bold">0/10</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="vocabProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Vocabulary Card -->
+            <div id="vocabCard" class="vocab-flashcard" onclick="flipVocabCard()">
+                <div id="vocabFront" class="block">
+                    <div class="text-4xl font-bold text-accent mb-6">amortization</div>
+                    <div class="text-lg text-gray-300 mb-4">Click to see definition</div>
+                    <div class="text-sm text-gray-400">TOEIC Finance Vocabulary</div>
+                </div>
+                <div id="vocabBack" class="hidden">
+                    <div class="text-2xl font-bold text-accent mb-4">amortization</div>
+                    <div class="text-lg text-white mb-4">
+                        The gradual reduction of a debt through regular payments over time
+                    </div>
+                    <div class="text-sm text-gray-300 italic mb-6">
+                        "The loan amortization schedule shows decreasing interest payments over the 5-year term."
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        Common in TOEIC Part 5-6 • Financial Context
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Buttons -->
+            <div class="flex justify-center gap-3" id="vocabRating">
+                <button onclick="rateVocab('again')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Again
+                </button>
+                <button onclick="rateVocab('hard')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Hard
+                </button>
+                <button onclick="rateVocab('good')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Good
+                </button>
+                <button onclick="rateVocab('easy')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Easy
+                </button>
+            </div>
+
+            <!-- Add Custom Vocabulary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Add Custom Term</h3>
+                <div class="space-y-3">
+                    <input type="text" id="newVocabTerm" placeholder="Financial term..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <textarea id="newVocabDefinition" rows="2" placeholder="Definition..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <input type="text" id="newVocabExample" placeholder="Example sentence..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <select id="newVocabPart" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="5">Part 5 - Grammar</option>
+                        <option value="6">Part 6 - Text Completion</option>
+                        <option value="7">Part 7 - Reading Comprehension</option>
+                        <option value="listening">Listening Parts</option>
+                    </select>
+                    <button onclick="addCustomVocab()" class="w-full bg-accent text-black p-3 rounded-lg font-semibold">
+                        Add Term
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">TOEIC Power Phrases</h2>
+            
+            <!-- Phrase Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Financial Expressions -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💰 Financial Expressions</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('due to market volatility')">
+                            due to market volatility
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('quarterly earnings report')">
+                            quarterly earnings report
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('budget allocation process')">
+                            budget allocation process
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('cost-benefit analysis')">
+                            cost-benefit analysis
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('return on investment')">
+                            return on investment
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Communication -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💼 Business Communication</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('I would like to schedule a meeting')">
+                            I would like to schedule a meeting
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('according to the financial data')">
+                            according to the financial data
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('please find attached the report')">
+                            please find attached the report
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('we need to review the budget')">
+                            we need to review the budget
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('the deadline has been extended')">
+                            the deadline has been extended
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transitions & Connectors -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🔗 Transitions</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('furthermore')">
+                            furthermore
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('in addition to')">
+                            in addition to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('as a result')">
+                            as a result
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('on the other hand')">
+                            on the other hand
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('in conclusion')">
+                            in conclusion
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOEIC Common Patterns -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📝 TOEIC Patterns</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('is expected to increase')">
+                            is expected to increase
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('has been postponed until')">
+                            has been postponed until
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('will be responsible for')">
+                            will be responsible for
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('should be completed by')">
+                            should be completed by
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('are required to submit')">
+                            are required to submit
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Phrases -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Custom Phrases</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newPhrase" placeholder="Add your custom phrase..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <select id="phraseCategory" class="p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="financial">Financial</option>
+                        <option value="business">Business</option>
+                        <option value="transitions">Transitions</option>
+                        <option value="patterns">TOEIC Patterns</option>
+                    </select>
+                    <button onclick="addCustomPhrase()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add
+                    </button>
+                </div>
+                <div id="customPhrases" class="space-y-2">
+                    <!-- Custom phrases will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scores Screen -->
+    <div id="scoresScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Score Tracking</h2>
+            
+            <!-- Overall Score -->
+            <div class="score-card">
+                <div class="text-4xl font-bold text-accent mb-2" id="overallScore">0</div>
+                <div class="text-lg text-gray-300 mb-4">Estimated TOEIC Score</div>
+                <div class="text-sm text-gray-400">Based on recent practice sessions</div>
+            </div>
+
+            <!-- Part Scores -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🎧 Listening Scores</h3>
+                    <div class="space-y-3">
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 1 - Photos</span>
+                                <span class="text-accent font-bold" id="part1Score">0/10</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part1Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 2 - Q&A</span>
+                                <span class="text-accent font-bold" id="part2Score">0/25</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part2Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 3 - Conversations</span>
+                                <span class="text-accent font-bold" id="part3Score">0/39</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part3Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 4 - Talks</span>
+                                <span class="text-accent font-bold" id="part4Score">0/30</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part4Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📖 Reading Scores</h3>
+                    <div class="space-y-3">
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 5 - Grammar</span>
+                                <span class="text-accent font-bold" id="part5Score">0/30</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part5Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 6 - Text Completion</span>
+                                <span class="text-accent font-bold" id="part6Score">0/16</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part6Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="part-score">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Part 7 - Reading Comprehension</span>
+                                <span class="text-accent font-bold" id="part7Score">0/54</span>
+                            </div>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" id="part7Progress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score History -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Score History</h3>
+                <div id="scoreHistory" class="space-y-3">
+                    <!-- Score history will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Review Screen -->
+    <div id="errorsScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Error Review</h2>
+            
+            <!-- Error Summary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Common Mistakes</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-400" id="grammarErrors">0</div>
+                        <div class="text-sm text-gray-400">Grammar Errors</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-400" id="vocabErrors">0</div>
+                        <div class="text-sm text-gray-400">Vocabulary Errors</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-400" id="listeningErrors">0</div>
+                        <div class="text-sm text-gray-400">Listening Errors</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-400" id="readingErrors">0</div>
+                        <div class="text-sm text-gray-400">Reading Errors</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error List -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Recent Errors</h3>
+                <div id="errorList" class="space-y-4">
+                    <!-- Error items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Study Recommendations -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Study Recommendations</h3>
+                <div id="studyRecommendations" class="space-y-3">
+                    <!-- Recommendations will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breathing Screen -->
+    <div id="breathingScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-2xl font-bold text-accent">Focus Reset Session</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Breathe</div>
+            </div>
+            
+            <div class="text-accent text-4xl font-bold" id="breathingTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center">
+                "Focus and confidence are the keys to TOEIC success."
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startBreathing()" id="startBreathingBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Session
+                </button>
+                <button onclick="pauseBreathing()" id="pauseBreathingBtn" 
+                        class="bg-yellow-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏸️ Pause
+                </button>
+                <button onclick="stopBreathing()" id="stopBreathingBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add Message
+                    </button>
+                </div>
+                <div id="customMessages" class="space-y-2">
+                    <!-- Custom messages will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Performance Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="score-card">
+                    <div class="text-3xl font-bold text-accent" id="totalSessions">0</div>
+                    <div class="text-sm text-gray-400">Total Sessions</div>
+                </div>
+                <div class="score-card">
+                    <div class="text-3xl font-bold text-accent" id="avgAccuracy">0%</div>
+                    <div class="text-sm text-gray-400">Average Accuracy</div>
+                </div>
+                <div class="score-card">
+                    <div class="text-3xl font-bold text-accent" id="studyStreak">0</div>
+                    <div class="text-sm text-gray-400">Study Streak</div>
+                </div>
+                <div class="score-card">
+                    <div class="text-3xl font-bold text-accent" id="vocabMastered">0</div>
+                    <div class="text-sm text-gray-400">Vocab Mastered</div>
+                </div>
+            </div>
+
+            <!-- Progress Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">Weekly Progress</h3>
+                    <div id="weeklyChart" class="space-y-3">
+                        <!-- Weekly progress chart will be here -->
+                    </div>
+                </div>
+                
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">Skill Breakdown</h3>
+                    <div id="skillChart" class="space-y-3">
+                        <!-- Skill breakdown chart will be here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Data Management</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="exportAllData()" class="bg-blue-600 text-white p-3 rounded-lg font-semibold">
+                        📤 Export Data
+                    </button>
+                    <button onclick="importData()" class="bg-green-600 text-white p-3 rounded-lg font-semibold">
+                        📥 Import Data
+                    </button>
+                    <button onclick="backupData()" class="bg-purple-600 text-white p-3 rounded-lg font-semibold">
+                        💾 Backup
+                    </button>
+                    <button onclick="syncData()" class="bg-accent text-black p-3 rounded-lg font-semibold">
+                        🔄 Sync
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Modal -->
+    <div id="quickStartModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-accent mb-6">Quick Start Practice</h3>
+            <div class="space-y-4">
+                <button onclick="startTimedSet('listening', 10)" class="w-full bg-accent text-black p-4 rounded-lg font-semibold text-left">
+                    🎧 10-Minute Listening Set
+                </button>
+                <button onclick="startTimedSet('reading', 15)" class="w-full bg-blue-600 text-white p-4 rounded-lg font-semibold text-left">
+                    📖 15-Minute Reading Set
+                </button>
+                <button onclick="startVocabReview()" class="w-full bg-green-600 text-white p-4 rounded-lg font-semibold text-left">
+                    📚 Vocabulary Review
+                </button>
+                <button onclick="closeQuickStart()" class="w-full bg-gray-600 text-white p-4 rounded-lg font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Recording Indicator -->
+    <div id="voiceIndicator" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white p-6 rounded-lg hidden z-50">
+        <div class="text-center">
+            <div class="text-4xl mb-4">🎤</div>
+            <div class="text-lg font-bold mb-2">Recording...</div>
+            <div class="text-sm mb-4">Speak your answer clearly</div>
+            <button onclick="stopVoiceInput()" class="bg-white text-red-600 px-6 py-2 rounded-lg font-semibold">
+                Stop Recording
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Listening Content Modal -->
+    <div id="addListeningModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <h3 class="text-xl font-bold text-accent mb-6">Add Custom Listening Content</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Title</label>
+                    <input type="text" id="listeningTitle" placeholder="e.g., Budget Meeting Discussion" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">TOEIC Part</label>
+                    <select id="listeningPart" class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                        <option value="1">Part 1 - Photographs</option>
+                        <option value="2">Part 2 - Question-Response</option>
+                        <option value="3">Part 3 - Conversations</option>
+                        <option value="4">Part 4 - Talks</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Audio Recording</label>
+                    <div class="flex gap-3 mb-3">
+                        <button onclick="startAudioRecording()" id="startRecordBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            🎤 Start Recording
+                        </button>
+                        <button onclick="stopAudioRecording()" id="stopRecordBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold" disabled>
+                            ⏹️ Stop Recording
+                        </button>
+                        <button onclick="playRecording()" id="playRecordBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold" disabled>
+                            ▶️ Play Recording
+                        </button>
+                    </div>
+                    <div id="recordingStatus" class="text-sm text-gray-400">No recording yet</div>
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Transcript</label>
+                    <textarea id="listeningTranscript" rows="4" placeholder="Enter the transcript of your audio..." 
+                              class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Questions</label>
+                    <div id="listeningQuestions" class="space-y-4">
+                        <div class="question-input bg-gray-700 p-4 rounded-lg">
+                            <input type="text" placeholder="Question 1..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                            </div>
+                            <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                                <option value="0">Correct Answer: A</option>
+                                <option value="1">Correct Answer: B</option>
+                                <option value="2">Correct Answer: C</option>
+                                <option value="3">Correct Answer: D</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="addListeningQuestion()" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        + Add Question
+                    </button>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button onclick="saveListeningContent()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Save Content
+                    </button>
+                    <button onclick="closeAddListeningModal()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Reading Content Modal -->
+    <div id="addReadingModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <h3 class="text-xl font-bold text-accent mb-6">Add Custom Reading Content</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Title</label>
+                    <input type="text" id="readingContentTitle" placeholder="e.g., Annual Financial Report" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">TOEIC Part</label>
+                    <select id="readingPart" class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                        <option value="5">Part 5 - Incomplete Sentences</option>
+                        <option value="6">Part 6 - Text Completion</option>
+                        <option value="7">Part 7 - Reading Comprehension</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Reading Passage</label>
+                    <textarea id="readingContentText" rows="8" placeholder="Enter your financial reading passage..." 
+                              class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-accent font-semibold mb-2">Questions</label>
+                    <div id="readingQuestions" class="space-y-4">
+                        <div class="question-input bg-gray-700 p-4 rounded-lg">
+                            <input type="text" placeholder="Question 1..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                                <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                            </div>
+                            <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                                <option value="0">Correct Answer: A</option>
+                                <option value="1">Correct Answer: B</option>
+                                <option value="2">Correct Answer: C</option>
+                                <option value="3">Correct Answer: D</option>
+                            </select>
+                            <textarea placeholder="Explanation (optional)..." rows="2" class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white"></textarea>
+                        </div>
+                    </div>
+                    <button onclick="addReadingQuestion()" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        + Add Question
+                    </button>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button onclick="saveReadingContent()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Save Content
+                    </button>
+                    <button onclick="closeAddReadingModal()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSession = null;
+        let currentQuestion = 0;
+        let sessionTimer = null;
+        let sessionTimeLeft = 0;
+        let vocabulary = [];
+        let phrases = [];
+        let motivationalMessages = [];
+        let scores = [];
+        let errors = [];
+        let analytics = {
+            totalSessions: 0,
+            currentStreak: 0,
+            vocabReviews: 0,
+            lastActiveDate: null
+        };
+        let breathingTimer = null;
+        let breathingInterval = null;
+        let breathingTimeLeft = 25 * 60;
+        let breathingPhase = 'inhale';
+        let isRecording = false;
+        let recognition = null;
+        let isOnline = navigator.onLine;
+        let currentVocabIndex = 0;
+        let isVocabFlipped = false;
+        let customListeningContent = [];
+        let customReadingContent = [];
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let currentRecording = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadHomeScreen();
+            updateStats();
+            setupOfflineHandling();
+            setupSpeechRecognition();
+            loadSpotlightVocab();
+            updateContentSelectors();
+        });
+
+        // Data management
+        function initializeData() {
+            const savedData = localStorage.getItem('toeicFinanceData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                vocabulary = data.vocabulary || getDefaultVocabulary();
+                phrases = data.phrases || getDefaultPhrases();
+                motivationalMessages = data.messages || getDefaultMessages();
+                scores = data.scores || [];
+                errors = data.errors || [];
+                analytics = data.analytics || analytics;
+                customListeningContent = data.customListeningContent || [];
+                customReadingContent = data.customReadingContent || [];
+            } else {
+                vocabulary = getDefaultVocabulary();
+                phrases = getDefaultPhrases();
+                motivationalMessages = getDefaultMessages();
+                customListeningContent = [];
+                customReadingContent = [];
+                saveData();
+            }
+        }
+
+        function saveData() {
+            const data = {
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                scores,
+                errors,
+                analytics,
+                customListeningContent,
+                customReadingContent,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('toeicFinanceData', JSON.stringify(data));
+            if (isOnline) {
+                showSyncIndicator();
+            }
+        }
+
+        function getDefaultVocabulary() {
+            return [
+                {
+                    id: '1',
+                    term: 'amortization',
+                    definition: 'The gradual reduction of a debt through regular payments over time',
+                    example: 'The loan amortization schedule shows decreasing interest payments over the 5-year term.',
+                    part: '5',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '2',
+                    term: 'EBITDA',
+                    definition: 'Earnings Before Interest, Taxes, Depreciation, and Amortization',
+                    example: 'Our EBITDA margin improved by 200 basis points year-over-year.',
+                    part: '7',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '3',
+                    term: 'variance',
+                    definition: 'The difference between planned and actual performance',
+                    example: 'The budget variance was primarily due to higher material costs.',
+                    part: '6',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '4',
+                    term: 'liquidity',
+                    definition: 'The ability to convert assets into cash quickly',
+                    example: 'The company maintains high liquidity to meet short-term obligations.',
+                    part: '7',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '5',
+                    term: 'depreciation',
+                    definition: 'The decrease in value of an asset over time',
+                    example: 'Equipment depreciation is calculated using the straight-line method.',
+                    part: '5',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                }
+            ];
+        }
+
+        function getDefaultPhrases() {
+            return [
+                { id: '1', category: 'financial', text: 'due to market volatility', custom: false },
+                { id: '2', category: 'business', text: 'I would like to schedule a meeting', custom: false },
+                { id: '3', category: 'transitions', text: 'furthermore', custom: false },
+                { id: '4', category: 'patterns', text: 'is expected to increase', custom: false }
+            ];
+        }
+
+        function getDefaultMessages() {
+            return [
+                "Focus and confidence are the keys to TOEIC success.",
+                "Every practice session brings you closer to your target score.",
+                "Consistency in study leads to consistent improvement.",
+                "Master the patterns, master the test.",
+                "Your financial English skills are growing stronger."
+            ];
+        }
+
+        // Screen management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'home': loadHomeScreen(); break;
+                case 'listening': loadListeningScreen(); break;
+                case 'reading': loadReadingScreen(); break;
+                case 'vocabulary': loadVocabularyScreen(); break;
+                case 'phrases': loadPhrasesScreen(); break;
+                case 'scores': loadScoresScreen(); break;
+                case 'errors': loadErrorsScreen(); break;
+                case 'breathing': loadBreathingScreen(); break;
+                case 'analytics': loadAnalyticsScreen(); break;
+            }
+        }
+
+        // Home screen
+        function loadHomeScreen() {
+            updateTodayProgress();
+            loadRecentScores();
+            loadSpotlightVocab();
+        }
+
+        function updateTodayProgress() {
+            const today = new Date().toDateString();
+            const todayScores = scores.filter(score => new Date(score.date).toDateString() === today);
+            
+            const listeningCount = todayScores.filter(s => s.type === 'listening').length;
+            const readingCount = todayScores.filter(s => s.type === 'reading').length;
+            const vocabCount = vocabulary.filter(v => {
+                const lastReview = v.lastReview ? new Date(v.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            const totalQuestions = todayScores.reduce((sum, s) => sum + s.total, 0);
+            const correctAnswers = todayScores.reduce((sum, s) => sum + s.correct, 0);
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            
+            document.getElementById('todayListening').textContent = listeningCount;
+            document.getElementById('todayReading').textContent = readingCount;
+            document.getElementById('todayVocab').textContent = vocabCount;
+            document.getElementById('todayAccuracy').textContent = accuracy + '%';
+        }
+
+        function loadRecentScores() {
+            const recentScores = scores.slice(-5).reverse();
+            const container = document.getElementById('recentScores');
+            
+            if (recentScores.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No practice sessions yet</div>';
+                return;
+            }
+            
+            container.innerHTML = recentScores.map(score => `
+                <div class="part-score">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-semibold text-accent">${score.type.toUpperCase()}</span>
+                            <span class="text-sm text-gray-400 ml-2">${new Date(score.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-accent font-bold">${score.correct}/${score.total}</div>
+                            <div class="text-sm text-gray-400">${Math.round((score.correct/score.total)*100)}%</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadSpotlightVocab() {
+            if (vocabulary.length === 0) return;
+            
+            const randomVocab = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+            const container = document.getElementById('spotlightVocab');
+            
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-4">${randomVocab.term}</div>
+                    <div class="text-lg text-gray-300 mb-4">${randomVocab.definition}</div>
+                    <div class="text-sm text-gray-400 italic">"${randomVocab.example}"</div>
+                    <div class="text-xs text-gray-500 mt-4">TOEIC Part ${randomVocab.part}</div>
+                </div>
+            `;
+        }
+
+        function flipCard() {
+            loadSpotlightVocab();
+        }
+
+        // Timed practice sessions
+        function startTimedSet(type, minutes) {
+            currentSession = {
+                type: type,
+                duration: minutes * 60,
+                questions: generateQuestions(type),
+                currentQuestion: 0,
+                answers: [],
+                startTime: Date.now()
+            };
+            
+            sessionTimeLeft = minutes * 60;
+            currentQuestion = 0;
+            
+            if (type === 'listening') {
+                showScreen('listening');
+                startSessionTimer('listening');
+            } else {
+                showScreen('reading');
+                startSessionTimer('reading');
+            }
+            
+            loadCurrentQuestion();
+            closeQuickStart();
+        }
+
+        function generateQuestions(type) {
+            // Generate sample questions based on type
+            const questions = [];
+            const count = type === 'listening' ? 10 : 15;
+            
+            for (let i = 0; i < count; i++) {
+                questions.push({
+                    id: i + 1,
+                    question: `Sample ${type} question ${i + 1} with financial context`,
+                    options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                    correct: Math.floor(Math.random() * 4),
+                    explanation: `This tests your understanding of financial ${type} skills.`
+                });
+            }
+            
+            return questions;
+        }
+
+        function startSessionTimer(type) {
+            const timerElement = document.getElementById(type + 'Time');
+            const progressElement = document.getElementById(type + 'Progress');
+            
+            sessionTimer = setInterval(() => {
+                sessionTimeLeft--;
+                
+                const minutes = Math.floor(sessionTimeLeft / 60);
+                const seconds = sessionTimeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                const progress = ((currentSession.duration - sessionTimeLeft) / currentSession.duration) * 360;
+                progressElement.style.transform = `rotate(${progress}deg)`;
+                
+                if (sessionTimeLeft <= 0) {
+                    finishSession();
+                }
+            }, 1000);
+        }
+
+        function loadCurrentQuestion() {
+            if (!currentSession) return;
+            
+            const question = currentSession.questions[currentQuestion];
+            const isListening = currentSession.type === 'listening';
+            
+            if (isListening) {
+                document.getElementById('questionProgress').textContent = `${currentQuestion + 1}/${currentSession.questions.length}`;
+                document.getElementById('setProgress').style.width = `${((currentQuestion + 1) / currentSession.questions.length) * 100}%`;
+            } else {
+                document.getElementById('readingQuestionProgress').textContent = `${currentQuestion + 1}/${currentSession.questions.length}`;
+                document.getElementById('readingSetProgress').style.width = `${((currentQuestion + 1) / currentSession.questions.length) * 100}%`;
+            }
+            
+            // Update question content
+            const questionElement = document.getElementById(isListening ? 'listeningQuestion' : 'readingQuestion');
+            questionElement.querySelector('.text-lg').textContent = `Question ${currentQuestion + 1} of ${currentSession.questions.length}`;
+            questionElement.querySelector('.text-white').textContent = question.question;
+            
+            // Update answer options
+            const options = questionElement.querySelectorAll('.answer-option');
+            options.forEach((option, index) => {
+                option.textContent = '';
+                option.innerHTML = `<span class="font-bold text-accent mr-3">${String.fromCharCode(65 + index)})</span>${question.options[index]}`;
+                option.classList.remove('selected', 'correct', 'incorrect');
+                option.onclick = () => selectAnswer(option, String.fromCharCode(65 + index));
+            });
+        }
+
+        function selectAnswer(element, answer) {
+            // Remove previous selections
+            element.parentElement.querySelectorAll('.answer-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Mark current selection
+            element.classList.add('selected');
+            
+            // Store answer
+            if (currentSession) {
+                currentSession.answers[currentQuestion] = answer;
+            }
+        }
+
+        function nextQuestion() {
+            if (!currentSession) return;
+            
+            if (currentQuestion < currentSession.questions.length - 1) {
+                currentQuestion++;
+                loadCurrentQuestion();
+            } else {
+                finishSession();
+            }
+        }
+
+        function previousQuestion() {
+            if (!currentSession) return;
+            
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadCurrentQuestion();
+            }
+        }
+
+        function finishSession() {
+            if (!currentSession) return;
+            
+            clearInterval(sessionTimer);
+            
+            // Calculate score
+            let correct = 0;
+            currentSession.questions.forEach((question, index) => {
+                const userAnswer = currentSession.answers[index];
+                const correctAnswer = String.fromCharCode(65 + question.correct);
+                if (userAnswer === correctAnswer) {
+                    correct++;
+                } else if (userAnswer) {
+                    // Record error for review
+                    errors.push({
+                        id: Date.now() + index,
+                        question: question.question,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswer,
+                        explanation: question.explanation,
+                        type: currentSession.type,
+                        date: new Date().toISOString()
+                    });
+                }
+            });
+            
+            // Save score
+            const score = {
+                id: Date.now(),
+                type: currentSession.type,
+                correct: correct,
+                total: currentSession.questions.length,
+                date: new Date().toISOString(),
+                duration: currentSession.duration - sessionTimeLeft
+            };
+            
+            scores.push(score);
+            analytics.totalSessions++;
+            updateStreak();
+            saveData();
+            
+            // Show results
+            showSessionResults(score);
+            
+            currentSession = null;
+        }
+
+        function showSessionResults(score) {
+            const percentage = Math.round((score.correct / score.total) * 100);
+            const message = percentage >= 80 ? 'Excellent!' : percentage >= 60 ? 'Good job!' : 'Keep practicing!';
+            
+            showNotification(`${message} Score: ${score.correct}/${score.total} (${percentage}%)`);
+            
+            // Update displays
+            updateStats();
+            loadHomeScreen();
+            showScreen('home');
+        }
+
+        // Audio functions (simulated)
+        function playAudio() {
+            document.getElementById('playBtn').textContent = '⏸️ Playing';
+            document.getElementById('playBtn').onclick = pauseAudio;
+            
+            // Simulate audio progress
+            let progress = 0;
+            const audioInterval = setInterval(() => {
+                progress += 2;
+                document.getElementById('audioProgress').style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(audioInterval);
+                    document.getElementById('playBtn').textContent = '▶️ Play';
+                    document.getElementById('playBtn').onclick = playAudio;
+                    document.getElementById('audioProgress').style.width = '0%';
+                }
+            }, 100);
+        }
+
+        function pauseAudio() {
+            document.getElementById('playBtn').textContent = '▶️ Play';
+            document.getElementById('playBtn').onclick = playAudio;
+        }
+
+        function replayAudio() {
+            document.getElementById('audioProgress').style.width = '0%';
+            playAudio();
+        }
+
+        // Vocabulary screen
+        function loadVocabularyScreen() {
+            loadVocabularyReview();
+            updateVocabularyProgress();
+        }
+
+        function loadVocabularyReview() {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            
+            if (dueWords.length === 0) {
+                document.getElementById('vocabCard').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl text-accent mb-4">🎉</div>
+                        <div class="text-2xl font-bold text-accent mb-2">All Caught Up!</div>
+                        <div class="text-gray-400">No vocabulary due for review</div>
+                        <button onclick="addRandomVocab()" class="mt-4 bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                            Add Random Term
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currentWord = dueWords[currentVocabIndex % dueWords.length];
+            loadVocabCard(currentWord);
+        }
+
+        function loadVocabCard(word) {
+            document.getElementById('vocabFront').innerHTML = `
+                <div class="text-4xl font-bold text-accent mb-6">${word.term}</div>
+                <div class="text-lg text-gray-300 mb-4">Click to see definition</div>
+                <div class="text-sm text-gray-400">TOEIC Part ${word.part} • Finance Vocabulary</div>
+            `;
+            
+            document.getElementById('vocabBack').innerHTML = `
+                <div class="text-2xl font-bold text-accent mb-4">${word.term}</div>
+                <div class="text-lg text-white mb-4">${word.definition}</div>
+                <div class="text-sm text-gray-300 italic mb-6">"${word.example}"</div>
+                <div class="text-xs text-gray-400">Common in TOEIC Part ${word.part} • Financial Context</div>
+            `;
+            
+            document.getElementById('vocabFront').classList.remove('hidden');
+            document.getElementById('vocabBack').classList.add('hidden');
+            isVocabFlipped = false;
+        }
+
+        function flipVocabCard() {
+            if (isVocabFlipped) {
+                document.getElementById('vocabFront').classList.remove('hidden');
+                document.getElementById('vocabBack').classList.add('hidden');
+            } else {
+                document.getElementById('vocabFront').classList.add('hidden');
+                document.getElementById('vocabBack').classList.remove('hidden');
+            }
+            isVocabFlipped = !isVocabFlipped;
+        }
+
+        function updateVocabularyProgress() {
+            const today = new Date().toDateString();
+            const reviewedToday = vocabulary.filter(word => {
+                const lastReview = word.lastReview ? new Date(word.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            const dailyGoal = 10;
+            const progress = Math.min((reviewedToday / dailyGoal) * 100, 100);
+            
+            document.getElementById('vocabProgress').textContent = `${reviewedToday}/${dailyGoal}`;
+            document.getElementById('vocabProgressBar').style.width = `${progress}%`;
+        }
+
+        function rateVocab(rating) {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            if (dueWords.length === 0) return;
+            
+            const currentWord = dueWords[currentVocabIndex % dueWords.length];
+            const wordIndex = vocabulary.findIndex(w => w.id === currentWord.id);
+            
+            if (wordIndex === -1) return;
+            
+            // Spaced repetition algorithm
+            let newEase = currentWord.ease;
+            let newInterval = currentWord.interval;
+            
+            switch (rating) {
+                case 'again':
+                    newEase = Math.max(1.3, newEase - 0.2);
+                    newInterval = 1;
+                    break;
+                case 'hard':
+                    newEase = Math.max(1.3, newEase - 0.15);
+                    newInterval = Math.max(1, Math.round(newInterval * 1.2));
+                    break;
+                case 'good':
+                    newInterval = Math.round(newInterval * newEase);
+                    break;
+                case 'easy':
+                    newEase = newEase + 0.15;
+                    newInterval = Math.round(newInterval * newEase * 1.3);
+                    break;
+            }
+            
+            vocabulary[wordIndex] = {
+                ...currentWord,
+                ease: newEase,
+                interval: newInterval,
+                due: Date.now() + (newInterval * 24 * 60 * 60 * 1000),
+                lastReview: Date.now()
+            };
+            
+            analytics.vocabReviews++;
+            saveData();
+            
+            currentVocabIndex++;
+            loadVocabularyReview();
+            updateVocabularyProgress();
+            updateStats();
+        }
+
+        function addCustomVocab() {
+            const term = document.getElementById('newVocabTerm').value.trim();
+            const definition = document.getElementById('newVocabDefinition').value.trim();
+            const example = document.getElementById('newVocabExample').value.trim();
+            const part = document.getElementById('newVocabPart').value;
+            
+            if (!term || !definition) {
+                showNotification('Please enter both term and definition');
+                return;
+            }
+            
+            vocabulary.push({
+                id: Date.now().toString(),
+                term: term,
+                definition: definition,
+                example: example || `Example usage of ${term} in TOEIC context.`,
+                part: part,
+                due: Date.now(),
+                ease: 2.5,
+                interval: 1,
+                lastReview: null
+            });
+            
+            saveData();
+            
+            document.getElementById('newVocabTerm').value = '';
+            document.getElementById('newVocabDefinition').value = '';
+            document.getElementById('newVocabExample').value = '';
+            
+            showNotification('Vocabulary term added!');
+            loadVocabularyReview();
+        }
+
+        // Phrases screen
+        function loadPhrasesScreen() {
+            loadCustomPhrases();
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = phrase;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function addCustomPhrase() {
+            const phrase = document.getElementById('newPhrase').value.trim();
+            const category = document.getElementById('phraseCategory').value;
+            
+            if (!phrase) {
+                showNotification('Please enter a phrase');
+                return;
+            }
+            
+            phrases.push({
+                id: Date.now().toString(),
+                category: category,
+                text: phrase,
+                custom: true
+            });
+            
+            saveData();
+            
+            document.getElementById('newPhrase').value = '';
+            loadCustomPhrases();
+            showNotification('Custom phrase added!');
+        }
+
+        function loadCustomPhrases() {
+            const customPhrases = phrases.filter(p => p.custom);
+            const container = document.getElementById('customPhrases');
+            
+            if (customPhrases.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No custom phrases yet</div>';
+                return;
+            }
+            
+            const groupedPhrases = customPhrases.reduce((acc, phrase) => {
+                if (!acc[phrase.category]) acc[phrase.category] = [];
+                acc[phrase.category].push(phrase);
+                return acc;
+            }, {});
+            
+            container.innerHTML = Object.entries(groupedPhrases).map(([category, categoryPhrases]) => `
+                <div class="mb-4">
+                    <h4 class="font-bold text-accent mb-2">${category.toUpperCase()}</h4>
+                    <div class="space-y-1">
+                        ${categoryPhrases.map(phrase => `
+                            <div class="flex justify-between items-center bg-gray-800 p-2 rounded">
+                                <span class="phrase-chip" onclick="copyPhrase('${phrase.text}')">${phrase.text}</span>
+                                <button onclick="deletePhrase('${phrase.id}')" class="text-red-400 text-xs">Delete</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePhrase(phraseId) {
+            phrases = phrases.filter(p => p.id !== phraseId);
+            saveData();
+            loadCustomPhrases();
+            showNotification('Phrase deleted');
+        }
+
+        // Scores screen
+        function loadScoresScreen() {
+            updateOverallScore();
+            updatePartScores();
+            loadScoreHistory();
+        }
+
+        function updateOverallScore() {
+            if (scores.length === 0) {
+                document.getElementById('overallScore').textContent = '0';
+                return;
+            }
+            
+            const recentScores = scores.slice(-10);
+            const totalQuestions = recentScores.reduce((sum, s) => sum + s.total, 0);
+            const correctAnswers = recentScores.reduce((sum, s) => sum + s.correct, 0);
+            const accuracy = totalQuestions > 0 ? correctAnswers / totalQuestions : 0;
+            
+            // Estimate TOEIC score (simplified calculation)
+            const estimatedScore = Math.round(accuracy * 990);
+            document.getElementById('overallScore').textContent = estimatedScore;
+        }
+
+        function updatePartScores() {
+            // Simulate part scores based on recent performance
+            const parts = ['part1', 'part2', 'part3', 'part4', 'part5', 'part6', 'part7'];
+            const maxScores = [10, 25, 39, 30, 30, 16, 54];
+            
+            parts.forEach((part, index) => {
+                const randomScore = Math.floor(Math.random() * maxScores[index]);
+                const percentage = (randomScore / maxScores[index]) * 100;
+                
+                document.getElementById(part + 'Score').textContent = `${randomScore}/${maxScores[index]}`;
+                document.getElementById(part + 'Progress').style.width = `${percentage}%`;
+            });
+        }
+
+        function loadScoreHistory() {
+            const container = document.getElementById('scoreHistory');
+            
+            if (scores.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No scores recorded yet</div>';
+                return;
+            }
+            
+            const recentScores = scores.slice(-10).reverse();
+            container.innerHTML = recentScores.map(score => {
+                const percentage = Math.round((score.correct / score.total) * 100);
+                return `
+                    <div class="part-score">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-semibold text-accent">${score.type.toUpperCase()}</span>
+                                <span class="text-sm text-gray-400 ml-2">${new Date(score.date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold">${score.correct}/${score.total}</div>
+                                <div class="text-sm text-gray-400">${percentage}%</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-2">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Error review screen
+        function loadErrorsScreen() {
+            updateErrorSummary();
+            loadErrorList();
+            generateStudyRecommendations();
+        }
+
+        function updateErrorSummary() {
+            const grammarErrors = errors.filter(e => e.type === 'reading' && e.question.includes('grammar')).length;
+            const vocabErrors = errors.filter(e => e.question.includes('vocabulary')).length;
+            const listeningErrors = errors.filter(e => e.type === 'listening').length;
+            const readingErrors = errors.filter(e => e.type === 'reading').length;
+            
+            document.getElementById('grammarErrors').textContent = grammarErrors;
+            document.getElementById('vocabErrors').textContent = vocabErrors;
+            document.getElementById('listeningErrors').textContent = listeningErrors;
+            document.getElementById('readingErrors').textContent = readingErrors;
+        }
+
+        function loadErrorList() {
+            const container = document.getElementById('errorList');
+            
+            if (errors.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No errors recorded yet</div>';
+                return;
+            }
+            
+            const recentErrors = errors.slice(-10).reverse();
+            container.innerHTML = recentErrors.map(error => `
+                <div class="error-review-item">
+                    <div class="font-semibold text-red-400 mb-2">${error.type.toUpperCase()} Error</div>
+                    <div class="text-white mb-2">${error.question}</div>
+                    <div class="text-sm text-gray-300 mb-2">
+                        Your answer: <span class="text-red-400">${error.userAnswer}</span> | 
+                        Correct answer: <span class="text-green-400">${error.correctAnswer}</span>
+                    </div>
+                    <div class="text-xs text-gray-400">${error.explanation}</div>
+                    <div class="text-xs text-gray-500 mt-2">${new Date(error.date).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateStudyRecommendations() {
+            const container = document.getElementById('studyRecommendations');
+            const recommendations = [];
+            
+            const listeningErrors = errors.filter(e => e.type === 'listening').length;
+            const readingErrors = errors.filter(e => e.type === 'reading').length;
+            
+            if (listeningErrors > readingErrors) {
+                recommendations.push('Focus on listening practice - try more Part 3 and 4 exercises');
+                recommendations.push('Practice note-taking while listening to financial discussions');
+            } else if (readingErrors > listeningErrors) {
+                recommendations.push('Strengthen reading comprehension with financial texts');
+                recommendations.push('Review grammar patterns commonly tested in Part 5');
+            }
+            
+            if (vocabulary.filter(v => v.ease < 2.0).length > 5) {
+                recommendations.push('Spend more time on vocabulary review - focus on difficult terms');
+            }
+            
+            if (recommendations.length === 0) {
+                recommendations.push('Keep up the great work! Continue regular practice sessions');
+                recommendations.push('Try increasing the difficulty level of your practice sets');
+            }
+            
+            container.innerHTML = recommendations.map(rec => `
+                <div class="bg-blue-600 bg-opacity-20 border border-blue-400 rounded-lg p-3">
+                    <div class="text-blue-300">💡 ${rec}</div>
+                </div>
+            `).join('');
+        }
+
+        // Breathing screen
+        function loadBreathingScreen() {
+            loadCustomMessages();
+        }
+
+        function startBreathing() {
+            breathingTimeLeft = 25 * 60;
+            breathingPhase = 'inhale';
+            
+            document.getElementById('startBreathingBtn').disabled = true;
+            document.getElementById('pauseBreathingBtn').disabled = false;
+            document.getElementById('stopBreathingBtn').disabled = false;
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                updateBreathingTimer();
+                
+                if (breathingTimeLeft <= 0) {
+                    stopBreathing();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateBreathingTimer() {
+            const minutes = Math.floor(breathingTimeLeft / 60);
+            const seconds = breathingTimeLeft % 60;
+            document.getElementById('breathingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (motivationalMessages.length > 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function pauseBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+                
+                document.getElementById('pauseBreathingBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseBreathingBtn').onclick = resumeBreathing;
+            }
+        }
+
+        function resumeBreathing() {
+            startBreathing();
+            document.getElementById('pauseBreathingBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseBreathingBtn').onclick = pauseBreathing;
+        }
+
+        function stopBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startBreathingBtn').disabled = false;
+            document.getElementById('pauseBreathingBtn').disabled = true;
+            document.getElementById('stopBreathingBtn').disabled = true;
+            
+            showNotification('Focus session completed! 🧘');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) return;
+            
+            motivationalMessages.push(message);
+            saveData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMessages();
+            showNotification('Motivational message added!');
+        }
+
+        function loadCustomMessages() {
+            const customMessages = motivationalMessages.slice(5); // Skip default messages
+            const container = document.getElementById('customMessages');
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            motivationalMessages.splice(index, 1);
+            saveData();
+            loadCustomMessages();
+            showNotification('Message removed');
+        }
+
+        // Analytics screen
+        function loadAnalyticsScreen() {
+            updateAnalyticsDisplay();
+            loadWeeklyChart();
+            loadSkillChart();
+        }
+
+        function updateAnalyticsDisplay() {
+            document.getElementById('totalSessions').textContent = analytics.totalSessions;
+            document.getElementById('studyStreak').textContent = analytics.currentStreak;
+            document.getElementById('vocabMastered').textContent = vocabulary.filter(v => v.ease > 3.0).length;
+            
+            const totalQuestions = scores.reduce((sum, s) => sum + s.total, 0);
+            const correctAnswers = scores.reduce((sum, s) => sum + s.correct, 0);
+            const avgAccuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            document.getElementById('avgAccuracy').textContent = avgAccuracy + '%';
+        }
+
+        function loadWeeklyChart() {
+            const container = document.getElementById('weeklyChart');
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            container.innerHTML = days.map((day, index) => {
+                const sessions = Math.floor(Math.random() * 5);
+                const percentage = (sessions / 5) * 100;
+                return `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-accent font-semibold">${day}</span>
+                        <span class="text-gray-400">${sessions} sessions</span>
+                    </div>
+                    <div class="progress-bar mb-3">
+                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadSkillChart() {
+            const container = document.getElementById('skillChart');
+            const skills = [
+                { name: 'Listening', score: 75 },
+                { name: 'Reading', score: 82 },
+                { name: 'Vocabulary', score: 68 },
+                { name: 'Grammar', score: 79 }
+            ];
+            
+            container.innerHTML = skills.map(skill => `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-accent font-semibold">${skill.name}</span>
+                    <span class="text-gray-400">${skill.score}%</span>
+                </div>
+                <div class="progress-bar mb-3">
+                    <div class="progress-fill" style="width: ${skill.score}%"></div>
+                </div>
+            `).join('');
+        }
+
+        // Quick start functions
+        function quickStart() {
+            document.getElementById('quickStartModal').classList.remove('hidden');
+        }
+
+        function closeQuickStart() {
+            document.getElementById('quickStartModal').classList.add('hidden');
+        }
+
+        function startVocabReview() {
+            closeQuickStart();
+            showScreen('vocabulary');
+        }
+
+        // Speech recognition setup
+        function setupSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    handleVoiceInput(transcript);
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                };
+            }
+        }
+
+        function startVoiceInput() {
+            if (!recognition) {
+                showNotification('Speech recognition not supported');
+                return;
+            }
+            
+            isRecording = true;
+            document.getElementById('voiceIndicator').classList.remove('hidden');
+            recognition.start();
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById('voiceIndicator').classList.add('hidden');
+            }
+        }
+
+        function handleVoiceInput(transcript) {
+            // Process voice input based on current screen
+            showNotification(`Voice input: "${transcript}"`);
+            stopVoiceInput();
+        }
+
+        // Data management functions
+        function exportAllData() {
+            const data = {
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                scores,
+                errors,
+                analytics,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `toeic-finance-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('This will replace all current data. Are you sure?')) {
+                            vocabulary = importedData.vocabulary || [];
+                            phrases = importedData.phrases || [];
+                            motivationalMessages = importedData.messages || [];
+                            scores = importedData.scores || [];
+                            errors = importedData.errors || [];
+                            analytics = importedData.analytics || analytics;
+                            
+                            saveData();
+                            showNotification('Data imported successfully!');
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    } catch (error) {
+                        showNotification('Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function backupData() {
+            exportAllData();
+        }
+
+        function syncData() {
+            showSyncIndicator();
+            showNotification('Data synced (offline mode)');
+        }
+
+        // Utility functions
+        function updateStats() {
+            document.getElementById('currentStreak').textContent = analytics.currentStreak;
+            document.getElementById('totalScore').textContent = scores.length > 0 ? 
+                Math.round(scores.reduce((sum, s) => sum + (s.correct/s.total)*100, 0) / scores.length) : 0;
+            document.getElementById('testsTaken').textContent = analytics.totalSessions;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = analytics.lastActiveDate ? new Date(analytics.lastActiveDate).toDateString() : null;
+            
+            if (lastActive === today) {
+                return;
+            }
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastActive === yesterday.toDateString()) {
+                analytics.currentStreak++;
+            } else if (lastActive !== today) {
+                analytics.currentStreak = 1;
+            }
+            
+            analytics.lastActiveDate = new Date().toISOString();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-6 py-3 rounded-lg font-semibold z-50 shadow-lg';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        function showSyncIndicator() {
+            document.getElementById('syncIndicator').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('syncIndicator').classList.add('hidden');
+            }, 2000);
+        }
+
+        function setupOfflineHandling() {
+            window.addEventListener('online', () => {
+                isOnline = true;
+                showSyncIndicator();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                showNotification('Working offline');
+            });
+        }
+
+        // Custom Content Creation Functions
+        function showAddListeningContent() {
+            document.getElementById('addListeningModal').classList.remove('hidden');
+            resetListeningForm();
+        }
+
+        function closeAddListeningModal() {
+            document.getElementById('addListeningModal').classList.add('hidden');
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                stopAudioRecording();
+            }
+        }
+
+        function showAddReadingContent() {
+            document.getElementById('addReadingModal').classList.remove('hidden');
+            resetReadingForm();
+        }
+
+        function closeAddReadingModal() {
+            document.getElementById('addReadingModal').classList.add('hidden');
+        }
+
+        function resetListeningForm() {
+            document.getElementById('listeningTitle').value = '';
+            document.getElementById('listeningPart').value = '3';
+            document.getElementById('listeningTranscript').value = '';
+            document.getElementById('listeningQuestions').innerHTML = `
+                <div class="question-input bg-gray-700 p-4 rounded-lg">
+                    <input type="text" placeholder="Question 1..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    </div>
+                    <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                        <option value="0">Correct Answer: A</option>
+                        <option value="1">Correct Answer: B</option>
+                        <option value="2">Correct Answer: C</option>
+                        <option value="3">Correct Answer: D</option>
+                    </select>
+                </div>
+            `;
+            currentRecording = null;
+            updateRecordingStatus();
+        }
+
+        function resetReadingForm() {
+            document.getElementById('readingContentTitle').value = '';
+            document.getElementById('readingPart').value = '7';
+            document.getElementById('readingContentText').value = '';
+            document.getElementById('readingQuestions').innerHTML = `
+                <div class="question-input bg-gray-700 p-4 rounded-lg">
+                    <input type="text" placeholder="Question 1..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                        <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    </div>
+                    <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                        <option value="0">Correct Answer: A</option>
+                        <option value="1">Correct Answer: B</option>
+                        <option value="2">Correct Answer: C</option>
+                        <option value="3">Correct Answer: D</option>
+                    </select>
+                    <textarea placeholder="Explanation (optional)..." rows="2" class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white"></textarea>
+                </div>
+            `;
+        }
+
+        function addListeningQuestion() {
+            const container = document.getElementById('listeningQuestions');
+            const questionCount = container.children.length + 1;
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-input bg-gray-700 p-4 rounded-lg';
+            questionDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-accent font-semibold">Question ${questionCount}</span>
+                    <button onclick="removeQuestion(this)" class="text-red-400 text-sm">Remove</button>
+                </div>
+                <input type="text" placeholder="Question ${questionCount}..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                </div>
+                <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                    <option value="0">Correct Answer: A</option>
+                    <option value="1">Correct Answer: B</option>
+                    <option value="2">Correct Answer: C</option>
+                    <option value="3">Correct Answer: D</option>
+                </select>
+            `;
+            
+            container.appendChild(questionDiv);
+        }
+
+        function addReadingQuestion() {
+            const container = document.getElementById('readingQuestions');
+            const questionCount = container.children.length + 1;
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-input bg-gray-700 p-4 rounded-lg';
+            questionDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-accent font-semibold">Question ${questionCount}</span>
+                    <button onclick="removeQuestion(this)" class="text-red-400 text-sm">Remove</button>
+                </div>
+                <input type="text" placeholder="Question ${questionCount}..." class="w-full p-2 mb-3 rounded bg-gray-600 border border-accent text-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="Option A" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option B" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option C" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                    <input type="text" placeholder="Option D" class="p-2 rounded bg-gray-600 border border-accent text-white">
+                </div>
+                <select class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white">
+                    <option value="0">Correct Answer: A</option>
+                    <option value="1">Correct Answer: B</option>
+                    <option value="2">Correct Answer: C</option>
+                    <option value="3">Correct Answer: D</option>
+                </select>
+                <textarea placeholder="Explanation (optional)..." rows="2" class="w-full p-2 mt-2 rounded bg-gray-600 border border-accent text-white"></textarea>
+            `;
+            
+            container.appendChild(questionDiv);
+        }
+
+        function removeQuestion(button) {
+            button.closest('.question-input').remove();
+        }
+
+        // Audio Recording Functions
+        async function startAudioRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recordedChunks = [];
+                
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = function() {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    currentRecording = blob;
+                    updateRecordingStatus();
+                    
+                    // Stop all tracks to release microphone
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                
+                document.getElementById('startRecordBtn').disabled = true;
+                document.getElementById('stopRecordBtn').disabled = false;
+                document.getElementById('recordingStatus').textContent = 'Recording in progress...';
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                showNotification('Microphone access denied or not available');
+            }
+        }
+
+        function stopAudioRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                
+                document.getElementById('startRecordBtn').disabled = false;
+                document.getElementById('stopRecordBtn').disabled = true;
+            }
+        }
+
+        function playRecording() {
+            if (currentRecording) {
+                const audio = new Audio(URL.createObjectURL(currentRecording));
+                audio.play().catch(error => {
+                    console.error('Error playing recording:', error);
+                    showNotification('Error playing recording');
+                });
+            }
+        }
+
+        function updateRecordingStatus() {
+            const statusElement = document.getElementById('recordingStatus');
+            const playButton = document.getElementById('playRecordBtn');
+            
+            if (currentRecording) {
+                const size = (currentRecording.size / 1024).toFixed(1);
+                statusElement.textContent = `Recording ready (${size} KB)`;
+                playButton.disabled = false;
+            } else {
+                statusElement.textContent = 'No recording yet';
+                playButton.disabled = true;
+            }
+        }
+
+        function saveListeningContent() {
+            const title = document.getElementById('listeningTitle').value.trim();
+            const part = document.getElementById('listeningPart').value;
+            const transcript = document.getElementById('listeningTranscript').value.trim();
+            
+            if (!title) {
+                showNotification('Please enter a title');
+                return;
+            }
+            
+            // Collect questions
+            const questionInputs = document.querySelectorAll('#listeningQuestions .question-input');
+            const questions = [];
+            
+            questionInputs.forEach((questionDiv, index) => {
+                const inputs = questionDiv.querySelectorAll('input');
+                const select = questionDiv.querySelector('select');
+                
+                if (inputs[0].value.trim()) {
+                    questions.push({
+                        id: index + 1,
+                        question: inputs[0].value.trim(),
+                        options: [
+                            inputs[1].value.trim() || `Option A`,
+                            inputs[2].value.trim() || `Option B`,
+                            inputs[3].value.trim() || `Option C`,
+                            inputs[4].value.trim() || `Option D`
+                        ],
+                        correct: parseInt(select.value),
+                        explanation: `This question tests listening comprehension skills for TOEIC Part ${part}.`
+                    });
+                }
+            });
+            
+            if (questions.length === 0) {
+                showNotification('Please add at least one question');
+                return;
+            }
+            
+            const content = {
+                id: Date.now().toString(),
+                title: title,
+                part: part,
+                transcript: transcript,
+                questions: questions,
+                audioBlob: currentRecording,
+                dateCreated: new Date().toISOString(),
+                custom: true
+            };
+            
+            customListeningContent.push(content);
+            saveData();
+            
+            showNotification('Listening content saved successfully!');
+            closeAddListeningModal();
+            updateContentSelectors();
+        }
+
+        function saveReadingContent() {
+            const title = document.getElementById('readingContentTitle').value.trim();
+            const part = document.getElementById('readingPart').value;
+            const text = document.getElementById('readingContentText').value.trim();
+            
+            if (!title || !text) {
+                showNotification('Please enter title and reading passage');
+                return;
+            }
+            
+            // Collect questions
+            const questionInputs = document.querySelectorAll('#readingQuestions .question-input');
+            const questions = [];
+            
+            questionInputs.forEach((questionDiv, index) => {
+                const inputs = questionDiv.querySelectorAll('input');
+                const select = questionDiv.querySelector('select');
+                const textarea = questionDiv.querySelector('textarea');
+                
+                if (inputs[0].value.trim()) {
+                    questions.push({
+                        id: index + 1,
+                        question: inputs[0].value.trim(),
+                        options: [
+                            inputs[1].value.trim() || `Option A`,
+                            inputs[2].value.trim() || `Option B`,
+                            inputs[3].value.trim() || `Option C`,
+                            inputs[4].value.trim() || `Option D`
+                        ],
+                        correct: parseInt(select.value),
+                        explanation: textarea.value.trim() || `This question tests reading comprehension skills for TOEIC Part ${part}.`
+                    });
+                }
+            });
+            
+            if (questions.length === 0) {
+                showNotification('Please add at least one question');
+                return;
+            }
+            
+            const content = {
+                id: Date.now().toString(),
+                title: title,
+                part: part,
+                text: text,
+                questions: questions,
+                dateCreated: new Date().toISOString(),
+                custom: true
+            };
+            
+            customReadingContent.push(content);
+            saveData();
+            
+            showNotification('Reading content saved successfully!');
+            closeAddReadingModal();
+            updateContentSelectors();
+        }
+
+        function updateContentSelectors() {
+            // Update reading content selector
+            const readingSelect = document.getElementById('readingContentSelect');
+            if (readingSelect) {
+                readingSelect.innerHTML = '<option value="default">Default Financial Report</option>';
+                
+                customReadingContent.forEach(content => {
+                    const option = document.createElement('option');
+                    option.value = content.id;
+                    option.textContent = `${content.title} (Part ${content.part})`;
+                    readingSelect.appendChild(option);
+                });
+            }
+        }
+
+        function loadSelectedReading() {
+            const select = document.getElementById('readingContentSelect');
+            const selectedId = select.value;
+            
+            if (selectedId === 'default') {
+                // Load default content
+                document.getElementById('readingTitle').textContent = 'Financial Report Analysis';
+                document.getElementById('readingPassage').innerHTML = `
+                    <p class="mb-4">
+                        The quarterly financial results demonstrate significant improvement in operational efficiency and revenue growth. 
+                        Our EBITDA margin expanded by 250 basis points year-over-year, primarily driven by cost optimization 
+                        initiatives and favorable market conditions.
+                    </p>
+                    <p class="mb-4">
+                        Revenue increased 18% compared to the same period last year, with particularly strong performance in 
+                        our core business segments. The variance analysis reveals that higher-than-expected demand in the 
+                        technology sector contributed significantly to this outperformance.
+                    </p>
+                    <p class="mb-4">
+                        Working capital management improved substantially, with days sales outstanding decreasing from 45 to 38 days. 
+                        This improvement reflects enhanced collection processes and better customer credit assessment procedures 
+                        implemented during the previous quarter.
+                    </p>
+                `;
+            } else {
+                const content = customReadingContent.find(c => c.id === selectedId);
+                if (content) {
+                    document.getElementById('readingTitle').textContent = content.title;
+                    document.getElementById('readingPassage').innerHTML = content.text.split('\n').map(p => `<p class="mb-4">${p}</p>`).join('');
+                }
+            }
+        }
+
+        // Transcript toggle function
+        function toggleTranscript() {
+            const content = document.getElementById('transcriptContent');
+            const toggle = document.getElementById('transcriptToggle');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                toggle.textContent = 'Hide Transcript';
+            } else {
+                content.classList.add('hidden');
+                toggle.textContent = 'Show Transcript';
+            }
+        }
+
+        // Record audio for practice (different from content creation)
+        function recordAudio() {
+            if (!isRecording) {
+                startVoiceInput();
+            } else {
+                stopVoiceInput();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988258ca84fefee5',t:'MTc1OTM4ODY3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
