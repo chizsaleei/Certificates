@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamSpirit - Leadership Motivation Hub</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b0d 0%, #1a2e1a 50%, #2d4a2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .morale-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .morale-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+            transition: all 0.3s ease;
+        }
+
+        .morale-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.2);
+        }
+
+        .morale-meter {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .morale-high { background: linear-gradient(45deg, #4caf50, #8bc34a); }
+        .morale-medium { background: linear-gradient(45deg, #ff9800, #ffc107); }
+        .morale-low { background: linear-gradient(45deg, #f44336, #ff5722); }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .quick-survey {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+        }
+
+        .survey-question {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .mood-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .mood-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .mood-btn:hover, .mood-btn.selected {
+            border-color: #daa520;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
+        }
+
+        .challenge-card {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #daa520;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .challenge-card:hover {
+            background: rgba(45, 74, 45, 0.8);
+            transform: translateX(5px);
+        }
+
+        .challenge-card.active {
+            border-left-color: #228b22;
+            background: rgba(34, 139, 34, 0.2);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .challenge-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .challenge-progress {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .energy-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .energy-tool {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .tool-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .tool-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            flex: 1;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .voice-btn, .add-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover, .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .team-member {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0d1b0d;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .member-status {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .member-mood {
+            font-size: 1.5rem;
+        }
+
+        .focus-timer {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-btn.active {
+            background: #f44336;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(45, 74, 45, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(57, 73, 171, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #ffc107;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #ffc107;
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            color: #ffc107;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            color: #ffeb3b;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 193, 7, 0.4);
+        }
+
+        .do-now-btn {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(244, 67, 54, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(244, 67, 54, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 35, 126, 0.8);
+            border: 2px solid #3949ab;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26, 35, 126, 0.8);
+            border: 2px solid #3949ab;
+            border-radius: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffeb3b;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 5px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .morale-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid #ffc107;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🚀 TeamSpirit</h1>
+            <p>Leadership Motivation Hub</p>
+        </div>
+
+        <!-- Morale Dashboard -->
+        <div class="morale-dashboard">
+            <div class="morale-card">
+                <div class="morale-meter morale-high" id="teamMorale">85%</div>
+                <h4>Team Morale</h4>
+                <p>Overall team energy level</p>
+            </div>
+            <div class="morale-card">
+                <div class="morale-meter morale-medium" id="activeMembers">12</div>
+                <h4>Active Members</h4>
+                <p>Engaged team members</p>
+            </div>
+            <div class="morale-card">
+                <div class="morale-meter morale-high" id="challengesActive">3</div>
+                <h4>Active Challenges</h4>
+                <p>Ongoing team activities</p>
+            </div>
+            <div class="morale-card">
+                <div class="morale-meter morale-medium" id="weeklyGoal">67%</div>
+                <h4>Weekly Goal</h4>
+                <p>Progress toward target</p>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('surveys')">📊 Quick Surveys</button>
+            <button class="nav-tab" onclick="switchTab('challenges')">🏆 Team Challenges</button>
+            <button class="nav-tab" onclick="switchTab('energy')">⚡ Energy Tools</button>
+            <button class="nav-tab" onclick="switchTab('team')">👥 Team View</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📈 Analytics</button>
+        </div>
+
+        <!-- Quick Surveys Tab -->
+        <div id="surveys" class="tab-content active">
+            <div class="quick-survey">
+                <h3>📊 Daily Pulse Check</h3>
+                <div class="survey-question">How is your team feeling today?</div>
+                <div class="mood-selector">
+                    <div class="mood-btn" onclick="selectMood(this, 'excited')" data-mood="excited">🚀</div>
+                    <div class="mood-btn" onclick="selectMood(this, 'happy')" data-mood="happy">😊</div>
+                    <div class="mood-btn" onclick="selectMood(this, 'neutral')" data-mood="neutral">😐</div>
+                    <div class="mood-btn" onclick="selectMood(this, 'tired')" data-mood="tired">😴</div>
+                    <div class="mood-btn" onclick="selectMood(this, 'stressed')" data-mood="stressed">😰</div>
+                </div>
+                <button class="tool-btn" onclick="submitMoodSurvey()">Submit Team Mood</button>
+            </div>
+
+            <div class="quick-survey">
+                <h3>🎯 Quick Motivation Survey</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="surveyInput" placeholder="What's motivating your team today?" aria-label="Motivation survey">
+                    <button class="voice-btn" onclick="startVoiceInput('surveyInput')" aria-label="Voice input">🎤</button>
+                    <button class="add-btn" onclick="addSurveyResponse()">Add</button>
+                </div>
+                <div class="tags-input" id="surveyTags" onclick="focusTagInput('surveyTagInput')">
+                    <input type="text" id="surveyTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+            </div>
+
+            <div id="surveyResponses"></div>
+        </div>
+
+        <!-- Team Challenges Tab -->
+        <div id="challenges" class="tab-content">
+            <div class="input-group">
+                <input type="text" class="form-input" id="challengeInput" placeholder="Create a new team challenge..." aria-label="New challenge">
+                <button class="voice-btn" onclick="startVoiceInput('challengeInput')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="addChallenge()">Create</button>
+            </div>
+
+            <input type="text" class="search-bar" id="challengeSearch" placeholder="🔍 Search challenges..." oninput="filterChallenges()" aria-label="Search challenges">
+
+            <div id="challengeList"></div>
+        </div>
+
+        <!-- Energy Tools Tab -->
+        <div id="energy" class="tab-content">
+            <div class="energy-tools">
+                <div class="energy-tool">
+                    <span class="tool-icon">🎉</span>
+                    <h4>Celebration Boost</h4>
+                    <p>Quick team celebration ideas</p>
+                    <button class="tool-btn" onclick="triggerCelebration()">Celebrate Now!</button>
+                </div>
+                <div class="energy-tool">
+                    <span class="tool-icon">💪</span>
+                    <h4>Energy Break</h4>
+                    <p>5-minute team energizer</p>
+                    <button class="tool-btn" onclick="startEnergyBreak()">Start Break</button>
+                </div>
+                <div class="energy-tool">
+                    <span class="tool-icon">🧘</span>
+                    <h4>Mindful Moment</h4>
+                    <p>Team mindfulness session</p>
+                    <button class="tool-btn" onclick="startMindfulness()">Begin Session</button>
+                </div>
+                <div class="energy-tool">
+                    <span class="tool-icon">🎯</span>
+                    <h4>Goal Reminder</h4>
+                    <p>Refocus on team objectives</p>
+                    <button class="tool-btn" onclick="showGoalReminder()">View Goals</button>
+                </div>
+            </div>
+
+            <div class="quick-survey">
+                <h3>✨ Daily Team Affirmations</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="affirmationInput" placeholder="We are capable of achieving great things together...">
+                    <button class="add-btn" onclick="addAffirmation()">Add</button>
+                </div>
+                <div id="affirmationList"></div>
+            </div>
+        </div>
+
+        <!-- Team View Tab -->
+        <div id="team" class="tab-content">
+            <div class="input-group">
+                <input type="text" class="form-input" id="memberInput" placeholder="Add team member name..." aria-label="Team member name">
+                <button class="add-btn" onclick="addTeamMember()">Add Member</button>
+            </div>
+
+            <div id="teamMemberList"></div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Team Focus Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
+                <p style="color: #a0a0a0; margin-top: 15px;">Lead by example with focused work sessions</p>
+            </div>
+
+            <div class="quick-survey">
+                <h3>🚀 Leadership Actions</h3>
+                <select class="form-select" id="focusAction">
+                    <option value="">Select a leadership action...</option>
+                    <option value="team-check">Team Check-in</option>
+                    <option value="goal-review">Goal Review</option>
+                    <option value="feedback-session">Feedback Session</option>
+                    <option value="planning">Strategic Planning</option>
+                </select>
+                <button class="do-now-btn" onclick="executeAction()" style="margin-top: 10px; width: 100%;">
+                    ⚡ DO IT NOW
+                </button>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSurveys">0</div>
+                    <div class="stat-label">Surveys Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgMorale">0%</div>
+                    <div class="stat-label">Average Morale</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="challengesCompleted">0</div>
+                    <div class="stat-label">Challenges Done</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="focusStreak">0</div>
+                    <div class="stat-label">Focus Streak</div>
+                </div>
+            </div>
+
+            <div class="energy-tools">
+                <button class="tool-btn" onclick="exportToPDF()">📄 Export Report</button>
+                <button class="tool-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="tool-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <h3>🎯 Leadership Action <span class="close" onclick="closeActionModal()">&times;</span></h3>
+            <div id="actionContent"></div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3 id="editModalTitle">✏️ Edit <span class="close" onclick="closeEditModal()">&times;</span></h3>
+            <div id="editModalContent"></div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let surveys = [];
+        let challenges = [];
+        let teamMembers = [];
+        let affirmations = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let currentMood = null;
+        let totalFocusTime = 0;
+
+        // Sample data for demonstration
+        const celebrationIdeas = [
+            "🎉 Virtual high-fives all around!",
+            "🏆 Shout-out in team chat!",
+            "🎊 Quick celebration dance break!",
+            "⭐ Recognition wall post!",
+            "🎈 Team appreciation message!"
+        ];
+
+        const energyBreakActivities = [
+            "🤸 30-second desk stretches",
+            "💨 Deep breathing exercise",
+            "👀 Eye movement exercises",
+            "🚶 Quick walk around",
+            "💪 Shoulder rolls and neck stretches"
+        ];
+
+        const mindfulnessPrompts = [
+            "Take three deep breaths and focus on the present moment",
+            "Notice five things you can see around you right now",
+            "Feel grateful for one thing that went well today",
+            "Set a positive intention for the next hour",
+            "Appreciate the effort your team is putting in"
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            renderSurveys();
+            renderChallenges();
+            renderTeamMembers();
+            renderAffirmations();
+            checkOnlineStatus();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Initialize with sample data if empty
+            if (teamMembers.length === 0) {
+                initializeSampleData();
+            }
+        });
+
+        function initializeSampleData() {
+            teamMembers = [
+                { id: 1, name: 'Alex Johnson', mood: 'happy', status: 'Working on project A', avatar: 'AJ' },
+                { id: 2, name: 'Sarah Chen', mood: 'excited', status: 'Leading client call', avatar: 'SC' },
+                { id: 3, name: 'Mike Rodriguez', mood: 'neutral', status: 'Code review', avatar: 'MR' },
+                { id: 4, name: 'Emma Wilson', mood: 'happy', status: 'Design sprint', avatar: 'EW' }
+            ];
+            
+            challenges = [
+                {
+                    id: 1,
+                    title: 'Daily Stand-up Streak',
+                    description: 'Complete 5 consecutive daily stand-ups',
+                    progress: 60,
+                    participants: 4,
+                    active: true,
+                    tags: ['communication', 'daily']
+                },
+                {
+                    id: 2,
+                    title: 'Innovation Ideas',
+                    description: 'Submit 3 improvement ideas this week',
+                    progress: 33,
+                    participants: 6,
+                    active: true,
+                    tags: ['innovation', 'ideas']
+                }
+            ];
+            
+            renderTeamMembers();
+            renderChallenges();
+            updateMoraleDisplay();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Survey functionality
+        function selectMood(element, mood) {
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            currentMood = mood;
+        }
+
+        function editSurvey(surveyId) {
+            const survey = surveys.find(s => s.id === surveyId);
+            if (!survey || survey.type === 'mood') return;
+            
+            showEditModal('Survey Response', `
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editSurveyText" value="${survey.text}" placeholder="Survey response">
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editSurveyTags" value="${survey.tags.join(', ')}" placeholder="Tags (comma separated)">
+                </div>
+                <button class="tool-btn" onclick="saveSurveyEdit(${surveyId})">Save Changes</button>
+            `);
+        }
+
+        function saveSurveyEdit(surveyId) {
+            const survey = surveys.find(s => s.id === surveyId);
+            const newText = document.getElementById('editSurveyText').value.trim();
+            const newTags = document.getElementById('editSurveyTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            if (survey && newText) {
+                survey.text = newText;
+                survey.tags = newTags;
+                renderSurveys();
+                saveData();
+                closeEditModal();
+                showNotification('Survey updated! ✏️');
+            }
+        }
+
+        function deleteSurvey(surveyId) {
+            if (confirm('Delete this survey response?')) {
+                surveys = surveys.filter(s => s.id !== surveyId);
+                renderSurveys();
+                updateStats();
+                updateMoraleDisplay();
+                saveData();
+                showNotification('Survey deleted! 🗑️');
+            }
+        }
+
+        function submitMoodSurvey() {
+            if (!currentMood) {
+                showNotification('Please select a mood first', 'error');
+                return;
+            }
+            
+            const survey = {
+                id: Date.now(),
+                type: 'mood',
+                mood: currentMood,
+                timestamp: new Date(),
+                responses: 1
+            };
+            
+            surveys.push(survey);
+            updateMoraleDisplay();
+            updateStats();
+            saveData();
+            showNotification('Team mood recorded! 📊');
+            
+            // Reset selection
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            currentMood = null;
+        }
+
+        function addSurveyResponse() {
+            const input = document.getElementById('surveyInput');
+            const tagInput = document.getElementById('surveyTagInput');
+            
+            if (!input.value.trim()) return;
+            
+            const survey = {
+                id: Date.now(),
+                type: 'response',
+                text: input.value.trim(),
+                tags: tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                timestamp: new Date()
+            };
+            
+            surveys.push(survey);
+            input.value = '';
+            tagInput.value = '';
+            document.getElementById('surveyTags').innerHTML = '<input type="text" id="surveyTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            
+            renderSurveys();
+            updateStats();
+            saveData();
+            showNotification('Survey response added! 📝');
+        }
+
+        function renderSurveys() {
+            const container = document.getElementById('surveyResponses');
+            container.innerHTML = '';
+            
+            const recentSurveys = surveys.slice(-5).reverse();
+            
+            recentSurveys.forEach(survey => {
+                const element = document.createElement('div');
+                element.className = 'team-member';
+                
+                if (survey.type === 'mood') {
+                    const moodEmoji = {
+                        excited: '🚀',
+                        happy: '😊',
+                        neutral: '😐',
+                        tired: '😴',
+                        stressed: '😰'
+                    };
+                    
+                    element.innerHTML = `
+                        <div class="member-avatar">${moodEmoji[survey.mood]}</div>
+                        <div class="member-info">
+                            <div class="member-name">Team Mood: ${survey.mood}</div>
+                            <div class="member-status">${new Date(survey.timestamp).toLocaleString()}</div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="action-btn" onclick="deleteSurvey(${survey.id})">🗑️</button>
+                        </div>
+                    `;
+                } else {
+                    element.innerHTML = `
+                        <div class="member-avatar">💬</div>
+                        <div class="member-info">
+                            <div class="member-name">${survey.text}</div>
+                            <div class="member-status">
+                                ${new Date(survey.timestamp).toLocaleString()}
+                                ${survey.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="action-btn" onclick="editSurvey(${survey.id})">✏️</button>
+                            <button class="action-btn" onclick="deleteSurvey(${survey.id})">🗑️</button>
+                        </div>
+                    `;
+                }
+                
+                container.appendChild(element);
+            });
+        }
+
+        // Challenge functionality
+        function addChallenge() {
+            const input = document.getElementById('challengeInput');
+            
+            if (!input.value.trim()) return;
+            
+            const challenge = {
+                id: Date.now(),
+                title: input.value.trim(),
+                description: 'Team challenge to boost morale and engagement',
+                progress: 0,
+                participants: teamMembers.length,
+                active: true,
+                tags: ['team', 'motivation'],
+                createdAt: new Date()
+            };
+            
+            challenges.push(challenge);
+            input.value = '';
+            
+            renderChallenges();
+            updateMoraleDisplay();
+            saveData();
+            showNotification('Challenge created! 🏆');
+        }
+
+        function renderChallenges() {
+            const container = document.getElementById('challengeList');
+            const searchTerm = document.getElementById('challengeSearch')?.value.toLowerCase() || '';
+            
+            const filteredChallenges = challenges.filter(challenge => {
+                return challenge.title.toLowerCase().includes(searchTerm) ||
+                       challenge.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            });
+            
+            container.innerHTML = '';
+            
+            filteredChallenges.forEach(challenge => {
+                const element = document.createElement('div');
+                element.className = `challenge-card ${challenge.active ? 'active' : ''}`;
+                
+                element.innerHTML = `
+                    <div class="challenge-header">
+                        <div class="challenge-title">${challenge.title}</div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn" onclick="updateChallengeProgress(${challenge.id})">+10%</button>
+                            <button class="action-btn" onclick="editChallenge(${challenge.id})">✏️</button>
+                            <button class="action-btn" onclick="toggleChallenge(${challenge.id})">${challenge.active ? '⏸️' : '▶️'}</button>
+                            <button class="action-btn" onclick="deleteChallenge(${challenge.id})">🗑️</button>
+                        </div>
+                    </div>
+                    <p>${challenge.description}</p>
+                    <div class="challenge-progress">
+                        <div class="progress-bar" style="width: ${challenge.progress}%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <span>👥 ${challenge.participants} participants</span>
+                        <span>${challenge.progress}% complete</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        ${challenge.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(element);
+            });
+        }
+
+        function updateChallengeProgress(challengeId) {
+            const challenge = challenges.find(c => c.id === challengeId);
+            if (challenge && challenge.active) {
+                challenge.progress = Math.min(100, challenge.progress + 10);
+                
+                if (challenge.progress >= 100) {
+                    challenge.active = false;
+                    showNotification('🎉 Challenge completed! Great teamwork!');
+                    triggerCelebration();
+                } else {
+                    showNotification('Progress updated! Keep going! 💪');
+                }
+                
+                renderChallenges();
+                updateMoraleDisplay();
+                saveData();
+            }
+        }
+
+        function toggleChallenge(challengeId) {
+            const challenge = challenges.find(c => c.id === challengeId);
+            if (challenge) {
+                challenge.active = !challenge.active;
+                renderChallenges();
+                saveData();
+                showNotification(challenge.active ? 'Challenge reactivated!' : 'Challenge paused');
+            }
+        }
+
+        function filterChallenges() {
+            renderChallenges();
+        }
+
+        function editChallenge(challengeId) {
+            const challenge = challenges.find(c => c.id === challengeId);
+            if (!challenge) return;
+            
+            showEditModal('Challenge', `
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editChallengeTitle" value="${challenge.title}" placeholder="Challenge title">
+                </div>
+                <div class="input-group">
+                    <textarea class="form-textarea" id="editChallengeDesc" placeholder="Challenge description">${challenge.description}</textarea>
+                </div>
+                <div class="input-group">
+                    <input type="number" class="form-input" id="editChallengeProgress" value="${challenge.progress}" min="0" max="100" placeholder="Progress %">
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editChallengeTags" value="${challenge.tags.join(', ')}" placeholder="Tags (comma separated)">
+                </div>
+                <button class="tool-btn" onclick="saveChallengeEdit(${challengeId})">Save Changes</button>
+            `);
+        }
+
+        function saveChallengeEdit(challengeId) {
+            const challenge = challenges.find(c => c.id === challengeId);
+            const newTitle = document.getElementById('editChallengeTitle').value.trim();
+            const newDesc = document.getElementById('editChallengeDesc').value.trim();
+            const newProgress = parseInt(document.getElementById('editChallengeProgress').value) || 0;
+            const newTags = document.getElementById('editChallengeTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            if (challenge && newTitle) {
+                challenge.title = newTitle;
+                challenge.description = newDesc;
+                challenge.progress = Math.max(0, Math.min(100, newProgress));
+                challenge.tags = newTags;
+                
+                if (challenge.progress >= 100 && challenge.active) {
+                    challenge.active = false;
+                    showNotification('🎉 Challenge completed!');
+                }
+                
+                renderChallenges();
+                updateMoraleDisplay();
+                saveData();
+                closeEditModal();
+                showNotification('Challenge updated! ✏️');
+            }
+        }
+
+        function deleteChallenge(challengeId) {
+            if (confirm('Delete this challenge?')) {
+                challenges = challenges.filter(c => c.id !== challengeId);
+                renderChallenges();
+                updateMoraleDisplay();
+                saveData();
+                showNotification('Challenge deleted! 🗑️');
+            }
+        }
+
+        // Energy tools
+        function triggerCelebration() {
+            const idea = celebrationIdeas[Math.floor(Math.random() * celebrationIdeas.length)];
+            showNotification(idea, 'celebration');
+            
+            // Add visual celebration effect
+            document.body.style.animation = 'pulse 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 500);
+        }
+
+        function startEnergyBreak() {
+            const activity = energyBreakActivities[Math.floor(Math.random() * energyBreakActivities.length)];
+            showActionModal('Energy Break', `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">⚡</div>
+                    <h4>5-Minute Energy Boost</h4>
+                    <p style="font-size: 1.2rem; margin: 20px 0;">${activity}</p>
+                    <button class="timer-btn" onclick="startEnergyTimer()">Start 5-Minute Timer</button>
+                </div>
+            `);
+        }
+
+        function startMindfulness() {
+            const prompt = mindfulnessPrompts[Math.floor(Math.random() * mindfulnessPrompts.length)];
+            showActionModal('Mindful Moment', `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">🧘</div>
+                    <h4>Team Mindfulness</h4>
+                    <p style="font-size: 1.1rem; margin: 20px 0; font-style: italic;">${prompt}</p>
+                    <button class="timer-btn" onclick="startMindfulnessTimer()">Start 3-Minute Session</button>
+                </div>
+            `);
+        }
+
+        function showGoalReminder() {
+            showActionModal('Goal Reminder', `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">🎯</div>
+                    <h4>Team Objectives</h4>
+                    <div style="text-align: left; margin: 20px 0;">
+                        <p>✅ Maintain high team morale</p>
+                        <p>✅ Complete weekly challenges</p>
+                        <p>✅ Support team member growth</p>
+                        <p>✅ Foster collaborative environment</p>
+                        <p>✅ Achieve project milestones</p>
+                    </div>
+                    <button class="timer-btn" onclick="closeActionModal()">Keep Going!</button>
+                </div>
+            `);
+        }
+
+        function showActionModal(title, content) {
+            document.getElementById('actionModal').querySelector('h3').innerHTML = 
+                `${title} <span class="close" onclick="closeActionModal()">&times;</span>`;
+            document.getElementById('actionContent').innerHTML = content;
+            document.getElementById('actionModal').style.display = 'block';
+        }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').style.display = 'none';
+        }
+
+        function showEditModal(title, content) {
+            document.getElementById('editModalTitle').innerHTML = 
+                `✏️ Edit ${title} <span class="close" onclick="closeEditModal()">&times;</span>`;
+            document.getElementById('editModalContent').innerHTML = content;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function startEnergyTimer() {
+            let seconds = 300; // 5 minutes
+            const interval = setInterval(() => {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('actionContent').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">⚡</div>
+                        <h4>Energy Break in Progress</h4>
+                        <div style="font-size: 2rem; color: #ffc107; margin: 20px 0;">
+                            ${minutes}:${secs.toString().padStart(2, '0')}
+                        </div>
+                        <p>Take this time to recharge!</p>
+                    </div>
+                `;
+                
+                seconds--;
+                if (seconds < 0) {
+                    clearInterval(interval);
+                    showNotification('Energy break complete! 🔋');
+                    closeActionModal();
+                }
+            }, 1000);
+        }
+
+        function startMindfulnessTimer() {
+            let seconds = 180; // 3 minutes
+            const interval = setInterval(() => {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('actionContent').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🧘</div>
+                        <h4>Mindfulness Session</h4>
+                        <div style="font-size: 2rem; color: #ffc107; margin: 20px 0;">
+                            ${minutes}:${secs.toString().padStart(2, '0')}
+                        </div>
+                        <p>Breathe deeply and stay present</p>
+                    </div>
+                `;
+                
+                seconds--;
+                if (seconds < 0) {
+                    clearInterval(interval);
+                    showNotification('Mindfulness session complete! 🧘');
+                    closeActionModal();
+                }
+            }, 1000);
+        }
+
+        // Team member management
+        function addTeamMember() {
+            const input = document.getElementById('memberInput');
+            
+            if (!input.value.trim()) return;
+            
+            const name = input.value.trim();
+            const member = {
+                id: Date.now(),
+                name: name,
+                mood: 'neutral',
+                status: 'Available',
+                avatar: name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+            };
+            
+            teamMembers.push(member);
+            input.value = '';
+            
+            renderTeamMembers();
+            updateMoraleDisplay();
+            saveData();
+            showNotification('Team member added! 👥');
+        }
+
+        function renderTeamMembers() {
+            const container = document.getElementById('teamMemberList');
+            container.innerHTML = '';
+            
+            teamMembers.forEach(member => {
+                const moodEmoji = {
+                    excited: '🚀',
+                    happy: '😊',
+                    neutral: '😐',
+                    tired: '😴',
+                    stressed: '😰'
+                };
+                
+                const element = document.createElement('div');
+                element.className = 'team-member';
+                
+                element.innerHTML = `
+                    <div class="member-avatar">${member.avatar}</div>
+                    <div class="member-info">
+                        <div class="member-name">${member.name}</div>
+                        <div class="member-status">${member.status}</div>
+                    </div>
+                    <div class="member-mood" onclick="cycleMemberMood(${member.id})">${moodEmoji[member.mood]}</div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="action-btn" onclick="editTeamMember(${member.id})">✏️</button>
+                        <button class="action-btn" onclick="deleteTeamMember(${member.id})">🗑️</button>
+                    </div>
+                `;
+                
+                container.appendChild(element);
+            });
+        }
+
+        function cycleMemberMood(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            if (member) {
+                const moods = ['excited', 'happy', 'neutral', 'tired', 'stressed'];
+                const currentIndex = moods.indexOf(member.mood);
+                member.mood = moods[(currentIndex + 1) % moods.length];
+                
+                renderTeamMembers();
+                updateMoraleDisplay();
+                saveData();
+            }
+        }
+
+        function editTeamMember(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            if (!member) return;
+            
+            showEditModal('Team Member', `
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editMemberName" value="${member.name}" placeholder="Member name">
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="editMemberStatus" value="${member.status}" placeholder="Current status">
+                </div>
+                <div class="input-group">
+                    <select class="form-select" id="editMemberMood">
+                        <option value="excited" ${member.mood === 'excited' ? 'selected' : ''}>🚀 Excited</option>
+                        <option value="happy" ${member.mood === 'happy' ? 'selected' : ''}>😊 Happy</option>
+                        <option value="neutral" ${member.mood === 'neutral' ? 'selected' : ''}>😐 Neutral</option>
+                        <option value="tired" ${member.mood === 'tired' ? 'selected' : ''}>😴 Tired</option>
+                        <option value="stressed" ${member.mood === 'stressed' ? 'selected' : ''}>😰 Stressed</option>
+                    </select>
+                </div>
+                <button class="tool-btn" onclick="saveTeamMemberEdit(${memberId})">Save Changes</button>
+            `);
+        }
+
+        function saveTeamMemberEdit(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            const newName = document.getElementById('editMemberName').value.trim();
+            const newStatus = document.getElementById('editMemberStatus').value.trim();
+            const newMood = document.getElementById('editMemberMood').value;
+            
+            if (member && newName) {
+                member.name = newName;
+                member.status = newStatus;
+                member.mood = newMood;
+                member.avatar = newName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                
+                renderTeamMembers();
+                updateMoraleDisplay();
+                saveData();
+                closeEditModal();
+                showNotification('Team member updated! ✏️');
+            }
+        }
+
+        function deleteTeamMember(memberId) {
+            if (confirm('Remove this team member?')) {
+                teamMembers = teamMembers.filter(m => m.id !== memberId);
+                renderTeamMembers();
+                updateMoraleDisplay();
+                saveData();
+                showNotification('Team member removed! 🗑️');
+            }
+        }
+
+        // Affirmations
+        function addAffirmation() {
+            const input = document.getElementById('affirmationInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                affirmations.push({
+                    id: Date.now(),
+                    text: text,
+                    createdAt: new Date()
+                });
+                
+                input.value = '';
+                renderAffirmations();
+                saveData();
+                showNotification('Team affirmation added! ✨');
+            }
+        }
+
+        function renderAffirmations() {
+            const list = document.getElementById('affirmationList');
+            list.innerHTML = '';
+            
+            affirmations.forEach(affirmation => {
+                const element = document.createElement('div');
+                element.className = 'team-member';
+                element.innerHTML = `
+                    <div class="member-avatar">✨</div>
+                    <div class="member-info">
+                        <div class="member-name">${affirmation.text}</div>
+                    </div>
+                    <button class="action-btn" onclick="removeAffirmation(${affirmation.id})">🗑️</button>
+                `;
+                list.appendChild(element);
+            });
+        }
+
+        function removeAffirmation(id) {
+            affirmations = affirmations.filter(a => a.id !== id);
+            renderAffirmations();
+            saveData();
+        }
+
+        // Focus timer
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Focus session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Focus session complete! Leading by example!');
+            updateStats();
+            saveData();
+        }
+
+        function executeAction() {
+            const action = document.getElementById('focusAction').value;
+            if (!action) {
+                showNotification('Please select an action first', 'error');
+                return;
+            }
+            
+            const actions = {
+                'team-check': 'Conducting team check-in...',
+                'goal-review': 'Reviewing team goals...',
+                'feedback-session': 'Starting feedback session...',
+                'planning': 'Beginning strategic planning...'
+            };
+            
+            showNotification(actions[action] + ' 🚀');
+            startTimer();
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Analytics and stats
+        function updateStats() {
+            const totalSurveys = surveys.length;
+            const moodSurveys = surveys.filter(s => s.type === 'mood');
+            const avgMorale = calculateAverageMorale();
+            const completedChallenges = challenges.filter(c => c.progress >= 100).length;
+            const focusStreak = calculateFocusStreak();
+            
+            document.getElementById('totalSurveys').textContent = totalSurveys;
+            document.getElementById('avgMorale').textContent = avgMorale + '%';
+            document.getElementById('challengesCompleted').textContent = completedChallenges;
+            document.getElementById('focusStreak').textContent = focusStreak;
+        }
+
+        function calculateAverageMorale() {
+            const moodValues = { excited: 100, happy: 80, neutral: 60, tired: 40, stressed: 20 };
+            const teamMoods = teamMembers.map(m => moodValues[m.mood] || 60);
+            const surveyMoods = surveys.filter(s => s.type === 'mood').map(s => moodValues[s.mood] || 60);
+            
+            const allMoods = [...teamMoods, ...surveyMoods];
+            if (allMoods.length === 0) return 75;
+            
+            return Math.round(allMoods.reduce((a, b) => a + b, 0) / allMoods.length);
+        }
+
+        function calculateFocusStreak() {
+            // Simple streak calculation based on focus sessions
+            return Math.floor(totalFocusTime / 25);
+        }
+
+        function updateMoraleDisplay() {
+            const avgMorale = calculateAverageMorale();
+            const activeMembers = teamMembers.length;
+            const activeChallenges = challenges.filter(c => c.active).length;
+            const weeklyGoal = Math.min(100, (challenges.reduce((sum, c) => sum + c.progress, 0) / challenges.length) || 0);
+            
+            document.getElementById('teamMorale').textContent = avgMorale + '%';
+            document.getElementById('activeMembers').textContent = activeMembers;
+            document.getElementById('challengesActive').textContent = activeChallenges;
+            document.getElementById('weeklyGoal').textContent = Math.round(weeklyGoal) + '%';
+            
+            // Update morale meter colors
+            const moraleElement = document.getElementById('teamMorale').parentElement;
+            moraleElement.className = 'morale-meter ' + (avgMorale >= 80 ? 'morale-high' : avgMorale >= 60 ? 'morale-medium' : 'morale-low');
+        }
+
+        // Export and backup
+        function exportToPDF() {
+            const content = generateTeamReport();
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `team-motivation-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Team report exported! 📄');
+        }
+
+        function generateTeamReport() {
+            const avgMorale = calculateAverageMorale();
+            const activeChallenges = challenges.filter(c => c.active);
+            const completedChallenges = challenges.filter(c => c.progress >= 100);
+            
+            return `
+TeamSpirit Leadership Report
+Generated: ${new Date().toLocaleDateString()}
+
+TEAM OVERVIEW
+=============
+Team Size: ${teamMembers.length} members
+Average Morale: ${avgMorale}%
+Total Surveys: ${surveys.length}
+Focus Sessions: ${Math.floor(totalFocusTime / 25)}
+
+TEAM MEMBERS
+============
+${teamMembers.map(member => `👤 ${member.name} - ${member.mood} (${member.status})`).join('\n')}
+
+ACTIVE CHALLENGES
+=================
+${activeChallenges.map(challenge => `🏆 ${challenge.title} - ${challenge.progress}% complete`).join('\n')}
+
+COMPLETED CHALLENGES
+====================
+${completedChallenges.map(challenge => `✅ ${challenge.title} - 100% complete`).join('\n')}
+
+TEAM AFFIRMATIONS
+=================
+${affirmations.map(a => `✨ ${a.text}`).join('\n')}
+
+RECENT SURVEY RESPONSES
+=======================
+${surveys.slice(-10).map(s => s.type === 'mood' ? `😊 Team mood: ${s.mood}` : `💬 ${s.text}`).join('\n')}
+            `.trim();
+        }
+
+        function backupData() {
+            const data = {
+                surveys: surveys,
+                challenges: challenges,
+                teamMembers: teamMembers,
+                affirmations: affirmations,
+                totalFocusTime: totalFocusTime,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `teamspirit-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        surveys = data.surveys || [];
+                        challenges = data.challenges || [];
+                        teamMembers = data.teamMembers || [];
+                        affirmations = data.affirmations || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        
+                        renderSurveys();
+                        renderChallenges();
+                        renderTeamMembers();
+                        renderAffirmations();
+                        updateStats();
+                        updateMoraleDisplay();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('teamspirit_surveys', JSON.stringify(surveys));
+            localStorage.setItem('teamspirit_challenges', JSON.stringify(challenges));
+            localStorage.setItem('teamspirit_members', JSON.stringify(teamMembers));
+            localStorage.setItem('teamspirit_affirmations', JSON.stringify(affirmations));
+            localStorage.setItem('teamspirit_focusTime', totalFocusTime);
+        }
+
+        function loadData() {
+            const savedSurveys = localStorage.getItem('teamspirit_surveys');
+            const savedChallenges = localStorage.getItem('teamspirit_challenges');
+            const savedMembers = localStorage.getItem('teamspirit_members');
+            const savedAffirmations = localStorage.getItem('teamspirit_affirmations');
+            const savedFocusTime = localStorage.getItem('teamspirit_focusTime');
+            
+            if (savedSurveys) surveys = JSON.parse(savedSurveys);
+            if (savedChallenges) challenges = JSON.parse(savedChallenges);
+            if (savedMembers) teamMembers = JSON.parse(savedMembers);
+            if (savedAffirmations) affirmations = JSON.parse(savedAffirmations);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+            } else if (type === 'celebration') {
+                notification.style.background = 'rgba(255, 193, 7, 0.9)';
+                notification.style.color = '#1a237e';
+            } else {
+                notification.style.background = 'rgba(76, 175, 80, 0.9)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const actionModal = document.getElementById('actionModal');
+            const editModal = document.getElementById('editModal');
+            
+            if (event.target === actionModal) {
+                closeActionModal();
+            }
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98710803f704fc92',t:'MTc1OTIwNzExMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
