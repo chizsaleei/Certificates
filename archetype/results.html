@@ -1,1 +1,206 @@
+<!-- result/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Archetype App Recommendations</title>
+<style>
+  :root{
+    --lotus:#F8F7F2; --ever:#26433A; --gold:#CBA35B; --jade:#7FB5A0; --ink:#0E1514;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:transparent;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial}
+  .wrap{background:var(--lotus); border:2px solid var(--gold); border-radius:16px; padding:20px; color:var(--ink)}
+  .title{margin:0 0 8px 0; color:var(--ever); font-weight:800; font-size:20px; text-align:center}
+  .subtitle{margin:0 0 16px 0; color:var(--ink); opacity:.8; text-align:center; font-size:14px}
+
+  /* Tabs without JS */
+  .tabs{display:grid; gap:10px}
+  .tab-head{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+  .tab-body{background:var(--ever); border:2px solid var(--gold); border-radius:12px; padding:14px}
+  .chip{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--ever); color:#fff; border:1px solid var(--gold);
+    border-radius:999px; padding:8px 10px; font-weight:700; font-size:12px;
+    cursor:pointer; user-select:none; transition:.2s transform, .2s box-shadow;
+    box-shadow:0 2px 0 rgba(0,0,0,.25)
+  }
+  .chip .i{font-size:16px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+  .chip:hover{transform:translateY(-2px)}
+  .apps{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px}
+  .btn{
+    display:block; width:100%; text-align:center; background:var(--gold); color:var(--ink);
+    border:none; border-radius:10px; padding:12px 14px; font-weight:800; font-size:14px;
+    text-decoration:none; box-shadow:0 2px 0 rgba(0,0,0,.25); transition:.2s transform
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .note{margin-top:10px; color:#fff; opacity:.9; font-size:12px; text-align:center}
+
+  /* Radio logic */
+  .rad{display:none}
+  /* Default: first selected */
+  .rad:first-of-type:checked ~ .tab-panels .panel:first-child {display:block}
+  .panel{display:none; color:#fff}
+  /* When a radio is checked, show its panel by using sibling selectors */
+  /* We map each radio to a data-panel index via nth-child alignment */
+  .rad:nth-of-type(1):checked ~ .tab-panels .panel:nth-of-type(1),
+  .rad:nth-of-type(2):checked ~ .tab-panels .panel:nth-of-type(2),
+  .rad:nth-of-type(3):checked ~ .tab-panels .panel:nth-of-type(3),
+  .rad:nth-of-type(4):checked ~ .tab-panels .panel:nth-of-type(4),
+  .rad:nth-of-type(5):checked ~ .tab-panels .panel:nth-of-type(5),
+  .rad:nth-of-type(6):checked ~ .tab-panels .panel:nth-of-type(6),
+  .rad:nth-of-type(7):checked ~ .tab-panels .panel:nth-of-type(7),
+  .rad:nth-of-type(8):checked ~ .tab-panels .panel:nth-of-type(8),
+  .rad:nth-of-type(9):checked ~ .tab-panels .panel:nth-of-type(9),
+  .rad:nth-of-type(10):checked ~ .tab-panels .panel:nth-of-type(10) {display:block}
+
+  /* Visually indicate selected chip */
+  .rad:nth-of-type(1):checked ~ .tab-head label[for="t1"],
+  .rad:nth-of-type(2):checked ~ .tab-head label[for="t2"],
+  .rad:nth-of-type(3):checked ~ .tab-head label[for="t3"],
+  .rad:nth-of-type(4):checked ~ .tab-head label[for="t4"],
+  .rad:nth-of-type(5):checked ~ .tab-head label[for="t5"],
+  .rad:nth-of-type(6):checked ~ .tab-head label[for="t6"],
+  .rad:nth-of-type(7):checked ~ .tab-head label[for="t7"],
+  .rad:nth-of-type(8):checked ~ .tab-head label[for="t8"],
+  .rad:nth-of-type(9):checked ~ .tab-head label[for="t9"],
+  .rad:nth-of-type(10):checked ~ .tab-head label[for="t10"]{
+    background:linear-gradient(180deg, var(--gold), #b98b3f);
+    color:var(--ink)
+  }
+
+  @media (max-width: 860px){
+    .tab-head{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h2 class="title">✨ Recommended Apps</h2>
+    <p class="subtitle">Pick your archetype to see focused tools</p>
+
+    <!-- Radios first so sibling selectors work -->
+    <input class="rad" type="radio" name="tab" id="t1" checked>
+    <input class="rad" type="radio" name="tab" id="t2">
+    <input class="rad" type="radio" name="tab" id="t3">
+    <input class="rad" type="radio" name="tab" id="t4">
+    <input class="rad" type="radio" name="tab" id="t5">
+    <input class="rad" type="radio" name="tab" id="t6">
+    <input class="rad" type="radio" name="tab" id="t7">
+    <input class="rad" type="radio" name="tab" id="t8">
+    <input class="rad" type="radio" name="tab" id="t9">
+    <input class="rad" type="radio" name="tab" id="t10">
+
+    <!-- Tab headers -->
+    <div class="tab-head" role="tablist" aria-label="Archetype selector">
+      <label class="chip" for="t1"  role="tab" aria-controls="p1"  aria-selected="true"><span class="i">🛠️</span><span>Builder</span></label>
+      <label class="chip" for="t2"  role="tab" aria-controls="p2"><span class="i">🔍</span><span>Analyst</span></label>
+      <label class="chip" for="t3"  role="tab" aria-controls="p3"><span class="i">🤝</span><span>Connector</span></label>
+      <label class="chip" for="t4"  role="tab" aria-controls="p4"><span class="i">🎨</span><span>Creator</span></label>
+      <label class="chip" for="t5"  role="tab" aria-controls="p5"><span class="i">💝</span><span>Caregiver</span></label>
+      <label class="chip" for="t6"  role="tab" aria-controls="p6"><span class="i">👑</span><span>Leader</span></label>
+      <label class="chip" for="t7"  role="tab" aria-controls="p7"><span class="i">♟️</span><span>Strategist</span></label>
+      <label class="chip" for="t8"  role="tab" aria-controls="p8"><span class="i">🗺️</span><span>Explorer</span></label>
+      <label class="chip" for="t9"  role="tab" aria-controls="p9"><span class="i">🎭</span><span>Performer</span></label>
+      <label class="chip" for="t10" role="tab" aria-controls="p10"><span class="i">✅</span><span>Finisher</span></label>
+    </div>
+
+    <!-- Panels -->
+    <div class="tab-panels" style="margin-top:12px">
+      <!-- Builder -->
+      <section class="tab-body panel" id="p1" aria-labelledby="t1">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#motivational-tracking" target="_blank" rel="noopener">Motivational Tracking App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#task-management" target="_blank" rel="noopener">Task Management App</a>
+        </div>
+        <p class="note">Builder tools focus on momentum and systems</p>
+      </section>
+
+      <!-- Analyst -->
+      <section class="tab-body panel" id="p2" aria-labelledby="t2">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#data-visualization" target="_blank" rel="noopener">Data Visualization App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#decision-support" target="_blank" rel="noopener">Decision Support App</a>
+        </div>
+        <p class="note">Analyst tools help you decide with clarity</p>
+      </section>
+
+      <!-- Connector -->
+      <section class="tab-body panel" id="p3" aria-labelledby="t3">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#networking-scripts" target="_blank" rel="noopener">Professional Networking Scripts</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#social-balance" target="_blank" rel="noopener">Social Balance App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#relationship-board" target="_blank" rel="noopener">Relationship Board App</a>
+        </div>
+        <p class="note">Connector tools support warm boundaries</p>
+      </section>
+
+      <!-- Creator -->
+      <section class="tab-body panel" id="p4" aria-labelledby="t4">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#consistency-tracker" target="_blank" rel="noopener">Consistency Tracker App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#idea-capture" target="_blank" rel="noopener">Idea Capture App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#ideation-prompt" target="_blank" rel="noopener">Ideation Prompt</a>
+        </div>
+        <p class="note">Creator tools feed your reservoir</p>
+      </section>
+
+      <!-- Caregiver -->
+      <section class="tab-body panel" id="p5" aria-labelledby="t5">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#boundary-management" target="_blank" rel="noopener">Boundary Management App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#self-care-planner" target="_blank" rel="noopener">Self-care Planner App</a>
+        </div>
+        <p class="note">Caregiver tools protect recovery</p>
+      </section>
+
+      <!-- Leader -->
+      <section class="tab-body panel" id="p6" aria-labelledby="t6">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#delegation-tool" target="_blank" rel="noopener">Delegation Tool App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#team-motivation" target="_blank" rel="noopener">Team Motivation App</a>
+        </div>
+        <p class="note">Leader tools help you share the sky</p>
+      </section>
+
+      <!-- Strategist -->
+      <section class="tab-body panel" id="p7" aria-labelledby="t7">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#planning-visualization" target="_blank" rel="noopener">Planning Visualization App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#strategy-simulation" target="_blank" rel="noopener">Strategy Simulation App</a>
+        </div>
+        <p class="note">Strategist tools balance plan and field</p>
+      </section>
+
+      <!-- Explorer -->
+      <section class="tab-body panel" id="p8" aria-labelledby="t8">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#safety-preparation" target="_blank" rel="noopener">Safety Preparation App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#adventure-planning" target="_blank" rel="noopener">Adventure Planning App</a>
+        </div>
+        <p class="note">Explorer tools add safe adventure</p>
+      </section>
+
+      <!-- Performer -->
+      <section class="tab-body panel" id="p9" aria-labelledby="t9">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#feedback-recovery" target="_blank" rel="noopener">Feedback Recovery App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#performer-prep" target="_blank" rel="noopener">Performer Prep App</a>
+        </div>
+        <p class="note">Performer tools build steady presence</p>
+      </section>
+
+      <!-- Finisher -->
+      <section class="tab-body panel" id="p10" aria-labelledby="t10">
+        <div class="apps">
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#achievement-logging" target="_blank" rel="noopener">Achievement Logging App</a>
+          <a class="btn" href="https://ko-fi.com/lifebalanceq/shop#task-completion" target="_blank" rel="noopener">Task Completion App</a>
+        </div>
+        <p class="note">Finisher tools land the work</p>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
 
