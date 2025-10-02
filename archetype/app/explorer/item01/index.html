@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeExplorer - Adventure Risk Assessment & Safety Planning</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a2e0a 0%, #1a4a1a 50%, #2d5a2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(26, 74, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d5a2d;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(26, 74, 26, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0a2e0a;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .safety-card {
+            background: rgba(45, 90, 45, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #daa520;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .safety-card:hover {
+            background: rgba(45, 90, 45, 0.8);
+            transform: translateX(5px);
+        }
+
+        .safety-card.high-risk {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+        }
+
+        .safety-card.medium-risk {
+            border-left-color: #ff9800;
+            background: rgba(255, 152, 0, 0.2);
+        }
+
+        .safety-card.low-risk {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .safety-card.completed {
+            opacity: 0.7;
+            border-left-color: #4caf50;
+        }
+
+        .safety-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .safety-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .risk-level {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .risk-high {
+            background: #f44336;
+            color: white;
+        }
+
+        .risk-medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .risk-low {
+            background: #4caf50;
+            color: white;
+        }
+
+        .location-info {
+            background: rgba(26, 74, 26, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .weather-alert {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid #ff9800;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 74, 26, 0.8);
+            border: 2px solid #2d5a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0a2e0a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .emergency-btn {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 1rem;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(244, 67, 54, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(244, 67, 54, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 74, 26, 0.8);
+            border: 2px solid #2d5a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26, 74, 26, 0.8);
+            border: 2px solid #2d5a2d;
+            border-radius: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(26, 74, 26, 0.5);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .checklist-item:hover {
+            background: rgba(26, 74, 26, 0.8);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .checklist-item.swiping {
+            transform: translateX(-100px);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #daa520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0a2e0a;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #4caf50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+        }
+
+        .checklist-item.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .focus-timer {
+            background: rgba(45, 90, 45, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0a2e0a;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-btn.active {
+            background: #f44336;
+            color: white;
+        }
+
+        .risk-assessment {
+            background: rgba(45, 90, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d5a2d;
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .risk-card {
+            background: rgba(26, 74, 26, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #2d5a2d;
+            transition: all 0.3s ease;
+        }
+
+        .risk-card:hover {
+            background: rgba(26, 74, 26, 1);
+        }
+
+        .risk-card.high {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .risk-card.medium {
+            border-color: #ff9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .risk-card.low {
+            border-color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(26, 74, 26, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #daa520;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .motivational-message {
+            background: rgba(218, 165, 32, 0.1);
+            border: 2px solid #daa520;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 90, 45, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 100px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 10px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .location-scanner {
+            background: rgba(26, 74, 26, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .scan-result {
+            background: rgba(45, 90, 45, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #daa520;
+        }
+
+        .emergency-contacts {
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 5px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .delete-btn {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #ff6b6b;
+        }
+
+        .delete-btn:hover {
+            background: rgba(244, 67, 54, 0.4);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🛡️ SafeExplorer</h1>
+            <p>Adventure Risk Assessment & Safety Planning</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPlans">0</div>
+                <div class="stat-label">Safety Plans</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedChecks">0</div>
+                <div class="stat-label">Safety Checks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="safetyStreak">0</div>
+                <div class="stat-label">Safety Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="riskLevel">LOW</div>
+                <div class="stat-label">Current Risk</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "Safety is not a destination, it's a journey. Every precaution taken is a step towards a successful adventure."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('safety')">🛡️ Safety Plans</button>
+            <button class="nav-tab" onclick="switchTab('create')">📋 Create Plan</button>
+            <button class="nav-tab" onclick="switchTab('location')">📍 Location Scan</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Safety Plans Tab -->
+        <div id="safety" class="tab-content active">
+            <div class="input-group">
+                <input type="text" class="search-bar" id="safetySearch" placeholder="Search safety plans by location, activity, or tags..." oninput="filterSafetyPlans()">
+            </div>
+
+            <div class="emergency-contacts">
+                <h4>🚨 Emergency Contacts</h4>
+                <div class="contact-item">
+                    <span>Emergency Services</span>
+                    <button class="emergency-btn" onclick="callEmergency('911')">📞 911</button>
+                </div>
+                <div class="contact-item">
+                    <span>Search & Rescue</span>
+                    <button class="action-btn" onclick="callEmergency('sar')">📞 Contact</button>
+                </div>
+            </div>
+
+            <div id="safetyPlansList"></div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="quickSafetyPlan" placeholder="Quick add safety plan..." aria-label="Quick safety plan">
+                <button class="voice-btn" onclick="startVoiceInput('quickSafetyPlan')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickAddSafetyPlan()">Quick Add</button>
+                <button class="emergency-btn" onclick="startEmergencyPrep()">🚨 EMERGENCY PREP</button>
+            </div>
+        </div>
+
+        <!-- Create Plan Tab -->
+        <div id="create" class="tab-content">
+            <div class="safety-card">
+                <h3>🛡️ Safety Plan Creator</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="planTitle" placeholder="Adventure/Activity title..." aria-label="Plan title">
+                    <button class="voice-btn" onclick="startVoiceInput('planTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="form-input" id="planLocation" placeholder="Location (address, coordinates, or landmark)..." aria-label="Location">
+                    <button class="action-btn" onclick="getCurrentLocation()">📍 Use GPS</button>
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="planDescription" placeholder="Activity description and objectives..." rows="3"></textarea>
+                    <button class="voice-btn" onclick="startVoiceInput('planDescription')" aria-label="Voice input for description">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="activityType">
+                        <option value="hiking">Hiking/Trekking</option>
+                        <option value="climbing">Rock/Mountain Climbing</option>
+                        <option value="water">Water Activities</option>
+                        <option value="winter">Winter Sports</option>
+                        <option value="camping">Camping/Backpacking</option>
+                        <option value="cycling">Cycling/Biking</option>
+                        <option value="urban">Urban Exploration</option>
+                        <option value="wildlife">Wildlife Observation</option>
+                    </select>
+                    <select class="form-select" id="riskAssessment">
+                        <option value="low">Low Risk</option>
+                        <option value="medium">Medium Risk</option>
+                        <option value="high">High Risk</option>
+                        <option value="extreme">Extreme Risk</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="datetime-local" class="form-input" id="startTime" aria-label="Start time">
+                    <input type="datetime-local" class="form-input" id="endTime" aria-label="End time">
+                    <input type="number" class="form-input" id="groupSize" placeholder="Group size" min="1" aria-label="Group size">
+                </div>
+                
+                <div class="tags-input" id="planTags" onclick="focusTagInput('planTagInput')">
+                    <input type="text" id="planTagInput" placeholder="Add tags (weather, gear, permits)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <h4>📋 Safety Checklist</h4>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checklistItem" placeholder="Safety check item..." aria-label="Checklist item">
+                    <select class="form-select" id="checklistPriority">
+                        <option value="critical">Critical</option>
+                        <option value="important">Important</option>
+                        <option value="optional">Optional</option>
+                    </select>
+                    <button class="add-btn" onclick="addChecklistItem()">Add</button>
+                </div>
+                <div id="checklistPreview"></div>
+                
+                <h4>⚠️ Risk Factors</h4>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="riskFactor" placeholder="Risk factor..." aria-label="Risk factor">
+                    <select class="form-select" id="riskSeverity">
+                        <option value="low">Low Impact</option>
+                        <option value="medium">Medium Impact</option>
+                        <option value="high">High Impact</option>
+                        <option value="critical">Critical Impact</option>
+                    </select>
+                    <button class="add-btn" onclick="addRiskFactor()">Add Risk</button>
+                </div>
+                <div id="riskFactorsPreview"></div>
+                
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="add-btn" onclick="createSafetyPlan()">🛡️ Create Safety Plan</button>
+                    <button class="emergency-btn" onclick="createAndActivate()">⚡ CREATE & ACTIVATE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Scan Tab -->
+        <div id="location" class="tab-content">
+            <div class="location-scanner">
+                <h3>📍 Location Risk Scanner</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="scanLocation" placeholder="Enter location to scan..." aria-label="Scan location">
+                    <button class="action-btn" onclick="scanLocation()">🔍 Scan Location</button>
+                    <button class="action-btn" onclick="scanCurrentLocation()">📍 Scan Current</button>
+                </div>
+                
+                <div id="locationResults">
+                    <div class="scan-result">
+                        <h4>🌤️ Weather Conditions</h4>
+                        <div id="weatherInfo">Click scan to get weather data</div>
+                    </div>
+                    
+                    <div class="scan-result">
+                        <h4>🗺️ Terrain Analysis</h4>
+                        <div id="terrainInfo">Click scan to analyze terrain</div>
+                    </div>
+                    
+                    <div class="scan-result">
+                        <h4>🚨 Local Hazards</h4>
+                        <div id="hazardInfo">Click scan to check hazards</div>
+                    </div>
+                    
+                    <div class="scan-result">
+                        <h4>📶 Communication Coverage</h4>
+                        <div id="coverageInfo">Click scan to check coverage</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="safety-card">
+                <h3>🗺️ Offline Maps & Data</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="downloadOfflineMaps()">📥 Download Maps</button>
+                    <button class="action-btn" onclick="cacheWeatherData()">🌤️ Cache Weather</button>
+                    <button class="action-btn" onclick="syncEmergencyData()">🚨 Sync Emergency Data</button>
+                </div>
+                <div id="offlineStatus">
+                    <p>📱 Offline data status: Ready for offline use</p>
+                </div>
+            </div>
+
+            <div class="safety-card">
+                <h3>📡 GPS & Navigation</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="shareLocation()">📍 Share Location</button>
+                    <button class="action-btn" onclick="setCheckInReminder()">⏰ Set Check-in</button>
+                    <button class="emergency-btn" onclick="sendSOSSignal()">🆘 SEND SOS</button>
+                </div>
+                <div id="gpsStatus">
+                    <p>🛰️ GPS Status: <span id="gpsAccuracy">Searching...</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Safety Planning Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
+                <p style="color: #a0a0a0; margin-top: 15px;">Focus on safety planning and risk assessment</p>
+            </div>
+
+            <div class="safety-card">
+                <h3>💡 Daily Safety Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+
+            <div class="safety-card">
+                <h3>🎯 Safety Action Items</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="reviewEmergencyPlan()">📋 Review Emergency Plan</button>
+                    <button class="action-btn" onclick="checkGearCondition()">🎒 Check Gear Condition</button>
+                    <button class="action-btn" onclick="updateEmergencyContacts()">📞 Update Contacts</button>
+                </div>
+            </div>
+
+            <div class="safety-card">
+                <h3>📚 Safety Knowledge Base</h3>
+                <div id="safetyTips">
+                    <div class="scan-result">
+                        <h4>🏔️ Mountain Safety</h4>
+                        <p>Always inform someone of your route and expected return time.</p>
+                    </div>
+                    <div class="scan-result">
+                        <h4>🌊 Water Safety</h4>
+                        <p>Check water conditions and wear appropriate flotation devices.</p>
+                    </div>
+                    <div class="scan-result">
+                        <h4>🌨️ Weather Awareness</h4>
+                        <p>Monitor weather forecasts and have contingency plans ready.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>🛡️ Safety Stats</h4>
+                    <div class="stat-value" id="totalSafetyPlans">0</div>
+                    <div class="stat-label">Total safety plans</div>
+                    <div class="chart-placeholder">Safety Timeline</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Safety Streak</h4>
+                    <div class="stat-value" id="safetyStreakAnalytics">0</div>
+                    <div class="stat-label">Days of consistent safety planning</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⚡ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTimeAnalytics">0h</div>
+                    <div class="stat-label">This month</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>📊 Risk Assessment</h4>
+                    <div class="stat-value" id="avgRiskLevel">MEDIUM</div>
+                    <div class="chart-placeholder">Risk Distribution</div>
+                </div>
+            </div>
+
+            <div class="safety-card">
+                <h3>📈 Detailed Analytics</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>🎯 Activity Breakdown</h4>
+                        <div id="activityBreakdown"></div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>⚠️ Risk Trends</h4>
+                        <div id="riskTrends"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportSafetyReport()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Plan Edit Modal -->
+    <div id="safetyModal" class="modal">
+        <div class="modal-content">
+            <h3 id="safetyModalTitle">Edit Safety Plan <span class="close" onclick="closeSafetyModal()">&times;</span></h3>
+            <div id="safetyModalContent">
+                <input type="text" class="form-input" id="editPlanTitle" placeholder="Plan title...">
+                <input type="text" class="form-input" id="editPlanLocation" placeholder="Location...">
+                <textarea class="form-textarea" id="editPlanDescription" placeholder="Description..." rows="3"></textarea>
+                <select class="form-select" id="editActivityType">
+                    <option value="hiking">Hiking/Trekking</option>
+                    <option value="climbing">Rock/Mountain Climbing</option>
+                    <option value="water">Water Activities</option>
+                    <option value="winter">Winter Sports</option>
+                    <option value="camping">Camping/Backpacking</option>
+                    <option value="cycling">Cycling/Biking</option>
+                    <option value="urban">Urban Exploration</option>
+                    <option value="wildlife">Wildlife Observation</option>
+                </select>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveSafetyPlanEdit()">Save Changes</button>
+                    <button class="action-btn" onclick="activateSafetyPlan()">Activate Plan</button>
+                    <button class="action-btn delete-btn" onclick="deleteCurrentSafetyPlan()">Delete Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your safety motivation message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let safetyPlans = [];
+        let currentSafetyPlan = null;
+        let currentChecklist = [];
+        let currentRiskFactors = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let safetyStreak = 0;
+        let currentLocation = null;
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "Safety is not a destination, it's a journey. Every precaution taken is a step towards a successful adventure.",
+            "Preparation prevents poor performance. Plan your safety, live your adventure.",
+            "The best adventures are the ones you return from safely. Plan well, explore confidently.",
+            "Risk assessment is not about avoiding adventure, it's about embracing it responsibly.",
+            "Every safety check completed is a victory over uncertainty. Stay prepared, stay safe.",
+            "Adventure begins where your comfort zone ends, but safety should never be compromised.",
+            "The mountains are calling, but preparation is answering. Be ready for anything.",
+            "Safety planning is the foundation upon which great adventures are built.",
+            "Knowledge is your best gear. Preparation is your strongest tool. Safety is your greatest achievement.",
+            "Explore boldly, but never blindly. Let safety be your guide to extraordinary experiences."
+        ];
+
+        // Daily safety prompts
+        const safetyPrompts = [
+            "Review and update your emergency contact information",
+            "Check the condition of your safety gear and equipment",
+            "Research weather conditions for your next planned adventure",
+            "Practice using your emergency communication devices",
+            "Review local emergency procedures for your adventure area",
+            "Update your first aid knowledge with a quick refresher",
+            "Check and test your navigation tools and backup systems",
+            "Review your insurance coverage for adventure activities"
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            renderSafetyPlans();
+            initializeGPS();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (safetyPlans.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+        });
+
+        function initializeSampleData() {
+            safetyPlans = [
+                {
+                    id: 1,
+                    title: 'Mountain Hiking Safety Plan',
+                    location: 'Rocky Mountain National Park, CO',
+                    description: 'Day hike to Bear Lake with family group, moderate difficulty trail',
+                    activityType: 'hiking',
+                    riskLevel: 'medium',
+                    startTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    endTime: new Date(Date.now() + 32 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    groupSize: 4,
+                    tags: ['hiking', 'mountains', 'family', 'day-trip'],
+                    checklist: [
+                        { id: 1, text: 'Check weather forecast', priority: 'critical', completed: true },
+                        { id: 2, text: 'Pack first aid kit', priority: 'critical', completed: false },
+                        { id: 3, text: 'Inform park rangers of route', priority: 'important', completed: false },
+                        { id: 4, text: 'Charge GPS device and phone', priority: 'critical', completed: false }
+                    ],
+                    riskFactors: [
+                        { id: 1, factor: 'Altitude sickness', severity: 'medium', mitigation: 'Gradual ascent, hydration' },
+                        { id: 2, factor: 'Weather changes', severity: 'high', mitigation: 'Monitor forecast, pack layers' }
+                    ],
+                    progress: 25,
+                    createdAt: new Date(),
+                    active: false,
+                    completed: false
+                },
+                {
+                    id: 2,
+                    title: 'Urban Photography Safety',
+                    location: 'Downtown Denver, CO',
+                    description: 'Night photography session in urban environment, solo exploration',
+                    activityType: 'urban',
+                    riskLevel: 'low',
+                    startTime: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    endTime: new Date(Date.now() + 54 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    groupSize: 1,
+                    tags: ['photography', 'urban', 'night', 'solo'],
+                    checklist: [
+                        { id: 1, text: 'Share location with emergency contact', priority: 'critical', completed: false },
+                        { id: 2, text: 'Carry personal safety alarm', priority: 'important', completed: false },
+                        { id: 3, text: 'Plan safe transportation route', priority: 'important', completed: false }
+                    ],
+                    riskFactors: [
+                        { id: 1, factor: 'Personal safety in urban area', severity: 'medium', mitigation: 'Stay in well-lit areas, avoid isolated spots' }
+                    ],
+                    progress: 0,
+                    createdAt: new Date(),
+                    active: false,
+                    completed: false
+                }
+            ];
+            
+            updateStats();
+            renderSafetyPlans();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Safety plan management
+        function createSafetyPlan() {
+            const title = document.getElementById('planTitle').value.trim();
+            const location = document.getElementById('planLocation').value.trim();
+            const description = document.getElementById('planDescription').value.trim();
+            const activityType = document.getElementById('activityType').value;
+            const riskLevel = document.getElementById('riskAssessment').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const groupSize = parseInt(document.getElementById('groupSize').value) || 1;
+            const tagInput = document.getElementById('planTagInput');
+            
+            if (!title || !location || !description || !startTime || !endTime) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const safetyPlan = {
+                id: Date.now(),
+                title: title,
+                location: location,
+                description: description,
+                activityType: activityType,
+                riskLevel: riskLevel,
+                startTime: startTime,
+                endTime: endTime,
+                groupSize: groupSize,
+                tags: tags,
+                checklist: [...currentChecklist],
+                riskFactors: [...currentRiskFactors],
+                progress: 0,
+                createdAt: new Date(),
+                active: false,
+                completed: false
+            };
+            
+            safetyPlans.push(safetyPlan);
+            
+            // Clear form
+            clearSafetyPlanForm();
+            
+            updateStats();
+            updateStreak();
+            renderSafetyPlans();
+            saveData();
+            showNotification('Safety plan created successfully! 🛡️');
+        }
+
+        function createAndActivate() {
+            createSafetyPlan();
+            if (safetyPlans.length > 0) {
+                const latestPlan = safetyPlans[safetyPlans.length - 1];
+                latestPlan.active = true;
+                switchTab('safety');
+                document.querySelector('[onclick="switchTab(\'safety\')"]').classList.add('active');
+                showNotification(`Safety plan "${latestPlan.title}" is now active! 🚨`);
+                saveData();
+            }
+        }
+
+        function quickAddSafetyPlan() {
+            const title = document.getElementById('quickSafetyPlan').value.trim();
+            if (!title) {
+                showNotification('Please enter a safety plan title', 'error');
+                return;
+            }
+            
+            const safetyPlan = {
+                id: Date.now(),
+                title: title,
+                location: 'Location TBD',
+                description: 'Quick safety plan - add details later',
+                activityType: 'hiking',
+                riskLevel: 'medium',
+                startTime: new Date().toISOString().slice(0, 16),
+                endTime: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                groupSize: 1,
+                tags: ['quick-add'],
+                checklist: [],
+                riskFactors: [],
+                progress: 0,
+                createdAt: new Date(),
+                active: false,
+                completed: false
+            };
+            
+            safetyPlans.push(safetyPlan);
+            document.getElementById('quickSafetyPlan').value = '';
+            
+            updateStats();
+            renderSafetyPlans();
+            saveData();
+            showNotification('Quick safety plan added! 🚀');
+        }
+
+        function startEmergencyPrep() {
+            showNotification('Emergency preparation mode activated! 🚨', 'emergency');
+            
+            // Switch to create tab and pre-fill emergency values
+            switchTab('create');
+            document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+            document.getElementById('riskAssessment').value = 'high';
+            document.getElementById('planTitle').value = 'Emergency Safety Plan';
+            document.getElementById('planTitle').focus();
+        }
+
+        function clearSafetyPlanForm() {
+            document.getElementById('planTitle').value = '';
+            document.getElementById('planLocation').value = '';
+            document.getElementById('planDescription').value = '';
+            document.getElementById('activityType').value = 'hiking';
+            document.getElementById('riskAssessment').value = 'low';
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('groupSize').value = '';
+            document.getElementById('planTagInput').value = '';
+            document.getElementById('planTags').innerHTML = '<input type="text" id="planTagInput" placeholder="Add tags (weather, gear, permits)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentChecklist = [];
+            currentRiskFactors = [];
+            renderChecklistPreview();
+            renderRiskFactorsPreview();
+        }
+
+        function renderSafetyPlans() {
+            const container = document.getElementById('safetyPlansList');
+            container.innerHTML = '';
+            
+            const filteredPlans = filterSafetyPlansBySearch();
+            
+            if (filteredPlans.length === 0) {
+                container.innerHTML = '<div class="safety-card"><p>No safety plans found. Create your first safety plan to begin secure exploration!</p></div>';
+                return;
+            }
+            
+            filteredPlans.forEach(plan => {
+                const card = createSafetyPlanCard(plan);
+                container.appendChild(card);
+            });
+        }
+
+        function createSafetyPlanCard(plan) {
+            const card = document.createElement('div');
+            card.className = `safety-card ${plan.riskLevel}-risk ${plan.completed ? 'completed' : ''}`;
+            
+            const completedChecks = plan.checklist.filter(item => item.completed).length;
+            const totalChecks = plan.checklist.length;
+            const progress = totalChecks > 0 ? Math.round((completedChecks / totalChecks) * 100) : 0;
+            
+            const startTime = new Date(plan.startTime);
+            const endTime = new Date(plan.endTime);
+            const now = new Date();
+            const isActive = plan.active || (now >= startTime && now <= endTime);
+            
+            card.innerHTML = `
+                <div class="safety-header">
+                    <div>
+                        <div class="safety-title">${plan.title}</div>
+                        <div style="color: #a0a0a0; font-size: 0.9rem;">📍 ${plan.location}</div>
+                        <div style="color: #a0a0a0; font-size: 0.9rem;">${plan.description}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="risk-level risk-${plan.riskLevel}">${plan.riskLevel.toUpperCase()} RISK</div>
+                        <div style="color: #a0a0a0; font-size: 0.8rem;">${completedChecks}/${totalChecks} checks</div>
+                        ${isActive ? '<div style="color: #f44336; font-weight: bold; font-size: 0.8rem;">🔴 ACTIVE</div>' : ''}
+                    </div>
+                </div>
+                
+                <div class="location-info">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>🎯 Activity: ${plan.activityType}</span>
+                        <span>👥 Group: ${plan.groupSize} people</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>🕐 Start: ${startTime.toLocaleDateString()} ${startTime.toLocaleTimeString()}</span>
+                        <span>🕐 End: ${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}</span>
+                    </div>
+                </div>
+                
+                ${plan.riskFactors.length > 0 ? `
+                    <div class="weather-alert">
+                        <strong>⚠️ Risk Factors:</strong>
+                        ${plan.riskFactors.slice(0, 2).map(risk => `
+                            <div style="font-size: 0.9rem; margin: 2px 0;">
+                                • ${risk.factor} (${risk.severity} severity)
+                            </div>
+                        `).join('')}
+                        ${plan.riskFactors.length > 2 ? `<div style="font-size: 0.8rem; color: #a0a0a0;">+${plan.riskFactors.length - 2} more risks</div>` : ''}
+                    </div>
+                ` : ''}
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0;">
+                    ${plan.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                    <span>Safety Progress: ${progress}%</span>
+                    <div style="width: 100px; height: 6px; background: rgba(26, 74, 26, 0.8); border-radius: 3px; overflow: hidden;">
+                        <div style="width: ${progress}%; height: 100%; background: linear-gradient(45deg, #daa520, #ffd700);"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
+                    <button class="action-btn" onclick="editSafetyPlan(${plan.id})">✏️ Edit</button>
+                    <button class="action-btn" onclick="viewChecklist(${plan.id})">📋 Checklist</button>
+                    ${!plan.active ? `
+                        <button class="action-btn" onclick="activatePlan(${plan.id})">🔴 Activate</button>
+                    ` : `
+                        <button class="action-btn" onclick="deactivatePlan(${plan.id})">⏹️ Deactivate</button>
+                    `}
+                    ${!plan.completed ? `
+                        <button class="emergency-btn" onclick="executePlan(${plan.id})">🚀 EXECUTE</button>
+                    ` : `
+                        <button class="action-btn" onclick="archivePlan(${plan.id})">📦 Archive</button>
+                    `}
+                    <button class="action-btn delete-btn" onclick="deleteSafetyPlan(${plan.id})">🗑️ Delete</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function filterSafetyPlans() {
+            renderSafetyPlans();
+        }
+
+        function filterSafetyPlansBySearch() {
+            const searchTerm = document.getElementById('safetySearch').value.toLowerCase();
+            if (!searchTerm) return safetyPlans;
+            
+            return safetyPlans.filter(plan => 
+                plan.title.toLowerCase().includes(searchTerm) ||
+                plan.location.toLowerCase().includes(searchTerm) ||
+                plan.description.toLowerCase().includes(searchTerm) ||
+                plan.activityType.toLowerCase().includes(searchTerm) ||
+                plan.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        function editSafetyPlan(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            currentSafetyPlan = plan;
+            document.getElementById('editPlanTitle').value = plan.title;
+            document.getElementById('editPlanLocation').value = plan.location;
+            document.getElementById('editPlanDescription').value = plan.description;
+            document.getElementById('editActivityType').value = plan.activityType;
+            document.getElementById('safetyModal').style.display = 'block';
+        }
+
+        function saveSafetyPlanEdit() {
+            if (!currentSafetyPlan) return;
+            
+            currentSafetyPlan.title = document.getElementById('editPlanTitle').value;
+            currentSafetyPlan.location = document.getElementById('editPlanLocation').value;
+            currentSafetyPlan.description = document.getElementById('editPlanDescription').value;
+            currentSafetyPlan.activityType = document.getElementById('editActivityType').value;
+            
+            renderSafetyPlans();
+            closeSafetyModal();
+            saveData();
+            showNotification('Safety plan updated! ✏️');
+        }
+
+        function activateSafetyPlan() {
+            if (!currentSafetyPlan) return;
+            
+            // Deactivate all other plans
+            safetyPlans.forEach(plan => plan.active = false);
+            
+            currentSafetyPlan.active = true;
+            
+            renderSafetyPlans();
+            closeSafetyModal();
+            updateStats();
+            saveData();
+            showNotification('🔴 Safety plan activated! Stay safe out there!');
+        }
+
+        function deleteCurrentSafetyPlan() {
+            if (!currentSafetyPlan) return;
+            
+            if (confirm('Are you sure you want to delete this safety plan?')) {
+                safetyPlans = safetyPlans.filter(p => p.id !== currentSafetyPlan.id);
+                renderSafetyPlans();
+                closeSafetyModal();
+                updateStats();
+                saveData();
+                showNotification('Safety plan deleted');
+            }
+        }
+
+        function activatePlan(planId) {
+            // Deactivate all plans first
+            safetyPlans.forEach(plan => plan.active = false);
+            
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (plan) {
+                plan.active = true;
+                renderSafetyPlans();
+                updateStats();
+                saveData();
+                showNotification(`🔴 "${plan.title}" activated!`);
+            }
+        }
+
+        function deactivatePlan(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (plan) {
+                plan.active = false;
+                renderSafetyPlans();
+                updateStats();
+                saveData();
+                showNotification(`⏹️ "${plan.title}" deactivated`);
+            }
+        }
+
+        function executePlan(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            showNotification(`🚀 Executing safety plan: "${plan.title}"!`);
+            
+            // Activate the plan and mark as in progress
+            activatePlan(planId);
+            
+            // Show checklist for immediate action
+            viewChecklist(planId);
+        }
+
+        function viewChecklist(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            // For now, just show notification - in a full app this would open a detailed checklist view
+            showNotification(`📋 Opening checklist for "${plan.title}"`);
+        }
+
+        function archivePlan(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            plan.archived = true;
+            plan.active = false;
+            renderSafetyPlans();
+            saveData();
+            showNotification('Safety plan archived 📦');
+        }
+
+        function deleteSafetyPlan(planId) {
+            const plan = safetyPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            const confirmMessage = plan.completed ? 
+                `Are you sure you want to delete the completed safety plan "${plan.title}"?` :
+                `Are you sure you want to delete "${plan.title}"? This action cannot be undone.`;
+            
+            if (confirm(confirmMessage)) {
+                safetyPlans = safetyPlans.filter(p => p.id !== planId);
+                renderSafetyPlans();
+                updateStats();
+                saveData();
+                showNotification(`Safety plan "${plan.title}" deleted 🗑️`);
+            }
+        }
+
+        // Checklist management
+        function addChecklistItem() {
+            const text = document.getElementById('checklistItem').value.trim();
+            const priority = document.getElementById('checklistPriority').value;
+            
+            if (!text) {
+                showNotification('Please enter a checklist item', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                text: text,
+                priority: priority,
+                completed: false
+            };
+            
+            currentChecklist.push(item);
+            
+            document.getElementById('checklistItem').value = '';
+            renderChecklistPreview();
+            showNotification('Safety check added! 📋');
+        }
+
+        function renderChecklistPreview() {
+            const container = document.getElementById('checklistPreview');
+            container.innerHTML = '';
+            
+            currentChecklist.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'checklist-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <span class="tag" style="margin-left: auto;">${item.priority}</span>
+                    <button class="action-btn" onclick="removeChecklistItem(${index})" style="padding: 4px 8px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeChecklistItem(index) {
+            currentChecklist.splice(index, 1);
+            renderChecklistPreview();
+        }
+
+        // Risk factor management
+        function addRiskFactor() {
+            const factor = document.getElementById('riskFactor').value.trim();
+            const severity = document.getElementById('riskSeverity').value;
+            
+            if (!factor) {
+                showNotification('Please enter a risk factor', 'error');
+                return;
+            }
+            
+            const risk = {
+                id: Date.now(),
+                factor: factor,
+                severity: severity,
+                mitigation: 'Mitigation strategy to be defined'
+            };
+            
+            currentRiskFactors.push(risk);
+            
+            document.getElementById('riskFactor').value = '';
+            renderRiskFactorsPreview();
+            showNotification('Risk factor added! ⚠️');
+        }
+
+        function renderRiskFactorsPreview() {
+            const container = document.getElementById('riskFactorsPreview');
+            container.innerHTML = '';
+            
+            currentRiskFactors.forEach((risk, index) => {
+                const element = document.createElement('div');
+                element.className = 'risk-card ' + risk.severity;
+                element.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${risk.factor}</strong>
+                            <div style="font-size: 0.8rem; color: #a0a0a0;">${risk.severity} severity</div>
+                        </div>
+                        <button class="action-btn" onclick="removeRiskFactor(${index})" style="padding: 4px 8px;">✕</button>
+                    </div>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeRiskFactor(index) {
+            currentRiskFactors.splice(index, 1);
+            renderRiskFactorsPreview();
+        }
+
+        // Location and GPS functionality
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                showNotification('Geolocation not supported by this browser', 'error');
+                return;
+            }
+            
+            showNotification('Getting your location...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    currentLocation = { lat, lon };
+                    
+                    document.getElementById('planLocation').value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    showNotification('Location captured! 📍');
+                    updateGPSStatus(position.coords.accuracy);
+                },
+                function(error) {
+                    showNotification('Unable to get location: ' + error.message, 'error');
+                }
+            );
+        }
+
+        function initializeGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    function(position) {
+                        updateGPSStatus(position.coords.accuracy);
+                    },
+                    function(error) {
+                        document.getElementById('gpsAccuracy').textContent = 'GPS Error';
+                    }
+                );
+            }
+        }
+
+        function updateGPSStatus(accuracy) {
+            const statusElement = document.getElementById('gpsAccuracy');
+            if (accuracy < 10) {
+                statusElement.textContent = 'Excellent (±' + Math.round(accuracy) + 'm)';
+                statusElement.style.color = '#4caf50';
+            } else if (accuracy < 50) {
+                statusElement.textContent = 'Good (±' + Math.round(accuracy) + 'm)';
+                statusElement.style.color = '#ffd700';
+            } else {
+                statusElement.textContent = 'Poor (±' + Math.round(accuracy) + 'm)';
+                statusElement.style.color = '#f44336';
+            }
+        }
+
+        function scanLocation() {
+            const location = document.getElementById('scanLocation').value.trim();
+            if (!location) {
+                showNotification('Please enter a location to scan', 'error');
+                return;
+            }
+            
+            showNotification('Scanning location for safety data...', 'info');
+            
+            // Show loading state
+            document.getElementById('weatherInfo').innerHTML = '<div style="color: #ffd700;">🔄 Analyzing weather patterns...</div>';
+            document.getElementById('terrainInfo').innerHTML = '<div style="color: #ffd700;">🔄 Scanning terrain data...</div>';
+            document.getElementById('hazardInfo').innerHTML = '<div style="color: #ffd700;">🔄 Checking hazard reports...</div>';
+            document.getElementById('coverageInfo').innerHTML = '<div style="color: #ffd700;">🔄 Testing communication coverage...</div>';
+            
+            // Simulate realistic location scanning with varied data based on location
+            setTimeout(() => {
+                const locationLower = location.toLowerCase();
+                let weatherData, terrainData, hazardData, coverageData;
+                
+                // Generate location-specific data
+                if (locationLower.includes('mountain') || locationLower.includes('peak') || locationLower.includes('alpine')) {
+                    weatherData = `
+                        <div>🌤️ Current: 45°F, Clear skies</div>
+                        <div>🌧️ Forecast: 10% chance of afternoon storms</div>
+                        <div>💨 Wind: 15 mph W (gusts to 25 mph)</div>
+                        <div>👁️ Visibility: 15+ miles</div>
+                        <div style="color: #ff9800;">⚠️ UV exposure: Very High at altitude</div>
+                    `;
+                    terrainData = `
+                        <div>🏔️ Elevation: 9,200-11,500 ft</div>
+                        <div>📐 Grade: Steep (25-40% sections)</div>
+                        <div>🗻 Terrain: Rocky, exposed ridges</div>
+                        <div>💧 Water sources: Limited, carry 3+ liters</div>
+                        <div style="color: #f44336;">⚠️ Rockfall danger in couloirs</div>
+                    `;
+                    hazardData = `
+                        <div>⚠️ Wildlife: Mountain goats, possible bears</div>
+                        <div>🚧 Trail conditions: Loose scree, some scrambling</div>
+                        <div>❄️ Snow/Ice: Possible above 10,000 ft</div>
+                        <div>🔥 Fire danger: Moderate</div>
+                        <div style="color: #f44336;">⚠️ Lightning risk on exposed ridges</div>
+                    `;
+                    coverageData = `
+                        <div>📱 Cell coverage: Poor to none above treeline</div>
+                        <div>📡 Emergency radio: Recommended</div>
+                        <div>🛰️ Satellite comm: Essential for safety</div>
+                        <div style="color: #ff9800;">⚠️ GPS accuracy may vary in canyons</div>
+                    `;
+                } else if (locationLower.includes('water') || locationLower.includes('lake') || locationLower.includes('river') || locationLower.includes('beach')) {
+                    weatherData = `
+                        <div>🌤️ Current: 68°F, Partly cloudy</div>
+                        <div>🌧️ Forecast: 30% chance of showers</div>
+                        <div>💨 Wind: 12 mph SW</div>
+                        <div>👁️ Visibility: 8 miles (hazy)</div>
+                        <div style="color: #ff9800;">⚠️ Thunderstorm watch until 8 PM</div>
+                    `;
+                    terrainData = `
+                        <div>🏔️ Elevation: 5,400 ft</div>
+                        <div>📐 Grade: Gentle (5-10%)</div>
+                        <div>🗻 Terrain: Sandy/rocky shoreline</div>
+                        <div>💧 Water temp: 62°F</div>
+                        <div style="color: #2196f3;">ℹ️ Water level: Normal</div>
+                    `;
+                    hazardData = `
+                        <div>⚠️ Wildlife: Waterfowl, possible snakes</div>
+                        <div>🚧 Trail conditions: Muddy near water</div>
+                        <div>❄️ Snow/Ice: None</div>
+                        <div>🔥 Fire danger: Low near water</div>
+                        <div style="color: #ff9800;">⚠️ Flash flood potential in storms</div>
+                    `;
+                    coverageData = `
+                        <div>📱 Cell coverage: Good (3-4 bars)</div>
+                        <div>📡 Emergency radio: Available</div>
+                        <div>🛰️ Satellite comm: Optional</div>
+                        <div style="color: #4caf50;">✓ Marine radio channels available</div>
+                    `;
+                } else if (locationLower.includes('desert') || locationLower.includes('canyon')) {
+                    weatherData = `
+                        <div>🌤️ Current: 85°F, Sunny</div>
+                        <div>🌧️ Forecast: 5% chance of rain</div>
+                        <div>💨 Wind: 8 mph E</div>
+                        <div>👁️ Visibility: 20+ miles</div>
+                        <div style="color: #f44336;">⚠️ Extreme heat warning: 105°F+ expected</div>
+                    `;
+                    terrainData = `
+                        <div>🏔️ Elevation: 3,200 ft</div>
+                        <div>📐 Grade: Variable (flat to steep)</div>
+                        <div>🗻 Terrain: Sand, rock, cacti</div>
+                        <div>💧 Water sources: NONE - carry 1 gal/person</div>
+                        <div style="color: #f44336;">⚠️ Flash flood channels present</div>
+                    `;
+                    hazardData = `
+                        <div>⚠️ Wildlife: Rattlesnakes, scorpions, javelinas</div>
+                        <div>🚧 Trail conditions: Sandy, some washouts</div>
+                        <div>❄️ Snow/Ice: None</div>
+                        <div>🔥 Fire danger: Very High</div>
+                        <div style="color: #f44336;">⚠️ Heat exhaustion risk - start early</div>
+                    `;
+                    coverageData = `
+                        <div>📱 Cell coverage: Spotty (1-2 bars)</div>
+                        <div>📡 Emergency radio: Limited range</div>
+                        <div>🛰️ Satellite comm: Highly recommended</div>
+                        <div style="color: #ff9800;">⚠️ GPS essential - easy to get lost</div>
+                    `;
+                } else {
+                    // Default/urban/general location
+                    weatherData = `
+                        <div>🌤️ Current: 72°F, Partly Cloudy</div>
+                        <div>🌧️ Forecast: 20% chance of rain</div>
+                        <div>💨 Wind: 8 mph SW</div>
+                        <div>👁️ Visibility: 10 miles</div>
+                        <div style="color: #4caf50;">✓ Conditions favorable for outdoor activities</div>
+                    `;
+                    terrainData = `
+                        <div>🏔️ Elevation: 5,500 ft</div>
+                        <div>📐 Grade: Moderate (15% avg)</div>
+                        <div>🗻 Terrain: Mixed forest and meadows</div>
+                        <div>💧 Water sources: Available every 2 miles</div>
+                        <div style="color: #4caf50;">✓ Well-maintained trails</div>
+                    `;
+                    hazardData = `
+                        <div>⚠️ Wildlife: Deer, possible black bears</div>
+                        <div>🚧 Trail conditions: Good, some loose rocks</div>
+                        <div>❄️ Snow/Ice: None reported</div>
+                        <div>🔥 Fire danger: Low to Moderate</div>
+                        <div style="color: #4caf50;">✓ Generally safe conditions</div>
+                    `;
+                    coverageData = `
+                        <div>📱 Cell coverage: Good (4/5 bars)</div>
+                        <div>📡 Emergency radio: Available</div>
+                        <div>🛰️ Satellite comm: Optional backup</div>
+                        <div style="color: #4caf50;">✓ Reliable communication expected</div>
+                    `;
+                }
+                
+                document.getElementById('weatherInfo').innerHTML = weatherData;
+                document.getElementById('terrainInfo').innerHTML = terrainData;
+                document.getElementById('hazardInfo').innerHTML = hazardData;
+                document.getElementById('coverageInfo').innerHTML = coverageData;
+                
+                showNotification(`Location scan complete for "${location}"! 🔍`);
+                
+                // Auto-populate risk assessment based on scan results
+                suggestRiskLevel(location);
+                
+            }, 2500);
+        }
+        
+        function suggestRiskLevel(location) {
+            const locationLower = location.toLowerCase();
+            let suggestedRisk = 'medium';
+            
+            if (locationLower.includes('mountain') || locationLower.includes('peak') || locationLower.includes('alpine') || 
+                locationLower.includes('desert') || locationLower.includes('canyon')) {
+                suggestedRisk = 'high';
+            } else if (locationLower.includes('urban') || locationLower.includes('park') || locationLower.includes('trail')) {
+                suggestedRisk = 'low';
+            }
+            
+            // Update risk assessment if we're on the create tab
+            const riskSelect = document.getElementById('riskAssessment');
+            if (riskSelect && document.getElementById('create').classList.contains('active')) {
+                riskSelect.value = suggestedRisk;
+                showNotification(`Risk level suggested: ${suggestedRisk.toUpperCase()} based on location scan`, 'info');
+            }
+        }
+
+        function scanCurrentLocation() {
+            if (!currentLocation) {
+                getCurrentLocation();
+                setTimeout(() => {
+                    if (currentLocation) {
+                        document.getElementById('scanLocation').value = `${currentLocation.lat.toFixed(6)}, ${currentLocation.lon.toFixed(6)}`;
+                        scanLocation();
+                    }
+                }, 2000);
+            } else {
+                document.getElementById('scanLocation').value = `${currentLocation.lat.toFixed(6)}, ${currentLocation.lon.toFixed(6)}`;
+                scanLocation();
+            }
+        }
+
+        function downloadOfflineMaps() {
+            showNotification('Downloading offline maps...', 'info');
+            setTimeout(() => {
+                showNotification('Offline maps downloaded! 📥');
+                document.getElementById('offlineStatus').innerHTML = '<p>📱 Offline data status: Maps cached, ready for offline use</p>';
+            }, 3000);
+        }
+
+        function cacheWeatherData() {
+            showNotification('Caching weather data...', 'info');
+            setTimeout(() => {
+                showNotification('Weather data cached! 🌤️');
+            }, 1500);
+        }
+
+        function syncEmergencyData() {
+            showNotification('Syncing emergency data...', 'info');
+            setTimeout(() => {
+                showNotification('Emergency data synced! 🚨');
+            }, 2000);
+        }
+
+        function shareLocation() {
+            if (!currentLocation) {
+                getCurrentLocation();
+                return;
+            }
+            
+            const locationUrl = `https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lon}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Current Location - SafeExplorer',
+                    text: 'Here is my current location for safety tracking',
+                    url: locationUrl
+                });
+            } else {
+                // Fallback for browsers without Web Share API
+                navigator.clipboard.writeText(locationUrl).then(() => {
+                    showNotification('Location link copied to clipboard! 📍');
+                });
+            }
+        }
+
+        function setCheckInReminder() {
+            showNotification('Check-in reminder set for every 2 hours ⏰');
+        }
+
+        function sendSOSSignal() {
+            if (confirm('This will send an SOS signal to emergency contacts. Continue?')) {
+                showNotification('🆘 SOS SIGNAL SENT! Emergency contacts notified.', 'emergency');
+            }
+        }
+
+        // Emergency functions
+        function callEmergency(type) {
+            if (type === '911') {
+                if (confirm('This will attempt to call 911. Continue?')) {
+                    showNotification('📞 Calling 911...', 'emergency');
+                    // In a real app, this would initiate an emergency call
+                }
+            } else {
+                showNotification('📞 Contacting Search & Rescue...', 'emergency');
+            }
+        }
+
+        // Focus timer functionality
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Safety planning session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Safety planning session complete! Great focus!');
+            updateStats();
+            saveData();
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailySafetyPromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...safetyPrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailySafetyPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailySafetyPromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailySafetyPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="safety-card" style="margin-bottom: 10px;">
+                    <div class="safety-title">💡 ${prompt}</div>
+                    <div style="margin-top: 10px;">
+                        <button class="emergency-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailySafetyPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailySafetyPrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great safety planning! 🌟');
+            updateStreak();
+        }
+
+        // Safety action functions
+        function reviewEmergencyPlan() {
+            showNotification('📋 Opening emergency plan review checklist...');
+        }
+
+        function checkGearCondition() {
+            showNotification('🎒 Gear condition check initiated...');
+        }
+
+        function updateEmergencyContacts() {
+            showNotification('📞 Emergency contacts update form opened...');
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customSafetyMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customSafetyMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const activePlans = safetyPlans.filter(p => p.active && !p.completed).length;
+            const totalChecks = safetyPlans.reduce((sum, plan) => 
+                sum + plan.checklist.filter(item => item.completed).length, 0);
+            
+            // Calculate current risk level
+            const activePlan = safetyPlans.find(p => p.active);
+            const currentRisk = activePlan ? activePlan.riskLevel.toUpperCase() : 'LOW';
+            
+            document.getElementById('totalPlans').textContent = safetyPlans.length;
+            document.getElementById('completedChecks').textContent = totalChecks;
+            document.getElementById('safetyStreak').textContent = safetyStreak;
+            document.getElementById('riskLevel').textContent = currentRisk;
+            
+            // Update risk level color
+            const riskElement = document.getElementById('riskLevel');
+            riskElement.className = 'stat-value';
+            if (currentRisk === 'HIGH' || currentRisk === 'EXTREME') {
+                riskElement.style.color = '#f44336';
+            } else if (currentRisk === 'MEDIUM') {
+                riskElement.style.color = '#ff9800';
+            } else {
+                riskElement.style.color = '#4caf50';
+            }
+            
+            // Analytics tab stats
+            document.getElementById('totalSafetyPlans').textContent = safetyPlans.length;
+            document.getElementById('safetyStreakAnalytics').textContent = safetyStreak;
+            document.getElementById('totalFocusTimeAnalytics').textContent = Math.round(totalFocusTime / 60) + 'h';
+            
+            // Calculate average risk level
+            const riskLevels = safetyPlans.map(p => p.riskLevel);
+            const avgRisk = calculateAverageRisk(riskLevels);
+            document.getElementById('avgRiskLevel').textContent = avgRisk;
+            
+            updateActivityBreakdown();
+            updateRiskTrends();
+        }
+
+        function calculateAverageRisk(riskLevels) {
+            if (riskLevels.length === 0) return 'LOW';
+            
+            const riskValues = { low: 1, medium: 2, high: 3, extreme: 4 };
+            const avgValue = riskLevels.reduce((sum, risk) => sum + riskValues[risk], 0) / riskLevels.length;
+            
+            if (avgValue <= 1.5) return 'LOW';
+            if (avgValue <= 2.5) return 'MEDIUM';
+            if (avgValue <= 3.5) return 'HIGH';
+            return 'EXTREME';
+        }
+
+        function updateActivityBreakdown() {
+            const activities = {};
+            safetyPlans.forEach(plan => {
+                activities[plan.activityType] = (activities[plan.activityType] || 0) + 1;
+            });
+            
+            const container = document.getElementById('activityBreakdown');
+            container.innerHTML = Object.entries(activities)
+                .map(([activity, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>${activity}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateRiskTrends() {
+            const container = document.getElementById('riskTrends');
+            const riskCounts = { low: 0, medium: 0, high: 0, extreme: 0 };
+            
+            safetyPlans.forEach(plan => {
+                riskCounts[plan.riskLevel]++;
+            });
+            
+            container.innerHTML = Object.entries(riskCounts)
+                .map(([risk, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>${risk.toUpperCase()}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastSafetyActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    safetyStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    safetyStreak = 1;
+                }
+            } else {
+                // First time
+                safetyStreak = 1;
+            }
+            
+            localStorage.setItem('lastSafetyActiveDate', today);
+            localStorage.setItem('safetyStreak', safetyStreak.toString());
+            updateStats();
+        }
+
+        // Export and backup
+        function exportSafetyReport() {
+            const activePlans = safetyPlans.filter(p => p.active);
+            const completedPlans = safetyPlans.filter(p => p.completed);
+            const totalChecks = safetyPlans.reduce((sum, plan) => 
+                sum + plan.checklist.filter(item => item.completed).length, 0);
+            
+            const content = `
+SafeExplorer Safety Report
+Generated: ${new Date().toLocaleDateString()}
+
+SAFETY OVERVIEW
+===============
+Total Safety Plans: ${safetyPlans.length}
+Active Plans: ${activePlans.length}
+Completed Plans: ${completedPlans.length}
+Completed Safety Checks: ${totalChecks}
+Current Safety Streak: ${safetyStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+
+ACTIVE SAFETY PLANS
+==================
+${activePlans.map(plan => `
+🛡️ ${plan.title}
+   Location: ${plan.location}
+   Risk Level: ${plan.riskLevel.toUpperCase()}
+   Activity: ${plan.activityType}
+   Group Size: ${plan.groupSize}
+   Start: ${new Date(plan.startTime).toLocaleString()}
+   
+   Safety Checklist:
+   ${plan.checklist.map(item => `   ${item.completed ? '✅' : '☐'} ${item.text} (${item.priority})`).join('\n   ')}
+   
+   Risk Factors:
+   ${plan.riskFactors.map(risk => `   ⚠️ ${risk.factor} (${risk.severity} severity)`).join('\n   ')}
+`).join('\n')}
+
+RECENT SAFETY PLANS
+==================
+${safetyPlans.slice(-10).map(p => `🛡️ ${p.title} - ${p.activityType} - ${p.riskLevel.toUpperCase()} risk`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `safeexplorer-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Safety report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                safetyPlans: safetyPlans,
+                totalFocusTime: totalFocusTime,
+                safetyStreak: safetyStreak,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `safeexplorer-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        safetyPlans = data.safetyPlans || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        safetyStreak = data.safetyStreak || 0;
+                        
+                        renderSafetyPlans();
+                        updateStats();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            safetyPlans.forEach(plan => {
+                if (plan.completed || !plan.active) return;
+                
+                const startTime = new Date(plan.startTime);
+                const timeDiff = startTime - now;
+                const hoursDiff = timeDiff / (1000 * 60 * 60);
+                
+                // Remind 2 hours before start time
+                if (hoursDiff <= 2 && hoursDiff > 0) {
+                    showNotification(`Safety Reminder: "${plan.title}" starts in ${Math.round(hoursDiff)} hours`, 'reminder');
+                }
+                
+                // Remind if overdue
+                if (timeDiff < 0 && Math.abs(hoursDiff) <= 24) {
+                    showNotification(`Safety Alert: "${plan.title}" is overdue for ${Math.round(Math.abs(hoursDiff))} hours`, 'emergency');
+                }
+            });
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('safeExplorer_plans', JSON.stringify(safetyPlans));
+            localStorage.setItem('safeExplorer_focusTime', totalFocusTime);
+            localStorage.setItem('safeExplorer_streak', safetyStreak);
+        }
+
+        function loadData() {
+            const savedPlans = localStorage.getItem('safeExplorer_plans');
+            const savedFocusTime = localStorage.getItem('safeExplorer_focusTime');
+            const savedStreak = localStorage.getItem('safeExplorer_streak');
+            
+            if (savedPlans) safetyPlans = JSON.parse(savedPlans);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) safetyStreak = parseInt(savedStreak);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeSafetyModal() {
+            document.getElementById('safetyModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+            } else if (type === 'emergency') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+                notification.style.color = 'white';
+                notification.style.fontWeight = 'bold';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 193, 7, 0.9)';
+                notification.style.color = '#1a237e';
+            } else if (type === 'info') {
+                notification.style.background = 'rgba(33, 150, 243, 0.9)';
+                notification.style.color = 'white';
+            } else {
+                notification.style.background = 'rgba(76, 175, 80, 0.9)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, type === 'emergency' ? 8000 : 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('planTitle').focus();
+                        break;
+                    case 'l':
+                        e.preventDefault();
+                        switchTab('location');
+                        document.querySelector('[onclick="switchTab(\'location\')"]').classList.add('active');
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const safetyModal = document.getElementById('safetyModal');
+            const messageModal = document.getElementById('messageModal');
+            
+            if (event.target === safetyModal) {
+                closeSafetyModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871661e32b01072',t:'MTc1OTIxMDk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
