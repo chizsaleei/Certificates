@@ -1,166 +1,82 @@
-/* =========================================================
-   Chiza Site Script
-   Modern, minimal, and page-agnostic helpers
-   ========================================================= */
+/* ==========================================
+   CHIZSA | COACHING — Global behavior
+   - Active nav state
+   - External link safety
+   - Smooth anchor scroll with reduced-motion respect
+   - Service worker registration
+   - UTM capture (session)
+   ========================================== */
 
-/* -------------------------------
-   0) Small helpers
--------------------------------- */
-const $  = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-const isExternal = (href) => {
+(function () {
+  const $ = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+  // 1) Mark active nav item
   try {
-    const u = new URL(href, location.href);
-    return u.origin !== location.origin;
-  } catch { return false; }
-};
-
-/* -------------------------------
-   1) Mark the active nav item
--------------------------------- */
-(function markActiveNav() {
-  const path = location.pathname.split("/").pop() || "index.html";
-  const links = $$(".nav a");
-  links.forEach(a => {
-    const href = a.getAttribute("href");
-    if (!href) return;
-    // match index.html or root
-    const isHome = (path === "" || path === "index.html") && (href === "index.html");
-    if (isHome || href === path) a.classList.add("active");
-  });
-})();
-
-/* -------------------------------
-   2) Tabs with filter support
-   Works for any .tabs group. It looks for:
-   - data-filter on the clicked button
-   - a target grid to filter:
-       a) via data-target on the .tabs element (selector)
-       b) or an element with id #grid, #t-grid, or .cert-grid
-   Expects items in the grid to have:
-       data-type  or  data-category
--------------------------------- */
-(function enableTabs() {
-  $$(".tabs").forEach(tabsEl => {
-    const getTargetGrid = () => {
-      const sel = tabsEl.getAttribute("data-target");
-      if (sel) return $(sel);
-      return $("#grid") || $("#t-grid") || $(".cert-grid") || $(".grid-training");
-    };
-
-    const grid = getTargetGrid();
-    if (!grid) return;
-
-    tabsEl.addEventListener("click", (e) => {
-      const btn = e.target.closest(".tab");
-      if (!btn) return;
-      const filter = btn.dataset.filter || "all";
-      // visual state
-      $$(".tab", tabsEl).forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      // if grid has dynamic renderer elsewhere, just publish an event
-      const ev = new CustomEvent("tabs:filter", { detail: { filter, grid } });
-      document.dispatchEvent(ev);
-
-      // fallback filter for static cards
-      const children = Array.from(grid.children);
-      const attr = children.some(x => x.hasAttribute("data-type")) ? "data-type" : "data-category";
-      children.forEach(card => {
-        const val = card.getAttribute(attr);
-        card.style.display = (filter === "all" || val === filter) ? "" : "none";
-      });
-    });
-  });
-})();
-
-/* -------------------------------
-   3) Freebie success state
-   Shows the success notice when redirected with ?sent=1
--------------------------------- */
-(function freebieSuccess() {
-  const params = new URLSearchParams(location.search);
-  if (params.get("sent") === "1") {
-    const form = $("#freebie-form");
-    const ok   = $("#success");
-    if (form && ok) {
-      form.hidden = true;
-      ok.hidden = false;
-    }
-  }
-})();
-
-/* -------------------------------
-   4) External link hygiene
-   Ensures target and rel on external anchors
--------------------------------- */
-(function secureExternalLinks() {
-  $$("a[href]").forEach(a => {
-    const href = a.getAttribute("href");
-    if (href && isExternal(href)) {
-      a.target = a.target || "_blank";
-      const rel = new Set((a.getAttribute("rel") || "").split(/\s+/).filter(Boolean));
-      rel.add("noopener"); rel.add("noreferrer");
-      a.setAttribute("rel", Array.from(rel).join(" "));
-    }
-  });
-})();
-
-/* -------------------------------
-   5) Lazy fade-in on scroll
-   Adds .reveal when elements enter viewport
--------------------------------- */
-(function revealOnScroll() {
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("reveal");
-        io.unobserve(e.target);
+    const path = location.pathname.replace(/\/+$/, '') || '/';
+    $$('.site-nav a').forEach(a => {
+      const href = a.getAttribute('href') || '';
+      const h = href.replace(/\/+$/, '');
+      if (h && h !== '#' && path.startsWith(h)) {
+        a.setAttribute('aria-current','page');
       }
     });
-  }, { threshold: .15 });
+  } catch(e){ /* no-op */ }
 
-  $$(".card, .product, .t-card, .testi-card, .hero, .section").forEach(el => io.observe(el));
-})();
+  // 2) External link safety
+  try {
+    $$('a[href^="http"]').forEach(a => {
+      const url = new URL(a.href);
+      if (url.host !== location.host) {
+        a.setAttribute('target','_blank');
+        a.setAttribute('rel','noopener');
+      }
+    });
+  } catch(e){}
 
-/* -------------------------------
-   6) Smooth scroll for same-page anchors
--------------------------------- */
-(function smoothAnchors() {
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const id = a.getAttribute("href");
-    if (id.length <= 1) return;
-    const target = $(id);
-    if (!target) return;
-    e.preventDefault();
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-    history.pushState(null, "", id);
-  });
-})();
+  // 3) Smooth anchor scroll (respect reduced motion)
+  try {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      $$('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          const id = a.getAttribute('href');
+          const el = $(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({behavior:'smooth',block:'start'});
+            history.pushState(null,'',id);
+          }
+        });
+      });
+    }
+  } catch(e){}
 
-/* -------------------------------
-   7) Image fallback helper
-   Use: <img data-fallback="images/certificate-fallback.jpg">
--------------------------------- */
-(function imageFallback() {
-  $$("img[data-fallback]").forEach(img => {
-    const fallback = img.getAttribute("data-fallback");
-    img.addEventListener("error", () => {
-      if (img.dataset.failed) return; // avoid loops
-      img.dataset.failed = "1";
-      img.src = fallback;
-    }, { once: true });
-  });
-})();
+  // 4) Capture UTM once per session for simple analytics
+  try {
+    const params = new URLSearchParams(location.search);
+    const utm = ['utm_source','utm_medium','utm_campaign','utm_content'].reduce((acc,k)=>{
+      const v = params.get(k); if (v) acc[k]=v; return acc;
+    }, {});
+    if (Object.keys(utm).length) sessionStorage.setItem('utm', JSON.stringify(utm));
+  } catch(e){}
 
-/* -------------------------------
-   8) Lightweight analytics ping (optional)
-   Adds a data-action label to Ko-fi buttons for future use
--------------------------------- */
-(function tagCtas() {
-  $$('a[href*="ko-fi.com"]').forEach(a => {
-    a.dataset.action = a.dataset.action || "kofi";
-  });
+  // 5) Service worker registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(()=>{ /* ignore */ });
+    });
+  }
+
+  // 6) Tiny helper exposed for pages that want it
+  window.Site = {
+    getUTM(){ try { return JSON.parse(sessionStorage.getItem('utm')||'{}'); } catch(e){ return {}; } },
+    // gold hover utility for buttons rendered at runtime
+    ripple(el){
+      if(!el) return;
+      el.addEventListener('pointerdown', ()=> el.style.transform='translateY(1px)');
+      el.addEventListener('pointerup',   ()=> el.style.transform='');
+      el.addEventListener('pointerleave',()=> el.style.transform='');
+    }
+  };
 })();
