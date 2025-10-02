@@ -1,1 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Archetype - Personality Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --deep-green: #1a4d3a;
+            --medium-green: #2d6b4f;
+            --light-green: #4a8b6b;
+            --gold: #d4af37;
+            --dark-gold: #b8941f;
+            --off-white: #f8f9fa;
+            --light-gray: #e9ecef;
+            --dark-text: #1a1a1a;
+            --success-green: #52c41a;
+            --warning-amber: #fa8c16;
+            --info-teal: #13c2c2;
+        }
+        
+        .bg-deep-green { background-color: var(--deep-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-gold { background-color: var(--gold); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-off-white { background-color: var(--off-white); }
+        .bg-light-gray { background-color: var(--light-gray); }
+        
+        .text-deep-green { color: var(--deep-green); }
+        .text-gold { color: var(--gold); }
+        .text-dark { color: var(--dark-text); }
+        .text-off-white { color: var(--off-white); }
+        .text-success { color: var(--success-green); }
+        .text-warning { color: var(--warning-amber); }
+        .text-info { color: var(--info-teal); }
+        
+        .border-gold { border-color: var(--gold); }
+        .border-deep-green { border-color: var(--deep-green); }
+        
+        body {
+            background: linear-gradient(135deg, var(--deep-green), var(--medium-green));
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: rgba(248, 249, 250, 0.95);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 24px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .option-button {
+            background: var(--off-white);
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 8px 0;
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--dark-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .option-button:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-button.selected {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+        }
+        
+        .primary-button {
+            background: var(--gold);
+            color: var(--dark-text);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        .primary-button:hover {
+            background: var(--dark-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+        }
+        
+        .primary-button:disabled {
+            background: var(--light-gray);
+            color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            background: var(--light-gray);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, var(--gold), var(--dark-gold));
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .archetype-card {
+            background: var(--off-white);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 16px 0;
+            border: 2px solid var(--gold);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .archetype-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .question-number {
+            background: var(--deep-green);
+            color: var(--off-white);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        
+        .intro-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .intro-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--off-white);
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .intro-subtitle {
+            font-size: 20px;
+            color: var(--off-white);
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+        
+        .archetype-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 12px;
+            margin: 32px 0;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .archetype-preview {
+            background: var(--deep-green);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            color: var(--off-white);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .archetype-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .archetype-preview:hover {
+            border-color: var(--gold);
+            background: var(--medium-green);
+            transform: translateY(-6px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .archetype-preview:hover::before {
+            opacity: 1;
+        }
+        
+        .archetype-preview .archetype-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .archetype-preview .archetype-name {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--off-white);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            line-height: 1.2;
+        }
+        
+        @media (max-width: 768px) {
+            .archetype-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 10px;
+            }
+            
+            .archetype-preview {
+                min-height: 100px;
+                padding: 16px 8px;
+            }
+            
+            .archetype-preview .archetype-icon {
+                font-size: 28px;
+                margin-bottom: 6px;
+            }
+            
+            .archetype-preview .archetype-name {
+                font-size: 12px;
+            }
+        }
+        
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--deep-green);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Introduction Screen -->
+    <div id="introScreen" class="quiz-container">
+        <div class="intro-section fade-in">
+            <h1 class="intro-title">🎭 Find Your Archetype</h1>
+            <p class="intro-subtitle">Discover your core personality pattern through 25 carefully crafted questions</p>
+            
+            <div class="question-card">
+                <h2 class="text-2xl font-bold text-deep-green mb-4">The 10 Archetypes</h2>
+                <div class="archetype-grid">
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🏗️</div>
+                        <div class="archetype-name">The Builder</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🔍</div>
+                        <div class="archetype-name">The Analyst</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🤝</div>
+                        <div class="archetype-name">The Connector</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🎨</div>
+                        <div class="archetype-name">The Creator</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">💝</div>
+                        <div class="archetype-name">The Caregiver</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">👑</div>
+                        <div class="archetype-name">The Leader</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">♟️</div>
+                        <div class="archetype-name">The Strategist</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🗺️</div>
+                        <div class="archetype-name">The Explorer</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">🎭</div>
+                        <div class="archetype-name">The Performer</div>
+                    </div>
+                    <div class="archetype-preview">
+                        <div class="archetype-icon">✅</div>
+                        <div class="archetype-name">The Finisher</div>
+                    </div>
+                </div>
+                
+                <div class="bg-light-gray rounded-lg p-6 mt-6">
+                    <h3 class="text-lg font-bold text-deep-green mb-3">📋 How It Works</h3>
+                    <ul class="text-left text-dark space-y-2">
+                        <li>• 25 thoughtfully designed questions</li>
+                        <li>• Each question reveals different aspects of your personality</li>
+                        <li>• No right or wrong answers - be honest for best results</li>
+                        <li>• Takes about 5-7 minutes to complete</li>
+                        <li>• Get detailed insights about your archetype</li>
+                    </ul>
+                </div>
+                
+                <button onclick="startQuiz()" class="primary-button mt-8 pulse">
+                    🚀 Start Your Journey
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="quiz-container hidden">
+        <div class="question-card fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div class="question-number" id="questionNumber">1</div>
+                <div class="text-sm text-deep-green font-semibold" id="progressText">Question 1 of 25</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 4%"></div>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-deep-green mb-6" id="questionText">
+                Loading question...
+            </h2>
+            
+            <div id="optionsContainer" class="space-y-3">
+                <!-- Options will be populated here -->
+            </div>
+            
+            <div class="flex justify-between mt-8">
+                <button onclick="previousQuestion()" id="prevButton" class="primary-button" style="background: var(--light-gray); color: var(--dark-text);" disabled>
+                    ← Previous
+                </button>
+                <button onclick="nextQuestion()" id="nextButton" class="primary-button" disabled>
+                    Next →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="quiz-container hidden">
+        <div class="archetype-card fade-in">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-deep-green mb-4">🎉 Your Archetype Revealed!</h1>
+                <div class="archetype-icon" id="resultIcon">🎭</div>
+                <h2 class="text-3xl font-bold text-deep-green mb-2" id="resultTitle">Your Archetype</h2>
+                <p class="text-lg text-dark mb-6" id="resultTagline">Your unique personality pattern</p>
+            </div>
+            
+            <div class="result-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="matchPercentage">95%</div>
+                    <div class="stat-label">Match Strength</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="dominantTraits">3</div>
+                    <div class="stat-label">Dominant Traits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="compatibilityScore">8.5</div>
+                    <div class="stat-label">Leadership Score</div>
+                </div>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-deep-green mb-4">📖 Core Description</h3>
+                <p class="text-dark leading-relaxed" id="resultDescription">
+                    Your detailed archetype description will appear here...
+                </p>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-deep-green mb-4">💪 Key Strengths</h3>
+                <ul class="text-dark space-y-2" id="resultStrengths">
+                    <!-- Strengths will be populated here -->
+                </ul>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-deep-green mb-4">🎯 Growth Areas</h3>
+                <ul class="text-dark space-y-2" id="resultGrowthAreas">
+                    <!-- Growth areas will be populated here -->
+                </ul>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-deep-green mb-4">🤝 Compatible Archetypes</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="compatibleArchetypes">
+                    <!-- Compatible archetypes will be populated here -->
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="restartQuiz()" class="primary-button mr-4">
+                    🔄 Take Quiz Again
+                </button>
+                <button onclick="shareResults()" class="primary-button" style="background: var(--medium-green); color: var(--off-white);">
+                    📤 Share Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data
+        const questions = [
+            {
+                text: "When facing a complex problem, what's your first instinct?",
+                options: [
+                    { text: "Break it down into manageable steps and create a plan", archetypes: { builder: 3, strategist: 2, finisher: 1 } },
+                    { text: "Gather all available data and analyze patterns", archetypes: { analyst: 3, strategist: 1 } },
+                    { text: "Brainstorm creative and unconventional solutions", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Consider how it affects everyone involved", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Take charge and rally others to solve it together", archetypes: { leader: 3, connector: 1 } }
+                ]
+            },
+            {
+                text: "In a team meeting, you're most likely to:",
+                options: [
+                    { text: "Present detailed research and supporting evidence", archetypes: { analyst: 3, strategist: 1 } },
+                    { text: "Facilitate discussion and ensure everyone's voice is heard", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Propose innovative ideas that challenge conventional thinking", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Focus on actionable next steps and deadlines", archetypes: { finisher: 3, builder: 2 } },
+                    { text: "Guide the conversation toward strategic outcomes", archetypes: { leader: 3, strategist: 2 } }
+                ]
+            },
+            {
+                text: "What energizes you most in your work?",
+                options: [
+                    { text: "Building something tangible from the ground up", archetypes: { builder: 3, creator: 1 } },
+                    { text: "Solving complex puzzles and uncovering insights", archetypes: { analyst: 3, strategist: 1 } },
+                    { text: "Connecting with people and building relationships", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Expressing creativity and bringing ideas to life", archetypes: { creator: 3, performer: 2 } },
+                    { text: "Supporting others and making a positive impact", archetypes: { caregiver: 3, connector: 1 } }
+                ]
+            },
+            {
+                text: "How do you prefer to learn new skills?",
+                options: [
+                    { text: "Hands-on practice and trial-and-error", archetypes: { builder: 2, explorer: 3 } },
+                    { text: "Thorough research and systematic study", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Learning from mentors and collaborative discussion", archetypes: { connector: 3, caregiver: 1 } },
+                    { text: "Experimenting and finding my own creative approach", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Structured courses with clear milestones", archetypes: { finisher: 3, analyst: 1 } }
+                ]
+            },
+            {
+                text: "When you're stressed, you tend to:",
+                options: [
+                    { text: "Focus intensely on completing tasks and meeting deadlines", archetypes: { finisher: 3, builder: 1 } },
+                    { text: "Analyze the situation from every possible angle", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Seek support from friends and talk through your feelings", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Channel stress into creative outlets or new projects", archetypes: { creator: 3, performer: 1 } },
+                    { text: "Take control of the situation and organize solutions", archetypes: { leader: 3, strategist: 1 } }
+                ]
+            },
+            {
+                text: "What role do you naturally take in group projects?",
+                options: [
+                    { text: "The project manager who keeps everything on track", archetypes: { finisher: 3, leader: 2 } },
+                    { text: "The researcher who provides data and analysis", archetypes: { analyst: 3, strategist: 1 } },
+                    { text: "The team harmonizer who manages relationships", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "The idea generator who thinks outside the box", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "The implementer who turns plans into reality", archetypes: { builder: 3, finisher: 1 } }
+                ]
+            },
+            {
+                text: "Your ideal work environment would be:",
+                options: [
+                    { text: "A well-organized space with clear systems and processes", archetypes: { finisher: 3, analyst: 2 } },
+                    { text: "A collaborative open space that encourages interaction", archetypes: { connector: 3, performer: 2 } },
+                    { text: "A creative studio with flexibility and inspiration", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "A quiet space for deep thinking and analysis", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "A dynamic environment with new challenges daily", archetypes: { explorer: 3, leader: 2 } }
+                ]
+            },
+            {
+                text: "When making important decisions, you rely most on:",
+                options: [
+                    { text: "Comprehensive data analysis and logical reasoning", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Input from trusted advisors and stakeholders", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Intuition and creative insight", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Past experience and proven methodologies", archetypes: { builder: 3, finisher: 2 } },
+                    { text: "Strategic thinking and long-term vision", archetypes: { strategist: 3, leader: 2 } }
+                ]
+            },
+            {
+                text: "What motivates you to take on new challenges?",
+                options: [
+                    { text: "The opportunity to build something meaningful", archetypes: { builder: 3, creator: 1 } },
+                    { text: "The chance to solve complex problems", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "The ability to help and support others", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "The potential for creative expression", archetypes: { creator: 3, performer: 2 } },
+                    { text: "The opportunity to explore uncharted territory", archetypes: { explorer: 3, leader: 1 } }
+                ]
+            },
+            {
+                text: "How do you handle conflict in relationships?",
+                options: [
+                    { text: "Address it directly with facts and clear communication", archetypes: { leader: 3, analyst: 2 } },
+                    { text: "Seek to understand all perspectives and find compromise", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Focus on practical solutions that work for everyone", archetypes: { builder: 3, finisher: 2 } },
+                    { text: "Use creativity to find unexpected win-win solutions", archetypes: { creator: 3, strategist: 1 } },
+                    { text: "Analyze the root causes and develop systematic approaches", archetypes: { analyst: 3, strategist: 2 } }
+                ]
+            },
+            {
+                text: "What's your approach to planning for the future?",
+                options: [
+                    { text: "Create detailed roadmaps with specific milestones", archetypes: { strategist: 3, finisher: 2 } },
+                    { text: "Build flexible frameworks that can adapt to change", archetypes: { builder: 2, explorer: 3 } },
+                    { text: "Focus on relationships and collaborative opportunities", archetypes: { connector: 3, caregiver: 1 } },
+                    { text: "Envision creative possibilities and innovative directions", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Research trends and analyze potential scenarios", archetypes: { analyst: 3, strategist: 2 } }
+                ]
+            },
+            {
+                text: "In social situations, you're most comfortable when:",
+                options: [
+                    { text: "Facilitating meaningful conversations between others", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Sharing knowledge and insights on topics you're passionate about", archetypes: { analyst: 2, performer: 3 } },
+                    { text: "Leading activities and bringing people together", archetypes: { leader: 3, performer: 2 } },
+                    { text: "Engaging in deep, one-on-one conversations", archetypes: { caregiver: 3, analyst: 1 } },
+                    { text: "Exploring new ideas and creative concepts with others", archetypes: { creator: 3, explorer: 2 } }
+                ]
+            },
+            {
+                text: "What's your greatest strength in achieving goals?",
+                options: [
+                    { text: "Persistence and determination to see things through", archetypes: { finisher: 3, builder: 2 } },
+                    { text: "Ability to analyze and optimize approaches", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Skill in building coalitions and gaining support", archetypes: { connector: 3, leader: 2 } },
+                    { text: "Capacity for innovative thinking and creative solutions", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Talent for inspiring and motivating others", archetypes: { leader: 3, performer: 2 } }
+                ]
+            },
+            {
+                text: "How do you prefer to receive feedback?",
+                options: [
+                    { text: "Detailed, specific, and data-driven insights", archetypes: { analyst: 3, finisher: 2 } },
+                    { text: "Constructive suggestions delivered with empathy", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Direct, honest feedback focused on results", archetypes: { leader: 3, builder: 2 } },
+                    { text: "Creative suggestions that inspire new possibilities", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Strategic guidance that helps me see the bigger picture", archetypes: { strategist: 3, leader: 1 } }
+                ]
+            },
+            {
+                text: "What energizes you most about working with others?",
+                options: [
+                    { text: "Building strong, lasting relationships", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Sharing knowledge and learning from their expertise", archetypes: { analyst: 2, explorer: 3 } },
+                    { text: "Collaborating on creative projects and innovations", archetypes: { creator: 3, performer: 2 } },
+                    { text: "Leading teams toward ambitious goals", archetypes: { leader: 3, strategist: 2 } },
+                    { text: "Supporting others in achieving their potential", archetypes: { caregiver: 3, connector: 2 } }
+                ]
+            },
+            {
+                text: "When starting a new project, your first priority is:",
+                options: [
+                    { text: "Understanding the scope and creating a detailed plan", archetypes: { strategist: 3, finisher: 2 } },
+                    { text: "Researching best practices and gathering information", archetypes: { analyst: 3, builder: 1 } },
+                    { text: "Identifying stakeholders and building team alignment", archetypes: { connector: 3, leader: 2 } },
+                    { text: "Exploring creative possibilities and innovative approaches", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Setting up systems and processes for execution", archetypes: { builder: 3, finisher: 2 } }
+                ]
+            },
+            {
+                text: "What type of recognition means the most to you?",
+                options: [
+                    { text: "Acknowledgment of your expertise and analytical skills", archetypes: { analyst: 3, strategist: 1 } },
+                    { text: "Appreciation for your supportive and caring nature", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Recognition of your creative contributions and innovations", archetypes: { creator: 3, performer: 2 } },
+                    { text: "Praise for your leadership and ability to drive results", archetypes: { leader: 3, finisher: 2 } },
+                    { text: "Respect for your reliability and quality of work", archetypes: { builder: 3, finisher: 2 } }
+                ]
+            },
+            {
+                text: "How do you approach learning from failure?",
+                options: [
+                    { text: "Analyze what went wrong and develop better systems", archetypes: { analyst: 3, builder: 2 } },
+                    { text: "Focus on the lessons learned and how to support others", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Use it as inspiration for creative new approaches", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Take responsibility and develop stronger leadership skills", archetypes: { leader: 3, strategist: 2 } },
+                    { text: "Treat it as valuable data for future decision-making", archetypes: { strategist: 3, analyst: 2 } }
+                ]
+            },
+            {
+                text: "What's your natural response to uncertainty?",
+                options: [
+                    { text: "Gather more information to reduce ambiguity", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Create contingency plans for multiple scenarios", archetypes: { strategist: 3, finisher: 2 } },
+                    { text: "Embrace it as an opportunity for innovation", archetypes: { explorer: 3, creator: 2 } },
+                    { text: "Focus on what you can control and build from there", archetypes: { builder: 3, finisher: 2 } },
+                    { text: "Rally others and face it together as a team", archetypes: { leader: 3, connector: 2 } }
+                ]
+            },
+            {
+                text: "What drives your sense of accomplishment?",
+                options: [
+                    { text: "Completing projects to the highest standard", archetypes: { finisher: 3, builder: 2 } },
+                    { text: "Discovering insights that solve important problems", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "Making a positive difference in people's lives", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Creating something beautiful or innovative", archetypes: { creator: 3, performer: 2 } },
+                    { text: "Achieving ambitious goals and inspiring others", archetypes: { leader: 3, explorer: 1 } }
+                ]
+            },
+            {
+                text: "How do you prefer to communicate important ideas?",
+                options: [
+                    { text: "Through detailed presentations with supporting data", archetypes: { analyst: 3, strategist: 2 } },
+                    { text: "In personal conversations that build understanding", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Using creative visuals and storytelling", archetypes: { creator: 3, performer: 2 } },
+                    { text: "With clear, direct language focused on action", archetypes: { leader: 3, builder: 2 } },
+                    { text: "Through systematic documentation and processes", archetypes: { builder: 3, finisher: 2 } }
+                ]
+            },
+            {
+                text: "What's your approach to work-life balance?",
+                options: [
+                    { text: "Create clear boundaries and stick to structured schedules", archetypes: { finisher: 3, analyst: 2 } },
+                    { text: "Integrate work and life in ways that serve relationships", archetypes: { connector: 3, caregiver: 2 } },
+                    { text: "Follow your energy and passion, even if it's unconventional", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Build sustainable systems that support long-term success", archetypes: { builder: 3, strategist: 2 } },
+                    { text: "Lead by example in creating healthy team cultures", archetypes: { leader: 3, caregiver: 1 } }
+                ]
+            },
+            {
+                text: "What legacy do you want to leave behind?",
+                options: [
+                    { text: "Systems and structures that continue to serve others", archetypes: { builder: 3, strategist: 2 } },
+                    { text: "Knowledge and insights that advance understanding", archetypes: { analyst: 3, explorer: 2 } },
+                    { text: "Strong relationships and a caring community", archetypes: { connector: 3, caregiver: 3 } },
+                    { text: "Creative works that inspire and move people", archetypes: { creator: 3, performer: 2 } },
+                    { text: "Leadership that empowered others to achieve greatness", archetypes: { leader: 3, caregiver: 1 } }
+                ]
+            },
+            {
+                text: "How do you handle competing priorities?",
+                options: [
+                    { text: "Create a systematic framework for evaluation and ranking", archetypes: { strategist: 3, analyst: 2 } },
+                    { text: "Consider the impact on people and relationships first", archetypes: { caregiver: 3, connector: 2 } },
+                    { text: "Focus on what aligns with your creative vision", archetypes: { creator: 3, performer: 1 } },
+                    { text: "Tackle the most critical and time-sensitive items first", archetypes: { finisher: 3, leader: 2 } },
+                    { text: "Build flexible solutions that address multiple needs", archetypes: { builder: 3, explorer: 2 } }
+                ]
+            },
+            {
+                text: "What's your greatest source of professional satisfaction?",
+                options: [
+                    { text: "Mastering complex skills and becoming an expert", archetypes: { analyst: 3, builder: 2 } },
+                    { text: "Seeing others grow and succeed through your support", archetypes: { caregiver: 3, leader: 2 } },
+                    { text: "Bringing innovative ideas to life", archetypes: { creator: 3, explorer: 2 } },
+                    { text: "Delivering exceptional results consistently", archetypes: { finisher: 3, strategist: 2 } },
+                    { text: "Building bridges between people and ideas", archetypes: { connector: 3, performer: 2 } }
+                ]
+            }
+        ];
+
+        // Archetype definitions
+        const archetypes = {
+            builder: {
+                name: "The Builder",
+                icon: "🏗️",
+                tagline: "You create lasting foundations and turn visions into reality",
+                description: "Builders are the architects of progress. You have an innate ability to take abstract concepts and transform them into concrete, functional systems. Your methodical approach, combined with practical wisdom, makes you invaluable in any endeavor requiring structure and sustainability. You thrive on creating something tangible that will serve others long after you're done.",
+                strengths: [
+                    "Exceptional project management and organizational skills",
+                    "Ability to see both big picture and important details",
+                    "Strong problem-solving with practical solutions",
+                    "Natural talent for creating efficient systems and processes",
+                    "Reliable follow-through and commitment to quality"
+                ],
+                growthAreas: [
+                    "Embracing flexibility when plans need to change",
+                    "Balancing perfectionism with timely delivery",
+                    "Delegating effectively rather than doing everything yourself",
+                    "Being open to unconventional or creative approaches"
+                ],
+                compatibleArchetypes: ["strategist", "finisher", "analyst", "leader"]
+            },
+            analyst: {
+                name: "The Analyst",
+                icon: "🔍",
+                tagline: "You uncover hidden patterns and provide clarity through insight",
+                description: "Analysts are the truth-seekers who bring clarity to complexity. Your superpower lies in your ability to process vast amounts of information, identify patterns others miss, and distill insights that drive better decisions. You approach problems with intellectual rigor and have an insatiable curiosity about how things really work.",
+                strengths: [
+                    "Exceptional research and data analysis capabilities",
+                    "Ability to identify patterns and trends others miss",
+                    "Strong critical thinking and logical reasoning",
+                    "Talent for breaking down complex problems",
+                    "Commitment to accuracy and evidence-based conclusions"
+                ],
+                growthAreas: [
+                    "Communicating insights in accessible, actionable ways",
+                    "Making decisions with incomplete information",
+                    "Balancing analysis with timely action",
+                    "Considering emotional and interpersonal factors in decisions"
+                ],
+                compatibleArchetypes: ["strategist", "builder", "explorer", "finisher"]
+            },
+            connector: {
+                name: "The Connector",
+                icon: "🤝",
+                tagline: "You build bridges between people and create thriving communities",
+                description: "Connectors are the social architects who understand that relationships are the foundation of all success. You have a natural gift for bringing people together, facilitating understanding, and creating environments where collaboration flourishes. Your emotional intelligence and networking abilities make you a catalyst for collective achievement.",
+                strengths: [
+                    "Exceptional interpersonal and communication skills",
+                    "Natural ability to build and maintain relationships",
+                    "Talent for facilitating collaboration and teamwork",
+                    "Strong emotional intelligence and empathy",
+                    "Skill in conflict resolution and finding common ground"
+                ],
+                growthAreas: [
+                    "Setting boundaries to avoid overcommitment to others",
+                    "Making tough decisions that might disappoint some people",
+                    "Focusing on task completion alongside relationship building",
+                    "Advocating for your own needs and priorities"
+                ],
+                compatibleArchetypes: ["caregiver", "leader", "performer", "creator"]
+            },
+            creator: {
+                name: "The Creator",
+                icon: "🎨",
+                tagline: "You bring imagination to life and inspire through innovation",
+                description: "Creators are the visionaries who see possibilities where others see limitations. Your imagination, combined with the drive to bring ideas to life, makes you a source of innovation and inspiration. You approach challenges with creativity and aren't afraid to experiment with unconventional solutions that can transform entire industries.",
+                strengths: [
+                    "Exceptional creativity and innovative thinking",
+                    "Ability to envision possibilities others can't see",
+                    "Talent for inspiring others through your vision",
+                    "Comfort with ambiguity and experimental approaches",
+                    "Natural aesthetic sense and design thinking"
+                ],
+                growthAreas: [
+                    "Following through on projects to completion",
+                    "Working within constraints and practical limitations",
+                    "Collaborating with more structured personality types",
+                    "Balancing creative vision with market realities"
+                ],
+                compatibleArchetypes: ["explorer", "performer", "connector", "builder"]
+            },
+            caregiver: {
+                name: "The Caregiver",
+                icon: "💝",
+                tagline: "You nurture growth and create environments where others thrive",
+                description: "Caregivers are the nurturers who understand that supporting others is the highest form of leadership. Your empathy, patience, and genuine concern for others' wellbeing creates environments where people feel safe to grow, learn, and reach their potential. You find deep fulfillment in seeing others succeed.",
+                strengths: [
+                    "Deep empathy and understanding of others' needs",
+                    "Natural mentoring and coaching abilities",
+                    "Talent for creating supportive, inclusive environments",
+                    "Strong listening skills and emotional support",
+                    "Ability to see and develop potential in others"
+                ],
+                growthAreas: [
+                    "Setting healthy boundaries to prevent burnout",
+                    "Advocating for your own needs and recognition",
+                    "Making difficult decisions that might cause short-term discomfort",
+                    "Balancing support with accountability"
+                ],
+                compatibleArchetypes: ["connector", "leader", "builder", "finisher"]
+            },
+            leader: {
+                name: "The Leader",
+                icon: "👑",
+                tagline: "You inspire action and guide others toward ambitious goals",
+                description: "Leaders are the catalysts who transform potential into achievement. Your natural charisma, strategic thinking, and ability to inspire others makes you effective at rallying people around a shared vision. You're comfortable with responsibility and thrive when guiding teams through challenges toward meaningful outcomes.",
+                strengths: [
+                    "Natural charisma and ability to inspire others",
+                    "Strong decision-making under pressure",
+                    "Talent for strategic thinking and vision-setting",
+                    "Comfort with responsibility and accountability",
+                    "Ability to motivate teams toward ambitious goals"
+                ],
+                growthAreas: [
+                    "Listening to input before making decisions",
+                    "Developing patience with slower-moving processes",
+                    "Sharing credit and empowering others to lead",
+                    "Managing stress and avoiding burnout from high expectations"
+                ],
+                compatibleArchetypes: ["strategist", "connector", "builder", "finisher"]
+            },
+            strategist: {
+                name: "The Strategist",
+                icon: "♟️",
+                tagline: "You see the big picture and navigate complex challenges with wisdom",
+                description: "Strategists are the master planners who excel at seeing multiple moves ahead. Your ability to understand complex systems, anticipate consequences, and develop sophisticated approaches to challenges makes you invaluable in navigating uncertainty. You think in terms of long-term impact and sustainable advantage.",
+                strengths: [
+                    "Exceptional long-term thinking and planning abilities",
+                    "Talent for understanding complex systems and relationships",
+                    "Strong analytical and synthesis skills",
+                    "Ability to anticipate consequences and plan contingencies",
+                    "Natural wisdom in resource allocation and prioritization"
+                ],
+                growthAreas: [
+                    "Taking action without perfect information",
+                    "Communicating complex strategies in simple terms",
+                    "Adapting quickly when circumstances change rapidly",
+                    "Balancing strategic thinking with tactical execution"
+                ],
+                compatibleArchetypes: ["analyst", "leader", "builder", "finisher"]
+            },
+            explorer: {
+                name: "The Explorer",
+                icon: "🗺️",
+                tagline: "You discover new frontiers and embrace the unknown with courage",
+                description: "Explorers are the pioneers who venture into uncharted territory. Your curiosity, adaptability, and courage to embrace uncertainty makes you a natural innovator and change agent. You thrive in dynamic environments and are energized by the possibility of discovering something new and meaningful.",
+                strengths: [
+                    "High adaptability and comfort with change",
+                    "Natural curiosity and love of learning",
+                    "Courage to take calculated risks",
+                    "Ability to spot opportunities others miss",
+                    "Talent for inspiring others to embrace new possibilities"
+                ],
+                growthAreas: [
+                    "Following through on commitments and seeing projects to completion",
+                    "Working within established systems and processes",
+                    "Developing patience for detailed planning and preparation",
+                    "Balancing exploration with practical responsibilities"
+                ],
+                compatibleArchetypes: ["creator", "analyst", "performer", "connector"]
+            },
+            performer: {
+                name: "The Performer",
+                icon: "🎭",
+                tagline: "You energize others and bring ideas to life through engagement",
+                description: "Performers are the energizers who bring enthusiasm and engagement to everything they touch. Your natural charisma, communication skills, and ability to connect with audiences makes you effective at inspiring action and creating memorable experiences. You understand that how you present ideas is often as important as the ideas themselves.",
+                strengths: [
+                    "Exceptional communication and presentation skills",
+                    "Natural charisma and ability to engage audiences",
+                    "Talent for making complex ideas accessible and compelling",
+                    "High energy and enthusiasm that motivates others",
+                    "Ability to adapt your style to different audiences"
+                ],
+                growthAreas: [
+                    "Developing depth alongside your natural breadth",
+                    "Following through on commitments made during high-energy moments",
+                    "Balancing performance with authentic relationship building",
+                    "Managing energy levels to avoid burnout"
+                ],
+                compatibleArchetypes: ["creator", "connector", "leader", "explorer"]
+            },
+            finisher: {
+                name: "The Finisher",
+                icon: "✅",
+                tagline: "You ensure excellence through attention to detail and follow-through",
+                description: "Finishers are the quality guardians who ensure that good intentions become great results. Your attention to detail, commitment to excellence, and ability to see projects through to completion makes you indispensable in any endeavor where quality matters. You take pride in delivering work that exceeds expectations.",
+                strengths: [
+                    "Exceptional attention to detail and quality standards",
+                    "Strong follow-through and project completion skills",
+                    "Ability to spot and correct errors others miss",
+                    "Commitment to meeting deadlines and deliverables",
+                    "Natural talent for process improvement and optimization"
+                ],
+                growthAreas: [
+                    "Balancing perfectionism with practical deadlines",
+                    "Delegating tasks without micromanaging",
+                    "Embracing 'good enough' solutions when appropriate",
+                    "Focusing on high-impact details rather than perfecting everything"
+                ],
+                compatibleArchetypes: ["builder", "analyst", "strategist", "caregiver"]
+            }
+        };
+
+        // Quiz State
+        let currentQuestion = 0;
+        let answers = {};
+        let scores = {};
+
+        // Initialize scores
+        Object.keys(archetypes).forEach(archetype => {
+            scores[archetype] = 0;
+        });
+
+        function startQuiz() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            
+            document.getElementById('questionNumber').textContent = currentQuestion + 1;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = question.text;
+            
+            // Update progress bar
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // Load options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button slide-in';
+                button.style.animationDelay = `${index * 0.1}s`;
+                button.textContent = option.text;
+                button.onclick = () => selectOption(index);
+                container.appendChild(button);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prevButton').disabled = currentQuestion === 0;
+            document.getElementById('nextButton').disabled = true;
+            
+            // Clear previous selection
+            delete answers[currentQuestion];
+        }
+
+        function selectOption(optionIndex) {
+            // Remove previous selection
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            document.querySelectorAll('.option-button')[optionIndex].classList.add('selected');
+            
+            // Store answer
+            answers[currentQuestion] = optionIndex;
+            
+            // Enable next button
+            document.getElementById('nextButton').disabled = false;
+            
+            // Auto-advance after a short delay for better UX
+            setTimeout(() => {
+                if (answers[currentQuestion] === optionIndex) {
+                    nextQuestion();
+                }
+            }, 800);
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] === undefined) return;
+            
+            // Update scores based on current answer
+            const question = questions[currentQuestion];
+            const selectedOption = question.options[answers[currentQuestion]];
+            
+            Object.entries(selectedOption.archetypes).forEach(([archetype, points]) => {
+                scores[archetype] += points;
+            });
+            
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                showResults();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+                
+                // Restore previous selection if it exists
+                if (answers[currentQuestion] !== undefined) {
+                    const optionButtons = document.querySelectorAll('.option-button');
+                    optionButtons[answers[currentQuestion]].classList.add('selected');
+                    document.getElementById('nextButton').disabled = false;
+                }
+            }
+        }
+
+        function showResults() {
+            // Find the dominant archetype
+            let maxScore = 0;
+            let dominantArchetype = '';
+            
+            Object.entries(scores).forEach(([archetype, score]) => {
+                if (score > maxScore) {
+                    maxScore = score;
+                    dominantArchetype = archetype;
+                }
+            });
+            
+            const result = archetypes[dominantArchetype];
+            
+            // Calculate match percentage (out of maximum possible score)
+            const maxPossibleScore = questions.length * 3; // Maximum 3 points per question
+            const matchPercentage = Math.round((maxScore / maxPossibleScore) * 100);
+            
+            // Count dominant traits (scores above average)
+            const averageScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length;
+            const dominantTraits = Object.values(scores).filter(score => score > averageScore).length;
+            
+            // Calculate leadership score (based on leader, strategist, and connector scores)
+            const leadershipScore = ((scores.leader + scores.strategist + scores.connector) / (maxPossibleScore * 3) * 10).toFixed(1);
+            
+            // Update results display
+            document.getElementById('resultIcon').textContent = result.icon;
+            document.getElementById('resultTitle').textContent = result.name;
+            document.getElementById('resultTagline').textContent = result.tagline;
+            document.getElementById('resultDescription').textContent = result.description;
+            
+            // Update stats
+            document.getElementById('matchPercentage').textContent = matchPercentage + '%';
+            document.getElementById('dominantTraits').textContent = dominantTraits;
+            document.getElementById('compatibilityScore').textContent = leadershipScore;
+            
+            // Update strengths
+            const strengthsList = document.getElementById('resultStrengths');
+            strengthsList.innerHTML = result.strengths.map(strength => 
+                `<li class="flex items-start"><span class="text-success mr-2">✓</span>${strength}</li>`
+            ).join('');
+            
+            // Update growth areas
+            const growthList = document.getElementById('resultGrowthAreas');
+            growthList.innerHTML = result.growthAreas.map(area => 
+                `<li class="flex items-start"><span class="text-warning mr-2">→</span>${area}</li>`
+            ).join('');
+            
+            // Update compatible archetypes
+            const compatibleContainer = document.getElementById('compatibleArchetypes');
+            compatibleContainer.innerHTML = result.compatibleArchetypes.map(archetype => {
+                const compatible = archetypes[archetype];
+                return `
+                    <div class="bg-light-gray rounded-lg p-3 text-center border border-deep-green">
+                        <div class="text-2xl mb-1">${compatible.icon}</div>
+                        <div class="text-sm font-semibold text-deep-green">${compatible.name}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Show results screen
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            // Reset state
+            currentQuestion = 0;
+            answers = {};
+            Object.keys(archetypes).forEach(archetype => {
+                scores[archetype] = 0;
+            });
+            
+            // Show intro screen
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('introScreen').classList.remove('hidden');
+        }
+
+        function shareResults() {
+            const resultTitle = document.getElementById('resultTitle').textContent;
+            const resultTagline = document.getElementById('resultTagline').textContent;
+            const matchPercentage = document.getElementById('matchPercentage').textContent;
+            
+            const shareText = `I just discovered I'm ${resultTitle}! ${resultTagline} (${matchPercentage} match) 🎭 Find your archetype too!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Personality Archetype',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback to clipboard
+                navigator.clipboard.writeText(shareText + ' ' + window.location.href).then(() => {
+                    alert('Results copied to clipboard! Share with your friends.');
+                });
+            }
+        }
+
+        // Initialize the quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some interactive elements
+            document.querySelectorAll('.archetype-preview').forEach((preview, index) => {
+                preview.style.animationDelay = `${index * 0.1}s`;
+                preview.classList.add('fade-in');
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9884e5ee77c20890',t:'MTc1OTQxNTQzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
