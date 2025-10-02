@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Sparks - Ideation Prompt Generator</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2419 0%, #1a4d32 25%, #2d5a3d 50%, #1e3a2b 75%, #0f2419 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 77, 50, 0.6) 50%, rgba(45, 90, 61, 0.4) 100%);
+            border-radius: 25px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 208, 63, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3.2rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 30%, #b8860b 70%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.3rem;
+            color: #e8f5e8;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .prompt-generator {
+            background: linear-gradient(135deg, rgba(248, 250, 248, 0.98) 0%, rgba(230, 243, 230, 0.98) 100%);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            color: #1a4d32;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preferences-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .preference-select {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%);
+            color: #ffffff;
+            border: 2px solid #2d5a3d;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .preference-select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .preference-select:hover {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+        }
+
+        .current-prompt {
+            background: linear-gradient(135deg, rgba(26, 77, 50, 0.1) 0%, rgba(45, 90, 61, 0.05) 100%);
+            border: 2px solid #2d5a3d;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-prompt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(212, 175, 55, 0.05) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .current-prompt:hover::before {
+            opacity: 1;
+        }
+
+        .prompt-text {
+            font-size: 1.3rem;
+            color: #1a4d32;
+            font-weight: 600;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .prompt-placeholder {
+            color: #888;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%);
+            color: #ffffff;
+        }
+
+        .brainstorm-area {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .brainstorm-textarea {
+            width: 100%;
+            height: 180px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #333;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .brainstorm-textarea::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            background: rgba(45, 90, 61, 0.2);
+            border: 2px solid #2d5a3d;
+            color: #1a4d32;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn.active {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border-color: #b8860b;
+        }
+
+        .timer-btn:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 0 15px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .idea-folders {
+            background: linear-gradient(135deg, rgba(15, 36, 25, 0.9) 0%, rgba(26, 77, 50, 0.7) 100%);
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid #1a4d32;
+        }
+
+        .folder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .folder-title {
+            color: #d4af37;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .add-folder-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-folder-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .folder-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .folder-item {
+            background: rgba(45, 90, 61, 0.4);
+            border: 1px solid #2d5a3d;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .folder-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .folder-item.active {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .folder-name {
+            color: #f4d03f;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .folder-count {
+            color: #b8d4b8;
+            font-size: 0.8rem;
+        }
+
+        .delete-folder {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #cd853f;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .folder-item:hover .delete-folder {
+            opacity: 1;
+        }
+
+        .stats-panel {
+            background: rgba(45, 90, 61, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+        }
+
+        .stats-title {
+            color: #d4af37;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #e8f5e8;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            color: #f4d03f;
+            font-weight: 600;
+        }
+
+        .save-idea-btn {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .save-idea-btn:hover {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 77, 50, 0.95) 0%, rgba(45, 90, 61, 0.95) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #d4af37;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal h3 {
+            color: #d4af37;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #2d5a3d;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%);
+            color: #ffffff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+        }
+
+        .progress-ring-circle {
+            stroke: #d4af37;
+            stroke-width: 4;
+            fill: transparent;
+            stroke-dasharray: 188.5;
+            stroke-dashoffset: 188.5;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .main-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .preferences-bar {
+                flex-direction: column;
+            }
+            
+            .prompt-actions {
+                flex-direction: column;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Creative Sparks</h1>
+            <p>Break through creative blocks with personalized prompts and focused brainstorming sessions</p>
+        </div>
+
+        <div class="main-dashboard">
+            <div class="prompt-generator">
+                <div class="section-title">
+                    🎯 Ideation Generator
+                </div>
+
+                <div class="preferences-bar">
+                    <select class="preference-select" id="creativeType">
+                        <option value="general">General Creative</option>
+                        <option value="writing">Writing & Content</option>
+                        <option value="design">Design & Visual</option>
+                        <option value="marketing">Marketing & Ads</option>
+                        <option value="product">Product & Innovation</option>
+                        <option value="business">Business & Strategy</option>
+                        <option value="art">Art & Expression</option>
+                    </select>
+
+                    <select class="preference-select" id="promptStyle">
+                        <option value="challenge">Challenge-Based</option>
+                        <option value="question">Question Prompts</option>
+                        <option value="scenario">Scenario Building</option>
+                        <option value="constraint">Creative Constraints</option>
+                        <option value="combination">Idea Combinations</option>
+                        <option value="perspective">New Perspectives</option>
+                    </select>
+
+                    <select class="preference-select" id="difficulty">
+                        <option value="easy">Gentle Nudge</option>
+                        <option value="medium">Moderate Push</option>
+                        <option value="hard">Big Challenge</option>
+                    </select>
+                </div>
+
+                <div class="current-prompt" id="currentPrompt">
+                    <div class="prompt-placeholder">Click "Generate Spark" to get your first creative prompt!</div>
+                </div>
+
+                <div class="prompt-actions">
+                    <button class="action-btn" onclick="generatePrompt()">
+                        ⚡ Generate Spark
+                    </button>
+                    <button class="action-btn secondary" onclick="favoritePrompt()">
+                        ⭐ Save Prompt
+                    </button>
+                    <button class="action-btn secondary" onclick="clearPrompt()">
+                        🗑️ Clear Prompt
+                    </button>
+                </div>
+
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="setTimer(5)">5 min</button>
+                    <button class="timer-btn" onclick="setTimer(10)">10 min</button>
+                    <button class="timer-btn" onclick="setTimer(15)">15 min</button>
+                    <div class="timer-display" id="timerDisplay">--:--</div>
+                    <button class="action-btn secondary" onclick="toggleTimer()" id="timerBtn">
+                        ▶️ Start
+                    </button>
+                </div>
+
+                <div class="brainstorm-area">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <span style="color: #1a4d32; font-weight: 600; font-size: 0.9rem;">💭 Brainstorm Space</span>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="action-btn secondary" style="padding: 6px 12px; font-size: 0.8rem; min-width: auto;" onclick="toggleVoiceRecording()" id="voiceBtn">
+                                🎤 Voice
+                            </button>
+                            <button class="action-btn secondary" style="padding: 6px 12px; font-size: 0.8rem; min-width: auto;" onclick="clearBrainstorm()">
+                                🔄 Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div id="voiceStatus" style="display: none; background: rgba(212, 175, 55, 0.1); border: 1px solid #d4af37; border-radius: 8px; padding: 8px; margin-bottom: 10px; font-size: 0.9rem; color: #1a4d32; text-align: center;">
+                        🎤 Listening... Speak your ideas!
+                    </div>
+                    <textarea class="brainstorm-textarea" id="brainstormText" 
+                              placeholder="Start brainstorming here... Let your ideas flow freely! Or click the voice button to speak your thoughts."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="save-idea-btn" onclick="saveCurrentIdea()" style="flex: 1; margin: 0;">
+                        💾 Save Ideas to Folder
+                    </button>
+                    <button class="save-idea-btn" onclick="extractTakeaways()" style="flex: 1; margin: 0; background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); color: #1a4d32;">
+                        ✨ Extract Takeaways
+                    </button>
+                </div>
+
+                <div id="takeawaysPanel" style="display: none; background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(244, 208, 63, 0.05) 100%); border: 2px solid #d4af37; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="color: #1a4d32; margin: 0; font-size: 1.1rem;">🎯 Key Takeaways & Next Steps</h4>
+                        <button onclick="closeTakeaways()" style="background: none; border: none; color: #888; cursor: pointer; font-size: 1.2rem;">×</button>
+                    </div>
+                    <div id="takeawaysContent"></div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="idea-folders">
+                    <div class="folder-header">
+                        <h3 class="folder-title">💡 Idea Folders</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="add-folder-btn" onclick="openNewFolderModal()" title="Add new folder">+</button>
+                            <button class="add-folder-btn" onclick="clearAllFolders()" title="Clear all folders" style="background: linear-gradient(135deg, #cd853f 0%, #daa520 100%);">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="folder-list" id="folderList">
+                        <!-- Folders will be populated here -->
+                    </div>
+                </div>
+
+                <div class="stats-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div class="stats-title" style="margin: 0;">📊 Creative Stats</div>
+                        <button class="add-folder-btn" onclick="resetStats()" title="Reset all stats" style="width: 24px; height: 24px; font-size: 0.8rem; background: linear-gradient(135deg, #cd853f 0%, #daa520 100%);">🔄</button>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Prompts Generated</span>
+                        <span class="stat-value" id="promptCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Ideas Saved</span>
+                        <span class="stat-value" id="ideaCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Brainstorm Time</span>
+                        <span class="stat-value" id="totalTime">0 min</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Streak</span>
+                        <span class="stat-value" id="streakCount">0 days</span>
+                    </div>
+                </div>
+
+                <div class="stats-panel">
+                    <div class="stats-title">🔥 Session Progress</div>
+                    <svg class="progress-ring">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="30" id="progressCircle"></circle>
+                    </svg>
+                    <div style="text-align: center; color: #e8f5e8; font-size: 0.9rem;" id="progressText">
+                        Ready to start creating!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Folder Modal -->
+    <div class="modal" id="newFolderModal">
+        <div class="modal-content">
+            <h3>Create New Folder</h3>
+            <input type="text" id="folderNameInput" placeholder="Enter folder name..." maxlength="30">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeNewFolderModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createNewFolder()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentPrompt = '';
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerDuration = 0;
+        let isTimerRunning = false;
+        let currentFolder = null;
+        let recognition = null;
+        let isRecording = false;
+        let stats = {
+            promptCount: 0,
+            ideaCount: 0,
+            totalTime: 0,
+            streakCount: 0
+        };
+
+        const prompts = {
+            general: {
+                challenge: [
+                    "Create something that solves a problem you encountered today",
+                    "Design an experience that brings strangers together",
+                    "Invent a product that makes mundane tasks magical",
+                    "Build something that your 10-year-old self would love",
+                    "Create a solution for a problem that doesn't exist yet"
+                ],
+                question: [
+                    "What if gravity worked differently for one day?",
+                    "How would you redesign the concept of time?",
+                    "What would happen if colors had personalities?",
+                    "How can you make waiting in line an adventure?",
+                    "What if you could only communicate through drawings?"
+                ],
+                scenario: [
+                    "You're designing a city for people who never sleep",
+                    "Create a restaurant where the food tells stories",
+                    "Design a school where failure is celebrated",
+                    "Build a library where books read themselves to you",
+                    "Create a park where every bench has a different superpower"
+                ],
+                constraint: [
+                    "Create something using only circles and straight lines",
+                    "Design with only the colors you can see right now",
+                    "Build something that fits in a shoebox but feels infinite",
+                    "Create using only materials found in a kitchen",
+                    "Design something that works backwards"
+                ],
+                combination: [
+                    "Combine a playground with a meditation space",
+                    "Mix a library with a dance studio",
+                    "Blend a coffee shop with a science lab",
+                    "Merge a garden with a recording studio",
+                    "Fuse a bookstore with a climbing gym"
+                ],
+                perspective: [
+                    "Design from the perspective of a time traveler",
+                    "Create as if you're designing for aliens",
+                    "Build something from a child's point of view",
+                    "Design as if money didn't exist",
+                    "Create from the perspective of someone who's never seen technology"
+                ]
+            },
+            writing: {
+                challenge: [
+                    "Write a story where the protagonist is a color",
+                    "Create a dialogue between two objects in your room",
+                    "Write from the perspective of the last book on Earth",
+                    "Tell a story that happens entirely in footnotes",
+                    "Write a love letter from one season to another"
+                ],
+                question: [
+                    "What if memories could be traded like currency?",
+                    "How would society change if everyone could read minds for one hour daily?",
+                    "What would happen if all the world's libraries came alive?",
+                    "How would relationships work if people aged backwards?",
+                    "What if dreams were a shared virtual reality?"
+                ],
+                scenario: [
+                    "A world where lying causes physical pain",
+                    "A society where your job is determined by your dreams",
+                    "A place where emotions have physical weight",
+                    "A time when words have expiration dates",
+                    "A reality where stories write themselves"
+                ],
+                constraint: [
+                    "Write a complete story using only questions",
+                    "Tell a tale without using the letter 'e'",
+                    "Create a narrative using only dialogue",
+                    "Write a story that reads the same forwards and backwards",
+                    "Tell a story using only one-syllable words"
+                ],
+                combination: [
+                    "Blend a cooking recipe with a mystery plot",
+                    "Mix a travel guide with a horror story",
+                    "Combine a technical manual with a romance",
+                    "Merge a weather report with an adventure tale",
+                    "Fuse a shopping list with a philosophical essay"
+                ],
+                perspective: [
+                    "Write from the viewpoint of a house watching families move in and out",
+                    "Tell a story from the perspective of the internet",
+                    "Write as if you're the last human teaching aliens about Earth",
+                    "Create from the viewpoint of a photograph",
+                    "Write as someone who experiences time non-linearly"
+                ]
+            },
+            design: {
+                challenge: [
+                    "Design a user interface for people who communicate through colors",
+                    "Create packaging that tells the product's origin story",
+                    "Design a logo that changes based on the viewer's mood",
+                    "Create a poster that looks different from every angle",
+                    "Design a website that exists only for 24 hours"
+                ],
+                question: [
+                    "How would you design for a world without screens?",
+                    "What if typography could move and dance?",
+                    "How would you visualize the concept of trust?",
+                    "What if every design element had a personality?",
+                    "How would you design for people who see in 12 dimensions?"
+                ],
+                scenario: [
+                    "Design for a museum that exists in people's dreams",
+                    "Create branding for a company that sells bottled emotions",
+                    "Design a mobile app for time travelers",
+                    "Create signage for a city built in the clouds",
+                    "Design a book cover for a story that changes every time it's read"
+                ],
+                constraint: [
+                    "Design using only geometric shapes and one accent color",
+                    "Create a layout using only typography, no images",
+                    "Design with a color palette inspired by your last meal",
+                    "Create using only hand-drawn elements",
+                    "Design something that works in complete darkness"
+                ],
+                combination: [
+                    "Blend minimalist design with maximalist content",
+                    "Mix vintage aesthetics with futuristic functionality",
+                    "Combine organic shapes with digital precision",
+                    "Merge children's book illustration with corporate branding",
+                    "Fuse street art style with luxury brand elegance"
+                ],
+                perspective: [
+                    "Design as if you're creating for beings who perceive time differently",
+                    "Create from the perspective of someone who's never seen design before",
+                    "Design as if every element must tell part of a story",
+                    "Create from the viewpoint of the design elements themselves",
+                    "Design as if the audience lives underwater"
+                ]
+            },
+            marketing: {
+                challenge: [
+                    "Market a product that makes people forget things",
+                    "Create a campaign for selling silence",
+                    "Promote a service that only works on Tuesdays",
+                    "Market the concept of 'almost' as a luxury experience",
+                    "Create a campaign for a product that markets itself"
+                ],
+                question: [
+                    "How would you market to people who live in the past?",
+                    "What if your target audience was other marketers?",
+                    "How would you sell something that everyone already has?",
+                    "What if your product could only be described, never shown?",
+                    "How would you market to people who don't believe in marketing?"
+                ],
+                scenario: [
+                    "Launch a brand in a world where advertising is illegal",
+                    "Market to a society that communicates only through music",
+                    "Create a campaign for a post-apocalyptic world",
+                    "Promote a product in a reality where money doesn't exist",
+                    "Market to aliens visiting Earth for the first time"
+                ],
+                constraint: [
+                    "Create a campaign using only questions, no statements",
+                    "Market using only colors and shapes, no words",
+                    "Promote through stories that seem unrelated to your product",
+                    "Create a campaign that works only through word-of-mouth",
+                    "Market using only things people already own"
+                ],
+                combination: [
+                    "Blend educational content with entertainment marketing",
+                    "Mix personal storytelling with data-driven insights",
+                    "Combine nostalgia marketing with future-forward thinking",
+                    "Merge community building with product promotion",
+                    "Fuse art creation with brand awareness"
+                ],
+                perspective: [
+                    "Market from the perspective of your product's biggest critic",
+                    "Create campaigns as if you're marketing to your past self",
+                    "Promote from the viewpoint of someone who's never bought anything",
+                    "Market as if your audience lives in a completely different era",
+                    "Create from the perspective of the problem your product solves"
+                ]
+            },
+            product: {
+                challenge: [
+                    "Design a product that becomes more valuable when broken",
+                    "Create something that solves a problem by creating a new one",
+                    "Invent a product that only works when shared with others",
+                    "Design something that improves the more it's ignored",
+                    "Create a product that teaches users to not need it"
+                ],
+                question: [
+                    "What if products could evolve based on how they're used?",
+                    "How would you design for users who change personalities daily?",
+                    "What if your product had to work in zero gravity?",
+                    "How would you create something for people who live backwards through time?",
+                    "What if your product could only be used once per person ever?"
+                ],
+                scenario: [
+                    "Design for a world where everything is temporary",
+                    "Create a product for people who never stay in one place",
+                    "Build something for a society that shares everything",
+                    "Design for users who experience reality differently each day",
+                    "Create a product for a world where privacy doesn't exist"
+                ],
+                constraint: [
+                    "Design using only sustainable materials found within 10 miles",
+                    "Create a product with no moving parts that still feels dynamic",
+                    "Build something that works without electricity or batteries",
+                    "Design using only materials that would exist 1000 years ago",
+                    "Create a product that must be completely transparent"
+                ],
+                combination: [
+                    "Blend a meditation tool with a productivity app",
+                    "Mix a fitness device with a creative expression tool",
+                    "Combine a learning platform with a social game",
+                    "Merge a cooking appliance with a storytelling device",
+                    "Fuse a transportation method with an art creation tool"
+                ],
+                perspective: [
+                    "Design from the perspective of the materials you're using",
+                    "Create as if you're designing for your great-grandchildren",
+                    "Build from the viewpoint of someone who's never used technology",
+                    "Design as if the product will outlive humanity",
+                    "Create from the perspective of the problem itself"
+                ]
+            },
+            business: {
+                challenge: [
+                    "Create a business model where customers pay by teaching others",
+                    "Design a company that becomes smaller as it becomes more successful",
+                    "Build a business that only operates during full moons",
+                    "Create a service that makes money by giving things away",
+                    "Design a company where employees choose their own salaries"
+                ],
+                question: [
+                    "What if profit wasn't the primary measure of success?",
+                    "How would you run a business if money expired daily?",
+                    "What if your customers were also your competitors?",
+                    "How would you operate if your business model had to change monthly?",
+                    "What if success was measured by how much you helped competitors?"
+                ],
+                scenario: [
+                    "Run a business in a world where trust is a currency",
+                    "Operate a company where all decisions are made by lottery",
+                    "Build a business for a society that never sleeps",
+                    "Create a company in a world where everything is free",
+                    "Run a business where time moves backwards"
+                ],
+                constraint: [
+                    "Build a business using only resources you can borrow",
+                    "Create a company that operates only through acts of kindness",
+                    "Design a business model using only things people throw away",
+                    "Build a company that can only communicate through art",
+                    "Create a business that must help a competitor with every sale"
+                ],
+                combination: [
+                    "Blend a consulting firm with a entertainment company",
+                    "Mix a restaurant with a education platform",
+                    "Combine a fitness center with a coworking space",
+                    "Merge a bookstore with a therapy practice",
+                    "Fuse a travel agency with a skill-sharing network"
+                ],
+                perspective: [
+                    "Build a business from the perspective of your future customers' grandchildren",
+                    "Create from the viewpoint of the problem you're solving",
+                    "Design as if you're building for a completely different species",
+                    "Operate from the perspective of your biggest failure",
+                    "Build as if your business will be studied in history classes"
+                ]
+            },
+            art: {
+                challenge: [
+                    "Create art that only exists when no one is looking at it",
+                    "Make a piece that changes based on the viewer's heartbeat",
+                    "Create art using only shadows and light",
+                    "Make something beautiful from things people consider ugly",
+                    "Create art that tells a different story to each person who sees it"
+                ],
+                question: [
+                    "What if colors had sounds and sounds had textures?",
+                    "How would you create art for people who experience synesthesia?",
+                    "What if your art could only be experienced, never seen?",
+                    "How would you make art that exists in multiple dimensions simultaneously?",
+                    "What if your medium was time itself?"
+                ],
+                scenario: [
+                    "Create art for a gallery that exists only in people's memories",
+                    "Make a piece for a world where art is the only form of communication",
+                    "Create for an audience that experiences reality in slow motion",
+                    "Make art for beings who perceive all of time at once",
+                    "Create for a world where art physically heals people"
+                ],
+                constraint: [
+                    "Create using only materials found in nature today",
+                    "Make art using only your non-dominant hand",
+                    "Create something that must be experienced in complete darkness",
+                    "Make art using only things that are typically invisible",
+                    "Create using only the colors of your last dream"
+                ],
+                combination: [
+                    "Blend sculpture with performance art",
+                    "Mix digital art with traditional craftsmanship",
+                    "Combine music with visual storytelling",
+                    "Merge photography with interactive experience",
+                    "Fuse painting with architectural space"
+                ],
+                perspective: [
+                    "Create from the perspective of the art materials themselves",
+                    "Make art as if you're creating for beings from another dimension",
+                    "Create from the viewpoint of someone who's never seen art before",
+                    "Make art as if it's the last piece that will ever be created",
+                    "Create from the perspective of future archaeologists discovering your work"
+                ]
+            }
+        };
+
+        let folders = [
+            { id: 1, name: "Quick Ideas", ideas: [], count: 0 },
+            { id: 2, name: "Projects", ideas: [], count: 0 },
+            { id: 3, name: "Inspiration", ideas: [], count: 0 }
+        ];
+
+        // Initialize app
+        function initializeApp() {
+            loadStats();
+            loadFolders();
+            renderFolders();
+            updateStats();
+            setCurrentFolder(folders[0]);
+            initializeVoiceRecognition();
+        }
+
+        function initializeVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    document.getElementById('voiceBtn').innerHTML = '🔴 Stop';
+                    document.getElementById('voiceStatus').style.display = 'block';
+                };
+
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    const textarea = document.getElementById('brainstormText');
+                    if (finalTranscript) {
+                        textarea.value += finalTranscript;
+                        // Auto-save
+                        localStorage.setItem('creativeSparks_currentBrainstorm', textarea.value);
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceRecording();
+                    if (event.error === 'not-allowed') {
+                        showToast('🎤 Microphone access denied. Please enable microphone permissions.');
+                    } else {
+                        showToast('🎤 Voice recognition error. Please try again.');
+                    }
+                };
+
+                recognition.onend = function() {
+                    stopVoiceRecording();
+                };
+            }
+        }
+
+        function toggleVoiceRecording() {
+            if (!recognition) {
+                showToast('🎤 Voice recognition not supported in this browser.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function stopVoiceRecording() {
+            isRecording = false;
+            document.getElementById('voiceBtn').innerHTML = '🎤 Voice';
+            document.getElementById('voiceStatus').style.display = 'none';
+        }
+
+        function extractTakeaways() {
+            const brainstormText = document.getElementById('brainstormText').value.trim();
+            
+            if (!brainstormText) {
+                showToast('Write some ideas first to extract takeaways! ✍️');
+                return;
+            }
+
+            const takeaways = analyzeBrainstormText(brainstormText);
+            displayTakeaways(takeaways);
+            document.getElementById('takeawaysPanel').style.display = 'block';
+            
+            showToast('✨ Takeaways extracted! Check the insights below.');
+        }
+
+        function analyzeBrainstormText(text) {
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+            const words = text.toLowerCase().split(/\s+/);
+            
+            // Extract key themes
+            const actionWords = words.filter(word => 
+                ['create', 'build', 'design', 'make', 'develop', 'implement', 'start', 'begin', 'try', 'test', 'explore', 'research'].includes(word)
+            );
+            
+            const problemWords = words.filter(word => 
+                ['problem', 'issue', 'challenge', 'difficulty', 'obstacle', 'barrier', 'pain', 'frustration'].includes(word)
+            );
+            
+            const solutionWords = words.filter(word => 
+                ['solution', 'answer', 'fix', 'resolve', 'solve', 'improve', 'enhance', 'optimize'].includes(word)
+            );
+
+            // Find potential action items (sentences with action words)
+            const actionItems = sentences.filter(sentence => 
+                actionWords.some(word => sentence.toLowerCase().includes(word))
+            ).slice(0, 3);
+
+            // Find key insights (longer, more complex sentences)
+            const insights = sentences
+                .filter(sentence => sentence.length > 50 && sentence.split(' ').length > 8)
+                .slice(0, 3);
+
+            // Generate advice based on content analysis
+            const advice = generateAdvice(text, actionWords.length, problemWords.length, solutionWords.length);
+
+            return {
+                keyInsights: insights.length > 0 ? insights : ['Focus on developing your most promising ideas further'],
+                actionItems: actionItems.length > 0 ? actionItems : ['Consider breaking down your ideas into smaller, actionable steps'],
+                advice: advice,
+                wordCount: words.length,
+                ideaCount: sentences.length
+            };
+        }
+
+        function generateAdvice(text, actionCount, problemCount, solutionCount) {
+            const advice = [];
+            
+            if (actionCount > problemCount) {
+                advice.push("🚀 You're action-oriented! Consider prioritizing your top 2-3 ideas to avoid spreading yourself too thin.");
+            } else if (problemCount > solutionCount) {
+                advice.push("🎯 You've identified key problems. Now focus on brainstorming specific solutions for each one.");
+            } else if (solutionCount > actionCount) {
+                advice.push("💡 Great solutions! Next step: create concrete action plans to implement your best ideas.");
+            }
+
+            if (text.includes('?')) {
+                advice.push("❓ You're asking good questions. Research and validate these assumptions before moving forward.");
+            }
+
+            if (text.length > 500) {
+                advice.push("📝 Rich brainstorming session! Consider organizing these ideas into categories or themes.");
+            } else if (text.length < 100) {
+                advice.push("🌱 Good start! Try spending more time exploring each idea in depth.");
+            }
+
+            // Default advice if none triggered
+            if (advice.length === 0) {
+                advice.push("✨ Keep building on these ideas! Consider: What's the smallest version you could test?");
+            }
+
+            return advice;
+        }
+
+        function displayTakeaways(takeaways) {
+            const content = document.getElementById('takeawaysContent');
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h5 style="color: #1a4d32; margin: 0 0 8px 0; font-size: 0.95rem;">💡 Key Insights</h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #2d5a3d;">
+                        ${takeaways.keyInsights.map(insight => `<li style="margin-bottom: 5px;">${insight.trim()}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <h5 style="color: #1a4d32; margin: 0 0 8px 0; font-size: 0.95rem;">✅ Potential Action Items</h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #2d5a3d;">
+                        ${takeaways.actionItems.map(action => `<li style="margin-bottom: 5px;">${action.trim()}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <h5 style="color: #1a4d32; margin: 0 0 8px 0; font-size: 0.95rem;">🎯 Personalized Advice</h5>
+                    <ul style="margin: 0; padding-left: 20px; color: #2d5a3d;">
+                        ${takeaways.advice.map(tip => `<li style="margin-bottom: 5px;">${tip}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(45, 90, 61, 0.1); padding: 10px; border-radius: 8px; font-size: 0.85rem; color: #1a4d32;">
+                    📊 Session Stats: ${takeaways.wordCount} words, ${takeaways.ideaCount} ideas captured
+                </div>
+                
+                <button onclick="saveTakeaways()" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%); color: #ffffff; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    💾 Save Takeaways to Folder
+                </button>
+            `;
+        }
+
+        function saveTakeaways() {
+            const takeawaysContent = document.getElementById('takeawaysContent').innerText;
+            
+            if (!currentFolder) {
+                currentFolder = folders[0];
+            }
+
+            const takeawaysIdea = {
+                id: Date.now(),
+                content: `TAKEAWAYS & INSIGHTS:\n\n${takeawaysContent}`,
+                timestamp: new Date().toLocaleString(),
+                prompt: currentPrompt || 'Brainstorming session',
+                type: 'takeaways'
+            };
+
+            currentFolder.ideas.push(takeawaysIdea);
+            currentFolder.count++;
+            
+            stats.ideaCount++;
+            
+            renderFolders();
+            updateStats();
+            saveFolders();
+            saveStats();
+            
+            showToast(`💾 Takeaways saved to "${currentFolder.name}" folder!`);
+        }
+
+        function closeTakeaways() {
+            document.getElementById('takeawaysPanel').style.display = 'none';
+        }
+
+        function generatePrompt() {
+            const creativeType = document.getElementById('creativeType').value;
+            const promptStyle = document.getElementById('promptStyle').value;
+            const difficulty = document.getElementById('difficulty').value;
+
+            const promptArray = prompts[creativeType][promptStyle];
+            const randomPrompt = promptArray[Math.floor(Math.random() * promptArray.length)];
+            
+            currentPrompt = randomPrompt;
+            
+            const promptElement = document.getElementById('currentPrompt');
+            promptElement.innerHTML = `<div class="prompt-text">${randomPrompt}</div>`;
+            
+            // Add animation effect
+            promptElement.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                promptElement.style.transform = 'scale(1)';
+            }, 100);
+
+            stats.promptCount++;
+            updateStats();
+            saveStats();
+            
+            showToast('✨ New creative spark generated! Let your imagination flow!');
+        }
+
+        function favoritePrompt() {
+            if (!currentPrompt) {
+                showToast('Generate a prompt first! ⚡');
+                return;
+            }
+
+            const favoriteFolder = folders.find(f => f.name === "Inspiration") || folders[0];
+            favoriteFolder.ideas.push({
+                id: Date.now(),
+                content: `PROMPT: ${currentPrompt}`,
+                timestamp: new Date().toLocaleString(),
+                type: 'prompt'
+            });
+            favoriteFolder.count++;
+
+            renderFolders();
+            saveFolders();
+            showToast('⭐ Prompt saved to favorites!');
+        }
+
+        function setTimer(minutes) {
+            // Reset any running timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            timerDuration = minutes * 60;
+            timerSeconds = timerDuration;
+            isTimerRunning = false;
+
+            // Update button states
+            document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            updateTimerDisplay();
+            document.getElementById('timerBtn').innerHTML = '▶️ Start';
+            
+            showToast(`⏰ Timer set for ${minutes} minutes. Ready to brainstorm!`);
+        }
+
+        function toggleTimer() {
+            if (timerSeconds === 0) {
+                showToast('Set a timer duration first! ⏰');
+                return;
+            }
+
+            if (isTimerRunning) {
+                // Pause timer
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isTimerRunning = false;
+                document.getElementById('timerBtn').innerHTML = '▶️ Resume';
+                showToast('⏸️ Timer paused');
+            } else {
+                // Start timer
+                isTimerRunning = true;
+                document.getElementById('timerBtn').innerHTML = '⏸️ Pause';
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    updateProgressRing();
+
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        isTimerRunning = false;
+                        document.getElementById('timerBtn').innerHTML = '▶️ Start';
+                        
+                        // Add time to stats
+                        stats.totalTime += Math.round(timerDuration / 60);
+                        updateStats();
+                        saveStats();
+                        
+                        showToast('🎉 Brainstorming session complete! Great work!');
+                        
+                        // Auto-save ideas if there's content
+                        const brainstormText = document.getElementById('brainstormText').value.trim();
+                        if (brainstormText) {
+                            saveCurrentIdea();
+                        }
+                    }
+                }, 1000);
+                
+                showToast('🚀 Timer started! Let creativity flow!');
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgressRing() {
+            const progress = ((timerDuration - timerSeconds) / timerDuration) * 100;
+            const circumference = 188.5;
+            const offset = circumference - (progress / 100) * circumference;
+            
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+            
+            const progressText = document.getElementById('progressText');
+            if (progress === 0) {
+                progressText.textContent = 'Ready to start creating!';
+            } else if (progress < 25) {
+                progressText.textContent = 'Getting warmed up...';
+            } else if (progress < 50) {
+                progressText.textContent = 'Ideas flowing!';
+            } else if (progress < 75) {
+                progressText.textContent = 'In the zone!';
+            } else if (progress < 100) {
+                progressText.textContent = 'Almost there!';
+            } else {
+                progressText.textContent = 'Session complete! 🎉';
+            }
+        }
+
+        function saveCurrentIdea() {
+            const brainstormText = document.getElementById('brainstormText').value.trim();
+            
+            if (!brainstormText) {
+                showToast('Write some ideas first! ✍️');
+                return;
+            }
+
+            if (!currentFolder) {
+                currentFolder = folders[0];
+            }
+
+            const newIdea = {
+                id: Date.now(),
+                content: brainstormText,
+                timestamp: new Date().toLocaleString(),
+                prompt: currentPrompt || 'Free brainstorming',
+                type: 'idea'
+            };
+
+            currentFolder.ideas.push(newIdea);
+            currentFolder.count++;
+            
+            stats.ideaCount++;
+            
+            // Clear the textarea
+            document.getElementById('brainstormText').value = '';
+            
+            renderFolders();
+            updateStats();
+            saveFolders();
+            saveStats();
+            
+            showToast(`💾 Ideas saved to "${currentFolder.name}" folder!`);
+        }
+
+        function setCurrentFolder(folder) {
+            currentFolder = folder;
+            
+            // Update folder selection visual
+            document.querySelectorAll('.folder-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const folderElement = document.querySelector(`[data-folder-id="${folder.id}"]`);
+            if (folderElement) {
+                folderElement.classList.add('active');
+            }
+        }
+
+        function renderFolders() {
+            const folderList = document.getElementById('folderList');
+            
+            folderList.innerHTML = folders.map(folder => `
+                <div class="folder-item ${currentFolder && currentFolder.id === folder.id ? 'active' : ''}" 
+                     data-folder-id="${folder.id}" onclick="setCurrentFolder(${JSON.stringify(folder).replace(/"/g, '&quot;')})">
+                    <div class="folder-name">${folder.name}</div>
+                    <div class="folder-count">${folder.count} ideas</div>
+                    ${folder.id > 3 ? `<button class="delete-folder" onclick="deleteFolder(${folder.id})" title="Delete folder">🗑️</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function openNewFolderModal() {
+            document.getElementById('newFolderModal').style.display = 'flex';
+            document.getElementById('folderNameInput').focus();
+        }
+
+        function closeNewFolderModal() {
+            document.getElementById('newFolderModal').style.display = 'none';
+            document.getElementById('folderNameInput').value = '';
+        }
+
+        function createNewFolder() {
+            const folderName = document.getElementById('folderNameInput').value.trim();
+            
+            if (!folderName) {
+                showToast('Please enter a folder name! 📁');
+                return;
+            }
+
+            if (folders.some(f => f.name.toLowerCase() === folderName.toLowerCase())) {
+                showToast('Folder name already exists! 📁');
+                return;
+            }
+
+            const newFolder = {
+                id: Date.now(),
+                name: folderName,
+                ideas: [],
+                count: 0
+            };
+
+            folders.push(newFolder);
+            renderFolders();
+            saveFolders();
+            closeNewFolderModal();
+            
+            showToast(`📁 "${folderName}" folder created!`);
+        }
+
+        function deleteFolder(folderId) {
+            if (confirm('Are you sure you want to delete this folder and all its ideas?')) {
+                folders = folders.filter(f => f.id !== folderId);
+                
+                if (currentFolder && currentFolder.id === folderId) {
+                    currentFolder = folders[0];
+                }
+                
+                renderFolders();
+                saveFolders();
+                showToast('🗑️ Folder deleted!');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('promptCount').textContent = stats.promptCount;
+            document.getElementById('ideaCount').textContent = stats.ideaCount;
+            document.getElementById('totalTime').textContent = stats.totalTime + ' min';
+            document.getElementById('streakCount').textContent = stats.streakCount + ' days';
+        }
+
+        function loadStats() {
+            const saved = localStorage.getItem('creativeSparks_stats');
+            if (saved) {
+                stats = { ...stats, ...JSON.parse(saved) };
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('creativeSparks_stats', JSON.stringify(stats));
+        }
+
+        function loadFolders() {
+            const saved = localStorage.getItem('creativeSparks_folders');
+            if (saved) {
+                folders = JSON.parse(saved);
+            }
+        }
+
+        function saveFolders() {
+            localStorage.setItem('creativeSparks_folders', JSON.stringify(folders));
+        }
+
+        function clearPrompt() {
+            currentPrompt = '';
+            const promptElement = document.getElementById('currentPrompt');
+            promptElement.innerHTML = '<div class="prompt-placeholder">Click "Generate Spark" to get your first creative prompt!</div>';
+            showToast('🗑️ Prompt cleared! Ready for a fresh start.');
+        }
+
+        function clearBrainstorm() {
+            if (document.getElementById('brainstormText').value.trim()) {
+                if (confirm('Are you sure you want to clear your brainstorm notes? This cannot be undone.')) {
+                    document.getElementById('brainstormText').value = '';
+                    localStorage.removeItem('creativeSparks_currentBrainstorm');
+                    showToast('🔄 Brainstorm space cleared!');
+                }
+            } else {
+                showToast('Brainstorm space is already empty! ✨');
+            }
+        }
+
+        function clearAllFolders() {
+            if (confirm('Are you sure you want to delete ALL folders and ideas? This cannot be undone.')) {
+                if (confirm('This will permanently delete all your saved ideas. Are you absolutely sure?')) {
+                    folders = [
+                        { id: 1, name: "Quick Ideas", ideas: [], count: 0 },
+                        { id: 2, name: "Projects", ideas: [], count: 0 },
+                        { id: 3, name: "Inspiration", ideas: [], count: 0 }
+                    ];
+                    currentFolder = folders[0];
+                    stats.ideaCount = 0;
+                    
+                    renderFolders();
+                    updateStats();
+                    saveFolders();
+                    saveStats();
+                    showToast('🗑️ All folders reset to default!');
+                }
+            }
+        }
+
+        function resetStats() {
+            if (confirm('Are you sure you want to reset all your creative stats? This cannot be undone.')) {
+                stats = {
+                    promptCount: 0,
+                    ideaCount: 0,
+                    totalTime: 0,
+                    streakCount: 0
+                };
+                
+                updateStats();
+                saveStats();
+                localStorage.removeItem('creativeSparks_lastVisit');
+                showToast('🔄 All stats have been reset!');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('newFolderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeNewFolderModal();
+            }
+        });
+
+        // Enter key to create folder
+        document.getElementById('folderNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createNewFolder();
+            }
+        });
+
+        // Auto-save brainstorm text
+        document.getElementById('brainstormText').addEventListener('input', function() {
+            localStorage.setItem('creativeSparks_currentBrainstorm', this.value);
+        });
+
+        // Load saved brainstorm text
+        function loadBrainstormText() {
+            const saved = localStorage.getItem('creativeSparks_currentBrainstorm');
+            if (saved) {
+                document.getElementById('brainstormText').value = saved;
+            }
+        }
+
+        // Initialize app when page loads
+        initializeApp();
+        loadBrainstormText();
+
+        // Update streak daily
+        function updateStreak() {
+            const lastVisit = localStorage.getItem('creativeSparks_lastVisit');
+            const today = new Date().toDateString();
+            
+            if (lastVisit !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastVisit === yesterday.toDateString()) {
+                    stats.streakCount++;
+                } else if (lastVisit !== today) {
+                    stats.streakCount = 1;
+                }
+                
+                localStorage.setItem('creativeSparks_lastVisit', today);
+                saveStats();
+                updateStats();
+            }
+        }
+
+        updateStreak();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986c382e6784b9ff',t:'MTc1OTE1NjY1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
