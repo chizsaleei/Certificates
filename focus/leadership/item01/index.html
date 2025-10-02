@@ -1,1 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeaderSync - Alignment & Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .item-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .item-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .item-card.completed {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+        }
+        
+        .item-card.at-risk {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: #f87171;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tag.active {
+            background: #d4af37;
+            color: #000;
+        }
+        
+        .tag:not(.active) {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">🎯 LeaderSync</h1>
+        <p class="text-lg text-gray-300 mb-4">Alignment & Feedback Loop</p>
+        
+        <!-- Stats Overview -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="weekStreak">0</div>
+                <div class="text-sm text-gray-400">Week Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="completionRate">0%</div>
+                <div class="text-sm text-gray-400">This Week</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="totalFeedback">0</div>
+                <div class="text-sm text-gray-400">Feedback Items</div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('alignment')" id="alignmentBtn" class="nav-btn active">Weekly Alignment</button>
+        <button onclick="showScreen('feedback')" id="feedbackBtn" class="nav-btn">Feedback Loop</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Leadership Phrases</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">25-Min Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">Analytics</button>
+    </nav>
+
+    <!-- Floating Add Button -->
+    <div onclick="showQuickAdd()" class="floating-btn" title="Quick Add">+</div>
+
+    <!-- Weekly Alignment Screen -->
+    <div id="alignmentScreen" class="screen p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📋 Weekly Alignment</h2>
+                <p class="text-gray-300">Drive clarity through structured outcomes and ownership</p>
+            </div>
+
+            <!-- Current Week -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-accent" id="currentWeekTitle">Week of [Date]</h3>
+                        <div class="text-gray-300" id="weekStatus">Draft</div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="publishWeek()" id="publishBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                            📤 Publish Week
+                        </button>
+                        <button onclick="exportWeekPDF()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                            📄 Export PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Week Theme</label>
+                        <input type="text" id="weekTheme" placeholder="e.g., Q4 Planning & Team Alignment" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Key Priority</label>
+                        <input type="text" id="weekPriority" placeholder="e.g., Launch product roadmap review" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outcomes -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">🎯 Key Outcomes</h3>
+                    <button onclick="addOutcome()" class="bg-accent text-black px-4 py-2 rounded-lg font-bold">
+                        ➕ Add Outcome
+                    </button>
+                </div>
+                <div id="outcomesList" class="space-y-3">
+                    <!-- Outcomes will be populated here -->
+                </div>
+            </div>
+
+            <!-- Risks -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">⚠️ Risks & Mitigation</h3>
+                    <button onclick="addRisk()" class="bg-accent text-black px-4 py-2 rounded-lg font-bold">
+                        ➕ Add Risk
+                    </button>
+                </div>
+                <div id="risksList" class="space-y-3">
+                    <!-- Risks will be populated here -->
+                </div>
+            </div>
+
+            <!-- Previous Weeks -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📚 Previous Weeks</h3>
+                <div id="previousWeeks" class="space-y-3">
+                    <!-- Previous weeks will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Loop Screen -->
+    <div id="feedbackScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">🔄 Feedback Loop</h2>
+                <p class="text-gray-300">Track behavior patterns and continuous improvement</p>
+            </div>
+
+            <!-- Feedback Filters -->
+            <div class="card">
+                <h3 class="text-lg font-bold text-accent mb-4">🏷️ Filter by Behavior</h3>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="tag active" onclick="filterFeedback('all')" data-tag="all">All</span>
+                    <span class="tag" onclick="filterFeedback('communication')" data-tag="communication">Communication</span>
+                    <span class="tag" onclick="filterFeedback('decision-making')" data-tag="decision-making">Decision Making</span>
+                    <span class="tag" onclick="filterFeedback('team-building')" data-tag="team-building">Team Building</span>
+                    <span class="tag" onclick="filterFeedback('conflict-resolution')" data-tag="conflict-resolution">Conflict Resolution</span>
+                    <span class="tag" onclick="filterFeedback('coaching')" data-tag="coaching">Coaching</span>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="addFeedback('positive')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold">
+                        ➕ Positive Feedback
+                    </button>
+                    <button onclick="addFeedback('growth')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-bold">
+                        ➕ Growth Area
+                    </button>
+                    <button onclick="addFeedback('observation')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                        ➕ Observation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="text-3xl text-green-400 mb-2">✅</div>
+                    <div class="text-2xl font-bold text-white" id="positiveFeedbackCount">0</div>
+                    <div class="text-gray-400">Positive</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-orange-400 mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="growthFeedbackCount">0</div>
+                    <div class="text-gray-400">Growth Areas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-blue-400 mb-2">👁️</div>
+                    <div class="text-2xl font-bold text-white" id="observationCount">0</div>
+                    <div class="text-gray-400">Observations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-accent mb-2">🔄</div>
+                    <div class="text-2xl font-bold text-white" id="closedLoopsCount">0</div>
+                    <div class="text-gray-400">Closed Loops</div>
+                </div>
+            </div>
+
+            <!-- Feedback Board -->
+            <div id="feedbackBoard" class="space-y-4">
+                <!-- Feedback items will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💬 Leadership Phrases</h2>
+                <p class="text-gray-300">Master the language of effective leadership</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Framing Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🎯 Framing & Vision</h3>
+                    <div id="framingPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newFramingPhrase" placeholder="Add phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addFramingPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alignment Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🤝 Alignment & Buy-in</h3>
+                    <div id="alignmentPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newAlignmentPhrase" placeholder="Add phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addAlignmentPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hard Conversations -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">💬 Hard Conversations</h3>
+                    <div id="conversationPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newConversationPhrase" placeholder="Add phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addConversationPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">🧘 25-Minute Leadership Reset</h2>
+            
+            <div class="breathing-circle mb-8" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold mb-8" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 py-4 bg-black bg-opacity-40 rounded-lg mb-8">
+                "Great leaders are made through reflection and continuous growth!"
+            </div>
+            
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Leadership Mantras</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMantra" placeholder="Add your leadership mantra..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMantra()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMantras" class="space-y-2">
+                    <!-- Custom mantras will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📊 Leadership Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📋</div>
+                    <div class="text-2xl font-bold text-white" id="totalWeeksPublished">0</div>
+                    <div class="text-gray-400">Weeks Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="currentStreak">0</div>
+                    <div class="text-gray-400">Current Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔄</div>
+                    <div class="text-2xl font-bold text-white" id="totalClosedLoops">0</div>
+                    <div class="text-gray-400">Closed Loops</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📈</div>
+                    <div class="text-2xl font-bold text-white" id="improvementRate">0%</div>
+                    <div class="text-gray-400">Improvement Rate</div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportAllData()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Export All Data
+                    </button>
+                    <button onclick="backupData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup Data
+                    </button>
+                    <button onclick="restoreData()" class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📥 Restore Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📈 Recent Activity</h3>
+                <div id="recentActivity" class="space-y-3">
+                    <!-- Recent activity will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">⚡ Quick Add</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="quickAddOutcome()" class="bg-blue-600 text-white p-4 rounded-lg font-bold">
+                    🎯 Add Outcome
+                </button>
+                <button onclick="quickAddFeedback()" class="bg-green-600 text-white p-4 rounded-lg font-bold">
+                    🔄 Add Feedback
+                </button>
+                <button onclick="quickAddRisk()" class="bg-orange-600 text-white p-4 rounded-lg font-bold">
+                    ⚠️ Add Risk
+                </button>
+                <button onclick="quickAddPhrase()" class="bg-purple-600 text-white p-4 rounded-lg font-bold">
+                    💬 Add Phrase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            weeklyPages: [],
+            feedbackItems: [],
+            vocabulary: {
+                framing: [
+                    "Let's align on the bigger picture here...",
+                    "The strategic intent behind this is...",
+                    "Our north star for this initiative is...",
+                    "The key outcome we're driving toward is...",
+                    "This connects to our broader vision by..."
+                ],
+                alignment: [
+                    "I need everyone's commitment on this direction...",
+                    "Let's ensure we're all rowing in the same direction...",
+                    "What would it take to get your full buy-in?",
+                    "I'm hearing some concerns - let's address them...",
+                    "How can we modify this to work for everyone?"
+                ],
+                conversations: [
+                    "I need to have a direct conversation with you about...",
+                    "I've noticed a pattern that we should discuss...",
+                    "This is difficult to bring up, but it's important...",
+                    "I care about your success, which is why I'm sharing this...",
+                    "Let's talk about what's not working and how to fix it..."
+                ]
+            },
+            mantras: [
+                "Great leaders are made through reflection and continuous growth!",
+                "Clarity creates confidence in your team!",
+                "Feedback is a gift that drives excellence!",
+                "Alignment today prevents chaos tomorrow!",
+                "Leadership is about serving others' success!"
+            ],
+            progress: {
+                weekStreak: 0,
+                totalWeeks: 0,
+                closedFeedbackLoops: 0
+            },
+            currentWeek: null
+        };
+
+        // Timers
+        let resetTimer = null;
+        let breathingInterval = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            loadCurrentWeek();
+            updateAllStats();
+            loadVocabulary();
+            loadMantras();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('leaderSyncData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('leaderSyncData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'alignment': loadCurrentWeek(); break;
+                case 'feedback': loadFeedbackBoard(); break;
+                case 'vocabulary': loadVocabulary(); break;
+                case 'analytics': loadAnalytics(); break;
+            }
+        }
+
+        // Weekly Alignment Management
+        function loadCurrentWeek() {
+            const currentWeekStart = getWeekStart(new Date());
+            const weekKey = currentWeekStart.toISOString().split('T')[0];
+            
+            let currentWeek = appData.weeklyPages.find(w => w.weekStart === weekKey);
+            
+            if (!currentWeek) {
+                currentWeek = {
+                    id: Date.now().toString(),
+                    weekStart: weekKey,
+                    theme: '',
+                    priority: '',
+                    outcomes: [],
+                    risks: [],
+                    status: 'draft',
+                    createdDate: new Date().toISOString()
+                };
+                appData.weeklyPages.push(currentWeek);
+            }
+            
+            appData.currentWeek = currentWeek;
+            
+            // Update UI
+            document.getElementById('currentWeekTitle').textContent = `Week of ${formatDate(currentWeekStart)}`;
+            document.getElementById('weekStatus').textContent = currentWeek.status === 'published' ? 'Published' : 'Draft';
+            document.getElementById('weekTheme').value = currentWeek.theme || '';
+            document.getElementById('weekPriority').value = currentWeek.priority || '';
+            
+            // Update publish button
+            const publishBtn = document.getElementById('publishBtn');
+            if (currentWeek.status === 'published') {
+                publishBtn.textContent = '✅ Published';
+                publishBtn.disabled = true;
+                publishBtn.classList.add('opacity-50');
+            } else {
+                publishBtn.textContent = '📤 Publish Week';
+                publishBtn.disabled = false;
+                publishBtn.classList.remove('opacity-50');
+            }
+            
+            loadOutcomes();
+            loadRisks();
+            loadPreviousWeeks();
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+
+        function publishWeek() {
+            if (!appData.currentWeek) return;
+            
+            // Save current inputs
+            appData.currentWeek.theme = document.getElementById('weekTheme').value;
+            appData.currentWeek.priority = document.getElementById('weekPriority').value;
+            
+            if (!appData.currentWeek.theme || appData.currentWeek.outcomes.length === 0) {
+                showNotification('Please add a theme and at least one outcome before publishing');
+                return;
+            }
+            
+            appData.currentWeek.status = 'published';
+            appData.currentWeek.publishedDate = new Date().toISOString();
+            appData.progress.totalWeeks++;
+            
+            saveAppData();
+            updateAllStats();
+            updateWeekStreak();
+            
+            showNotification(`📋 Week published! ${appData.currentWeek.outcomes.length} outcomes defined.`);
+            loadCurrentWeek();
+        }
+
+        // Outcomes Management
+        function loadOutcomes() {
+            const container = document.getElementById('outcomesList');
+            
+            if (!appData.currentWeek || appData.currentWeek.outcomes.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No outcomes defined yet</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.currentWeek.outcomes.map(outcome => `
+                <div class="item-card ${outcome.completed ? 'completed' : outcome.atRisk ? 'at-risk' : ''}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <input type="checkbox" ${outcome.completed ? 'checked' : ''} 
+                                       onchange="toggleOutcome('${outcome.id}')" 
+                                       class="w-5 h-5 text-accent">
+                                <h4 class="font-bold text-white">${outcome.title}</h4>
+                                ${outcome.atRisk ? '<span class="text-red-400 text-sm">⚠️ At Risk</span>' : ''}
+                            </div>
+                            <div class="text-sm text-gray-400 mb-2">${outcome.description}</div>
+                            ${outcome.owner ? `<div class="text-xs text-gray-500">Owner: ${outcome.owner}</div>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="toggleRisk('${outcome.id}')" class="text-yellow-400 text-sm">
+                                ${outcome.atRisk ? '✅' : '⚠️'}
+                            </button>
+                            <button onclick="editOutcome('${outcome.id}')" class="text-blue-400 text-sm">✏️</button>
+                            <button onclick="deleteOutcome('${outcome.id}')" class="text-red-400 text-sm">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addOutcome() {
+            const title = prompt('Outcome title:');
+            if (!title || !title.trim()) return;
+            
+            const description = prompt('Outcome description (optional):') || '';
+            const owner = prompt('Owner (optional):') || '';
+            
+            const newOutcome = {
+                id: Date.now().toString(),
+                title: title.trim(),
+                description: description.trim(),
+                owner: owner.trim(),
+                completed: false,
+                atRisk: false,
+                createdDate: new Date().toISOString()
+            };
+            
+            appData.currentWeek.outcomes.push(newOutcome);
+            saveAppData();
+            loadOutcomes();
+            updateAllStats();
+            showNotification('🎯 Outcome added!');
+        }
+
+        function toggleOutcome(outcomeId) {
+            const outcome = appData.currentWeek.outcomes.find(o => o.id === outcomeId);
+            if (outcome) {
+                outcome.completed = !outcome.completed;
+                if (outcome.completed) {
+                    outcome.completedDate = new Date().toISOString();
+                }
+                saveAppData();
+                loadOutcomes();
+                updateAllStats();
+            }
+        }
+
+        function toggleRisk(outcomeId) {
+            const outcome = appData.currentWeek.outcomes.find(o => o.id === outcomeId);
+            if (outcome) {
+                outcome.atRisk = !outcome.atRisk;
+                saveAppData();
+                loadOutcomes();
+                showNotification(outcome.atRisk ? '⚠️ Marked as at risk' : '✅ Risk cleared');
+            }
+        }
+
+        function editOutcome(outcomeId) {
+            const outcome = appData.currentWeek.outcomes.find(o => o.id === outcomeId);
+            if (outcome) {
+                const newTitle = prompt('Edit outcome title:', outcome.title);
+                if (newTitle && newTitle.trim()) {
+                    outcome.title = newTitle.trim();
+                    const newDescription = prompt('Edit description:', outcome.description);
+                    outcome.description = newDescription || '';
+                    const newOwner = prompt('Edit owner:', outcome.owner);
+                    outcome.owner = newOwner || '';
+                    
+                    saveAppData();
+                    loadOutcomes();
+                    showNotification('✏️ Outcome updated!');
+                }
+            }
+        }
+
+        function deleteOutcome(outcomeId) {
+            if (confirm('Delete this outcome?')) {
+                appData.currentWeek.outcomes = appData.currentWeek.outcomes.filter(o => o.id !== outcomeId);
+                saveAppData();
+                loadOutcomes();
+                updateAllStats();
+                showNotification('🗑️ Outcome deleted');
+            }
+        }
+
+        // Risks Management
+        function loadRisks() {
+            const container = document.getElementById('risksList');
+            
+            if (!appData.currentWeek || appData.currentWeek.risks.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No risks identified yet</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.currentWeek.risks.map(risk => `
+                <div class="item-card ${risk.severity === 'high' ? 'at-risk' : ''}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h4 class="font-bold text-white">${risk.title}</h4>
+                                <span class="text-xs px-2 py-1 rounded ${risk.severity === 'high' ? 'bg-red-600' : risk.severity === 'medium' ? 'bg-yellow-600' : 'bg-green-600'} text-white">
+                                    ${risk.severity}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-400 mb-2">${risk.description}</div>
+                            <div class="text-xs text-gray-500">Mitigation: ${risk.mitigation}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editRisk('${risk.id}')" class="text-blue-400 text-sm">✏️</button>
+                            <button onclick="deleteRisk('${risk.id}')" class="text-red-400 text-sm">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addRisk() {
+            const title = prompt('Risk title:');
+            if (!title || !title.trim()) return;
+            
+            const description = prompt('Risk description:') || '';
+            const severity = prompt('Severity (low/medium/high):', 'medium') || 'medium';
+            const mitigation = prompt('Mitigation plan:') || '';
+            
+            const newRisk = {
+                id: Date.now().toString(),
+                title: title.trim(),
+                description: description.trim(),
+                severity: severity.toLowerCase(),
+                mitigation: mitigation.trim(),
+                createdDate: new Date().toISOString()
+            };
+            
+            appData.currentWeek.risks.push(newRisk);
+            saveAppData();
+            loadRisks();
+            showNotification('⚠️ Risk added!');
+        }
+
+        function editRisk(riskId) {
+            const risk = appData.currentWeek.risks.find(r => r.id === riskId);
+            if (risk) {
+                const newTitle = prompt('Edit risk title:', risk.title);
+                if (newTitle && newTitle.trim()) {
+                    risk.title = newTitle.trim();
+                    risk.description = prompt('Edit description:', risk.description) || '';
+                    risk.severity = prompt('Edit severity (low/medium/high):', risk.severity) || 'medium';
+                    risk.mitigation = prompt('Edit mitigation:', risk.mitigation) || '';
+                    
+                    saveAppData();
+                    loadRisks();
+                    showNotification('✏️ Risk updated!');
+                }
+            }
+        }
+
+        function deleteRisk(riskId) {
+            if (confirm('Delete this risk?')) {
+                appData.currentWeek.risks = appData.currentWeek.risks.filter(r => r.id !== riskId);
+                saveAppData();
+                loadRisks();
+                showNotification('🗑️ Risk deleted');
+            }
+        }
+
+        function loadPreviousWeeks() {
+            const container = document.getElementById('previousWeeks');
+            const previousWeeks = appData.weeklyPages
+                .filter(w => w.status === 'published' && w.id !== appData.currentWeek?.id)
+                .sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart))
+                .slice(0, 5);
+            
+            if (previousWeeks.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No previous weeks published yet</div>';
+                return;
+            }
+            
+            container.innerHTML = previousWeeks.map(week => `
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-semibold text-white">Week of ${formatDate(new Date(week.weekStart))}</div>
+                            <div class="text-sm text-gray-400">${week.theme}</div>
+                            <div class="text-xs text-gray-500">${week.outcomes.length} outcomes, ${week.risks.length} risks</div>
+                        </div>
+                        <button onclick="viewWeekDetails('${week.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            View
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewWeekDetails(weekId) {
+            const week = appData.weeklyPages.find(w => w.id === weekId);
+            if (week) {
+                const details = `
+Week: ${formatDate(new Date(week.weekStart))}
+Theme: ${week.theme}
+Priority: ${week.priority}
+Status: ${week.status}
+
+Outcomes (${week.outcomes.length}):
+${week.outcomes.map(o => `• ${o.title} ${o.completed ? '✅' : '⏳'}`).join('\n')}
+
+Risks (${week.risks.length}):
+${week.risks.map(r => `• ${r.title} (${r.severity})`).join('\n')}
+                `;
+                alert(details);
+            }
+        }
+
+        // Feedback Loop Management
+        function loadFeedbackBoard() {
+            updateFeedbackStats();
+            loadFeedbackItems();
+        }
+
+        function updateFeedbackStats() {
+            const positive = appData.feedbackItems.filter(f => f.type === 'positive').length;
+            const growth = appData.feedbackItems.filter(f => f.type === 'growth').length;
+            const observation = appData.feedbackItems.filter(f => f.type === 'observation').length;
+            const closed = appData.feedbackItems.filter(f => f.status === 'closed').length;
+            
+            document.getElementById('positiveFeedbackCount').textContent = positive;
+            document.getElementById('growthFeedbackCount').textContent = growth;
+            document.getElementById('observationCount').textContent = observation;
+            document.getElementById('closedLoopsCount').textContent = closed;
+        }
+
+        function loadFeedbackItems() {
+            const container = document.getElementById('feedbackBoard');
+            
+            if (appData.feedbackItems.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <div class="text-6xl mb-4">🔄</div>
+                        <h3 class="text-xl font-bold mb-2">No feedback captured yet</h3>
+                        <p class="mb-6">Start building your feedback loop for continuous improvement</p>
+                        <button onclick="addFeedback('positive')" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold mr-3">
+                            Add Positive Feedback
+                        </button>
+                        <button onclick="addFeedback('growth')" class="bg-orange-600 text-white px-6 py-3 rounded-lg font-bold">
+                            Add Growth Area
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.feedbackItems.map(feedback => `
+                <div class="item-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">
+                                ${feedback.type === 'positive' ? '✅' : feedback.type === 'growth' ? '🎯' : '👁️'}
+                            </span>
+                            <div>
+                                <h4 class="font-bold text-white">${feedback.title}</h4>
+                                <div class="text-sm text-gray-400">${feedback.behavior}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs px-2 py-1 rounded ${feedback.status === 'closed' ? 'bg-green-600' : 'bg-yellow-600'} text-white">
+                                ${feedback.status}
+                            </span>
+                            <button onclick="toggleFeedbackStatus('${feedback.id}')" class="text-blue-400 text-sm">
+                                ${feedback.status === 'open' ? '✅' : '🔄'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-gray-300 mb-3">${feedback.description}</div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${feedback.tags.map(tag => `
+                            <span class="text-xs px-2 py-1 bg-gray-700 text-gray-300 rounded">${tag}</span>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="text-xs text-gray-500 mb-3">
+                        Impact: ${feedback.impact} | Date: ${new Date(feedback.date).toLocaleDateString()}
+                    </div>
+                    
+                    ${feedback.actionPlan ? `
+                        <div class="bg-gray-800 p-3 rounded mb-3">
+                            <div class="text-sm font-semibold text-accent mb-1">Action Plan:</div>
+                            <div class="text-sm text-gray-300">${feedback.actionPlan}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex gap-2">
+                        <button onclick="addActionPlan('${feedback.id}')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                            📋 ${feedback.actionPlan ? 'Edit' : 'Add'} Action Plan
+                        </button>
+                        <button onclick="editFeedback('${feedback.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="deleteFeedback('${feedback.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterFeedback(tag) {
+            // Update active filter
+            document.querySelectorAll('.tag').forEach(filter => {
+                filter.classList.remove('active');
+            });
+            document.querySelector(`[data-tag="${tag}"]`).classList.add('active');
+            
+            // Filter feedback items
+            const feedbackCards = document.querySelectorAll('#feedbackBoard .item-card');
+            feedbackCards.forEach(card => {
+                if (tag === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const tags = Array.from(card.querySelectorAll('.bg-gray-700')).map(span => span.textContent);
+                    card.style.display = tags.includes(tag) ? 'block' : 'none';
+                }
+            });
+        }
+
+        function addFeedback(type) {
+            const title = prompt(`${type === 'positive' ? 'Positive feedback' : type === 'growth' ? 'Growth area' : 'Observation'} title:`);
+            if (!title || !title.trim()) return;
+            
+            const behavior = prompt('Specific behavior observed:') || '';
+            const description = prompt('Detailed description:') || '';
+            const impact = prompt('Impact (low/medium/high):', 'medium') || 'medium';
+            const tagsInput = prompt('Tags (comma-separated):', 'communication') || 'communication';
+            
+            const newFeedback = {
+                id: Date.now().toString(),
+                type: type,
+                title: title.trim(),
+                behavior: behavior.trim(),
+                description: description.trim(),
+                impact: impact.toLowerCase(),
+                tags: tagsInput.split(',').map(t => t.trim()).filter(t => t),
+                status: 'open',
+                actionPlan: '',
+                date: new Date().toISOString()
+            };
+            
+            appData.feedbackItems.push(newFeedback);
+            saveAppData();
+            loadFeedbackBoard();
+            updateAllStats();
+            showNotification(`🔄 ${type === 'positive' ? 'Positive feedback' : 'Growth area'} added!`);
+        }
+
+        function toggleFeedbackStatus(feedbackId) {
+            const feedback = appData.feedbackItems.find(f => f.id === feedbackId);
+            if (feedback) {
+                feedback.status = feedback.status === 'open' ? 'closed' : 'open';
+                if (feedback.status === 'closed') {
+                    feedback.closedDate = new Date().toISOString();
+                    appData.progress.closedFeedbackLoops++;
+                }
+                saveAppData();
+                loadFeedbackBoard();
+                updateAllStats();
+                showNotification(feedback.status === 'closed' ? '✅ Feedback loop closed!' : '🔄 Feedback loop reopened');
+            }
+        }
+
+        function addActionPlan(feedbackId) {
+            const feedback = appData.feedbackItems.find(f => f.id === feedbackId);
+            if (feedback) {
+                const actionPlan = prompt('Action plan:', feedback.actionPlan);
+                if (actionPlan !== null) {
+                    feedback.actionPlan = actionPlan.trim();
+                    saveAppData();
+                    loadFeedbackBoard();
+                    showNotification('📋 Action plan updated!');
+                }
+            }
+        }
+
+        function editFeedback(feedbackId) {
+            const feedback = appData.feedbackItems.find(f => f.id === feedbackId);
+            if (feedback) {
+                const newTitle = prompt('Edit title:', feedback.title);
+                if (newTitle && newTitle.trim()) {
+                    feedback.title = newTitle.trim();
+                    feedback.behavior = prompt('Edit behavior:', feedback.behavior) || '';
+                    feedback.description = prompt('Edit description:', feedback.description) || '';
+                    feedback.impact = prompt('Edit impact (low/medium/high):', feedback.impact) || 'medium';
+                    const newTags = prompt('Edit tags (comma-separated):', feedback.tags.join(', ')) || '';
+                    feedback.tags = newTags.split(',').map(t => t.trim()).filter(t => t);
+                    
+                    saveAppData();
+                    loadFeedbackBoard();
+                    showNotification('✏️ Feedback updated!');
+                }
+            }
+        }
+
+        function deleteFeedback(feedbackId) {
+            if (confirm('Delete this feedback item?')) {
+                appData.feedbackItems = appData.feedbackItems.filter(f => f.id !== feedbackId);
+                saveAppData();
+                loadFeedbackBoard();
+                updateAllStats();
+                showNotification('🗑️ Feedback deleted');
+            }
+        }
+
+        // Vocabulary Management
+        function loadVocabulary() {
+            loadFramingPhrases();
+            loadAlignmentPhrases();
+            loadConversationPhrases();
+        }
+
+        function loadFramingPhrases() {
+            const container = document.getElementById('framingPhrases');
+            container.innerHTML = appData.vocabulary.framing.map((phrase, index) => `
+                <div class="bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadAlignmentPhrases() {
+            const container = document.getElementById('alignmentPhrases');
+            container.innerHTML = appData.vocabulary.alignment.map((phrase, index) => `
+                <div class="bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadConversationPhrases() {
+            const container = document.getElementById('conversationPhrases');
+            container.innerHTML = appData.vocabulary.conversations.map((phrase, index) => `
+                <div class="bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addFramingPhrase() {
+            const phrase = document.getElementById('newFramingPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.framing.push(phrase);
+                document.getElementById('newFramingPhrase').value = '';
+                saveAppData();
+                loadFramingPhrases();
+                showNotification('🎯 Framing phrase added!');
+            }
+        }
+
+        function addAlignmentPhrase() {
+            const phrase = document.getElementById('newAlignmentPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.alignment.push(phrase);
+                document.getElementById('newAlignmentPhrase').value = '';
+                saveAppData();
+                loadAlignmentPhrases();
+                showNotification('🤝 Alignment phrase added!');
+            }
+        }
+
+        function addConversationPhrase() {
+            const phrase = document.getElementById('newConversationPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.conversations.push(phrase);
+                document.getElementById('newConversationPhrase').value = '';
+                saveAppData();
+                loadConversationPhrases();
+                showNotification('💬 Conversation phrase added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Reset Session (25-minute breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                    showNotification('🧘 25-minute reset completed! Mind refreshed and focused!');
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (appData.mantras.length > 0) {
+                const randomMessage = appData.mantras[Math.floor(Math.random() * appData.mantras.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            document.getElementById('resetTimer').textContent = '25:00';
+            document.getElementById('breathingInstruction').textContent = 'Ready to Reset';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+        }
+
+        function addMantra() {
+            const mantra = document.getElementById('newMantra').value.trim();
+            if (!mantra) {
+                showNotification('Please enter a mantra');
+                return;
+            }
+            
+            appData.mantras.push(mantra);
+            saveAppData();
+            
+            document.getElementById('newMantra').value = '';
+            loadMantras();
+            showNotification('💭 Leadership mantra added!');
+        }
+
+        function loadMantras() {
+            const container = document.getElementById('customMantras');
+            const customMantras = appData.mantras.slice(5); // Skip default mantras
+            
+            if (customMantras.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom mantras yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMantras.map((mantra, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${mantra}"</span>
+                    <button onclick="removeMantra(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMantra(index) {
+            appData.mantras.splice(index, 1);
+            saveAppData();
+            loadMantras();
+            showNotification('🗑️ Mantra removed');
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+            loadRecentActivity();
+        }
+
+        function updateAnalyticsStats() {
+            const publishedWeeks = appData.weeklyPages.filter(w => w.status === 'published').length;
+            const closedLoops = appData.feedbackItems.filter(f => f.status === 'closed').length;
+            const totalFeedback = appData.feedbackItems.length;
+            const improvementRate = totalFeedback > 0 ? Math.round((closedLoops / totalFeedback) * 100) : 0;
+            
+            document.getElementById('totalWeeksPublished').textContent = publishedWeeks;
+            document.getElementById('currentStreak').textContent = appData.progress.weekStreak;
+            document.getElementById('totalClosedLoops').textContent = closedLoops;
+            document.getElementById('improvementRate').textContent = improvementRate + '%';
+        }
+
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const activities = [];
+            
+            // Add recent weeks
+            appData.weeklyPages.slice(-5).forEach(week => {
+                activities.push({
+                    type: 'week',
+                    date: week.publishedDate || week.createdDate,
+                    description: `Published week: ${week.theme}`,
+                    icon: '📋'
+                });
+            });
+            
+            // Add recent feedback
+            appData.feedbackItems.slice(-5).forEach(feedback => {
+                activities.push({
+                    type: 'feedback',
+                    date: feedback.date,
+                    description: `Added ${feedback.type} feedback: ${feedback.title}`,
+                    icon: feedback.type === 'positive' ? '✅' : feedback.type === 'growth' ? '🎯' : '👁️'
+                });
+            });
+            
+            // Sort by date
+            activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 10).map(activity => `
+                <div class="bg-gray-800 p-3 rounded flex items-center gap-3">
+                    <span class="text-2xl">${activity.icon}</span>
+                    <div class="flex-1">
+                        <div class="text-white text-sm">${activity.description}</div>
+                        <div class="text-xs text-gray-500">${new Date(activity.date).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Export Functions
+        function exportWeekPDF() {
+            if (!appData.currentWeek) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('Weekly Alignment Page', 20, 30);
+            
+            // Week info
+            doc.setFontSize(12);
+            doc.text(`Week of: ${formatDate(new Date(appData.currentWeek.weekStart))}`, 20, 50);
+            doc.text(`Theme: ${appData.currentWeek.theme || 'Not specified'}`, 20, 65);
+            doc.text(`Priority: ${appData.currentWeek.priority || 'Not specified'}`, 20, 80);
+            doc.text(`Status: ${appData.currentWeek.status}`, 20, 95);
+            
+            let yPos = 115;
+            
+            // Outcomes
+            if (appData.currentWeek.outcomes.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Key Outcomes', 20, yPos);
+                yPos += 15;
+                
+                doc.setFontSize(10);
+                appData.currentWeek.outcomes.forEach(outcome => {
+                    const status = outcome.completed ? '✓' : outcome.atRisk ? '⚠' : '○';
+                    doc.text(`${status} ${outcome.title}`, 25, yPos);
+                    yPos += 6;
+                    if (outcome.description) {
+                        const descLines = doc.splitTextToSize(`   ${outcome.description}`, 170);
+                        doc.text(descLines, 25, yPos);
+                        yPos += descLines.length * 4 + 3;
+                    }
+                });
+                yPos += 10;
+            }
+            
+            // Risks
+            if (appData.currentWeek.risks.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Risks & Mitigation', 20, yPos);
+                yPos += 15;
+                
+                doc.setFontSize(10);
+                appData.currentWeek.risks.forEach(risk => {
+                    doc.text(`• ${risk.title} (${risk.severity})`, 25, yPos);
+                    yPos += 6;
+                    if (risk.mitigation) {
+                        const mitigationLines = doc.splitTextToSize(`   Mitigation: ${risk.mitigation}`, 170);
+                        doc.text(mitigationLines, 25, yPos);
+                        yPos += mitigationLines.length * 4 + 3;
+                    }
+                });
+            }
+            
+            doc.save(`weekly-alignment-${appData.currentWeek.weekStart}.pdf`);
+            showNotification('📄 Weekly page exported to PDF!');
+        }
+
+        function exportAllData() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('LeaderSync - Complete Report', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Total Weeks: ${appData.weeklyPages.length}`, 20, 60);
+            doc.text(`Total Feedback Items: ${appData.feedbackItems.length}`, 20, 75);
+            
+            let yPos = 95;
+            
+            // Weekly Summary
+            doc.setFontSize(16);
+            doc.text('Weekly Summary', 20, yPos);
+            yPos += 15;
+            
+            doc.setFontSize(10);
+            appData.weeklyPages.forEach((week, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.text(`Week ${index + 1}: ${formatDate(new Date(week.weekStart))}`, 25, yPos);
+                yPos += 6;
+                doc.text(`Theme: ${week.theme || 'Not specified'}`, 30, yPos);
+                yPos += 6;
+                doc.text(`Status: ${week.status}`, 30, yPos);
+                yPos += 6;
+                doc.text(`Outcomes: ${week.outcomes.length} (${week.outcomes.filter(o => o.completed).length} completed)`, 30, yPos);
+                yPos += 10;
+            });
+            
+            doc.save(`leadersync-complete-report-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Complete report exported!');
+        }
+
+        function backupData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `leadersync-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Data backup created successfully!');
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('Restore data? This will overwrite your current progress.')) {
+                            appData = { ...appData, ...importedData };
+                            saveAppData();
+                            updateAllStats();
+                            showNotification('📥 Data restored successfully!');
+                            location.reload();
+                        }
+                    } catch (error) {
+                        showNotification('❌ Error reading backup file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Quick Add Functions
+        function showQuickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function quickAddOutcome() {
+            closeQuickAdd();
+            addOutcome();
+        }
+
+        function quickAddFeedback() {
+            closeQuickAdd();
+            addFeedback('positive');
+        }
+
+        function quickAddRisk() {
+            closeQuickAdd();
+            addRisk();
+        }
+
+        function quickAddPhrase() {
+            closeQuickAdd();
+            showScreen('vocabulary');
+            document.getElementById('newFramingPhrase').focus();
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            // Update header stats
+            document.getElementById('weekStreak').textContent = appData.progress.weekStreak;
+            document.getElementById('totalFeedback').textContent = appData.feedbackItems.length;
+            
+            // Calculate completion rate for current week
+            let completionRate = 0;
+            if (appData.currentWeek && appData.currentWeek.outcomes.length > 0) {
+                const completed = appData.currentWeek.outcomes.filter(o => o.completed).length;
+                completionRate = Math.round((completed / appData.currentWeek.outcomes.length) * 100);
+            }
+            
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+        }
+
+        function updateWeekStreak() {
+            const publishedWeeks = appData.weeklyPages.filter(w => w.status === 'published');
+            if (publishedWeeks.length === 0) {
+                appData.progress.weekStreak = 0;
+                return;
+            }
+            
+            // Calculate streak based on consecutive weeks
+            publishedWeeks.sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+            
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < publishedWeeks.length; i++) {
+                const weekDate = new Date(publishedWeeks[i].weekStart);
+                const weeksDiff = Math.floor((today - weekDate) / (7 * 24 * 60 * 60 * 1000));
+                
+                if (weeksDiff === i) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            appData.progress.weekStreak = streak;
+            saveAppData();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'newFramingPhrase') {
+                    addFramingPhrase();
+                } else if (activeElement.id === 'newAlignmentPhrase') {
+                    addAlignmentPhrase();
+                } else if (activeElement.id === 'newConversationPhrase') {
+                    addConversationPhrase();
+                } else if (activeElement.id === 'newMantra') {
+                    addMantra();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9882fa9a66e2fee5',t:'MTc1OTM5NTMwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
