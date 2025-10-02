@@ -1,1 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CashFlow Compass - Financial Tracker & Investing Habits</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .bucket-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .bucket-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .bucket-needs { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .bucket-wants { border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .bucket-growth { border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+        .bucket-safety { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        
+        .calculator-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            background: rgba(26, 59, 46, 0.8);
+            color: #d4af37;
+        }
+        
+        .calculator-btn:hover {
+            transform: scale(1.05);
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+        
+        .calculator-btn.operator {
+            background: rgba(212, 175, 55, 0.3);
+            color: #000;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .transaction-item {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(212, 175, 55, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .phrase-card {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .thesis-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .thesis-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .habit-rule {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+        }
+        
+        .calculator-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: right;
+            color: #d4af37;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">💰 CashFlow Compass</h1>
+        <p class="text-lg text-gray-300 mb-4">Financial Tracker & Investing Habits</p>
+        
+        <!-- Quick Stats -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="monthlyIncome">$0</div>
+                <div class="text-sm text-gray-400">Monthly Income</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="monthlyExpenses">$0</div>
+                <div class="text-sm text-gray-400">Monthly Expenses</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="monthlySurplus">$0</div>
+                <div class="text-sm text-gray-400">Monthly Surplus</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="investStreak">0</div>
+                <div class="text-sm text-gray-400">Invest Streak</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('cashflow')" id="cashflowBtn" class="nav-btn active">💰 CashFlow</button>
+        <button onclick="showScreen('investing')" id="investingBtn" class="nav-btn">📈 Investing</button>
+        <button onclick="showScreen('motivation')" id="motivationBtn" class="nav-btn">💬 Finance Wisdom</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">🧘 25-Min Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">📊 Analytics</button>
+    </nav>
+
+    <!-- Floating Add Button -->
+    <div onclick="showQuickTransaction()" class="floating-btn" title="Quick Transaction">+</div>
+
+    <!-- CashFlow Screen -->
+    <div id="cashflowScreen" class="screen p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💰 CashFlow Buckets</h2>
+                <p class="text-gray-300">Track Needs, Wants, Growth & Safety</p>
+            </div>
+
+            <!-- Bucket Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bucket-card bucket-needs">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🏠</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Needs</h3>
+                        <div class="text-2xl font-bold text-white" id="needsTotal">$0</div>
+                        <div class="text-sm text-gray-300" id="needsPercent">0%</div>
+                    </div>
+                </div>
+                <div class="bucket-card bucket-wants">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🎯</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Wants</h3>
+                        <div class="text-2xl font-bold text-white" id="wantsTotal">$0</div>
+                        <div class="text-sm text-gray-300" id="wantsPercent">0%</div>
+                    </div>
+                </div>
+                <div class="bucket-card bucket-growth">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">📈</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Growth</h3>
+                        <div class="text-2xl font-bold text-white" id="growthTotal">$0</div>
+                        <div class="text-sm text-gray-300" id="growthPercent">0%</div>
+                    </div>
+                </div>
+                <div class="bucket-card bucket-safety">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🛡️</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Safety</h3>
+                        <div class="text-2xl font-bold text-white" id="safetyTotal">$0</div>
+                        <div class="text-sm text-gray-300" id="safetyPercent">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculator Interface -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🧮 Quick Transaction Calculator</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="calculator-display mb-4" id="calculatorDisplay">0</div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="clearCalculator()" class="calculator-btn operator">C</button>
+                            <button onclick="calculatorInput('/')" class="calculator-btn operator">÷</button>
+                            <button onclick="calculatorInput('*')" class="calculator-btn operator">×</button>
+                            <button onclick="deleteLast()" class="calculator-btn operator">⌫</button>
+                            
+                            <button onclick="calculatorInput('7')" class="calculator-btn">7</button>
+                            <button onclick="calculatorInput('8')" class="calculator-btn">8</button>
+                            <button onclick="calculatorInput('9')" class="calculator-btn">9</button>
+                            <button onclick="calculatorInput('-')" class="calculator-btn operator">-</button>
+                            
+                            <button onclick="calculatorInput('4')" class="calculator-btn">4</button>
+                            <button onclick="calculatorInput('5')" class="calculator-btn">5</button>
+                            <button onclick="calculatorInput('6')" class="calculator-btn">6</button>
+                            <button onclick="calculatorInput('+')" class="calculator-btn operator">+</button>
+                            
+                            <button onclick="calculatorInput('1')" class="calculator-btn">1</button>
+                            <button onclick="calculatorInput('2')" class="calculator-btn">2</button>
+                            <button onclick="calculatorInput('3')" class="calculator-btn">3</button>
+                            <button onclick="calculateResult()" class="calculator-btn operator" style="grid-row: span 2;">=</button>
+                            
+                            <button onclick="calculatorInput('0')" class="calculator-btn" style="grid-column: span 2;">0</button>
+                            <button onclick="calculatorInput('.')" class="calculator-btn">.</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">Description</label>
+                                <input type="text" id="transactionDescription" placeholder="What's this transaction for?" 
+                                       class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-white font-semibold mb-2">Bucket</label>
+                                <select id="transactionBucket" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                                    <option value="needs">🏠 Needs</option>
+                                    <option value="wants">🎯 Wants</option>
+                                    <option value="growth">📈 Growth</option>
+                                    <option value="safety">🛡️ Safety</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-white font-semibold mb-2">Type</label>
+                                <select id="transactionType" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                                    <option value="expense">💸 Expense</option>
+                                    <option value="income">💰 Income</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button onclick="startVoiceNote()" id="voiceNoteBtn" 
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex-1">
+                                    🎤 Voice Note
+                                </button>
+                                <button onclick="stopVoiceNote()" id="stopVoiceBtn" 
+                                        class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold" disabled>
+                                    ⏹️ Stop
+                                </button>
+                            </div>
+                            
+                            <textarea id="transactionNotes" placeholder="Additional notes..." 
+                                      class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                            
+                            <button onclick="saveTransaction()" class="w-full bg-accent text-black px-6 py-3 rounded-lg font-bold text-lg">
+                                💾 Save Transaction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">📋 Recent Transactions</h3>
+                    <div class="flex gap-2">
+                        <select id="transactionFilter" onchange="filterTransactions()" 
+                                class="p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                            <option value="all">All Buckets</option>
+                            <option value="needs">Needs</option>
+                            <option value="wants">Wants</option>
+                            <option value="growth">Growth</option>
+                            <option value="safety">Safety</option>
+                        </select>
+                        <select id="timeFilter" onchange="filterTransactions()" 
+                                class="p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="transactionsList" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Transactions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investing Screen -->
+    <div id="investingScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📈 Investing Habits & Thesis</h2>
+                <p class="text-gray-300">Build consistent investing habits and document your thesis</p>
+            </div>
+
+            <!-- Habit Builder -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎯 Investment Habit Rules</h3>
+                <div id="habitRules" class="space-y-3 mb-6">
+                    <!-- Habit rules will be populated here -->
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">New Habit Rule</label>
+                        <input type="text" id="newHabitRule" placeholder="e.g., Invest $100 every Friday" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Amount</label>
+                        <input type="number" id="habitAmount" placeholder="100" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <button onclick="addHabitRule()" class="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                    ➕ Add Habit Rule
+                </button>
+            </div>
+
+            <!-- Investment Thesis Journal -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📝 Investment Thesis Journal</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Investment/Stock</label>
+                        <input type="text" id="thesisSymbol" placeholder="e.g., AAPL, VTI, Bitcoin" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Position Size</label>
+                        <input type="number" id="thesisAmount" placeholder="1000" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-white font-semibold mb-2">Investment Thesis</label>
+                    <div class="flex gap-3 mb-2">
+                        <button onclick="startThesisVoice()" id="thesisVoiceBtn" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                            🎤 Voice Thesis
+                        </button>
+                        <button onclick="stopThesisVoice()" id="stopThesisBtn" 
+                                class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold" disabled>
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                    <textarea id="thesisContent" placeholder="Why are you investing in this? What's your thesis?" 
+                              class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <button onclick="saveThesis()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                    📝 Save Thesis
+                </button>
+            </div>
+
+            <!-- Thesis History -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📚 Thesis History</h3>
+                <div id="thesisHistory" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Thesis entries will be populated here -->
+                </div>
+            </div>
+
+            <!-- Investment Tracking -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💹 Quick Investment Log</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Symbol</label>
+                        <input type="text" id="investSymbol" placeholder="AAPL" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Amount</label>
+                        <input type="number" id="investAmount" placeholder="500" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Type</label>
+                        <select id="investType" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="buy">📈 Buy</option>
+                            <option value="sell">📉 Sell</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="logInvestment()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                    💰 Log Investment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finance Wisdom Screen -->
+    <div id="motivationScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💬 Finance Wisdom & Risk Management</h2>
+                <p class="text-gray-300">Power phrases for financial discipline and smart risk-taking</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Financial Discipline -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">💪 Financial Discipline</h3>
+                    <div id="disciplinePhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newDisciplinePhrase" placeholder="Add discipline phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addDisciplinePhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Wealth Building -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🏗️ Wealth Building</h3>
+                    <div id="wealthPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newWealthPhrase" placeholder="Add wealth phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addWealthPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Risk Management -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">⚖️ Risk Management</h3>
+                    <div id="riskPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newRiskPhrase" placeholder="Add risk phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addRiskPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">🧘 25-Minute Financial Reset</h2>
+            
+            <div class="breathing-circle mb-8" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold mb-8" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 py-4 bg-black bg-opacity-40 rounded-lg mb-8">
+                "Wealth consists not in having great possessions, but in having few wants."
+            </div>
+            
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Financial Mantras</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newFinancialMantra" placeholder="Add your financial mantra..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addFinancialMantra()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMantras" class="space-y-2">
+                    <!-- Custom mantras will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📊 Financial Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">💰</div>
+                    <div class="text-2xl font-bold text-white" id="totalIncome">$0</div>
+                    <div class="text-gray-400">Total Income</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">💸</div>
+                    <div class="text-2xl font-bold text-white" id="totalExpenses">$0</div>
+                    <div class="text-gray-400">Total Expenses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📈</div>
+                    <div class="text-2xl font-bold text-white" id="totalInvested">$0</div>
+                    <div class="text-gray-400">Total Invested</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="savingsRate">0%</div>
+                    <div class="text-gray-400">Savings Rate</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-xl font-bold text-accent mb-4">📊 Monthly CashFlow</h3>
+                    <canvas id="cashflowChart" width="400" height="200"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-bold text-accent mb-4">🥧 Expense Breakdown</h3>
+                    <canvas id="expenseChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportMonthlyCashflow()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Monthly Report
+                    </button>
+                    <button onclick="exportThesisLog()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📝 Thesis Log
+                    </button>
+                    <button onclick="backupAllData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Transaction Modal -->
+    <div id="quickTransactionModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">💰 Quick Transaction</h3>
+                <button onclick="closeQuickTransaction()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Amount</label>
+                        <input type="number" id="quickAmount" step="0.01" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Type</label>
+                        <select id="quickType" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="expense">💸 Expense</option>
+                            <option value="income">💰 Income</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Bucket</label>
+                        <select id="quickBucket" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="needs">🏠 Needs</option>
+                            <option value="wants">🎯 Wants</option>
+                            <option value="growth">📈 Growth</option>
+                            <option value="safety">🛡️ Safety</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Description</label>
+                        <input type="text" id="quickDescription" placeholder="What's this for?" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Notes (Optional)</label>
+                    <textarea id="quickNotes" placeholder="Additional details..." 
+                              class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveQuickTransaction()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                        💾 Save Transaction
+                    </button>
+                    <button onclick="closeQuickTransaction()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            transactions: [],
+            investments: [],
+            theses: [],
+            habitRules: [
+                { id: '1', rule: 'Invest $100 every Friday', amount: 100, active: true },
+                { id: '2', rule: 'Put 20% of income into Growth bucket', amount: 0, active: true }
+            ],
+            motivation: {
+                discipline: [
+                    "A budget is telling your money where to go instead of wondering where it went.",
+                    "It's not how much money you make, but how much money you keep.",
+                    "The habit of saving is itself an education; it fosters every virtue.",
+                    "Don't save what is left after spending; spend what is left after saving.",
+                    "Financial peace isn't the acquisition of stuff. It's learning to live on less than you make."
+                ],
+                wealth: [
+                    "Wealth consists not in having great possessions, but in having few wants.",
+                    "The real measure of your wealth is how much you'd be worth if you lost all your money.",
+                    "An investment in knowledge pays the best interest.",
+                    "Time is more valuable than money. You can get more money, but you cannot get more time.",
+                    "The stock market is a device for transferring money from the impatient to the patient."
+                ],
+                risk: [
+                    "Risk comes from not knowing what you're doing.",
+                    "Never invest in a business you cannot understand.",
+                    "Diversification is protection against ignorance.",
+                    "The biggest risk is not taking any risk at all.",
+                    "In investing, what is comfortable is rarely profitable."
+                ]
+            },
+            mantras: [
+                "Wealth consists not in having great possessions, but in having few wants.",
+                "I am building wealth through consistent, disciplined actions.",
+                "Every dollar I save today works for my future self.",
+                "I invest in assets, not liabilities.",
+                "My financial discipline creates my financial freedom."
+            ],
+            progress: {
+                investStreak: 0,
+                longestInvestStreak: 0,
+                reviewStreak: 0,
+                totalInvested: 0
+            }
+        };
+
+        // Calculator state
+        let calculatorValue = '0';
+        let calculatorOperator = null;
+        let waitingForOperand = false;
+
+        // Timer variables
+        let resetTimer = null;
+        let breathingInterval = null;
+        let recognition = null;
+        let thesisRecognition = null;
+        let isListening = false;
+        let isThesisListening = false;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            loadTransactions();
+            loadHabitRules();
+            loadThesisHistory();
+            loadMotivation();
+            loadMantras();
+            initializeSpeechRecognition();
+            updateCalculatorDisplay();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('cashflowCompassData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('cashflowCompassData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'cashflow': 
+                    loadTransactions();
+                    updateBucketTotals();
+                    break;
+                case 'investing': 
+                    loadHabitRules();
+                    loadThesisHistory();
+                    break;
+                case 'motivation': 
+                    loadMotivation(); 
+                    break;
+                case 'analytics': 
+                    loadAnalytics(); 
+                    break;
+            }
+        }
+
+        // Calculator Functions
+        function calculatorInput(value) {
+            if (waitingForOperand) {
+                calculatorValue = value;
+                waitingForOperand = false;
+            } else {
+                calculatorValue = calculatorValue === '0' ? value : calculatorValue + value;
+            }
+            updateCalculatorDisplay();
+        }
+
+        function clearCalculator() {
+            calculatorValue = '0';
+            calculatorOperator = null;
+            waitingForOperand = false;
+            updateCalculatorDisplay();
+        }
+
+        function deleteLast() {
+            if (calculatorValue.length > 1) {
+                calculatorValue = calculatorValue.slice(0, -1);
+            } else {
+                calculatorValue = '0';
+            }
+            updateCalculatorDisplay();
+        }
+
+        function calculateResult() {
+            const result = parseFloat(calculatorValue);
+            if (!isNaN(result)) {
+                calculatorValue = result.toString();
+                updateCalculatorDisplay();
+            }
+        }
+
+        function updateCalculatorDisplay() {
+            document.getElementById('calculatorDisplay').textContent = calculatorValue;
+        }
+
+        // Transaction Management
+        function saveTransaction() {
+            const amount = parseFloat(calculatorValue);
+            const description = document.getElementById('transactionDescription').value.trim();
+            const bucket = document.getElementById('transactionBucket').value;
+            const type = document.getElementById('transactionType').value;
+            const notes = document.getElementById('transactionNotes').value.trim();
+            
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount');
+                return;
+            }
+            
+            if (!description) {
+                showNotification('Please enter a description');
+                return;
+            }
+            
+            const transaction = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                amount: amount,
+                description: description,
+                bucket: bucket,
+                type: type,
+                notes: notes
+            };
+            
+            appData.transactions.push(transaction);
+            
+            // Auto-create investment transaction if it's growth bucket
+            if (bucket === 'growth' && type === 'expense') {
+                const investment = {
+                    id: Date.now().toString() + '_inv',
+                    date: new Date().toISOString(),
+                    symbol: 'AUTO',
+                    amount: amount,
+                    type: 'buy',
+                    notes: `Auto-investment from ${description}`
+                };
+                appData.investments.push(investment);
+                appData.progress.totalInvested += amount;
+            }
+            
+            saveAppData();
+            updateAllStats();
+            loadTransactions();
+            updateBucketTotals();
+            
+            // Clear form
+            clearCalculator();
+            document.getElementById('transactionDescription').value = '';
+            document.getElementById('transactionNotes').value = '';
+            
+            showNotification(`💰 ${type === 'income' ? 'Income' : 'Expense'} of $${amount} saved!`);
+        }
+
+        function loadTransactions() {
+            const container = document.getElementById('transactionsList');
+            
+            if (appData.transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="text-lg font-bold mb-2">No transactions yet</h3>
+                        <p class="mb-4">Start tracking your cashflow</p>
+                        <button onclick="showQuickTransaction()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Add First Transaction
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const filteredTransactions = getFilteredTransactions();
+            const recentTransactions = filteredTransactions.slice(-20).reverse();
+            
+            container.innerHTML = recentTransactions.map(transaction => {
+                const bucketIcon = getBucketIcon(transaction.bucket);
+                const typeIcon = transaction.type === 'income' ? '💰' : '💸';
+                const amountClass = transaction.type === 'income' ? 'text-green-400' : 'text-red-400';
+                
+                return `
+                    <div class="transaction-item">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="text-2xl">${bucketIcon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="text-white font-bold">${transaction.description}</h4>
+                                        <span class="text-xs bg-gray-700 px-2 py-1 rounded">${transaction.bucket}</span>
+                                    </div>
+                                    <div class="text-sm text-gray-400">${new Date(transaction.date).toLocaleDateString()}</div>
+                                    ${transaction.notes ? `<div class="text-xs text-gray-500 mt-1">${transaction.notes}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg">${typeIcon}</span>
+                                    <span class="text-lg font-bold ${amountClass}">$${transaction.amount.toFixed(2)}</span>
+                                </div>
+                                <div class="flex gap-1 mt-2">
+                                    <button onclick="editTransaction('${transaction.id}')" class="bg-purple-600 text-white px-2 py-1 rounded text-xs">
+                                        ✏️
+                                    </button>
+                                    <button onclick="deleteTransaction('${transaction.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getBucketIcon(bucket) {
+            switch(bucket) {
+                case 'needs': return '🏠';
+                case 'wants': return '🎯';
+                case 'growth': return '📈';
+                case 'safety': return '🛡️';
+                default: return '💰';
+            }
+        }
+
+        function getFilteredTransactions() {
+            const bucketFilter = document.getElementById('transactionFilter')?.value || 'all';
+            const timeFilter = document.getElementById('timeFilter')?.value || 'month';
+            
+            let filtered = appData.transactions;
+            
+            // Filter by bucket
+            if (bucketFilter !== 'all') {
+                filtered = filtered.filter(t => t.bucket === bucketFilter);
+            }
+            
+            // Filter by time
+            const now = new Date();
+            if (timeFilter === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filtered = filtered.filter(t => new Date(t.date) >= weekAgo);
+            } else if (timeFilter === 'month') {
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                filtered = filtered.filter(t => new Date(t.date) >= monthAgo);
+            }
+            
+            return filtered;
+        }
+
+        function filterTransactions() {
+            loadTransactions();
+        }
+
+        function updateBucketTotals() {
+            const buckets = { needs: 0, wants: 0, growth: 0, safety: 0 };
+            let totalExpenses = 0;
+            
+            // Calculate current month totals
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            appData.transactions.forEach(transaction => {
+                const transactionDate = new Date(transaction.date);
+                if (transactionDate >= monthStart && transaction.type === 'expense') {
+                    buckets[transaction.bucket] += transaction.amount;
+                    totalExpenses += transaction.amount;
+                }
+            });
+            
+            // Update bucket displays
+            Object.keys(buckets).forEach(bucket => {
+                const percentage = totalExpenses > 0 ? ((buckets[bucket] / totalExpenses) * 100).toFixed(1) : 0;
+                document.getElementById(bucket + 'Total').textContent = `$${buckets[bucket].toFixed(2)}`;
+                document.getElementById(bucket + 'Percent').textContent = `${percentage}%`;
+            });
+        }
+
+        function editTransaction(transactionId) {
+            const transaction = appData.transactions.find(t => t.id === transactionId);
+            if (transaction) {
+                // Populate calculator and form with existing data
+                calculatorValue = transaction.amount.toString();
+                updateCalculatorDisplay();
+                
+                document.getElementById('transactionDescription').value = transaction.description;
+                document.getElementById('transactionBucket').value = transaction.bucket;
+                document.getElementById('transactionType').value = transaction.type;
+                document.getElementById('transactionNotes').value = transaction.notes;
+                
+                // Store edit ID for save function
+                document.getElementById('calculatorDisplay').dataset.editId = transactionId;
+            }
+        }
+
+        function deleteTransaction(transactionId) {
+            if (confirm('Delete this transaction? This cannot be undone.')) {
+                appData.transactions = appData.transactions.filter(t => t.id !== transactionId);
+                saveAppData();
+                updateAllStats();
+                loadTransactions();
+                updateBucketTotals();
+                showNotification('🗑️ Transaction deleted');
+            }
+        }
+
+        // Quick Transaction Modal
+        function showQuickTransaction() {
+            document.getElementById('quickTransactionModal').classList.remove('hidden');
+        }
+
+        function closeQuickTransaction() {
+            document.getElementById('quickTransactionModal').classList.add('hidden');
+        }
+
+        function saveQuickTransaction() {
+            const amount = parseFloat(document.getElementById('quickAmount').value);
+            const type = document.getElementById('quickType').value;
+            const bucket = document.getElementById('quickBucket').value;
+            const description = document.getElementById('quickDescription').value.trim();
+            const notes = document.getElementById('quickNotes').value.trim();
+            
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount');
+                return;
+            }
+            
+            if (!description) {
+                showNotification('Please enter a description');
+                return;
+            }
+            
+            const transaction = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                amount: amount,
+                description: description,
+                bucket: bucket,
+                type: type,
+                notes: notes
+            };
+            
+            appData.transactions.push(transaction);
+            
+            // Auto-create investment if growth bucket
+            if (bucket === 'growth' && type === 'expense') {
+                const investment = {
+                    id: Date.now().toString() + '_inv',
+                    date: new Date().toISOString(),
+                    symbol: 'AUTO',
+                    amount: amount,
+                    type: 'buy',
+                    notes: `Auto-investment from ${description}`
+                };
+                appData.investments.push(investment);
+                appData.progress.totalInvested += amount;
+            }
+            
+            saveAppData();
+            updateAllStats();
+            loadTransactions();
+            updateBucketTotals();
+            closeQuickTransaction();
+            
+            // Clear form
+            document.getElementById('quickAmount').value = '';
+            document.getElementById('quickDescription').value = '';
+            document.getElementById('quickNotes').value = '';
+            
+            showNotification(`💰 Quick ${type} of $${amount} saved!`);
+        }
+
+        // Investment Habits
+        function loadHabitRules() {
+            const container = document.getElementById('habitRules');
+            
+            container.innerHTML = appData.habitRules.map(rule => `
+                <div class="habit-rule">
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1">
+                            <div class="text-white font-bold">${rule.rule}</div>
+                            ${rule.amount > 0 ? `<div class="text-sm text-gray-400">Amount: $${rule.amount}</div>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="toggleHabitRule('${rule.id}')" 
+                                    class="px-3 py-1 rounded text-sm ${rule.active ? 'bg-green-600' : 'bg-gray-600'} text-white">
+                                ${rule.active ? '✅ Active' : '⏸️ Paused'}
+                            </button>
+                            <button onclick="deleteHabitRule('${rule.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-sm">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addHabitRule() {
+            const rule = document.getElementById('newHabitRule').value.trim();
+            const amount = parseFloat(document.getElementById('habitAmount').value) || 0;
+            
+            if (!rule) {
+                showNotification('Please enter a habit rule');
+                return;
+            }
+            
+            const newRule = {
+                id: Date.now().toString(),
+                rule: rule,
+                amount: amount,
+                active: true
+            };
+            
+            appData.habitRules.push(newRule);
+            saveAppData();
+            loadHabitRules();
+            
+            document.getElementById('newHabitRule').value = '';
+            document.getElementById('habitAmount').value = '';
+            
+            showNotification('🎯 Habit rule added!');
+        }
+
+        function toggleHabitRule(ruleId) {
+            const rule = appData.habitRules.find(r => r.id === ruleId);
+            if (rule) {
+                rule.active = !rule.active;
+                saveAppData();
+                loadHabitRules();
+                showNotification(`🎯 Habit rule ${rule.active ? 'activated' : 'paused'}`);
+            }
+        }
+
+        function deleteHabitRule(ruleId) {
+            if (confirm('Delete this habit rule?')) {
+                appData.habitRules = appData.habitRules.filter(r => r.id !== ruleId);
+                saveAppData();
+                loadHabitRules();
+                showNotification('🗑️ Habit rule deleted');
+            }
+        }
+
+        // Investment Thesis
+        function saveThesis() {
+            const symbol = document.getElementById('thesisSymbol').value.trim();
+            const amount = parseFloat(document.getElementById('thesisAmount').value) || 0;
+            const content = document.getElementById('thesisContent').value.trim();
+            
+            if (!symbol || !content) {
+                showNotification('Please enter symbol and thesis');
+                return;
+            }
+            
+            const thesis = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                symbol: symbol.toUpperCase(),
+                amount: amount,
+                content: content
+            };
+            
+            appData.theses.push(thesis);
+            saveAppData();
+            loadThesisHistory();
+            
+            // Clear form
+            document.getElementById('thesisSymbol').value = '';
+            document.getElementById('thesisAmount').value = '';
+            document.getElementById('thesisContent').value = '';
+            
+            showNotification('📝 Investment thesis saved!');
+        }
+
+        function loadThesisHistory() {
+            const container = document.getElementById('thesisHistory');
+            
+            if (appData.theses.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-lg font-bold mb-2">No investment theses yet</h3>
+                        <p>Document your investment reasoning above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const recentTheses = appData.theses.slice(-10).reverse();
+            
+            container.innerHTML = recentTheses.map(thesis => `
+                <div class="thesis-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h4 class="text-lg font-bold text-accent">${thesis.symbol}</h4>
+                                ${thesis.amount > 0 ? `<span class="bg-green-600 text-white px-2 py-1 rounded text-sm">$${thesis.amount}</span>` : ''}
+                            </div>
+                            <div class="text-sm text-gray-400 mb-3">${new Date(thesis.date).toLocaleDateString()}</div>
+                            <div class="text-white bg-gray-800 p-3 rounded">${thesis.content}</div>
+                        </div>
+                        <button onclick="deleteThesis('${thesis.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-sm ml-3">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteThesis(thesisId) {
+            if (confirm('Delete this thesis?')) {
+                appData.theses = appData.theses.filter(t => t.id !== thesisId);
+                saveAppData();
+                loadThesisHistory();
+                showNotification('🗑️ Thesis deleted');
+            }
+        }
+
+        function logInvestment() {
+            const symbol = document.getElementById('investSymbol').value.trim();
+            const amount = parseFloat(document.getElementById('investAmount').value);
+            const type = document.getElementById('investType').value;
+            
+            if (!symbol || !amount || amount <= 0) {
+                showNotification('Please enter valid symbol and amount');
+                return;
+            }
+            
+            const investment = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                symbol: symbol.toUpperCase(),
+                amount: amount,
+                type: type,
+                notes: ''
+            };
+            
+            appData.investments.push(investment);
+            
+            if (type === 'buy') {
+                appData.progress.totalInvested += amount;
+                appData.progress.investStreak++;
+                if (appData.progress.investStreak > appData.progress.longestInvestStreak) {
+                    appData.progress.longestInvestStreak = appData.progress.investStreak;
+                }
+            }
+            
+            saveAppData();
+            updateAllStats();
+            
+            // Clear form
+            document.getElementById('investSymbol').value = '';
+            document.getElementById('investAmount').value = '';
+            
+            showNotification(`📈 ${type === 'buy' ? 'Investment' : 'Sale'} of $${amount} in ${symbol} logged!`);
+        }
+
+        // Voice Recognition
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                // Transaction notes recognition
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const currentText = document.getElementById('transactionNotes').value;
+                        document.getElementById('transactionNotes').value = currentText + ' ' + finalTranscript;
+                    }
+                };
+                
+                // Thesis recognition
+                thesisRecognition = new webkitSpeechRecognition();
+                thesisRecognition.continuous = true;
+                thesisRecognition.interimResults = true;
+                thesisRecognition.lang = 'en-US';
+                
+                thesisRecognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const currentText = document.getElementById('thesisContent').value;
+                        document.getElementById('thesisContent').value = currentText + ' ' + finalTranscript;
+                    }
+                };
+            }
+        }
+
+        function startVoiceNote() {
+            if (!recognition) {
+                showNotification('Voice recognition not supported');
+                return;
+            }
+            
+            if (isListening) {
+                stopVoiceNote();
+                return;
+            }
+            
+            recognition.start();
+            isListening = true;
+            
+            document.getElementById('voiceNoteBtn').textContent = '⏹️ Stop Voice';
+            document.getElementById('voiceNoteBtn').classList.remove('bg-blue-600');
+            document.getElementById('voiceNoteBtn').classList.add('bg-red-600');
+            document.getElementById('stopVoiceBtn').disabled = false;
+            
+            showNotification('🎤 Listening for transaction notes...');
+        }
+
+        function stopVoiceNote() {
+            if (recognition && isListening) {
+                recognition.stop();
+                isListening = false;
+                
+                document.getElementById('voiceNoteBtn').textContent = '🎤 Voice Note';
+                document.getElementById('voiceNoteBtn').classList.remove('bg-red-600');
+                document.getElementById('voiceNoteBtn').classList.add('bg-blue-600');
+                document.getElementById('stopVoiceBtn').disabled = true;
+            }
+        }
+
+        function startThesisVoice() {
+            if (!thesisRecognition) {
+                showNotification('Voice recognition not supported');
+                return;
+            }
+            
+            if (isThesisListening) {
+                stopThesisVoice();
+                return;
+            }
+            
+            thesisRecognition.start();
+            isThesisListening = true;
+            
+            document.getElementById('thesisVoiceBtn').textContent = '⏹️ Stop Voice';
+            document.getElementById('thesisVoiceBtn').classList.remove('bg-blue-600');
+            document.getElementById('thesisVoiceBtn').classList.add('bg-red-600');
+            document.getElementById('stopThesisBtn').disabled = false;
+            
+            showNotification('🎤 Listening for investment thesis...');
+        }
+
+        function stopThesisVoice() {
+            if (thesisRecognition && isThesisListening) {
+                thesisRecognition.stop();
+                isThesisListening = false;
+                
+                document.getElementById('thesisVoiceBtn').textContent = '🎤 Voice Thesis';
+                document.getElementById('thesisVoiceBtn').classList.remove('bg-red-600');
+                document.getElementById('thesisVoiceBtn').classList.add('bg-blue-600');
+                document.getElementById('stopThesisBtn').disabled = true;
+            }
+        }
+
+        // Motivation Management
+        function loadMotivation() {
+            loadDisciplinePhrases();
+            loadWealthPhrases();
+            loadRiskPhrases();
+        }
+
+        function loadDisciplinePhrases() {
+            const container = document.getElementById('disciplinePhrases');
+            container.innerHTML = appData.motivation.discipline.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadWealthPhrases() {
+            const container = document.getElementById('wealthPhrases');
+            container.innerHTML = appData.motivation.wealth.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadRiskPhrases() {
+            const container = document.getElementById('riskPhrases');
+            container.innerHTML = appData.motivation.risk.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addDisciplinePhrase() {
+            const phrase = document.getElementById('newDisciplinePhrase').value.trim();
+            if (phrase) {
+                appData.motivation.discipline.push(phrase);
+                document.getElementById('newDisciplinePhrase').value = '';
+                saveAppData();
+                loadDisciplinePhrases();
+                showNotification('💪 Discipline phrase added!');
+            }
+        }
+
+        function addWealthPhrase() {
+            const phrase = document.getElementById('newWealthPhrase').value.trim();
+            if (phrase) {
+                appData.motivation.wealth.push(phrase);
+                document.getElementById('newWealthPhrase').value = '';
+                saveAppData();
+                loadWealthPhrases();
+                showNotification('🏗️ Wealth phrase added!');
+            }
+        }
+
+        function addRiskPhrase() {
+            const phrase = document.getElementById('newRiskPhrase').value.trim();
+            if (phrase) {
+                appData.motivation.risk.push(phrase);
+                document.getElementById('newRiskPhrase').value = '';
+                saveAppData();
+                loadRiskPhrases();
+                showNotification('⚖️ Risk phrase added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Reset Session (25-minute breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                    showNotification('🧘 25-minute financial reset completed! Mind clear for better decisions!');
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomFinancialMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomFinancialMessage() {
+            if (appData.mantras.length > 0) {
+                const randomMessage = appData.mantras[Math.floor(Math.random() * appData.mantras.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            document.getElementById('resetTimer').textContent = '25:00';
+            document.getElementById('breathingInstruction').textContent = 'Ready to Reset';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+        }
+
+        function addFinancialMantra() {
+            const mantra = document.getElementById('newFinancialMantra').value.trim();
+            if (!mantra) {
+                showNotification('Please enter a financial mantra');
+                return;
+            }
+            
+            appData.mantras.push(mantra);
+            saveAppData();
+            
+            document.getElementById('newFinancialMantra').value = '';
+            loadMantras();
+            showNotification('💭 Financial mantra added!');
+        }
+
+        function loadMantras() {
+            const container = document.getElementById('customMantras');
+            const customMantras = appData.mantras.slice(5); // Skip default mantras
+            
+            if (customMantras.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom mantras yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMantras.map((mantra, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${mantra}"</span>
+                    <button onclick="removeMantra(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMantra(index) {
+            appData.mantras.splice(index, 1);
+            saveAppData();
+            loadMantras();
+            showNotification('🗑️ Mantra removed');
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+            renderCashflowChart();
+            renderExpenseChart();
+        }
+
+        function updateAnalyticsStats() {
+            const totalIncome = appData.transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalExpenses = appData.transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const savingsRate = totalIncome > 0 ? (((totalIncome - totalExpenses) / totalIncome) * 100).toFixed(1) : 0;
+            
+            document.getElementById('totalIncome').textContent = `$${totalIncome.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+            document.getElementById('totalInvested').textContent = `$${appData.progress.totalInvested.toFixed(2)}`;
+            document.getElementById('savingsRate').textContent = `${savingsRate}%`;
+        }
+
+        function renderCashflowChart() {
+            const ctx = document.getElementById('cashflowChart').getContext('2d');
+            
+            // Get last 6 months of data
+            const months = [];
+            const incomeData = [];
+            const expenseData = [];
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                const monthStr = date.toISOString().slice(0, 7); // YYYY-MM
+                
+                months.push(date.toLocaleDateString('en-US', { month: 'short' }));
+                
+                const monthIncome = appData.transactions
+                    .filter(t => t.date.startsWith(monthStr) && t.type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const monthExpenses = appData.transactions
+                    .filter(t => t.date.startsWith(monthStr) && t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                incomeData.push(monthIncome);
+                expenseData.push(monthExpenses);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Income',
+                        data: incomeData,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderWidth: 3,
+                        fill: false
+                    }, {
+                        label: 'Expenses',
+                        data: expenseData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffffff',
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderExpenseChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            
+            // Calculate current month bucket totals
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            const buckets = { needs: 0, wants: 0, growth: 0, safety: 0 };
+            
+            appData.transactions.forEach(transaction => {
+                const transactionDate = new Date(transaction.date);
+                if (transactionDate >= monthStart && transaction.type === 'expense') {
+                    buckets[transaction.bucket] += transaction.amount;
+                }
+            });
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Needs', 'Wants', 'Growth', 'Safety'],
+                    datasets: [{
+                        data: [buckets.needs, buckets.wants, buckets.growth, buckets.safety],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6'],
+                        borderColor: ['#dc2626', '#d97706', '#16a34a', '#2563eb'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export Functions
+        function exportMonthlyCashflow() {
+            if (appData.transactions.length === 0) {
+                showNotification('No transactions to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Monthly CashFlow Report', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            // Current month summary
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const monthTransactions = appData.transactions.filter(t => new Date(t.date) >= monthStart);
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const monthSurplus = monthIncome - monthExpenses;
+            
+            let yPos = 70;
+            doc.setFontSize(16);
+            doc.text('Monthly Summary', 20, yPos);
+            yPos += 20;
+            
+            doc.setFontSize(12);
+            doc.text(`Income: $${monthIncome.toFixed(2)}`, 20, yPos);
+            yPos += 8;
+            doc.text(`Expenses: $${monthExpenses.toFixed(2)}`, 20, yPos);
+            yPos += 8;
+            doc.text(`Surplus: $${monthSurplus.toFixed(2)}`, 20, yPos);
+            yPos += 20;
+            
+            // Bucket breakdown
+            doc.setFontSize(16);
+            doc.text('Expense Breakdown', 20, yPos);
+            yPos += 15;
+            
+            const buckets = { needs: 0, wants: 0, growth: 0, safety: 0 };
+            monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+                buckets[t.bucket] += t.amount;
+            });
+            
+            Object.entries(buckets).forEach(([bucket, amount]) => {
+                doc.setFontSize(10);
+                doc.text(`${bucket.charAt(0).toUpperCase() + bucket.slice(1)}: $${amount.toFixed(2)}`, 25, yPos);
+                yPos += 6;
+            });
+            
+            doc.save(`cashflow-report-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Monthly report exported!');
+        }
+
+        function exportThesisLog() {
+            if (appData.theses.length === 0) {
+                showNotification('No theses to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Investment Thesis Log', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Total Theses: ${appData.theses.length}`, 20, 60);
+            
+            let yPos = 80;
+            
+            appData.theses.forEach((thesis, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`${index + 1}. ${thesis.symbol}`, 20, yPos);
+                yPos += 8;
+                
+                doc.setFontSize(10);
+                doc.text(`Date: ${new Date(thesis.date).toLocaleDateString()}`, 25, yPos);
+                if (thesis.amount > 0) {
+                    doc.text(`Amount: $${thesis.amount}`, 120, yPos);
+                }
+                yPos += 8;
+                
+                const thesisLines = doc.splitTextToSize(`Thesis: ${thesis.content}`, 170);
+                doc.text(thesisLines, 25, yPos);
+                yPos += thesisLines.length * 4 + 10;
+            });
+            
+            doc.save(`investment-thesis-log-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📝 Thesis log exported!');
+        }
+
+        function backupAllData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `cashflow-compass-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Complete backup created!');
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            // Calculate monthly totals
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            const monthlyIncome = appData.transactions
+                .filter(t => new Date(t.date) >= monthStart && t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthlyExpenses = appData.transactions
+                .filter(t => new Date(t.date) >= monthStart && t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthlySurplus = monthlyIncome - monthlyExpenses;
+            
+            // Update header stats
+            document.getElementById('monthlyIncome').textContent = `$${monthlyIncome.toFixed(0)}`;
+            document.getElementById('monthlyExpenses').textContent = `$${monthlyExpenses.toFixed(0)}`;
+            document.getElementById('monthlySurplus').textContent = `$${monthlySurplus.toFixed(0)}`;
+            document.getElementById('investStreak').textContent = appData.progress.investStreak;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'newHabitRule') {
+                    addHabitRule();
+                } else if (activeElement.id === 'newDisciplinePhrase') {
+                    addDisciplinePhrase();
+                } else if (activeElement.id === 'newWealthPhrase') {
+                    addWealthPhrase();
+                } else if (activeElement.id === 'newRiskPhrase') {
+                    addRiskPhrase();
+                } else if (activeElement.id === 'newFinancialMantra') {
+                    addFinancialMantra();
+                } else if (activeElement.id === 'transactionDescription') {
+                    saveTransaction();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98832104d1510890',t:'MTc1OTM5Njg4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
