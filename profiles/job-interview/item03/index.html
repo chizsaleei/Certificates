@@ -1,0 +1,3230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterviewAce - STAR Story Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .story-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .star-section {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .star-section:hover {
+            border-color: var(--medium-gold);
+        }
+        
+        .tag-chip {
+            display: inline-block;
+            background: var(--pale-green);
+            color: var(--dark-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .tag-chip:hover {
+            background: var(--medium-gold);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .tag-chip.selected {
+            background: var(--dark-gold);
+            color: white;
+            border-color: var(--medium-gold);
+        }
+        
+        .bullet-polisher {
+            background: var(--pale-gold);
+            border: 1px solid var(--medium-gold);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .bullet-polisher:hover {
+            background: var(--light-gold);
+            transform: translateY(-2px);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .practice-timer {
+            background: var(--dark-green);
+            color: var(--light-gold);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .practice-timer.warning {
+            background: #dc2626;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+        }
+        
+        .progress-ring-bg {
+            stroke: var(--pale-green);
+        }
+        
+        .progress-ring-progress {
+            stroke: var(--medium-gold);
+            stroke-dasharray: 251;
+            stroke-dashoffset: 251;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .mock-question {
+            background: white;
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .mock-question:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+        }
+        
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .difficulty-easy { background: #dcfce7; color: #166534; }
+        .difficulty-medium { background: #fef3c7; color: #92400e; }
+        .difficulty-hard { background: #fecaca; color: #991b1b; }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .voice-input-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-input-btn:hover {
+            background: #b91c1c;
+        }
+        
+        .voice-input-btn.recording {
+            background: #7f1d1d;
+            animation: recordingPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .metric-input {
+            background: var(--pale-gold);
+            border: 2px solid var(--medium-gold);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: bold;
+            text-align: center;
+            width: 100px;
+        }
+        
+        .follow-up-section {
+            background: var(--cream);
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .practice-mode-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .practice-mode-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .story-card {
+                padding: 16px;
+            }
+            
+            .star-section {
+                padding: 16px;
+            }
+            
+            .practice-mode-content {
+                padding: 20px;
+            }
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .recording-indicator {
+            animation: recordingBlink 1s ease-in-out infinite;
+        }
+        
+        @keyframes recordingBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .response-mode-btn.active {
+            background: var(--medium-gold) !important;
+            color: white !important;
+        }
+        
+        .recording-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .recording-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .transcript-section {
+            background: var(--cream);
+            border: 2px solid var(--pale-green);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        
+        .waveform-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            height: 40px;
+        }
+        
+        .waveform-bar {
+            width: 4px;
+            background: var(--medium-gold);
+            border-radius: 2px;
+            animation: waveform 1.5s ease-in-out infinite;
+        }
+        
+        .waveform-bar:nth-child(1) { animation-delay: 0s; }
+        .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+        .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+        .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+        .waveform-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes waveform {
+            0%, 100% { height: 8px; }
+            50% { height: 32px; }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">InterviewAce</h1>
+                        <p class="text-accent-green text-sm">STAR Story Builder & Interview Practice</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Stories Count -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-light-gold" id="storiesCount">0</div>
+                        <div class="text-xs text-accent-green">Stories</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="storiesBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Stories
+                        </button>
+                        <button id="practiceBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Practice
+                        </button>
+                        <button id="recordingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Recordings
+                        </button>
+                        <button id="vocabularyBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Vocabulary
+                        </button>
+                        <button id="progressBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Progress
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Quick Actions -->
+            <div class="story-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Quick Actions</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-medium-green" id="todayDate"></span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Create New Story -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="showCreateStory()">
+                        <div class="text-4xl mb-4 text-center">📝</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Create New Story</h3>
+                        <p class="text-sm text-medium-green text-center">Build a new STAR story with metrics and follow-ups</p>
+                    </div>
+
+                    <!-- Quick Practice -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="startQuickPractice()">
+                        <div class="text-4xl mb-4 text-center">⚡</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Quick Practice</h3>
+                        <p class="text-sm text-medium-green text-center">Random mock question with timer</p>
+                    </div>
+
+                    <!-- Random Vocabulary -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="showRandomVocabulary()">
+                        <div class="text-4xl mb-4 text-center">💡</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Power Words</h3>
+                        <p class="text-sm text-medium-green text-center">Discover impactful interview vocabulary</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Stories -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-dark-green">Recent Stories</h3>
+                    <button id="viewAllStoriesBtn" class="text-medium-gold hover:text-dark-gold transition-colors focus-visible">
+                        View All →
+                    </button>
+                </div>
+                
+                <div id="recentStories" class="space-y-4">
+                    <!-- Recent stories will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="totalStories">0</div>
+                    <div class="text-sm text-medium-green">Total Stories</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="practiceHours">0</div>
+                    <div class="text-sm text-medium-green">Practice Hours</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="thisWeekPractice">0</div>
+                    <div class="text-sm text-medium-green">This Week</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                    <div class="text-sm text-medium-green">Best Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stories View -->
+        <div id="storiesView" class="hidden space-y-6">
+            <!-- Stories Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green">My STAR Stories</h2>
+                        <p class="text-sm text-medium-green mt-1">Situation • Task • Action • Result</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="createStoryBtn" class="action-button focus-visible">
+                            + New Story
+                        </button>
+                        <button id="exportStoriesBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story Filters -->
+            <div class="bg-white p-4 rounded-xl border-2 border-pale-green">
+                <div class="flex flex-wrap items-center gap-4">
+                    <span class="text-sm font-semibold text-dark-green">Filter by tags:</span>
+                    <div id="storyFilters" class="flex flex-wrap gap-2">
+                        <!-- Filter tags will be populated here -->
+                    </div>
+                    <button id="clearFiltersBtn" class="text-sm text-medium-gold hover:text-dark-gold focus-visible">
+                        Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stories Grid -->
+            <div id="storiesGrid" class="space-y-6">
+                <!-- Stories will be populated here -->
+            </div>
+        </div>
+
+        <!-- Practice View -->
+        <div id="practiceView" class="hidden space-y-6">
+            <!-- Practice Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green">Interview Practice</h2>
+                        <p class="text-sm text-medium-green mt-1">Mock questions with timed responses</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="quickPracticeBtn" class="action-button focus-visible">
+                            ⚡ Quick Practice
+                        </button>
+                        <button id="customPracticeBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Custom Session
+                        </button>
+                        <button id="manageQuestionsBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Manage Questions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practice Settings -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <!-- Mock Questions Bank -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-dark-green">Mock Questions</h3>
+                            <button id="refreshQuestionsBtn" class="text-sm px-3 py-1 bg-medium-gold text-white rounded hover:bg-dark-gold transition-colors focus-visible">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                        
+                        <div id="mockQuestions" class="space-y-4">
+                            <!-- Mock questions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Practice Timer -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4 text-center">Practice Timer</h3>
+                        
+                        <div class="practice-timer" id="practiceTimer">
+                            <div class="text-2xl font-bold mb-2" id="timerDisplay">02:00</div>
+                            <div class="text-sm">Preparation Time</div>
+                        </div>
+                        
+                        <div class="relative inline-block mb-4 w-full flex justify-center">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring-bg progress-ring-circle" cx="40" cy="40" r="35"></circle>
+                                <circle class="progress-ring-progress progress-ring-circle" cx="40" cy="40" r="35" id="practiceTimerProgress"></circle>
+                            </svg>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button id="startPracticeTimerBtn" class="w-full action-button text-sm focus-visible">
+                                Start Timer
+                            </button>
+                            <button id="resetPracticeTimerBtn" class="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm focus-visible">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Tips -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Tips</h3>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start space-x-2">
+                                <span class="text-medium-gold">💡</span>
+                                <span class="text-medium-green">Use specific metrics and numbers</span>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <span class="text-medium-gold">💡</span>
+                                <span class="text-medium-green">Follow the STAR structure</span>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <span class="text-medium-gold">💡</span>
+                                <span class="text-medium-green">Prepare follow-up questions</span>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <span class="text-medium-gold">💡</span>
+                                <span class="text-medium-green">Practice out loud</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recordings View -->
+        <div id="recordingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Practice Recordings</h2>
+                    <div class="flex space-x-2">
+                        <button id="clearRecordingsBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                            Clear All
+                        </button>
+                        <button id="exportRecordingsBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Export List
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recording Filters -->
+                <div class="flex flex-wrap items-center gap-4 mb-6">
+                    <span class="text-sm font-semibold text-dark-green">Filter by:</span>
+                    <select id="recordingDateFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                    <select id="recordingTypeFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="all">All Types</option>
+                        <option value="audio">Audio Only</option>
+                        <option value="transcript">With Transcript</option>
+                    </select>
+                </div>
+                
+                <!-- Recordings Grid -->
+                <div id="recordingsGrid" class="space-y-4">
+                    <!-- Recordings will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary View -->
+        <div id="vocabularyView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Interview Vocabulary Bank</h2>
+                    <div class="flex space-x-2">
+                        <button id="addVocabBtn" class="action-button focus-visible">
+                            + Add Word
+                        </button>
+                        <button id="randomVocabBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            🎲 Random
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Vocabulary Categories -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="vocab-category active px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible" data-category="all">
+                        All
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="leadership">
+                        Leadership
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="achievement">
+                        Achievement
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="teamwork">
+                        Teamwork
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="problem-solving">
+                        Problem-Solving
+                    </button>
+                </div>
+                
+                <!-- Vocabulary Grid -->
+                <div id="vocabularyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Vocabulary cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress View -->
+        <div id="progressView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Progress Analytics</h2>
+                
+                <!-- Progress Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Consistency</h3>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green mb-2" id="weeklyProgress">5/7</div>
+                            <div class="text-sm text-medium-green mb-4">Days This Week</div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-accent-green h-3 rounded-full transition-all duration-500" id="weeklyProgressBar" style="width: 71%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Story Quality</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Complete STAR stories:</span>
+                                <span class="font-bold text-dark-green" id="completeStories">8/10</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">With metrics:</span>
+                                <span class="font-bold text-dark-green" id="storiesWithMetrics">6/10</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Follow-up ready:</span>
+                                <span class="font-bold text-dark-green" id="followUpReady">7/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalPracticeTime">0h</div>
+                        <div class="text-sm text-medium-green">Total Practice</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averageStoryLength">0</div>
+                        <div class="text-sm text-medium-green">Avg Story Length</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="mostUsedTag">-</div>
+                        <div class="text-sm text-medium-green">Top Tag</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="improvementScore">85%</div>
+                        <div class="text-sm text-medium-green">Readiness Score</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Recent Activity</h3>
+                    
+                    <div id="recentActivity" class="space-y-3">
+                        <!-- Recent activity will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Practice Settings -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Default Practice Time</label>
+                                <select id="practiceTimeSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="120">2 minutes</option>
+                                    <option value="180" selected>3 minutes</option>
+                                    <option value="300">5 minutes</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Practice Goal</label>
+                                <select id="dailyGoalSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="1" selected>1 session</option>
+                                    <option value="2">2 sessions</option>
+                                    <option value="3">3 sessions</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-save Stories</label>
+                                <input type="checkbox" id="autoSaveToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Voice Input</label>
+                                <input type="checkbox" id="voiceInputToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Notifications</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Reminders</label>
+                                <input type="checkbox" id="dailyRemindersToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Reminder Time</label>
+                                <input type="time" id="reminderTimeInput" value="09:00" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Create/Edit Story Modal -->
+    <div id="storyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-90vh overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-dark-green" id="storyModalTitle">Create New STAR Story</h3>
+                <button id="closeStoryModal" class="text-gray-500 hover:text-gray-700 text-2xl focus-visible">×</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Story Title and Tags -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-medium-green mb-2">Story Title</label>
+                        <input type="text" id="storyTitleInput" placeholder="e.g., Led team through crisis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-medium-green mb-2">Tags (comma-separated)</label>
+                        <input type="text" id="storyTagsInput" placeholder="leadership, crisis, teamwork" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                    </div>
+                </div>
+
+                <!-- STAR Sections -->
+                <div class="space-y-4">
+                    <!-- Situation -->
+                    <div class="star-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">📍 Situation</h4>
+                            <button id="voiceSituationBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="situationInput" placeholder="Describe the context and background..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Set the scene: Where, when, what was happening?</div>
+                    </div>
+
+                    <!-- Task -->
+                    <div class="star-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">🎯 Task</h4>
+                            <button id="voiceTaskBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="taskInput" placeholder="What was your responsibility or goal..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">What did you need to accomplish? What was your role?</div>
+                    </div>
+
+                    <!-- Action -->
+                    <div class="star-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">⚡ Action</h4>
+                            <button id="voiceActionBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="actionInput" placeholder="Describe the specific steps you took..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="4"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Focus on YOUR actions. Be specific about what YOU did.</div>
+                        
+                        <!-- Bullet Polishers -->
+                        <div class="mt-4">
+                            <h5 class="text-sm font-semibold text-medium-green mb-2">Action Enhancers (click to insert):</h5>
+                            <div id="actionPolishers" class="flex flex-wrap gap-2">
+                                <!-- Action polishers will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div class="star-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">🏆 Result</h4>
+                            <button id="voiceResultBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="resultInput" placeholder="What was the outcome and impact..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Quantify the results. What was the impact?</div>
+                        
+                        <!-- Metrics Section -->
+                        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="text-xs text-medium-green">Percentage</label>
+                                <input type="text" id="metricPercentage" placeholder="25%" class="metric-input w-full">
+                            </div>
+                            <div>
+                                <label class="text-xs text-medium-green">Dollar Amount</label>
+                                <input type="text" id="metricDollar" placeholder="$50K" class="metric-input w-full">
+                            </div>
+                            <div>
+                                <label class="text-xs text-medium-green">Time Saved</label>
+                                <input type="text" id="metricTime" placeholder="2 weeks" class="metric-input w-full">
+                            </div>
+                            <div>
+                                <label class="text-xs text-medium-green">People Impacted</label>
+                                <input type="text" id="metricPeople" placeholder="50 people" class="metric-input w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Follow-up Questions -->
+                <div class="follow-up-section">
+                    <h4 class="font-bold text-dark-green text-lg mb-3">🤔 Potential Follow-up Questions</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <input type="text" id="followUp1" placeholder="What would you do differently?" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        </div>
+                        <div>
+                            <input type="text" id="followUp2" placeholder="How did you handle resistance?" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        </div>
+                        <div>
+                            <input type="text" id="followUp3" placeholder="What did you learn from this experience?" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-8">
+                <button id="saveStoryBtn" class="flex-1 action-button focus-visible">
+                    Save Story
+                </button>
+                <button id="cancelStoryBtn" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Mode Overlay -->
+    <div id="practiceOverlay" class="practice-mode-overlay hidden">
+        <div class="practice-mode-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-dark-green">Practice Mode</h3>
+                <button id="exitPracticeBtn" class="text-gray-500 hover:text-gray-700 text-2xl focus-visible">×</button>
+            </div>
+            
+            <div class="text-center mb-8">
+                <div class="practice-timer" id="practiceOverlayTimer">
+                    <div class="text-3xl font-bold mb-2" id="practiceOverlayDisplay">03:00</div>
+                    <div class="text-sm">Think time remaining</div>
+                </div>
+            </div>
+            
+            <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold mb-6">
+                <h4 class="font-bold text-dark-green mb-3">Interview Question:</h4>
+                <p class="text-lg text-dark-green" id="practiceQuestion">Loading question...</p>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Response Options -->
+                <div class="flex space-x-4 mb-4">
+                    <button id="textResponseBtn" class="flex-1 px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible response-mode-btn active">
+                        📝 Text Response
+                    </button>
+                    <button id="voiceResponseBtn" class="flex-1 px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible response-mode-btn">
+                        🎤 Voice Response
+                    </button>
+                </div>
+                
+                <!-- Text Response Section -->
+                <div id="textResponseSection">
+                    <label class="block text-sm font-medium text-medium-green mb-2">Your STAR Response:</label>
+                    <textarea id="practiceResponse" placeholder="Structure your answer using STAR method..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="8"></textarea>
+                </div>
+                
+                <!-- Voice Response Section -->
+                <div id="voiceResponseSection" class="hidden">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold text-center">
+                        <div class="mb-4">
+                            <div id="recordingStatus" class="text-lg font-semibold text-dark-green mb-2">Ready to Record</div>
+                            <div id="recordingTimer" class="text-2xl font-bold text-medium-gold">00:00</div>
+                        </div>
+                        
+                        <div class="flex justify-center space-x-4 mb-4">
+                            <button id="startRecordingBtn" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🎤 Start Recording
+                            </button>
+                            <button id="stopRecordingBtn" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus-visible hidden">
+                                ⏹️ Stop Recording
+                            </button>
+                            <button id="playRecordingBtn" class="px-6 py-3 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible hidden">
+                                ▶️ Play Back
+                            </button>
+                        </div>
+                        
+                        <div id="audioPlayback" class="hidden">
+                            <audio id="recordedAudio" controls class="w-full mb-4"></audio>
+                        </div>
+                        
+                        <div id="transcriptionSection" class="hidden">
+                            <label class="block text-sm font-medium text-medium-green mb-2">Auto-Generated Transcript:</label>
+                            <textarea id="transcriptionText" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="6" placeholder="Transcript will appear here..."></textarea>
+                            <button id="editTranscriptBtn" class="mt-2 px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                                ✏️ Edit Transcript
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button id="startPracticeResponseBtn" class="flex-1 action-button focus-visible">
+                        Start Response Timer
+                    </button>
+                    <button id="savePracticeBtn" class="px-6 py-3 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                        Save Practice
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Interview Vocabulary</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Word/Phrase</label>
+                    <input type="text" id="vocabWordInput" placeholder="e.g., Spearheaded" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Definition</label>
+                    <textarea id="vocabDefinitionInput" placeholder="Meaning and context..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Example Usage</label>
+                    <textarea id="vocabExampleInput" placeholder="I spearheaded the initiative to..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="2"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="vocabCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="leadership">Leadership</option>
+                        <option value="achievement">Achievement</option>
+                        <option value="teamwork">Teamwork</option>
+                        <option value="problem-solving">Problem-Solving</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveVocabBtn" class="flex-1 action-button focus-visible">
+                    Add Vocabulary
+                </button>
+                <button id="cancelVocabBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Questions Modal -->
+    <div id="manageQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-90vh overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-dark-green">Manage Interview Questions</h3>
+                <button id="closeQuestionsModal" class="text-gray-500 hover:text-gray-700 text-2xl focus-visible">×</button>
+            </div>
+            
+            <div class="mb-6">
+                <button id="addQuestionBtn" class="action-button focus-visible">
+                    + Add Custom Question
+                </button>
+            </div>
+            
+            <!-- Questions List -->
+            <div id="questionsManagementList" class="space-y-4">
+                <!-- Questions will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="addQuestionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Custom Question</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Question</label>
+                    <textarea id="customQuestionInput" placeholder="Enter your interview question..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                        <select id="customQuestionCategory" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            <option value="Leadership">Leadership</option>
+                            <option value="Problem-Solving">Problem-Solving</option>
+                            <option value="Achievement">Achievement</option>
+                            <option value="Interpersonal">Interpersonal</option>
+                            <option value="Adaptability">Adaptability</option>
+                            <option value="Initiative">Initiative</option>
+                            <option value="Resilience">Resilience</option>
+                            <option value="Influence">Influence</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-medium-green mb-2">Difficulty</label>
+                        <select id="customQuestionDifficulty" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Tags (comma-separated)</label>
+                    <input type="text" id="customQuestionTags" placeholder="leadership, teamwork, communication" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveCustomQuestionBtn" class="flex-1 action-button focus-visible">
+                    Save Question
+                </button>
+                <button id="cancelCustomQuestionBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentStory: null,
+            editingStoryId: null,
+            practiceTimer: {
+                startTime: null,
+                elapsed: 0,
+                interval: null,
+                duration: 180000, // 3 minutes default
+                isRunning: false
+            },
+            speechRecognition: null,
+            isVoiceRecording: false,
+            currentVoiceTarget: null,
+            mediaRecorder: null,
+            recordedChunks: [],
+            isRecording: false,
+            recordingStartTime: null,
+            recordingTimer: null,
+            currentRecordingBlob: null,
+            currentResponseMode: 'text',
+            userData: {
+                stories: [],
+                vocabulary: [],
+                practiceHistory: [],
+                recordings: [],
+                customQuestions: [],
+                streak: 0,
+                longestStreak: 0,
+                lastActiveDate: null,
+                totalPracticeTime: 0,
+                settings: {
+                    practiceTime: 180,
+                    dailyGoal: 1,
+                    autoSave: true,
+                    voiceInput: true,
+                    dailyReminders: true,
+                    reminderTime: '09:00'
+                }
+            }
+        };
+
+        // Interview Questions Database
+        const interviewQuestions = [
+            {
+                id: 1,
+                question: "Tell me about a time when you had to lead a team through a difficult situation.",
+                category: "Leadership",
+                difficulty: "medium",
+                tags: ["leadership", "crisis", "teamwork"]
+            },
+            {
+                id: 2,
+                question: "Describe a situation where you had to solve a complex problem with limited resources.",
+                category: "Problem-Solving",
+                difficulty: "hard",
+                tags: ["problem-solving", "resourcefulness", "creativity"]
+            },
+            {
+                id: 3,
+                question: "Give me an example of when you exceeded expectations in your role.",
+                category: "Achievement",
+                difficulty: "easy",
+                tags: ["achievement", "performance", "excellence"]
+            },
+            {
+                id: 4,
+                question: "Tell me about a time when you had to work with a difficult colleague or customer.",
+                category: "Interpersonal",
+                difficulty: "medium",
+                tags: ["communication", "conflict-resolution", "patience"]
+            },
+            {
+                id: 5,
+                question: "Describe a situation where you had to adapt to significant changes in your workplace.",
+                category: "Adaptability",
+                difficulty: "medium",
+                tags: ["adaptability", "change-management", "flexibility"]
+            },
+            {
+                id: 6,
+                question: "Give me an example of when you took initiative to improve a process or system.",
+                category: "Initiative",
+                difficulty: "medium",
+                tags: ["initiative", "improvement", "innovation"]
+            },
+            {
+                id: 7,
+                question: "Tell me about a time when you failed at something and how you handled it.",
+                category: "Resilience",
+                difficulty: "hard",
+                tags: ["failure", "learning", "resilience"]
+            },
+            {
+                id: 8,
+                question: "Describe a situation where you had to persuade others to accept your idea.",
+                category: "Influence",
+                difficulty: "medium",
+                tags: ["persuasion", "influence", "communication"]
+            }
+        ];
+
+        // Interview Vocabulary Database
+        const interviewVocabulary = [
+            {
+                id: 1,
+                word: "Spearheaded",
+                definition: "Led or initiated (an attack or movement)",
+                example: "I spearheaded the digital transformation initiative that increased efficiency by 40%.",
+                category: "leadership"
+            },
+            {
+                id: 2,
+                word: "Orchestrated",
+                definition: "Organized and coordinated (a complex activity)",
+                example: "I orchestrated a cross-functional team effort to deliver the project ahead of schedule.",
+                category: "leadership"
+            },
+            {
+                id: 3,
+                word: "Streamlined",
+                definition: "Made more efficient by simplifying or eliminating unnecessary elements",
+                example: "I streamlined the approval process, reducing turnaround time from 5 days to 2 days.",
+                category: "achievement"
+            },
+            {
+                id: 4,
+                word: "Collaborated",
+                definition: "Worked jointly with others on an activity or project",
+                example: "I collaborated with stakeholders across three departments to align our objectives.",
+                category: "teamwork"
+            },
+            {
+                id: 5,
+                word: "Mitigated",
+                definition: "Made less severe or serious",
+                example: "I mitigated the risk by implementing a backup system that prevented data loss.",
+                category: "problem-solving"
+            }
+        ];
+
+        // Action Polishers/Enhancers
+        const actionPolishers = [
+            "Analyzed the situation thoroughly",
+            "Developed a comprehensive strategy",
+            "Collaborated with key stakeholders",
+            "Implemented systematic approach",
+            "Monitored progress regularly",
+            "Adjusted tactics based on feedback",
+            "Communicated updates transparently",
+            "Leveraged available resources efficiently",
+            "Prioritized critical tasks",
+            "Facilitated team discussions",
+            "Negotiated win-win solutions",
+            "Documented lessons learned"
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeSpeechRecognition();
+            loadUserData();
+            updateUI();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize default vocabulary if empty
+            if (appState.userData.vocabulary.length === 0) {
+                appState.userData.vocabulary = [...interviewVocabulary];
+                saveUserData();
+            }
+            
+            // Set today's date
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('storiesBtn').addEventListener('click', () => showView('stories'));
+            document.getElementById('practiceBtn').addEventListener('click', () => showView('practice'));
+            document.getElementById('recordingsBtn').addEventListener('click', () => showView('recordings'));
+            document.getElementById('vocabularyBtn').addEventListener('click', () => showView('vocabulary'));
+            document.getElementById('progressBtn').addEventListener('click', () => showView('progress'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+
+            // Dashboard actions
+            document.getElementById('viewAllStoriesBtn').addEventListener('click', () => showView('stories'));
+
+            // Story management
+            document.getElementById('createStoryBtn').addEventListener('click', showCreateStory);
+            document.getElementById('exportStoriesBtn').addEventListener('click', exportStories);
+            document.getElementById('saveStoryBtn').addEventListener('click', saveStory);
+            document.getElementById('cancelStoryBtn').addEventListener('click', hideStoryModal);
+            document.getElementById('closeStoryModal').addEventListener('click', hideStoryModal);
+
+            // Practice controls
+            document.getElementById('quickPracticeBtn').addEventListener('click', startQuickPractice);
+            document.getElementById('customPracticeBtn').addEventListener('click', startCustomPractice);
+            document.getElementById('manageQuestionsBtn').addEventListener('click', showManageQuestionsModal);
+            document.getElementById('refreshQuestionsBtn').addEventListener('click', refreshMockQuestions);
+            document.getElementById('startPracticeTimerBtn').addEventListener('click', togglePracticeTimer);
+            document.getElementById('resetPracticeTimerBtn').addEventListener('click', resetPracticeTimer);
+            document.getElementById('exitPracticeBtn').addEventListener('click', exitPracticeMode);
+            document.getElementById('startPracticeResponseBtn').addEventListener('click', startResponseTimer);
+            document.getElementById('savePracticeBtn').addEventListener('click', savePracticeSession);
+
+            // Response mode controls
+            document.getElementById('textResponseBtn').addEventListener('click', () => setResponseMode('text'));
+            document.getElementById('voiceResponseBtn').addEventListener('click', () => setResponseMode('voice'));
+            document.getElementById('startRecordingBtn').addEventListener('click', startRecording);
+            document.getElementById('stopRecordingBtn').addEventListener('click', stopRecording);
+            document.getElementById('playRecordingBtn').addEventListener('click', playRecording);
+            document.getElementById('editTranscriptBtn').addEventListener('click', enableTranscriptEditing);
+
+            // Recordings controls
+            document.getElementById('clearRecordingsBtn').addEventListener('click', clearAllRecordings);
+            document.getElementById('exportRecordingsBtn').addEventListener('click', exportRecordingsList);
+            document.getElementById('recordingDateFilter').addEventListener('change', filterRecordings);
+            document.getElementById('recordingTypeFilter').addEventListener('change', filterRecordings);
+
+            // Questions management
+            document.getElementById('addQuestionBtn').addEventListener('click', showAddQuestionModal);
+            document.getElementById('saveCustomQuestionBtn').addEventListener('click', saveCustomQuestion);
+            document.getElementById('cancelCustomQuestionBtn').addEventListener('click', hideAddQuestionModal);
+            document.getElementById('closeQuestionsModal').addEventListener('click', hideManageQuestionsModal);
+
+            // Vocabulary controls
+            document.getElementById('addVocabBtn').addEventListener('click', showAddVocabModal);
+            document.getElementById('randomVocabBtn').addEventListener('click', showRandomVocabulary);
+            document.getElementById('saveVocabBtn').addEventListener('click', saveNewVocabulary);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideAddVocabModal);
+
+            // Vocabulary categories
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.addEventListener('click', (e) => filterVocabulary(e.target.dataset.category));
+            });
+
+            // Voice input buttons
+            document.getElementById('voiceSituationBtn').addEventListener('click', () => toggleVoiceInput('situationInput'));
+            document.getElementById('voiceTaskBtn').addEventListener('click', () => toggleVoiceInput('taskInput'));
+            document.getElementById('voiceActionBtn').addEventListener('click', () => toggleVoiceInput('actionInput'));
+            document.getElementById('voiceResultBtn').addEventListener('click', () => toggleVoiceInput('resultInput'));
+
+            // Settings
+            document.getElementById('practiceTimeSelect').addEventListener('change', updatePracticeTime);
+            document.getElementById('dailyGoalSelect').addEventListener('change', updateDailyGoal);
+            document.getElementById('autoSaveToggle').addEventListener('change', updateAutoSave);
+            document.getElementById('voiceInputToggle').addEventListener('change', updateVoiceInput);
+            document.getElementById('dailyRemindersToggle').addEventListener('change', updateDailyReminders);
+            document.getElementById('reminderTimeInput').addEventListener('change', updateReminderTime);
+
+            // Data management
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+
+            // Story filters
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearStoryFilters);
+        }
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.speechRecognition = new SpeechRecognition();
+                
+                appState.speechRecognition.continuous = true;
+                appState.speechRecognition.interimResults = true;
+                appState.speechRecognition.lang = 'en-US';
+                
+                appState.speechRecognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+                    
+                    if (finalTranscript && appState.currentVoiceTarget) {
+                        const targetElement = document.getElementById(appState.currentVoiceTarget);
+                        if (targetElement) {
+                            const cursorPos = targetElement.selectionStart || targetElement.value.length;
+                            const textBefore = targetElement.value.substring(0, cursorPos);
+                            const textAfter = targetElement.value.substring(cursorPos);
+                            
+                            targetElement.value = textBefore + finalTranscript + textAfter;
+                            targetElement.selectionStart = targetElement.selectionEnd = cursorPos + finalTranscript.length;
+                        }
+                    }
+                };
+                
+                appState.speechRecognition.onend = function() {
+                    appState.isVoiceRecording = false;
+                    appState.currentVoiceTarget = null;
+                    updateVoiceInputButtons();
+                };
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('interviewAceData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('interviewAceData', JSON.stringify(appState.userData));
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('storiesView').classList.add('hidden');
+            document.getElementById('practiceView').classList.add('hidden');
+            document.getElementById('recordingsView').classList.add('hidden');
+            document.getElementById('vocabularyView').classList.add('hidden');
+            document.getElementById('progressView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'stories') {
+                updateStoriesView();
+            } else if (viewName === 'practice') {
+                refreshMockQuestions();
+            } else if (viewName === 'recordings') {
+                updateRecordingsView();
+            } else if (viewName === 'vocabulary') {
+                updateVocabularyView();
+            } else if (viewName === 'progress') {
+                updateProgressView();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updateStoriesCount();
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalStories').textContent = appState.userData.stories.length;
+            document.getElementById('practiceHours').textContent = Math.floor(appState.userData.totalPracticeTime / 3600);
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Calculate this week's practice sessions
+            const thisWeek = getThisWeekPractice();
+            document.getElementById('thisWeekPractice').textContent = thisWeek;
+            
+            // Update recent stories
+            updateRecentStories();
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function updateStoriesCount() {
+            document.getElementById('storiesCount').textContent = appState.userData.stories.length;
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            saveUserData();
+        }
+
+        function updateRecentStories() {
+            const recentContainer = document.getElementById('recentStories');
+            const recentStories = appState.userData.stories.slice(-5).reverse();
+            
+            if (recentStories.length === 0) {
+                recentContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📝</div>
+                        <p>No stories yet. Create your first STAR story!</p>
+                    </div>
+                `;
+            } else {
+                recentContainer.innerHTML = recentStories.map(story => `
+                    <div class="flex justify-between items-center p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${story.title}</div>
+                            <div class="text-sm text-medium-green">${new Date(story.createdAt).toLocaleDateString()}</div>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                ${story.tags.slice(0, 3).map(tag => `<span class="tag-chip text-xs">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="editStory('${story.id}')" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                ✏️
+                            </button>
+                            <button onclick="deleteStory('${story.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Story Management Functions
+        function showCreateStory() {
+            appState.editingStoryId = null;
+            document.getElementById('storyModalTitle').textContent = 'Create New STAR Story';
+            clearStoryForm();
+            populateActionPolishers();
+            document.getElementById('storyModal').classList.remove('hidden');
+            document.getElementById('storyModal').classList.add('flex');
+        }
+
+        function editStory(storyId) {
+            const story = appState.userData.stories.find(s => s.id === storyId);
+            if (!story) return;
+
+            appState.editingStoryId = storyId;
+            document.getElementById('storyModalTitle').textContent = 'Edit STAR Story';
+            
+            // Populate form with story data
+            document.getElementById('storyTitleInput').value = story.title;
+            document.getElementById('storyTagsInput').value = story.tags.join(', ');
+            document.getElementById('situationInput').value = story.situation || '';
+            document.getElementById('taskInput').value = story.task || '';
+            document.getElementById('actionInput').value = story.action || '';
+            document.getElementById('resultInput').value = story.result || '';
+            
+            // Populate metrics
+            document.getElementById('metricPercentage').value = story.metrics?.percentage || '';
+            document.getElementById('metricDollar').value = story.metrics?.dollar || '';
+            document.getElementById('metricTime').value = story.metrics?.time || '';
+            document.getElementById('metricPeople').value = story.metrics?.people || '';
+            
+            // Populate follow-ups
+            document.getElementById('followUp1').value = story.followUps?.[0] || '';
+            document.getElementById('followUp2').value = story.followUps?.[1] || '';
+            document.getElementById('followUp3').value = story.followUps?.[2] || '';
+            
+            populateActionPolishers();
+            document.getElementById('storyModal').classList.remove('hidden');
+            document.getElementById('storyModal').classList.add('flex');
+        }
+
+        function deleteStory(storyId) {
+            if (confirm('Are you sure you want to delete this story?')) {
+                appState.userData.stories = appState.userData.stories.filter(s => s.id !== storyId);
+                saveUserData();
+                updateUI();
+                if (appState.currentView === 'stories') {
+                    updateStoriesView();
+                }
+                showNotification('Story deleted', 'success');
+            }
+        }
+
+        function clearStoryForm() {
+            document.getElementById('storyTitleInput').value = '';
+            document.getElementById('storyTagsInput').value = '';
+            document.getElementById('situationInput').value = '';
+            document.getElementById('taskInput').value = '';
+            document.getElementById('actionInput').value = '';
+            document.getElementById('resultInput').value = '';
+            document.getElementById('metricPercentage').value = '';
+            document.getElementById('metricDollar').value = '';
+            document.getElementById('metricTime').value = '';
+            document.getElementById('metricPeople').value = '';
+            document.getElementById('followUp1').value = '';
+            document.getElementById('followUp2').value = '';
+            document.getElementById('followUp3').value = '';
+        }
+
+        function populateActionPolishers() {
+            const container = document.getElementById('actionPolishers');
+            const randomPolishers = actionPolishers.sort(() => 0.5 - Math.random()).slice(0, 8);
+            
+            container.innerHTML = randomPolishers.map(polisher => `
+                <span class="bullet-polisher text-xs cursor-pointer" onclick="insertActionPolisher('${polisher}')">
+                    ${polisher}
+                </span>
+            `).join('');
+        }
+
+        function insertActionPolisher(polisher) {
+            const actionInput = document.getElementById('actionInput');
+            const cursorPos = actionInput.selectionStart;
+            const textBefore = actionInput.value.substring(0, cursorPos);
+            const textAfter = actionInput.value.substring(cursorPos);
+            
+            const insertText = (textBefore.endsWith('\n') || textBefore === '') ? `• ${polisher}\n` : `\n• ${polisher}\n`;
+            actionInput.value = textBefore + insertText + textAfter;
+            actionInput.selectionStart = actionInput.selectionEnd = cursorPos + insertText.length;
+            
+            showNotification('Action point added!', 'success');
+        }
+
+        function saveStory() {
+            const title = document.getElementById('storyTitleInput').value.trim();
+            const tags = document.getElementById('storyTagsInput').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            const situation = document.getElementById('situationInput').value.trim();
+            const task = document.getElementById('taskInput').value.trim();
+            const action = document.getElementById('actionInput').value.trim();
+            const result = document.getElementById('resultInput').value.trim();
+            
+            if (!title || !situation || !task || !action || !result) {
+                showNotification('Please fill in all STAR sections', 'warning');
+                return;
+            }
+            
+            const metrics = {
+                percentage: document.getElementById('metricPercentage').value.trim(),
+                dollar: document.getElementById('metricDollar').value.trim(),
+                time: document.getElementById('metricTime').value.trim(),
+                people: document.getElementById('metricPeople').value.trim()
+            };
+            
+            const followUps = [
+                document.getElementById('followUp1').value.trim(),
+                document.getElementById('followUp2').value.trim(),
+                document.getElementById('followUp3').value.trim()
+            ].filter(q => q);
+            
+            const storyData = {
+                id: appState.editingStoryId || generateId(),
+                title,
+                tags,
+                situation,
+                task,
+                action,
+                result,
+                metrics,
+                followUps,
+                createdAt: appState.editingStoryId ? 
+                    appState.userData.stories.find(s => s.id === appState.editingStoryId).createdAt : 
+                    new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (appState.editingStoryId) {
+                const index = appState.userData.stories.findIndex(s => s.id === appState.editingStoryId);
+                appState.userData.stories[index] = storyData;
+                showNotification('Story updated successfully', 'success');
+            } else {
+                appState.userData.stories.push(storyData);
+                updateDailyStreak();
+                showNotification('Story created successfully', 'success');
+            }
+            
+            saveUserData();
+            updateUI();
+            hideStoryModal();
+            
+            if (appState.currentView === 'stories') {
+                updateStoriesView();
+            }
+        }
+
+        function hideStoryModal() {
+            document.getElementById('storyModal').classList.add('hidden');
+            document.getElementById('storyModal').classList.remove('flex');
+        }
+
+        function updateStoriesView() {
+            updateStoryFilters();
+            displayStories();
+        }
+
+        function updateStoryFilters() {
+            const allTags = [...new Set(appState.userData.stories.flatMap(story => story.tags))];
+            const filtersContainer = document.getElementById('storyFilters');
+            
+            filtersContainer.innerHTML = allTags.map(tag => `
+                <span class="tag-chip story-filter" data-tag="${tag}" onclick="toggleStoryFilter('${tag}')">
+                    ${tag}
+                </span>
+            `).join('');
+        }
+
+        function toggleStoryFilter(tag) {
+            const filterElement = document.querySelector(`[data-tag="${tag}"]`);
+            filterElement.classList.toggle('selected');
+            displayStories();
+        }
+
+        function clearStoryFilters() {
+            document.querySelectorAll('.story-filter').forEach(filter => {
+                filter.classList.remove('selected');
+            });
+            displayStories();
+        }
+
+        function displayStories() {
+            const selectedTags = Array.from(document.querySelectorAll('.story-filter.selected')).map(el => el.dataset.tag);
+            let filteredStories = appState.userData.stories;
+            
+            if (selectedTags.length > 0) {
+                filteredStories = appState.userData.stories.filter(story => 
+                    selectedTags.some(tag => story.tags.includes(tag))
+                );
+            }
+            
+            const storiesGrid = document.getElementById('storiesGrid');
+            
+            if (filteredStories.length === 0) {
+                storiesGrid.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">📝</div>
+                        <h3 class="text-xl font-semibold mb-2">No stories found</h3>
+                        <p>Create your first STAR story to get started!</p>
+                    </div>
+                `;
+            } else {
+                storiesGrid.innerHTML = filteredStories.map(story => `
+                    <div class="story-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-dark-green">${story.title}</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="editStory('${story.id}')" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteStory('${story.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${story.tags.map(tag => `<span class="tag-chip">${tag}</span>`).join('')}
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">📍 Situation</h4>
+                                <p class="text-sm text-medium-green">${story.situation.substring(0, 100)}${story.situation.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">🎯 Task</h4>
+                                <p class="text-sm text-medium-green">${story.task.substring(0, 100)}${story.task.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">⚡ Action</h4>
+                                <p class="text-sm text-medium-green">${story.action.substring(0, 100)}${story.action.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">🏆 Result</h4>
+                                <p class="text-sm text-medium-green">${story.result.substring(0, 100)}${story.result.length > 100 ? '...' : ''}</p>
+                                
+                                ${Object.values(story.metrics).some(m => m) ? `
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        ${story.metrics.percentage ? `<span class="text-xs bg-light-gold px-2 py-1 rounded">${story.metrics.percentage}</span>` : ''}
+                                        ${story.metrics.dollar ? `<span class="text-xs bg-light-gold px-2 py-1 rounded">${story.metrics.dollar}</span>` : ''}
+                                        ${story.metrics.time ? `<span class="text-xs bg-light-gold px-2 py-1 rounded">${story.metrics.time}</span>` : ''}
+                                        ${story.metrics.people ? `<span class="text-xs bg-light-gold px-2 py-1 rounded">${story.metrics.people}</span>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${story.followUps.length > 0 ? `
+                            <div class="mt-4 p-3 bg-cream rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-2">🤔 Follow-up Questions</h4>
+                                <ul class="text-xs text-medium-green space-y-1">
+                                    ${story.followUps.map(q => `<li>• ${q}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="text-xs text-gray-500 mt-4">
+                            Created: ${new Date(story.createdAt).toLocaleDateString()}
+                            ${story.updatedAt !== story.createdAt ? ` • Updated: ${new Date(story.updatedAt).toLocaleDateString()}` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Practice Functions
+        function refreshMockQuestions() {
+            const questionsContainer = document.getElementById('mockQuestions');
+            const randomQuestions = interviewQuestions.sort(() => 0.5 - Math.random()).slice(0, 6);
+            
+            questionsContainer.innerHTML = randomQuestions.map(question => `
+                <div class="mock-question">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="difficulty-badge difficulty-${question.difficulty}">${question.difficulty}</span>
+                            <span class="text-sm text-medium-green">${question.category}</span>
+                        </div>
+                        <button onclick="startPracticeWithQuestion('${question.id}')" class="action-button text-sm px-3 py-1 focus-visible">
+                            Practice
+                        </button>
+                    </div>
+                    
+                    <p class="text-dark-green font-medium mb-2">${question.question}</p>
+                    
+                    <div class="flex flex-wrap gap-1">
+                        ${question.tags.map(tag => `<span class="tag-chip text-xs">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startQuickPractice() {
+            const randomQuestion = interviewQuestions[Math.floor(Math.random() * interviewQuestions.length)];
+            startPracticeWithQuestion(randomQuestion.id);
+        }
+
+        function startCustomPractice() {
+            // For now, same as quick practice - could be expanded for custom settings
+            startQuickPractice();
+        }
+
+        function startPracticeWithQuestion(questionId) {
+            const question = interviewQuestions.find(q => q.id == questionId);
+            if (!question) return;
+            
+            document.getElementById('practiceQuestion').textContent = question.question;
+            document.getElementById('practiceResponse').value = '';
+            
+            // Reset and start timer
+            resetPracticeOverlayTimer();
+            startPracticeOverlayTimer();
+            
+            document.getElementById('practiceOverlay').classList.remove('hidden');
+        }
+
+        function exitPracticeMode() {
+            document.getElementById('practiceOverlay').classList.add('hidden');
+            resetPracticeOverlayTimer();
+        }
+
+        function togglePracticeTimer() {
+            if (appState.practiceTimer.isRunning) {
+                pausePracticeTimer();
+            } else {
+                startPracticeTimer();
+            }
+        }
+
+        function startPracticeTimer() {
+            if (appState.practiceTimer.interval) return;
+
+            appState.practiceTimer.startTime = Date.now() - appState.practiceTimer.elapsed;
+            appState.practiceTimer.isRunning = true;
+            
+            appState.practiceTimer.interval = setInterval(() => {
+                appState.practiceTimer.elapsed = Date.now() - appState.practiceTimer.startTime;
+                updatePracticeTimerDisplay();
+                
+                // Check if time is up
+                if (appState.practiceTimer.elapsed >= appState.practiceTimer.duration) {
+                    pausePracticeTimer();
+                    showNotification('Practice time is up!', 'warning');
+                }
+            }, 1000);
+            
+            document.getElementById('startPracticeTimerBtn').textContent = 'Pause Timer';
+        }
+
+        function pausePracticeTimer() {
+            if (appState.practiceTimer.interval) {
+                clearInterval(appState.practiceTimer.interval);
+                appState.practiceTimer.interval = null;
+                appState.practiceTimer.isRunning = false;
+            }
+            
+            document.getElementById('startPracticeTimerBtn').textContent = 'Start Timer';
+        }
+
+        function resetPracticeTimer() {
+            pausePracticeTimer();
+            appState.practiceTimer.elapsed = 0;
+            updatePracticeTimerDisplay();
+        }
+
+        function updatePracticeTimerDisplay() {
+            const remaining = Math.max(0, appState.practiceTimer.duration - appState.practiceTimer.elapsed);
+            
+            // Update remaining time
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = timeString;
+            
+            // Update progress ring
+            const progress = appState.practiceTimer.elapsed / appState.practiceTimer.duration;
+            const circumference = 2 * Math.PI * 35;
+            const offset = circumference - (progress * circumference);
+            document.getElementById('practiceTimerProgress').style.strokeDashoffset = offset;
+            
+            // Warning styling when time is running low
+            const timerElement = document.getElementById('practiceTimer');
+            if (remaining < 30000) { // Less than 30 seconds
+                timerElement.classList.add('warning');
+            } else {
+                timerElement.classList.remove('warning');
+            }
+        }
+
+        // Practice Overlay Timer Functions
+        function startPracticeOverlayTimer() {
+            const duration = 180000; // 3 minutes thinking time
+            let elapsed = 0;
+            
+            const interval = setInterval(() => {
+                elapsed += 1000;
+                const remaining = Math.max(0, duration - elapsed);
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('practiceOverlayDisplay').textContent = timeString;
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    document.getElementById('practiceOverlayTimer').classList.add('warning');
+                    showNotification('Thinking time is up! Start your response.', 'warning');
+                }
+            }, 1000);
+        }
+
+        function resetPracticeOverlayTimer() {
+            document.getElementById('practiceOverlayDisplay').textContent = '03:00';
+            document.getElementById('practiceOverlayTimer').classList.remove('warning');
+        }
+
+        function startResponseTimer() {
+            // Start a 2-minute response timer
+            const duration = 120000; // 2 minutes
+            let elapsed = 0;
+            
+            const interval = setInterval(() => {
+                elapsed += 1000;
+                const remaining = Math.max(0, duration - elapsed);
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('practiceOverlayDisplay').textContent = timeString;
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    showNotification('Response time is up!', 'warning');
+                }
+            }, 1000);
+            
+            showNotification('Response timer started - 2 minutes!', 'success');
+        }
+
+        function savePracticeSession() {
+            const response = document.getElementById('practiceResponse').value.trim();
+            const question = document.getElementById('practiceQuestion').textContent;
+            
+            if (!response) {
+                showNotification('Please write a response first', 'warning');
+                return;
+            }
+            
+            const practiceSession = {
+                id: generateId(),
+                question: question,
+                response: response,
+                date: new Date().toISOString(),
+                duration: appState.practiceTimer.elapsed || 0
+            };
+            
+            appState.userData.practiceHistory.push(practiceSession);
+            appState.userData.totalPracticeTime += (appState.practiceTimer.elapsed || 0) / 1000;
+            
+            updateDailyStreak();
+            saveUserData();
+            
+            showNotification('Practice session saved!', 'success');
+            exitPracticeMode();
+        }
+
+        // Voice Input Functions
+        function toggleVoiceInput(targetId) {
+            if (!appState.speechRecognition) {
+                showNotification('Voice input not supported in this browser', 'warning');
+                return;
+            }
+
+            if (appState.isVoiceRecording && appState.currentVoiceTarget === targetId) {
+                appState.speechRecognition.stop();
+                appState.isVoiceRecording = false;
+                appState.currentVoiceTarget = null;
+            } else {
+                try {
+                    appState.currentVoiceTarget = targetId;
+                    appState.speechRecognition.start();
+                    appState.isVoiceRecording = true;
+                    showNotification('Voice input started', 'success');
+                } catch (e) {
+                    showNotification('Error starting voice input', 'error');
+                }
+            }
+            
+            updateVoiceInputButtons();
+        }
+
+        function updateVoiceInputButtons() {
+            const buttons = ['voiceSituationBtn', 'voiceTaskBtn', 'voiceActionBtn', 'voiceResultBtn'];
+            
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    if (appState.isVoiceRecording && appState.currentVoiceTarget === btnId.replace('voice', '').replace('Btn', 'Input')) {
+                        btn.classList.add('recording');
+                        btn.innerHTML = '⏹️';
+                    } else {
+                        btn.classList.remove('recording');
+                        btn.innerHTML = '🎤';
+                    }
+                }
+            });
+        }
+
+        // Vocabulary Functions
+        function updateVocabularyView() {
+            filterVocabulary('all');
+        }
+
+        function filterVocabulary(category) {
+            // Update active category button
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.classList.remove('active', 'bg-medium-gold', 'text-white');
+                btn.classList.add('bg-pale-green', 'text-dark-green');
+            });
+            
+            const activeBtn = document.querySelector(`[data-category="${category}"]`);
+            activeBtn.classList.add('active', 'bg-medium-gold', 'text-white');
+            activeBtn.classList.remove('bg-pale-green', 'text-dark-green');
+            
+            // Filter vocabulary
+            const filteredVocab = category === 'all' 
+                ? appState.userData.vocabulary 
+                : appState.userData.vocabulary.filter(v => v.category === category);
+            
+            const vocabularyGrid = document.getElementById('vocabularyGrid');
+            
+            if (filteredVocab.length === 0) {
+                vocabularyGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">💡</div>
+                        <p>No vocabulary in this category yet</p>
+                    </div>
+                `;
+            } else {
+                vocabularyGrid.innerHTML = filteredVocab.map(vocab => `
+                    <div class="bg-white p-4 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-dark-green text-lg">${vocab.word}</h4>
+                            <button onclick="deleteVocabulary('${vocab.id}')" class="text-red-500 hover:text-red-700 text-sm focus-visible">
+                                ✕
+                            </button>
+                        </div>
+                        <p class="text-sm text-medium-green mb-3">${vocab.definition}</p>
+                        <p class="text-xs text-gray-600 italic mb-3">"${vocab.example}"</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs px-2 py-1 bg-pale-gold text-dark-green rounded">${vocab.category}</span>
+                            <button onclick="copyToClipboard('${vocab.word}')" class="text-xs text-medium-gold hover:text-dark-gold focus-visible">
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showRandomVocabulary() {
+            const randomVocab = appState.userData.vocabulary[Math.floor(Math.random() * appState.userData.vocabulary.length)];
+            if (randomVocab) {
+                alert(`💡 ${randomVocab.word}\n\n${randomVocab.definition}\n\nExample: ${randomVocab.example}`);
+            }
+        }
+
+        function showAddVocabModal() {
+            document.getElementById('addVocabModal').classList.remove('hidden');
+            document.getElementById('addVocabModal').classList.add('flex');
+        }
+
+        function hideAddVocabModal() {
+            document.getElementById('addVocabModal').classList.add('hidden');
+            document.getElementById('addVocabModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('vocabWordInput').value = '';
+            document.getElementById('vocabDefinitionInput').value = '';
+            document.getElementById('vocabExampleInput').value = '';
+            document.getElementById('vocabCategorySelect').value = 'leadership';
+        }
+
+        function saveNewVocabulary() {
+            const word = document.getElementById('vocabWordInput').value.trim();
+            const definition = document.getElementById('vocabDefinitionInput').value.trim();
+            const example = document.getElementById('vocabExampleInput').value.trim();
+            const category = document.getElementById('vocabCategorySelect').value;
+            
+            if (!word || !definition || !example) {
+                showNotification('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            const newVocab = {
+                id: generateId(),
+                word: word,
+                definition: definition,
+                example: example,
+                category: category,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.vocabulary.push(newVocab);
+            saveUserData();
+            updateVocabularyView();
+            hideAddVocabModal();
+            
+            showNotification('Vocabulary added successfully', 'success');
+        }
+
+        function deleteVocabulary(vocabId) {
+            if (confirm('Are you sure you want to delete this vocabulary item?')) {
+                appState.userData.vocabulary = appState.userData.vocabulary.filter(v => v.id != vocabId);
+                saveUserData();
+                updateVocabularyView();
+                showNotification('Vocabulary deleted', 'success');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(`"${text}" copied to clipboard`, 'success');
+            }).catch(() => {
+                showNotification('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        // Progress Functions
+        function updateProgressView() {
+            // Update practice consistency
+            const thisWeek = getThisWeekPractice();
+            const weeklyGoal = appState.userData.settings.dailyGoal * 7;
+            document.getElementById('weeklyProgress').textContent = `${thisWeek}/${weeklyGoal}`;
+            document.getElementById('weeklyProgressBar').style.width = `${(thisWeek / weeklyGoal) * 100}%`;
+            
+            // Update story quality metrics
+            const totalStories = appState.userData.stories.length;
+            const completeStories = appState.userData.stories.filter(s => s.situation && s.task && s.action && s.result).length;
+            const storiesWithMetrics = appState.userData.stories.filter(s => Object.values(s.metrics || {}).some(m => m)).length;
+            const followUpReady = appState.userData.stories.filter(s => s.followUps && s.followUps.length > 0).length;
+            
+            document.getElementById('completeStories').textContent = `${completeStories}/${totalStories}`;
+            document.getElementById('storiesWithMetrics').textContent = `${storiesWithMetrics}/${totalStories}`;
+            document.getElementById('followUpReady').textContent = `${followUpReady}/${totalStories}`;
+            
+            // Update detailed analytics
+            document.getElementById('totalPracticeTime').textContent = `${Math.floor(appState.userData.totalPracticeTime / 3600)}h`;
+            
+            const avgStoryLength = totalStories > 0 ? 
+                Math.round(appState.userData.stories.reduce((sum, s) => sum + (s.situation + s.task + s.action + s.result).length, 0) / totalStories) : 0;
+            document.getElementById('averageStoryLength').textContent = avgStoryLength;
+            
+            // Most used tag
+            const tagCounts = {};
+            appState.userData.stories.forEach(story => {
+                story.tags.forEach(tag => {
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                });
+            });
+            const mostUsedTag = Object.keys(tagCounts).reduce((a, b) => tagCounts[a] > tagCounts[b] ? a : b, '-');
+            document.getElementById('mostUsedTag').textContent = mostUsedTag;
+            
+            // Update recent activity
+            updateRecentActivity();
+        }
+
+        function updateRecentActivity() {
+            const activityContainer = document.getElementById('recentActivity');
+            const recentActivities = [];
+            
+            // Add recent stories
+            appState.userData.stories.slice(-5).forEach(story => {
+                recentActivities.push({
+                    type: 'story',
+                    date: story.createdAt,
+                    description: `Created story: ${story.title}`
+                });
+            });
+            
+            // Add recent practice sessions
+            appState.userData.practiceHistory.slice(-5).forEach(session => {
+                recentActivities.push({
+                    type: 'practice',
+                    date: session.date,
+                    description: `Practice session completed`
+                });
+            });
+            
+            // Sort by date and take most recent
+            recentActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recent = recentActivities.slice(0, 10);
+            
+            if (recent.length === 0) {
+                activityContainer.innerHTML = '<p class="text-gray-500 text-center">No recent activity</p>';
+            } else {
+                activityContainer.innerHTML = recent.map(activity => `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-pale-green">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg">${activity.type === 'story' ? '📝' : '⚡'}</span>
+                            <span class="text-sm text-dark-green">${activity.description}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">${new Date(activity.date).toLocaleDateString()}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getThisWeekPractice() {
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            return appState.userData.practiceHistory.filter(session => {
+                const sessionDate = new Date(session.date);
+                return sessionDate >= startOfWeek;
+            }).length;
+        }
+
+        function updateDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive !== today) {
+                if (lastActive) {
+                    const lastActiveDate = new Date(lastActive);
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (lastActiveDate.toDateString() === yesterday.toDateString()) {
+                        appState.userData.streak++;
+                    } else {
+                        appState.userData.streak = 1;
+                    }
+                } else {
+                    appState.userData.streak = 1;
+                }
+                
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+            }
+        }
+
+        // Export Functions
+        function exportStories() {
+            if (appState.userData.stories.length === 0) {
+                showNotification('No stories to export', 'warning');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('STAR Stories Collection', 20, 30);
+                
+                doc.setFontSize(12);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+                doc.text(`Total Stories: ${appState.userData.stories.length}`, 20, 55);
+                
+                let yPos = 75;
+                
+                appState.userData.stories.forEach((story, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    
+                    // Story title
+                    doc.setFontSize(16);
+                    doc.text(`${index + 1}. ${story.title}`, 20, yPos);
+                    yPos += 15;
+                    
+                    // Tags
+                    doc.setFontSize(10);
+                    doc.text(`Tags: ${story.tags.join(', ')}`, 20, yPos);
+                    yPos += 15;
+                    
+                    // STAR sections
+                    doc.setFontSize(12);
+                    
+                    // Situation
+                    doc.text('Situation:', 20, yPos);
+                    yPos += 7;
+                    const situationLines = doc.splitTextToSize(story.situation, 170);
+                    doc.text(situationLines, 20, yPos);
+                    yPos += situationLines.length * 5 + 5;
+                    
+                    // Task
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Task:', 20, yPos);
+                    yPos += 7;
+                    const taskLines = doc.splitTextToSize(story.task, 170);
+                    doc.text(taskLines, 20, yPos);
+                    yPos += taskLines.length * 5 + 5;
+                    
+                    // Action
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Action:', 20, yPos);
+                    yPos += 7;
+                    const actionLines = doc.splitTextToSize(story.action, 170);
+                    doc.text(actionLines, 20, yPos);
+                    yPos += actionLines.length * 5 + 5;
+                    
+                    // Result
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Result:', 20, yPos);
+                    yPos += 7;
+                    const resultLines = doc.splitTextToSize(story.result, 170);
+                    doc.text(resultLines, 20, yPos);
+                    yPos += resultLines.length * 5 + 10;
+                    
+                    // Metrics
+                    if (Object.values(story.metrics || {}).some(m => m)) {
+                        if (yPos > 250) {
+                            doc.addPage();
+                            yPos = 30;
+                        }
+                        doc.text('Metrics:', 20, yPos);
+                        yPos += 7;
+                        Object.entries(story.metrics).forEach(([key, value]) => {
+                            if (value) {
+                                doc.text(`• ${key}: ${value}`, 25, yPos);
+                                yPos += 5;
+                            }
+                        });
+                        yPos += 5;
+                    }
+                    
+                    // Follow-ups
+                    if (story.followUps && story.followUps.length > 0) {
+                        if (yPos > 250) {
+                            doc.addPage();
+                            yPos = 30;
+                        }
+                        doc.text('Follow-up Questions:', 20, yPos);
+                        yPos += 7;
+                        story.followUps.forEach(question => {
+                            doc.text(`• ${question}`, 25, yPos);
+                            yPos += 5;
+                        });
+                        yPos += 10;
+                    }
+                    
+                    yPos += 10;
+                });
+                
+                // Save
+                doc.save(`interview-star-stories-${new Date().toISOString().split('T')[0]}.pdf`);
+                showNotification('Stories exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('practiceTimeSelect').value = appState.userData.settings.practiceTime;
+            document.getElementById('dailyGoalSelect').value = appState.userData.settings.dailyGoal;
+            document.getElementById('autoSaveToggle').checked = appState.userData.settings.autoSave;
+            document.getElementById('voiceInputToggle').checked = appState.userData.settings.voiceInput;
+            document.getElementById('dailyRemindersToggle').checked = appState.userData.settings.dailyReminders;
+            document.getElementById('reminderTimeInput').value = appState.userData.settings.reminderTime;
+        }
+
+        function updatePracticeTime() {
+            appState.userData.settings.practiceTime = parseInt(document.getElementById('practiceTimeSelect').value);
+            appState.practiceTimer.duration = appState.userData.settings.practiceTime * 1000;
+            saveUserData();
+        }
+
+        function updateDailyGoal() {
+            appState.userData.settings.dailyGoal = parseInt(document.getElementById('dailyGoalSelect').value);
+            saveUserData();
+        }
+
+        function updateAutoSave() {
+            appState.userData.settings.autoSave = document.getElementById('autoSaveToggle').checked;
+            saveUserData();
+        }
+
+        function updateVoiceInput() {
+            appState.userData.settings.voiceInput = document.getElementById('voiceInputToggle').checked;
+            saveUserData();
+        }
+
+        function updateDailyReminders() {
+            appState.userData.settings.dailyReminders = document.getElementById('dailyRemindersToggle').checked;
+            saveUserData();
+        }
+
+        function updateReminderTime() {
+            appState.userData.settings.reminderTime = document.getElementById('reminderTimeInput').value;
+            saveUserData();
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `interview-ace-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('interviewAceData');
+                    
+                    appState.userData = {
+                        stories: [],
+                        vocabulary: [...interviewVocabulary],
+                        practiceHistory: [],
+                        streak: 0,
+                        longestStreak: 0,
+                        lastActiveDate: null,
+                        totalPracticeTime: 0,
+                        settings: {
+                            practiceTime: 180,
+                            dailyGoal: 1,
+                            autoSave: true,
+                            voiceInput: true,
+                            dailyReminders: true,
+                            reminderTime: '09:00'
+                        }
+                    };
+                    
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Recording Functions
+        function setResponseMode(mode) {
+            appState.currentResponseMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.response-mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (mode === 'text') {
+                document.getElementById('textResponseBtn').classList.add('active');
+                document.getElementById('textResponseSection').classList.remove('hidden');
+                document.getElementById('voiceResponseSection').classList.add('hidden');
+            } else {
+                document.getElementById('voiceResponseBtn').classList.add('active');
+                document.getElementById('textResponseSection').classList.add('hidden');
+                document.getElementById('voiceResponseSection').classList.remove('hidden');
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                appState.mediaRecorder = new MediaRecorder(stream);
+                appState.recordedChunks = [];
+                
+                appState.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        appState.recordedChunks.push(event.data);
+                    }
+                };
+                
+                appState.mediaRecorder.onstop = () => {
+                    const blob = new Blob(appState.recordedChunks, { type: 'audio/webm' });
+                    appState.currentRecordingBlob = blob;
+                    
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audioElement = document.getElementById('recordedAudio');
+                    audioElement.src = audioUrl;
+                    
+                    document.getElementById('audioPlayback').classList.remove('hidden');
+                    document.getElementById('playRecordingBtn').classList.remove('hidden');
+                    
+                    // Start transcription
+                    startTranscription();
+                };
+                
+                appState.mediaRecorder.start();
+                appState.isRecording = true;
+                appState.recordingStartTime = Date.now();
+                
+                // Update UI
+                document.getElementById('startRecordingBtn').classList.add('hidden');
+                document.getElementById('stopRecordingBtn').classList.remove('hidden');
+                document.getElementById('recordingStatus').innerHTML = `
+                    <div class="recording-indicator">🔴 Recording...</div>
+                    <div class="waveform-animation">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+                `;
+                
+                // Start recording timer
+                appState.recordingTimer = setInterval(updateRecordingTimer, 1000);
+                
+                showNotification('Recording started', 'success');
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                showNotification('Error accessing microphone', 'error');
+            }
+        }
+
+        function stopRecording() {
+            if (appState.mediaRecorder && appState.isRecording) {
+                appState.mediaRecorder.stop();
+                appState.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                appState.isRecording = false;
+                
+                // Clear timer
+                if (appState.recordingTimer) {
+                    clearInterval(appState.recordingTimer);
+                    appState.recordingTimer = null;
+                }
+                
+                // Update UI
+                document.getElementById('startRecordingBtn').classList.remove('hidden');
+                document.getElementById('stopRecordingBtn').classList.add('hidden');
+                document.getElementById('recordingStatus').textContent = 'Recording Complete';
+                
+                showNotification('Recording stopped', 'success');
+            }
+        }
+
+        function updateRecordingTimer() {
+            if (appState.recordingStartTime) {
+                const elapsed = Date.now() - appState.recordingStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('recordingTimer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function playRecording() {
+            const audioElement = document.getElementById('recordedAudio');
+            audioElement.play();
+        }
+
+        function startTranscription() {
+            // Simulate transcription process (in real app, would use speech-to-text API)
+            document.getElementById('transcriptionSection').classList.remove('hidden');
+            document.getElementById('transcriptionText').placeholder = 'Generating transcript...';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                document.getElementById('transcriptionText').placeholder = 'Transcript will appear here...';
+                document.getElementById('transcriptionText').value = 'Auto-transcription is simulated in this demo. In a real application, this would connect to a speech-to-text service like Google Speech API, Azure Speech Services, or AWS Transcribe to convert your audio recording into text.';
+                showNotification('Transcript generated', 'success');
+            }, 2000);
+        }
+
+        function enableTranscriptEditing() {
+            const transcriptElement = document.getElementById('transcriptionText');
+            transcriptElement.readOnly = false;
+            transcriptElement.focus();
+            showNotification('You can now edit the transcript', 'info');
+        }
+
+        // Recordings Management
+        function updateRecordingsView() {
+            filterRecordings();
+        }
+
+        function filterRecordings() {
+            const dateFilter = document.getElementById('recordingDateFilter').value;
+            const typeFilter = document.getElementById('recordingTypeFilter').value;
+            
+            let filteredRecordings = [...appState.userData.recordings];
+            
+            // Apply date filter
+            if (dateFilter !== 'all') {
+                const now = new Date();
+                let filterDate;
+                
+                switch (dateFilter) {
+                    case 'today':
+                        filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                        break;
+                    case 'week':
+                        filterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        break;
+                    case 'month':
+                        filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                        break;
+                }
+                
+                filteredRecordings = filteredRecordings.filter(recording => 
+                    new Date(recording.date) >= filterDate
+                );
+            }
+            
+            // Apply type filter
+            if (typeFilter !== 'all') {
+                filteredRecordings = filteredRecordings.filter(recording => {
+                    if (typeFilter === 'transcript') {
+                        return recording.transcript && recording.transcript.trim();
+                    } else if (typeFilter === 'audio') {
+                        return !recording.transcript || !recording.transcript.trim();
+                    }
+                    return true;
+                });
+            }
+            
+            displayRecordings(filteredRecordings);
+        }
+
+        function displayRecordings(recordings) {
+            const recordingsGrid = document.getElementById('recordingsGrid');
+            
+            if (recordings.length === 0) {
+                recordingsGrid.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">🎤</div>
+                        <h3 class="text-xl font-semibold mb-2">No recordings found</h3>
+                        <p>Start practicing with voice responses to see recordings here!</p>
+                    </div>
+                `;
+            } else {
+                recordingsGrid.innerHTML = recordings.map(recording => `
+                    <div class="recording-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-dark-green mb-2">${recording.question.substring(0, 80)}${recording.question.length > 80 ? '...' : ''}</h3>
+                                <div class="flex items-center space-x-4 text-sm text-medium-green">
+                                    <span>📅 ${new Date(recording.date).toLocaleDateString()}</span>
+                                    <span>⏱️ ${Math.floor(recording.duration / 60)}:${(recording.duration % 60).toString().padStart(2, '0')}</span>
+                                    ${recording.transcript ? '<span>📝 Transcript Available</span>' : '<span>🎤 Audio Only</span>'}
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="playRecordingById('${recording.id}')" class="text-accent-green hover:text-medium-green focus-visible">
+                                    ▶️ Play
+                                </button>
+                                <button onclick="deleteRecording('${recording.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        ${recording.audioUrl ? `
+                            <audio controls class="w-full mb-4">
+                                <source src="${recording.audioUrl}" type="audio/webm">
+                                Your browser does not support the audio element.
+                            </audio>
+                        ` : ''}
+                        
+                        ${recording.transcript ? `
+                            <div class="transcript-section">
+                                <h4 class="font-semibold text-dark-green mb-2">Transcript:</h4>
+                                <p class="text-sm text-medium-green">${recording.transcript}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function playRecordingById(recordingId) {
+            const recording = appState.userData.recordings.find(r => r.id === recordingId);
+            if (recording && recording.audioUrl) {
+                const audio = new Audio(recording.audioUrl);
+                audio.play();
+            }
+        }
+
+        function deleteRecording(recordingId) {
+            if (confirm('Are you sure you want to delete this recording?')) {
+                appState.userData.recordings = appState.userData.recordings.filter(r => r.id !== recordingId);
+                saveUserData();
+                updateRecordingsView();
+                showNotification('Recording deleted', 'success');
+            }
+        }
+
+        function clearAllRecordings() {
+            if (confirm('Are you sure you want to delete all recordings? This cannot be undone.')) {
+                appState.userData.recordings = [];
+                saveUserData();
+                updateRecordingsView();
+                showNotification('All recordings cleared', 'success');
+            }
+        }
+
+        function exportRecordingsList() {
+            if (appState.userData.recordings.length === 0) {
+                showNotification('No recordings to export', 'warning');
+                return;
+            }
+
+            const recordingsData = appState.userData.recordings.map(recording => ({
+                question: recording.question,
+                date: recording.date,
+                duration: recording.duration,
+                transcript: recording.transcript || 'No transcript available'
+            }));
+
+            const csvContent = [
+                ['Question', 'Date', 'Duration (seconds)', 'Transcript'],
+                ...recordingsData.map(r => [
+                    `"${r.question.replace(/"/g, '""')}"`,
+                    r.date,
+                    r.duration,
+                    `"${r.transcript.replace(/"/g, '""')}"`
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `interview-recordings-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showNotification('Recordings list exported', 'success');
+        }
+
+        // Questions Management
+        function showManageQuestionsModal() {
+            updateQuestionsManagementList();
+            document.getElementById('manageQuestionsModal').classList.remove('hidden');
+            document.getElementById('manageQuestionsModal').classList.add('flex');
+        }
+
+        function hideManageQuestionsModal() {
+            document.getElementById('manageQuestionsModal').classList.add('hidden');
+            document.getElementById('manageQuestionsModal').classList.remove('flex');
+        }
+
+        function showAddQuestionModal() {
+            document.getElementById('addQuestionModal').classList.remove('hidden');
+            document.getElementById('addQuestionModal').classList.add('flex');
+        }
+
+        function hideAddQuestionModal() {
+            document.getElementById('addQuestionModal').classList.add('hidden');
+            document.getElementById('addQuestionModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('customQuestionInput').value = '';
+            document.getElementById('customQuestionCategory').value = 'Leadership';
+            document.getElementById('customQuestionDifficulty').value = 'medium';
+            document.getElementById('customQuestionTags').value = '';
+        }
+
+        function updateQuestionsManagementList() {
+            const allQuestions = [...interviewQuestions, ...appState.userData.customQuestions];
+            const questionsContainer = document.getElementById('questionsManagementList');
+            
+            questionsContainer.innerHTML = allQuestions.map(question => `
+                <div class="bg-white p-4 rounded-xl border-2 border-pale-green">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="difficulty-badge difficulty-${question.difficulty}">${question.difficulty}</span>
+                            <span class="text-sm text-medium-green">${question.category}</span>
+                            ${question.custom ? '<span class="text-xs px-2 py-1 bg-medium-gold text-white rounded">Custom</span>' : ''}
+                        </div>
+                        <div class="flex space-x-2">
+                            ${question.custom ? `
+                                <button onclick="editCustomQuestion('${question.id}')" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteCustomQuestion('${question.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                    🗑️ Delete
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <p class="text-dark-green font-medium mb-2">${question.question}</p>
+                    
+                    <div class="flex flex-wrap gap-1">
+                        ${question.tags.map(tag => `<span class="tag-chip text-xs">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveCustomQuestion() {
+            const question = document.getElementById('customQuestionInput').value.trim();
+            const category = document.getElementById('customQuestionCategory').value;
+            const difficulty = document.getElementById('customQuestionDifficulty').value;
+            const tags = document.getElementById('customQuestionTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            if (!question) {
+                showNotification('Please enter a question', 'warning');
+                return;
+            }
+            
+            const newQuestion = {
+                id: generateId(),
+                question: question,
+                category: category,
+                difficulty: difficulty,
+                tags: tags,
+                custom: true,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.customQuestions.push(newQuestion);
+            saveUserData();
+            updateQuestionsManagementList();
+            hideAddQuestionModal();
+            
+            showNotification('Custom question added', 'success');
+        }
+
+        function deleteCustomQuestion(questionId) {
+            if (confirm('Are you sure you want to delete this custom question?')) {
+                appState.userData.customQuestions = appState.userData.customQuestions.filter(q => q.id !== questionId);
+                saveUserData();
+                updateQuestionsManagementList();
+                showNotification('Custom question deleted', 'success');
+            }
+        }
+
+        // Update refreshMockQuestions to include custom questions
+        function refreshMockQuestions() {
+            const questionsContainer = document.getElementById('mockQuestions');
+            const allQuestions = [...interviewQuestions, ...appState.userData.customQuestions];
+            const randomQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 6);
+            
+            questionsContainer.innerHTML = randomQuestions.map(question => `
+                <div class="mock-question">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="difficulty-badge difficulty-${question.difficulty}">${question.difficulty}</span>
+                            <span class="text-sm text-medium-green">${question.category}</span>
+                            ${question.custom ? '<span class="text-xs px-2 py-1 bg-medium-gold text-white rounded">Custom</span>' : ''}
+                        </div>
+                        <button onclick="startPracticeWithQuestion('${question.id}')" class="action-button text-sm px-3 py-1 focus-visible">
+                            Practice
+                        </button>
+                    </div>
+                    
+                    <p class="text-dark-green font-medium mb-2">${question.question}</p>
+                    
+                    <div class="flex flex-wrap gap-1">
+                        ${question.tags.map(tag => `<span class="tag-chip text-xs">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update startPracticeWithQuestion to handle custom questions
+        function startPracticeWithQuestion(questionId) {
+            const allQuestions = [...interviewQuestions, ...appState.userData.customQuestions];
+            const question = allQuestions.find(q => q.id == questionId);
+            if (!question) return;
+            
+            document.getElementById('practiceQuestion').textContent = question.question;
+            document.getElementById('practiceResponse').value = '';
+            document.getElementById('transcriptionText').value = '';
+            
+            // Reset response mode to text
+            setResponseMode('text');
+            
+            // Reset recording UI
+            document.getElementById('startRecordingBtn').classList.remove('hidden');
+            document.getElementById('stopRecordingBtn').classList.add('hidden');
+            document.getElementById('playRecordingBtn').classList.add('hidden');
+            document.getElementById('audioPlayback').classList.add('hidden');
+            document.getElementById('transcriptionSection').classList.add('hidden');
+            document.getElementById('recordingStatus').textContent = 'Ready to Record';
+            document.getElementById('recordingTimer').textContent = '00:00';
+            
+            // Reset and start timer
+            resetPracticeOverlayTimer();
+            startPracticeOverlayTimer();
+            
+            document.getElementById('practiceOverlay').classList.remove('hidden');
+        }
+
+        // Update savePracticeSession to handle recordings
+        function savePracticeSession() {
+            const question = document.getElementById('practiceQuestion').textContent;
+            let response = '';
+            let transcript = '';
+            
+            if (appState.currentResponseMode === 'text') {
+                response = document.getElementById('practiceResponse').value.trim();
+                if (!response) {
+                    showNotification('Please write a response first', 'warning');
+                    return;
+                }
+            } else {
+                transcript = document.getElementById('transcriptionText').value.trim();
+                if (!appState.currentRecordingBlob && !transcript) {
+                    showNotification('Please record a response or add a transcript', 'warning');
+                    return;
+                }
+            }
+            
+            const practiceSession = {
+                id: generateId(),
+                question: question,
+                response: response,
+                date: new Date().toISOString(),
+                duration: appState.practiceTimer.elapsed || 0,
+                responseMode: appState.currentResponseMode
+            };
+            
+            // Save recording if voice mode
+            if (appState.currentResponseMode === 'voice' && appState.currentRecordingBlob) {
+                const audioUrl = URL.createObjectURL(appState.currentRecordingBlob);
+                const recordingDuration = appState.recordingStartTime ? 
+                    Math.floor((Date.now() - appState.recordingStartTime) / 1000) : 0;
+                
+                const recording = {
+                    id: generateId(),
+                    question: question,
+                    audioUrl: audioUrl,
+                    transcript: transcript,
+                    date: new Date().toISOString(),
+                    duration: recordingDuration
+                };
+                
+                appState.userData.recordings.push(recording);
+            }
+            
+            appState.userData.practiceHistory.push(practiceSession);
+            appState.userData.totalPracticeTime += (appState.practiceTimer.elapsed || 0) / 1000;
+            
+            updateDailyStreak();
+            saveUserData();
+            
+            showNotification('Practice session saved!', 'success');
+            exitPracticeMode();
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98740b7871b21072',t:'MTc1OTIzODcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
