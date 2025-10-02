@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archetype Deck</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React 18 and Babel Standalone for JSX-in-browser -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* optional: smooth font rendering */
+    html, body { background: #F8F7F2; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Use React hooks from the global React object
+    const { useState, useRef, useEffect } = React;
+
+    const PALETTE = {
+      lotusWhite: "#F8F7F2",
+      deepEvergreen: "#26433A",
+      templeGold: "#CBA35B",
+      jadeMist: "#7FB5A0",
+      inkCharcoal: "#0E1514",
+      amberWarn: "#8C6A2C",
+      tealInfo: "#5FA79A",
+      softGreen: "#8DC8B5",
+    };
+
+    const DATA = [
+      { id:"builder", title:"The Builder", emoji:"🛠️",
+        quietTruth:"Your effort counts, even when unseen.",
+        nextStep:"Let your momentum speak for itself.",
+        apps:[
+          { name:"Motivational Tracking App", url:"https://ko-fi.com/lifebalanceq/shop#motivational-tracking" },
+          { name:"Task Management App", url:"https://ko-fi.com/lifebalanceq/shop#task-management" },
+        ],
+      },
+      { id:"analyst", title:"The Analyst", emoji:"🔍",
+        quietTruth:"It is brave to choose before data feels perfect.",
+        nextStep:"Pick one smart bet and learn in the open.",
+        apps:[
+          { name:"Data Visualization App", url:"https://ko-fi.com/lifebalanceq/shop#data-visualization" },
+          { name:"Decision Support App", url:"https://ko-fi.com/lifebalanceq/shop#decision-support" },
+        ],
+      },
+      { id:"connector", title:"The Connector", emoji:"🤝",
+        quietTruth:"Your worth is not measured by favors.",
+        nextStep:"Keep access warm with kind boundaries.",
+        apps:[
+          { name:"Professional Networking Scripts", url:"https://ko-fi.com/lifebalanceq/shop#networking-scripts" },
+          { name:"Social Balance App", url:"https://ko-fi.com/lifebalanceq/shop#social-balance" },
+          { name:"Relationship Board App", url:"https://ko-fi.com/lifebalanceq/shop#relationship-board" },
+        ],
+      },
+      { id:"creator", title:"The Creator", emoji:"🎨",
+        quietTruth:"The well fills when tended.",
+        nextStep:"Seed ideas daily and let the backlog grow.",
+        apps:[
+          { name:"Consistency Tracker App", url:"https://ko-fi.com/lifebalanceq/shop#consistency-tracker" },
+          { name:"Idea Capture App", url:"https://ko-fi.com/lifebalanceq/shop#idea-capture" },
+          { name:"Ideation Prompt", url:"https://ko-fi.com/lifebalanceq/shop#ideation-prompt" },
+        ],
+      },
+      { id:"caregiver", title:"The Caregiver", emoji:"💝",
+        quietTruth:"You deserve the care you give.",
+        nextStep:"Protect recovery windows and ask for support.",
+        apps:[
+          { name:"Boundary Management App", url:"https://ko-fi.com/lifebalanceq/shop#boundary-management" },
+          { name:"Self-care Planner App", url:"https://ko-fi.com/lifebalanceq/shop#self-care-planner" },
+        ],
+      },
+      { id:"leader", title:"The Leader", emoji:"👑",
+        quietTruth:"You do not need to carry it alone.",
+        nextStep:"Share the sky with a trusted circle.",
+        apps:[
+          { name:"Delegation Tool App", url:"https://ko-fi.com/lifebalanceq/shop#delegation-tool" },
+          { name:"Team Motivation App", url:"https://ko-fi.com/lifebalanceq/shop#team-motivation" },
+        ],
+      },
+      { id:"strategist", title:"The Strategist", emoji:"♟️",
+        quietTruth:"Reality is a partner, not just a plan.",
+        nextStep:"Balance doing, testing, and exploring.",
+        apps:[
+          { name:"Planning Visualization App", url:"https://ko-fi.com/lifebalanceq/shop#planning-visualization" },
+          { name:"Strategy Simulation App", url:"https://ko-fi.com/lifebalanceq/shop#strategy-simulation" },
+        ],
+      },
+      { id:"explorer", title:"The Explorer", emoji:"🗺️",
+        quietTruth:"Depth grows when attention lingers.",
+        nextStep:"Choose one path and let it mature.",
+        apps:[
+          { name:"Safety Preparation App", url:"https://ko-fi.com/lifebalanceq/shop#safety-preparation" },
+          { name:"Adventure Planning App", url:"https://ko-fi.com/lifebalanceq/shop#adventure-planning" },
+        ],
+      },
+      { id:"performer", title:"The Performer", emoji:"🎭",
+        quietTruth:"Applause is sweet, not the whole story.",
+        nextStep:"Build identity that stays when lights fade.",
+        apps:[
+          { name:"Feedback Recovery App", url:"https://ko-fi.com/lifebalanceq/shop#feedback-recovery" },
+          { name:"Performer Prep App", url:"https://ko-fi.com/lifebalanceq/shop#performer-prep" },
+        ],
+      },
+      { id:"finisher", title:"The Finisher", emoji:"✅",
+        quietTruth:"Good enough can be a loving finish.",
+        nextStep:"Define done and let the work ship.",
+        apps:[
+          { name:"Achievement Logging App", url:"https://ko-fi.com/lifebalanceq/shop#achievement-logging" },
+          { name:"Task Completion App", url:"https://ko-fi.com/lifebalanceq/shop#task-completion" },
+        ],
+      },
+    ];
+
+    function useKeyboardFlip(ref, onFlip) {
+      useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const handler = (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onFlip();
+          }
+        };
+        el.addEventListener("keydown", handler);
+        return () => el.removeEventListener("keydown", handler);
+      }, [ref, onFlip]);
+    }
+
+    function Sparkle() {
+      return (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-2xl"
+          style={{
+            background:
+              "radial-gradient(1200px 200px at 20% -10%, rgba(203,163,91,0.25), transparent 50%), radial-gradient(800px 200px at 100% 0%, rgba(127,181,160,0.25), transparent 50%)",
+            mixBlendMode: "screen",
+          }}
+        />
+      );
+    }
+
+    function MagicStyles(){
+      return (
+        <style>{`
+          @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+          @keyframes fadeUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+        `}</style>
+      );
+    }
+
+    function AppLink({ name, url }) {
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full rounded-lg text-center text-[12px] font-semibold py-2 mt-2 transition-transform"
+          style={{
+            background: PALETTE.templeGold,
+            color: PALETTE.inkCharcoal,
+            boxShadow: "0 2px 0 rgba(0,0,0,0.25)",
+          }}
+        >
+          {name}
+        </a>
+      );
+    }
+
+    function Card({ item, index }) {
+      const [flipped, setFlipped] = useState(false);
+      const cardRef = useRef(null);
+      useKeyboardFlip(cardRef, () => setFlipped((v) => !v));
+
+      return (
+        <div
+          ref={cardRef}
+          role="button"
+          tabIndex={0}
+          aria-pressed={flipped}
+          onClick={() => setFlipped((v) => !v)}
+          className="group relative [perspective:1400px] focus:outline-none transition-transform duration-300 hover:-translate-y-1"
+          style={{ animation: 'fadeUp 700ms ease both', animationDelay: (index * 90) + 'ms' }}
+        >
+          <div
+            className={`relative w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] shadow-xl ${flipped ? "[transform:rotateY(180deg)]" : ""}`}
+            style={{ minHeight: "22rem" }}
+          >
+            {/* Front */}
+            <div
+              className="absolute inset-0 rounded-2xl border overflow-hidden [backface-visibility:hidden] transition-transform duration-300"
+              style={{
+                background: PALETTE.deepEvergreen,
+                borderColor: PALETTE.templeGold,
+                color: PALETTE.lotusWhite,
+                boxShadow: "0 12px 24px rgba(14,21,20,0.45)",
+              }}
+            >
+              <Sparkle />
+              <div className="h-full flex flex-col items-center justify-center p-6 text-center select-none">
+                <div
+                  className="mb-4"
+                  style={{ fontSize: 48, filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.35))", animation: "floaty 6s ease-in-out infinite" }}
+                  aria-hidden
+                >
+                  {item.emoji}
+                </div>
+                <h3 className="text-2xl font-extrabold tracking-tight" style={{ textShadow: "0 1px 1px rgba(0,0,0,0.45)" }}>
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm opacity-90" style={{ textShadow: "0 1px 1px rgba(0,0,0,0.35)" }}>
+                  Tap to turn
+                </p>
+              </div>
+              <div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ boxShadow: "inset 0 0 0 2px rgba(203,163,91,0.45)" }}
+              />
+            </div>
+
+            {/* Back */}
+            <div
+              className="absolute inset-0 rounded-2xl border p-5 [transform:rotateY(180deg)] [backface-visibility:hidden]"
+              style={{
+                background: PALETTE.deepEvergreen,
+                borderColor: PALETTE.templeGold,
+                color: PALETTE.lotusWhite,
+                boxShadow: "0 12px 24px rgba(14,21,20,0.45)",
+              }}
+            >
+              <Sparkle />
+              <div className="flex h-full flex-col">
+                <p className="text-base leading-snug" style={{ textShadow: "0 1px 1px rgba(0,0,0,0.35)" }}>
+                  {item.quietTruth}
+                </p>
+                <p className="mt-2 text-sm opacity-95" style={{ color: PALETTE.softGreen }}>
+                  {item.nextStep}
+                </p>
+                <div className="mt-3 grid grid-cols-1 gap-2">
+                  {item.apps.map((a) => (
+                    <AppLink key={a.name} name={a.name} url={a.url} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ArchetypeCards() {
+      return (
+        <div className="min-h-screen" style={{ background: PALETTE.lotusWhite }}>
+          <header className="mx-auto max-w-7xl px-4 pt-10 pb-6">
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: PALETTE.inkCharcoal }}>
+              Archetype Deck
+            </h1>
+            <p className="text-sm md:text-base mt-1" style={{ color: PALETTE.inkCharcoal, opacity: 0.8 }}>
+              Flip a card to reveal a quiet truth and choose your next step
+            </p>
+          </header>
+
+          <MagicStyles />
+
+          <main className="mx-auto max-w-7xl px-4 pb-10 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {DATA.map((item, idx) => (
+              <Card key={item.id} item={item} index={idx} />
+            ))}
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ArchetypeCards />);
+  </script>
+</body>
+</html>
 
