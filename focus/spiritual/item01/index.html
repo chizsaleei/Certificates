@@ -1,1 +1,3023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiritual - Stillness Timer & Gratitude Trifecta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #0f2419); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+        }
+        
+        .timer-circle {
+            width: 280px;
+            height: 280px;
+            border: 8px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .timer-progress {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: #d4af37;
+            transform: rotate(-90deg);
+            transition: transform 1s linear;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .gratitude-item {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .gratitude-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .phrase-card {
+            background: rgba(26, 59, 46, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .voice-listening {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+        }
+        
+        .reflection-entry {
+            background: rgba(26, 59, 46, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .calendar-day {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day.has-entry {
+            background: rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+        }
+        
+        .calendar-day.streak {
+            background: #d4af37;
+            color: #000;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-6 text-center border-b border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">🧘 Spiritual</h1>
+        <p class="text-lg text-gray-300 mb-4">Stillness Timer & Gratitude Trifecta</p>
+        
+        <!-- Quick Stats -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-accent" id="stillnessStreak">0</div>
+                <div class="text-sm text-gray-400">Stillness Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-accent" id="gratitudeStreak">0</div>
+                <div class="text-sm text-gray-400">Gratitude Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-accent" id="totalMinutes">0</div>
+                <div class="text-sm text-gray-400">Total Minutes</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-accent" id="weeklyGoal">0/7</div>
+                <div class="text-sm text-gray-400">Weekly Goal</div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('timer')" id="timerBtn" class="nav-btn active">⏱️ Timer</button>
+        <button onclick="showScreen('gratitude')" id="gratitudeBtn" class="nav-btn">🙏 Gratitude</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">📖 Vocabulary</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">🧘‍♀️ Guided</button>
+        <button onclick="showScreen('bible')" id="bibleBtn" class="nav-btn">📖 Bible</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">📊 Analytics</button>
+    </nav>
+
+    <!-- Floating Quick Add Button -->
+    <div onclick="showQuickAdd()" class="floating-btn" title="Quick Add">+</div>
+
+    <!-- Timer Screen -->
+    <div id="timerScreen" class="screen p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">⏱️ Stillness Timer</h2>
+            
+            <!-- Timer Circle -->
+            <div class="timer-circle mb-8">
+                <div class="timer-progress" id="timerProgress"></div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-accent mb-2" id="timerDisplay">5:00</div>
+                    <div class="text-gray-400" id="timerStatus">Ready to Begin</div>
+                </div>
+            </div>
+            
+            <!-- Timer Controls -->
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startTimer()" id="startBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start
+                </button>
+                <button onclick="pauseTimer()" id="pauseBtn" 
+                        class="bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏸️ Pause
+                </button>
+                <button onclick="stopTimer()" id="stopBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Timer Presets -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                <button onclick="setTimer(5)" class="bg-gray-700 text-white px-4 py-3 rounded-lg font-bold">5 min</button>
+                <button onclick="setTimer(10)" class="bg-gray-700 text-white px-4 py-3 rounded-lg font-bold">10 min</button>
+                <button onclick="setTimer(15)" class="bg-gray-700 text-white px-4 py-3 rounded-lg font-bold">15 min</button>
+                <button onclick="setTimer(20)" class="bg-gray-700 text-white px-4 py-3 rounded-lg font-bold">20 min</button>
+            </div>
+            
+            <!-- Custom Timer -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">⚙️ Custom Timer</h3>
+                <div class="flex justify-center items-center gap-4 mb-4">
+                    <input type="number" id="customMinutes" min="1" max="120" value="5" 
+                           class="w-20 p-3 rounded-lg bg-gray-800 border border-accent text-white text-center">
+                    <span class="text-white">minutes</span>
+                    <button onclick="setCustomTimer()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Set Timer
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Gentle Prompts -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Gentle Prompts</h3>
+                <div class="text-center">
+                    <div class="text-lg text-gray-300 italic mb-4" id="currentPrompt">
+                        "Return to your breath. Notice without judgment."
+                    </div>
+                    <button onclick="getNewPrompt()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        New Prompt
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Post-Session Reflection -->
+            <div id="reflectionModal" class="modal hidden">
+                <div class="modal-content">
+                    <h3 class="text-2xl font-bold text-accent mb-6">🌟 Session Complete</h3>
+                    <div class="text-center mb-6">
+                        <div class="text-4xl mb-2">🧘</div>
+                        <div class="text-lg text-gray-300">You sat for <span id="sessionDuration" class="text-accent font-bold">5 minutes</span></div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">How was your session?</label>
+                            <div class="flex justify-center gap-3 mb-4">
+                                <button onclick="setSessionRating(1)" class="session-rating bg-gray-700 text-white px-4 py-2 rounded-lg">😔</button>
+                                <button onclick="setSessionRating(2)" class="session-rating bg-gray-700 text-white px-4 py-2 rounded-lg">😐</button>
+                                <button onclick="setSessionRating(3)" class="session-rating bg-gray-700 text-white px-4 py-2 rounded-lg">🙂</button>
+                                <button onclick="setSessionRating(4)" class="session-rating bg-gray-700 text-white px-4 py-2 rounded-lg">😊</button>
+                                <button onclick="setSessionRating(5)" class="session-rating bg-gray-700 text-white px-4 py-2 rounded-lg">😌</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Reflection (Optional)</label>
+                            <button onclick="startVoiceInput('sessionReflection', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="sessionReflection" placeholder="What did you notice? Any insights or observations..." 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="saveReflection()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                                💾 Save Session
+                            </button>
+                            <button onclick="closeReflection()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                                Skip
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gratitude Screen -->
+    <div id="gratitudeScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">🙏 Gratitude Trifecta</h2>
+                <p class="text-gray-300">Three specifics, act of service, intention</p>
+            </div>
+
+            <!-- Today's Gratitude -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-accent">Today's Gratitude</h3>
+                    <div class="text-sm text-gray-400" id="todayDate"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <!-- Three Specifics -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-3">✨ Three Specifics</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <button onclick="startVoiceInput('gratitude1', this)" 
+                                        class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                    🎤 Voice
+                                </button>
+                                <textarea id="gratitude1" placeholder="1. Something specific you're grateful for..." 
+                                          class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                            </div>
+                            <div>
+                                <button onclick="startVoiceInput('gratitude2', this)" 
+                                        class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                    🎤 Voice
+                                </button>
+                                <textarea id="gratitude2" placeholder="2. Another specific thing..." 
+                                          class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                            </div>
+                            <div>
+                                <button onclick="startVoiceInput('gratitude3', this)" 
+                                        class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                    🎤 Voice
+                                </button>
+                                <textarea id="gratitude3" placeholder="3. A third specific thing..." 
+                                          class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Act of Service -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-3">🤝 Act of Service</h4>
+                        <button onclick="startVoiceInput('actOfService', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="actOfService" placeholder="How did you serve others today? Or how will you?" 
+                                  class="w-full h-64 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    
+                    <!-- Intention -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-3">🎯 Intention</h4>
+                        <button onclick="startVoiceInput('intention', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="intention" placeholder="What's your intention for tomorrow? How will you show up?" 
+                                  class="w-full h-64 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="saveGratitude()" class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                        💾 Save Today's Gratitude
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Gratitude Entries -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📖 Recent Entries</h3>
+                <div id="recentGratitude" class="space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Recent entries will be populated here -->
+                </div>
+            </div>
+
+            <!-- Gratitude Calendar -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📅 Gratitude Calendar</h3>
+                <div class="text-center mb-4">
+                    <button onclick="changeMonth(-1)" class="bg-gray-700 text-white px-4 py-2 rounded-lg">←</button>
+                    <span class="mx-4 text-lg font-bold" id="calendarMonth"></span>
+                    <button onclick="changeMonth(1)" class="bg-gray-700 text-white px-4 py-2 rounded-lg">→</button>
+                </div>
+                <div id="gratitudeCalendar" class="grid grid-cols-7 gap-2">
+                    <!-- Calendar will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📖 Contemplative Vocabulary</h2>
+                <p class="text-gray-300">Power phrases and contemplative language</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Contemplative Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🧘 Contemplative Phrases</h3>
+                    <div id="contemplativePhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newContemplativePhrase" placeholder="Add contemplative phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addContemplativePhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prayer Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🙏 Prayer Phrases</h3>
+                    <div id="prayerPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newPrayerPhrase" placeholder="Add prayer phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addPrayerPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Wisdom Quotes -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">💎 Wisdom Quotes</h3>
+                    <div id="wisdomQuotes" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Quotes will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newWisdomQuote" placeholder="Add wisdom quote..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addWisdomQuote()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Affirmations -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">✨ Affirmations</h3>
+                    <div id="affirmations" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Affirmations will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newAffirmation" placeholder="Add affirmation..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addAffirmation()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Prayer/Reflection -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎤 Voice Prayer & Reflection</h3>
+                <div class="text-center mb-4">
+                    <button onclick="startPrayerRecording()" id="prayerRecordBtn" 
+                            class="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg">
+                        🎤 Start Prayer Recording
+                    </button>
+                    <button onclick="stopPrayerRecording()" id="stopPrayerBtn" 
+                            class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                        ⏹️ Stop Recording
+                    </button>
+                </div>
+                
+                <div id="prayerTranscript" class="bg-gray-800 p-4 rounded-lg min-h-32 mb-4 hidden">
+                    <h4 class="text-white font-bold mb-2">Transcript:</h4>
+                    <div id="transcriptText" class="text-gray-300"></div>
+                </div>
+                
+                <div id="savedPrayers" class="space-y-3">
+                    <h4 class="text-white font-bold">Recent Prayers & Reflections:</h4>
+                    <!-- Saved prayers will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guided Meditation Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">🧘‍♀️ Guided Meditations</h2>
+                <p class="text-gray-300">Structured practices with breathing, body scan, and loving-kindness</p>
+            </div>
+
+            <!-- Meditation Types -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card text-center cursor-pointer" onclick="startGuidedMeditation('breathing')">
+                    <div class="text-4xl mb-4">🌬️</div>
+                    <h3 class="text-xl font-bold text-accent mb-2">Breathing Focus</h3>
+                    <p class="text-gray-300 text-sm mb-4">Guided breath awareness with visual cues</p>
+                    <div class="text-accent font-bold">5-25 minutes</div>
+                </div>
+                
+                <div class="card text-center cursor-pointer" onclick="startGuidedMeditation('bodyscan')">
+                    <div class="text-4xl mb-4">🧘</div>
+                    <h3 class="text-xl font-bold text-accent mb-2">Body Scan</h3>
+                    <p class="text-gray-300 text-sm mb-4">Progressive relaxation through the body</p>
+                    <div class="text-accent font-bold">10-30 minutes</div>
+                </div>
+                
+                <div class="card text-center cursor-pointer" onclick="startGuidedMeditation('lovingkindness')">
+                    <div class="text-4xl mb-4">💝</div>
+                    <h3 class="text-xl font-bold text-accent mb-2">Loving-Kindness</h3>
+                    <p class="text-gray-300 text-sm mb-4">Cultivate compassion and goodwill</p>
+                    <div class="text-accent font-bold">15-25 minutes</div>
+                </div>
+            </div>
+
+            <!-- Active Meditation Interface -->
+            <div id="meditationInterface" class="card hidden">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-accent mb-2" id="meditationType">Breathing Focus</h3>
+                    <div class="text-5xl font-bold text-accent mb-4" id="meditationTimer">10:00</div>
+                    <div class="text-lg text-gray-300 mb-6" id="meditationInstruction">Preparing your practice...</div>
+                </div>
+                
+                <!-- Breathing Visual -->
+                <div class="breathing-circle mb-8" id="breathingCircle">
+                    <div class="text-accent font-bold text-xl" id="breathingCue">Ready</div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress-bar mb-6">
+                    <div class="progress-fill" id="meditationProgress" style="width: 0%"></div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="flex justify-center gap-4 mb-6">
+                    <button onclick="pauseMeditation()" id="pauseMeditationBtn" 
+                            class="bg-orange-600 text-white px-6 py-3 rounded-lg font-bold">
+                        ⏸️ Pause
+                    </button>
+                    <button onclick="stopMeditation()" id="stopMeditationBtn" 
+                            class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
+                        ⏹️ Stop
+                    </button>
+                </div>
+                
+                <!-- Current Phase -->
+                <div class="text-center">
+                    <div class="text-sm text-gray-400">Current Phase:</div>
+                    <div class="text-lg font-bold text-white" id="currentPhase">Preparation</div>
+                </div>
+            </div>
+
+            <!-- Meditation Setup -->
+            <div id="meditationSetup" class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">⚙️ Customize Your Practice</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Duration (minutes)</label>
+                        <select id="meditationDuration" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="5">5 minutes</option>
+                            <option value="10" selected>10 minutes</option>
+                            <option value="15">15 minutes</option>
+                            <option value="20">20 minutes</option>
+                            <option value="25">25 minutes</option>
+                            <option value="30">30 minutes</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Bell Intervals</label>
+                        <select id="bellInterval" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="0">No bells</option>
+                            <option value="60">Every minute</option>
+                            <option value="300" selected>Every 5 minutes</option>
+                            <option value="600">Every 10 minutes</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="flex items-center gap-3">
+                        <input type="checkbox" id="enableGuidance" checked class="w-5 h-5 text-accent">
+                        <span class="text-white">Enable voice guidance prompts</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Personal Meditation Notes -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📝 Meditation Journal</h3>
+                <div class="mb-4">
+                    <button onclick="startVoiceInput('meditationNotes', this)" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                        🎤 Voice Notes
+                    </button>
+                    <textarea id="meditationNotes" placeholder="Record insights, experiences, or intentions for your practice..." 
+                              class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                <button onclick="saveMeditationNote()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                    💾 Save Note
+                </button>
+                
+                <!-- Recent Notes -->
+                <div id="recentMeditationNotes" class="mt-6 space-y-3">
+                    <h4 class="text-white font-bold">Recent Journal Entries:</h4>
+                    <!-- Notes will be populated here -->
+                </div>
+            </div>
+
+            <!-- Meditation History -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📊 Practice History</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="totalGuidedSessions">0</div>
+                        <div class="text-sm text-gray-400">Guided Sessions</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="favoriteType">Breathing</div>
+                        <div class="text-sm text-gray-400">Favorite Type</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="avgGuidedDuration">0</div>
+                        <div class="text-sm text-gray-400">Avg Duration</div>
+                    </div>
+                </div>
+                
+                <div id="recentGuidedSessions" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Recent sessions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bible Verses Screen -->
+    <div id="bibleScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📖 Bible Verses</h2>
+                <p class="text-gray-300">Unlimited empowering verses for spiritual strength</p>
+            </div>
+
+            <!-- Daily Verse -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">🌅 Daily Verse</h3>
+                    <button onclick="getNewDailyVerse()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
+                        🔄 New Daily
+                    </button>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg text-gray-300 italic mb-3" id="dailyVerse">
+                        "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go."
+                    </div>
+                    <div class="text-accent font-bold" id="dailyReference">Joshua 1:9</div>
+                </div>
+            </div>
+
+            <!-- Random Inspiration -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎲 Random Inspiration</h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                    <button onclick="getRandomVerse()" class="bg-blue-600 text-white px-4 py-3 rounded-lg font-bold text-sm">
+                        🎲 Any Verse
+                    </button>
+                    <button onclick="getRandomVerse('strength')" class="bg-red-600 text-white px-4 py-3 rounded-lg font-bold text-sm">
+                        💪 Strength
+                    </button>
+                    <button onclick="getRandomVerse('peace')" class="bg-green-600 text-white px-4 py-3 rounded-lg font-bold text-sm">
+                        ☮️ Peace
+                    </button>
+                    <button onclick="getRandomVerse('hope')" class="bg-yellow-600 text-white px-4 py-3 rounded-lg font-bold text-sm">
+                        🌟 Hope
+                    </button>
+                    <button onclick="getRandomVerse('love')" class="bg-pink-600 text-white px-4 py-3 rounded-lg font-bold text-sm">
+                        ❤️ Love
+                    </button>
+                </div>
+                <div class="text-center bg-gray-800 p-4 rounded-lg">
+                    <div class="text-lg text-gray-300 italic mb-3" id="randomVerse">
+                        Click a button above to get an inspiring verse
+                    </div>
+                    <div class="text-accent font-bold" id="randomReference"></div>
+                </div>
+            </div>
+
+            <!-- Verse Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Strength & Courage -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">💪 Strength & Courage</h3>
+                    <div id="strengthVerses" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Verses will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Peace & Comfort -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">☮️ Peace & Comfort</h3>
+                    <div id="peaceVerses" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Verses will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Hope & Faith -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🌟 Hope & Faith</h3>
+                    <div id="hopeVerses" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Verses will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Love & Grace -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">❤️ Love & Grace</h3>
+                    <div id="loveVerses" class="space-y-2 max-h-64 overflow-y-auto">
+                        <!-- Verses will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Favorites -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">⭐ Your Favorite Verses</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <button onclick="startVoiceInput('customVerse', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="customVerse" placeholder="Enter verse text..." 
+                                  class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Reference</label>
+                        <input type="text" id="customReference" placeholder="e.g., John 3:16" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <button onclick="addFavoriteVerse()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm mt-2 w-full">
+                            ⭐ Add to Favorites
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="favoriteVerses" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- Favorite verses will be populated here -->
+                </div>
+            </div>
+
+            <!-- Verse Meditation -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🧘 Verse Meditation</h3>
+                <div class="text-center mb-6">
+                    <div class="bg-gray-800 p-4 rounded-lg mb-4">
+                        <div class="text-lg text-gray-300 italic mb-3" id="meditationVerse">
+                            Select "Start Meditation" to begin with a random empowering verse
+                        </div>
+                        <div class="text-accent font-bold" id="meditationReference"></div>
+                    </div>
+                    
+                    <div class="flex justify-center gap-4 mb-4">
+                        <button onclick="startVerseMeditation()" id="startVerseMeditationBtn" 
+                                class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            🧘 Start Meditation (5 min)
+                        </button>
+                        <button onclick="stopVerseMeditation()" id="stopVerseMeditationBtn" 
+                                class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold" disabled>
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                    
+                    <div id="verseMeditationTimer" class="hidden">
+                        <div class="text-3xl font-bold text-accent" id="verseMeditationDisplay">5:00</div>
+                        <div class="text-gray-400">Focus on the verse and let it speak to your heart</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Verses -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🔍 Search Verses</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="verseSearch" placeholder="Search by keyword, topic, or reference..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="searchVerses()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        🔍 Search
+                    </button>
+                </div>
+                
+                <div id="searchResults" class="space-y-2 max-h-64 overflow-y-auto">
+                    <div class="text-gray-400 text-center">Enter a search term above</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📊 Spiritual Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">🧘</div>
+                    <div class="text-2xl font-bold text-white" id="totalSessions">0</div>
+                    <div class="text-gray-400">Total Sessions</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">⏱️</div>
+                    <div class="text-2xl font-bold text-white" id="totalMinutesAnalytics">0</div>
+                    <div class="text-gray-400">Total Minutes</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">🙏</div>
+                    <div class="text-2xl font-bold text-white" id="gratitudeEntries">0</div>
+                    <div class="text-gray-400">Gratitude Entries</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="longestStreak">0</div>
+                    <div class="text-gray-400">Longest Streak</div>
+                </div>
+            </div>
+
+            <!-- Weekly Progress -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📈 Weekly Progress</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Stillness Sessions This Week</span>
+                            <span class="text-accent font-bold" id="weeklyStillness">0/7</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="stillnessProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Gratitude Entries This Week</span>
+                            <span class="text-accent font-bold" id="weeklyGratitude">0/7</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="gratitudeProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Average Session Length</span>
+                            <span class="text-accent font-bold" id="avgSessionLength">0 min</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="avgLengthProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export & Backup -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportWeeklyReflections()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Weekly PDF
+                    </button>
+                    <button onclick="exportAllData()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📊 Export All Data
+                    </button>
+                    <button onclick="backupData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup & Restore
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📋 Recent Activity</h3>
+                <div id="recentActivity" class="space-y-3 max-h-64 overflow-y-auto">
+                    <!-- Recent activity will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">⚡ Quick Add</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">What would you like to add?</label>
+                    <select id="quickAddType" onchange="updateQuickAddForm()" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="gratitude">🙏 Gratitude Entry</option>
+                        <option value="reflection">💭 Reflection</option>
+                        <option value="phrase">📖 Phrase/Quote</option>
+                        <option value="prayer">🎤 Voice Prayer</option>
+                    </select>
+                </div>
+                
+                <div id="quickAddForm">
+                    <!-- Form will be populated based on selection -->
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveQuickAdd()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                        💾 Save
+                    </button>
+                    <button onclick="closeQuickAdd()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            sessions: [],
+            gratitude: [],
+            vocabulary: {
+                contemplative: [
+                    "Be present in this moment",
+                    "Return to your breath",
+                    "Notice without judgment",
+                    "Let thoughts pass like clouds",
+                    "Find stillness within movement"
+                ],
+                prayer: [
+                    "Grant me serenity",
+                    "May I be at peace",
+                    "Guide my steps today",
+                    "Fill my heart with gratitude",
+                    "Help me serve others"
+                ],
+                wisdom: [
+                    "The present moment is the only time over which we have dominion. - Thich Nhat Hanh",
+                    "Peace comes from within. Do not seek it without. - Buddha",
+                    "Be still and know that I am God. - Psalm 46:10",
+                    "The quieter you become, the more you are able to hear. - Rumi",
+                    "In the depth of winter, I finally learned that there was in me an invincible summer. - Albert Camus"
+                ],
+                affirmations: [
+                    "I am at peace with what is",
+                    "I trust in the process of life",
+                    "I am grateful for this moment",
+                    "I choose love over fear",
+                    "I am exactly where I need to be"
+                ]
+            },
+            prayers: [],
+            guidedSessions: [],
+            meditationNotes: [],
+            favoriteVerses: [],
+            streaks: {
+                stillness: 0,
+                gratitude: 0,
+                longestStillness: 0,
+                longestGratitude: 0
+            },
+            settings: {
+                defaultTimer: 5,
+                gentlePrompts: true,
+                autoSave: true
+            }
+        };
+
+        // Timer variables
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerDuration = 300; // 5 minutes default
+        let isTimerRunning = false;
+        let isPaused = false;
+        let sessionStartTime = null;
+        let sessionRating = null;
+
+        // Guided meditation variables
+        let guidedMeditationTimer = null;
+        let guidedBreathingInterval = null;
+        let currentMeditationType = null;
+        let meditationPhases = [];
+        let currentPhaseIndex = 0;
+        let meditationTimeLeft = 0;
+        let meditationDuration = 0;
+
+        // Voice recognition
+        let recognition = null;
+        let isListening = false;
+        let currentVoiceTarget = null;
+        let voiceButton = null;
+        let prayerRecognition = null;
+        let isPrayerRecording = false;
+
+        // Calendar variables
+        let currentCalendarMonth = new Date();
+
+        // Bible verse variables
+        let verseMeditationTimer = null;
+        let verseMeditationSeconds = 0;
+        let verseMeditationDuration = 300; // 5 minutes
+
+        // Bible Verses Database
+        const bibleVerses = {
+            strength: [
+                { verse: "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.", reference: "Joshua 1:9" },
+                { verse: "I can do all this through him who gives me strength.", reference: "Philippians 4:13" },
+                { verse: "The Lord is my strength and my defense; he has become my salvation.", reference: "Exodus 15:2" },
+                { verse: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles.", reference: "Isaiah 40:31" },
+                { verse: "The Lord your God is with you, the Mighty Warrior who saves.", reference: "Zephaniah 3:17" },
+                { verse: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged.", reference: "Joshua 1:9" },
+                { verse: "My grace is sufficient for you, for my power is made perfect in weakness.", reference: "2 Corinthians 12:9" },
+                { verse: "The Lord is my rock, my fortress and my deliverer; my God is my rock, in whom I take refuge.", reference: "Psalm 18:2" },
+                { verse: "When I am afraid, I put my trust in you.", reference: "Psalm 56:3" },
+                { verse: "God is our refuge and strength, an ever-present help in trouble.", reference: "Psalm 46:1" }
+            ],
+            peace: [
+                { verse: "Peace I leave with you; my peace I give you. I do not give to you as the world gives.", reference: "John 14:27" },
+                { verse: "And the peace of God, which transcends all understanding, will guard your hearts and your minds.", reference: "Philippians 4:7" },
+                { verse: "You will keep in perfect peace those whose minds are steadfast, because they trust in you.", reference: "Isaiah 26:3" },
+                { verse: "Be still, and know that I am God.", reference: "Psalm 46:10" },
+                { verse: "Cast all your anxiety on him because he cares for you.", reference: "1 Peter 5:7" },
+                { verse: "Do not be anxious about anything, but in every situation, by prayer and petition, present your requests to God.", reference: "Philippians 4:6" },
+                { verse: "Come to me, all you who are weary and burdened, and I will give you rest.", reference: "Matthew 11:28" },
+                { verse: "The Lord bless you and keep you; the Lord make his face shine on you and be gracious to you.", reference: "Numbers 6:24-25" },
+                { verse: "Let the peace of Christ rule in your hearts, since as members of one body you were called to peace.", reference: "Colossians 3:15" },
+                { verse: "Great peace have those who love your law, and nothing can make them stumble.", reference: "Psalm 119:165" }
+            ],
+            hope: [
+                { verse: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you.", reference: "Jeremiah 29:11" },
+                { verse: "And we know that in all things God works for the good of those who love him.", reference: "Romans 8:28" },
+                { verse: "May the God of hope fill you with all joy and peace as you trust in him.", reference: "Romans 15:13" },
+                { verse: "But those who hope in the Lord will renew their strength.", reference: "Isaiah 40:31" },
+                { verse: "The Lord your God is in your midst, a mighty one who will save.", reference: "Zephaniah 3:17" },
+                { verse: "Weeping may stay for the night, but rejoicing comes in the morning.", reference: "Psalm 30:5" },
+                { verse: "He has made everything beautiful in its time.", reference: "Ecclesiastes 3:11" },
+                { verse: "The steadfast love of the Lord never ceases; his mercies never come to an end.", reference: "Lamentations 3:22" },
+                { verse: "This is the day the Lord has made; let us rejoice and be glad in it.", reference: "Psalm 118:24" },
+                { verse: "Trust in the Lord with all your heart and lean not on your own understanding.", reference: "Proverbs 3:5" }
+            ],
+            love: [
+                { verse: "God is love. Whoever lives in love lives in God, and God in them.", reference: "1 John 4:16" },
+                { verse: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.", reference: "1 Corinthians 13:4" },
+                { verse: "For God so loved the world that he gave his one and only Son.", reference: "John 3:16" },
+                { verse: "Above all, love each other deeply, because love covers over a multitude of sins.", reference: "1 Peter 4:8" },
+                { verse: "Dear friends, let us love one another, for love comes from God.", reference: "1 John 4:7" },
+                { verse: "Love your neighbor as yourself.", reference: "Matthew 22:39" },
+                { verse: "Greater love has no one than this: to lay down one's life for one's friends.", reference: "John 15:13" },
+                { verse: "The Lord appeared to us in the past, saying: I have loved you with an everlasting love.", reference: "Jeremiah 31:3" },
+                { verse: "How great is the love the Father has lavished on us, that we should be called children of God!", reference: "1 John 3:1" },
+                { verse: "And now these three remain: faith, hope and love. But the greatest of these is love.", reference: "1 Corinthians 13:13" }
+            ],
+            wisdom: [
+                { verse: "The fear of the Lord is the beginning of wisdom, and knowledge of the Holy One is understanding.", reference: "Proverbs 9:10" },
+                { verse: "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault.", reference: "James 1:5" },
+                { verse: "Trust in the Lord with all your heart and lean not on your own understanding.", reference: "Proverbs 3:5" },
+                { verse: "The simple believe anything, but the prudent give thought to their steps.", reference: "Proverbs 14:15" },
+                { verse: "Plans fail for lack of counsel, but with many advisers they succeed.", reference: "Proverbs 15:22" },
+                { verse: "Wisdom is supreme; therefore get wisdom. Though it cost all you have, get understanding.", reference: "Proverbs 4:7" },
+                { verse: "The way of fools seems right to them, but the wise listen to advice.", reference: "Proverbs 12:15" },
+                { verse: "By wisdom a house is built, and through understanding it is established.", reference: "Proverbs 24:3" },
+                { verse: "The heart of the discerning acquires knowledge, for the ears of the wise seek it out.", reference: "Proverbs 18:15" },
+                { verse: "Instruct the wise and they will be wiser still; teach the righteous and they will add to their learning.", reference: "Proverbs 9:9" }
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            initializeSpeechRecognition();
+            loadVocabulary();
+            loadRecentGratitude();
+            loadGratitudeCalendar();
+            loadRecentActivity();
+            updateTodayDate();
+            loadSavedPrayers();
+            loadRecentMeditationNotes();
+            setDailyVerse();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('spiritualAppData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+            calculateStreaks();
+        }
+
+        function saveAppData() {
+            localStorage.setItem('spiritualAppData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'gratitude': 
+                    loadRecentGratitude();
+                    loadGratitudeCalendar();
+                    break;
+                case 'vocabulary': 
+                    loadVocabulary();
+                    loadSavedPrayers();
+                    break;
+                case 'reset':
+                    loadRecentMeditationNotes();
+                    break;
+                case 'bible':
+                    loadBibleVerses();
+                    loadFavoriteVerses();
+                    break;
+                case 'analytics': 
+                    loadAnalytics();
+                    break;
+            }
+        }
+
+        // Timer Functions
+        function setTimer(minutes) {
+            if (isTimerRunning) return;
+            
+            timerDuration = minutes * 60;
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+            document.getElementById('timerStatus').textContent = 'Ready to Begin';
+        }
+
+        function setCustomTimer() {
+            const minutes = parseInt(document.getElementById('customMinutes').value);
+            if (minutes && minutes > 0 && minutes <= 120) {
+                setTimer(minutes);
+                showNotification(`Timer set to ${minutes} minutes`);
+            }
+        }
+
+        function startTimer() {
+            if (isPaused) {
+                // Resume from pause
+                isPaused = false;
+            } else {
+                // Fresh start
+                sessionStartTime = new Date();
+                timerSeconds = timerDuration;
+            }
+            
+            isTimerRunning = true;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('timerStatus').textContent = 'In Session';
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                updateTimerProgress();
+                
+                if (timerSeconds <= 0) {
+                    completeSession();
+                }
+            }, 1000);
+            
+            // Show gentle prompt
+            if (appData.settings.gentlePrompts) {
+                setTimeout(() => {
+                    if (isTimerRunning) getNewPrompt();
+                }, 60000); // After 1 minute
+            }
+        }
+
+        function pauseTimer() {
+            if (!isTimerRunning) return;
+            
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            isPaused = true;
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Paused';
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            isPaused = false;
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Stopped';
+            
+            // Reset timer
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+            updateTimerProgress();
+        }
+
+        function completeSession() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            isPaused = false;
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Session Complete';
+            
+            // Calculate session duration
+            const sessionMinutes = Math.round(timerDuration / 60);
+            document.getElementById('sessionDuration').textContent = `${sessionMinutes} minutes`;
+            
+            // Show reflection modal
+            document.getElementById('reflectionModal').classList.remove('hidden');
+            
+            // Play completion sound (if available)
+            playCompletionSound();
+            
+            showNotification('🧘 Session complete! Take a moment to reflect.');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerProgress() {
+            const progress = ((timerDuration - timerSeconds) / timerDuration) * 360;
+            document.getElementById('timerProgress').style.transform = `rotate(${progress - 90}deg)`;
+        }
+
+        function playCompletionSound() {
+            // Simple audio notification using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (error) {
+                console.log('Audio notification not available');
+            }
+        }
+
+        // Gentle Prompts
+        const gentlePrompts = [
+            "Return to your breath. Notice without judgment.",
+            "Let thoughts pass like clouds in the sky.",
+            "Feel your body supported by the earth.",
+            "Notice the space between your thoughts.",
+            "Breathe in peace, breathe out tension.",
+            "Be present in this moment.",
+            "Let go of what no longer serves you.",
+            "Find stillness within movement.",
+            "Trust in the process of life.",
+            "You are exactly where you need to be."
+        ];
+
+        function getNewPrompt() {
+            const randomPrompt = gentlePrompts[Math.floor(Math.random() * gentlePrompts.length)];
+            document.getElementById('currentPrompt').textContent = `"${randomPrompt}"`;
+        }
+
+        // Session Reflection
+        function setSessionRating(rating) {
+            sessionRating = rating;
+            
+            // Update button appearance
+            document.querySelectorAll('.session-rating').forEach(btn => {
+                btn.classList.remove('bg-accent');
+                btn.classList.add('bg-gray-700');
+            });
+            
+            event.target.classList.remove('bg-gray-700');
+            event.target.classList.add('bg-accent');
+        }
+
+        function saveReflection() {
+            const reflection = document.getElementById('sessionReflection').value.trim();
+            const sessionMinutes = Math.round(timerDuration / 60);
+            
+            const session = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                duration: sessionMinutes,
+                rating: sessionRating || 3,
+                reflection: reflection,
+                startTime: sessionStartTime
+            };
+            
+            appData.sessions.push(session);
+            
+            // Update streaks
+            updateStillnessStreak();
+            
+            saveAppData();
+            updateAllStats();
+            closeReflection();
+            
+            showNotification('🌟 Session saved! Great work on your practice.');
+        }
+
+        function closeReflection() {
+            document.getElementById('reflectionModal').classList.add('hidden');
+            
+            // Reset form
+            document.getElementById('sessionReflection').value = '';
+            sessionRating = null;
+            document.querySelectorAll('.session-rating').forEach(btn => {
+                btn.classList.remove('bg-accent');
+                btn.classList.add('bg-gray-700');
+            });
+            
+            // Reset timer display
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+            updateTimerProgress();
+        }
+
+        // Gratitude Functions
+        function updateTodayDate() {
+            const today = new Date();
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function saveGratitude() {
+            const gratitude1 = document.getElementById('gratitude1').value.trim();
+            const gratitude2 = document.getElementById('gratitude2').value.trim();
+            const gratitude3 = document.getElementById('gratitude3').value.trim();
+            const actOfService = document.getElementById('actOfService').value.trim();
+            const intention = document.getElementById('intention').value.trim();
+            
+            if (!gratitude1 && !gratitude2 && !gratitude3 && !actOfService && !intention) {
+                showNotification('Please enter at least one gratitude item');
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Check if entry for today already exists
+            const existingIndex = appData.gratitude.findIndex(g => g.date === today);
+            
+            const gratitudeEntry = {
+                id: existingIndex >= 0 ? appData.gratitude[existingIndex].id : Date.now().toString(),
+                date: today,
+                gratitude: [gratitude1, gratitude2, gratitude3].filter(g => g),
+                actOfService: actOfService,
+                intention: intention,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (existingIndex >= 0) {
+                appData.gratitude[existingIndex] = gratitudeEntry;
+                showNotification('🙏 Today\'s gratitude updated!');
+            } else {
+                appData.gratitude.push(gratitudeEntry);
+                updateGratitudeStreak();
+                showNotification('🙏 Gratitude saved! Thank you for practicing.');
+            }
+            
+            saveAppData();
+            updateAllStats();
+            loadRecentGratitude();
+            loadGratitudeCalendar();
+            
+            // Clear form
+            document.getElementById('gratitude1').value = '';
+            document.getElementById('gratitude2').value = '';
+            document.getElementById('gratitude3').value = '';
+            document.getElementById('actOfService').value = '';
+            document.getElementById('intention').value = '';
+        }
+
+        function loadRecentGratitude() {
+            const container = document.getElementById('recentGratitude');
+            const recentEntries = appData.gratitude
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 7);
+            
+            if (recentEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">🙏</div>
+                        <h3 class="text-lg font-bold mb-2">No gratitude entries yet</h3>
+                        <p>Start your gratitude practice above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = recentEntries.map(entry => `
+                <div class="gratitude-item">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-accent font-bold">${new Date(entry.date).toLocaleDateString()}</h4>
+                        <button onclick="deleteGratitudeEntry('${entry.id}')" class="text-red-400 text-sm">🗑️</button>
+                    </div>
+                    
+                    ${entry.gratitude.length > 0 ? `
+                        <div class="mb-3">
+                            <h5 class="text-white font-semibold text-sm mb-2">✨ Gratitude:</h5>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                ${entry.gratitude.map(g => `<li>• ${g}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${entry.actOfService ? `
+                        <div class="mb-3">
+                            <h5 class="text-white font-semibold text-sm mb-1">🤝 Service:</h5>
+                            <p class="text-gray-300 text-sm">${entry.actOfService}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${entry.intention ? `
+                        <div>
+                            <h5 class="text-white font-semibold text-sm mb-1">🎯 Intention:</h5>
+                            <p class="text-gray-300 text-sm">${entry.intention}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function deleteGratitudeEntry(entryId) {
+            if (confirm('Delete this gratitude entry? This cannot be undone.')) {
+                appData.gratitude = appData.gratitude.filter(g => g.id !== entryId);
+                saveAppData();
+                updateAllStats();
+                loadRecentGratitude();
+                loadGratitudeCalendar();
+                showNotification('🗑️ Gratitude entry deleted');
+            }
+        }
+
+        // Gratitude Calendar
+        function loadGratitudeCalendar() {
+            const container = document.getElementById('gratitudeCalendar');
+            const monthYear = document.getElementById('calendarMonth');
+            
+            const year = currentCalendarMonth.getFullYear();
+            const month = currentCalendarMonth.getMonth();
+            
+            monthYear.textContent = currentCalendarMonth.toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Create calendar grid
+            let calendarHTML = '';
+            
+            // Day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                calendarHTML += `<div class="text-center text-gray-400 text-xs font-bold p-2">${day}</div>`;
+            });
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += '<div></div>';
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const hasEntry = appData.gratitude.some(g => g.date === dateStr);
+                const isToday = dateStr === new Date().toISOString().split('T')[0];
+                
+                let classes = 'calendar-day';
+                if (hasEntry) classes += ' has-entry';
+                if (isToday) classes += ' border-2 border-accent';
+                
+                calendarHTML += `
+                    <div class="${classes}" onclick="viewGratitudeDay('${dateStr}')">
+                        ${day}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = calendarHTML;
+        }
+
+        function changeMonth(direction) {
+            currentCalendarMonth.setMonth(currentCalendarMonth.getMonth() + direction);
+            loadGratitudeCalendar();
+        }
+
+        function viewGratitudeDay(dateStr) {
+            const entry = appData.gratitude.find(g => g.date === dateStr);
+            if (entry) {
+                // Show gratitude entry details
+                const date = new Date(dateStr).toLocaleDateString();
+                let message = `Gratitude for ${date}:\n\n`;
+                
+                if (entry.gratitude.length > 0) {
+                    message += `✨ Gratitude:\n${entry.gratitude.map(g => `• ${g}`).join('\n')}\n\n`;
+                }
+                
+                if (entry.actOfService) {
+                    message += `🤝 Service: ${entry.actOfService}\n\n`;
+                }
+                
+                if (entry.intention) {
+                    message += `🎯 Intention: ${entry.intention}`;
+                }
+                
+                alert(message);
+            } else {
+                showNotification('No gratitude entry for this day');
+            }
+        }
+
+        // Voice Recognition
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript && currentVoiceTarget) {
+                        const currentText = currentVoiceTarget.value;
+                        const newText = currentText ? currentText + ' ' + finalTranscript : finalTranscript;
+                        currentVoiceTarget.value = newText;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                    showNotification('Voice recognition error. Please try again.');
+                };
+                
+                recognition.onend = function() {
+                    if (isListening) {
+                        stopVoiceInput();
+                    }
+                };
+
+                // Initialize prayer recognition
+                prayerRecognition = new webkitSpeechRecognition();
+                prayerRecognition.continuous = true;
+                prayerRecognition.interimResults = true;
+                prayerRecognition.lang = 'en-US';
+                
+                prayerRecognition.onresult = function(event) {
+                    let transcript = '';
+                    for (let i = 0; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    document.getElementById('transcriptText').textContent = transcript;
+                };
+                
+                prayerRecognition.onerror = function(event) {
+                    console.error('Prayer recognition error:', event.error);
+                    stopPrayerRecording();
+                };
+            }
+        }
+
+        function startVoiceInput(targetElementId, buttonElement) {
+            if (!recognition) {
+                showNotification('Voice recognition not supported in this browser');
+                return;
+            }
+            
+            if (isListening) {
+                stopVoiceInput();
+                return;
+            }
+            
+            currentVoiceTarget = document.getElementById(targetElementId);
+            voiceButton = buttonElement;
+            
+            if (!currentVoiceTarget) {
+                showNotification('Target element not found');
+                return;
+            }
+            
+            try {
+                recognition.start();
+                isListening = true;
+                
+                // Update button appearance
+                voiceButton.innerHTML = '⏹️ Stop';
+                voiceButton.classList.remove('bg-blue-600');
+                voiceButton.classList.add('bg-red-600');
+                
+                // Add visual feedback to target input
+                currentVoiceTarget.classList.add('voice-listening');
+                
+                showNotification('🎤 Listening... Speak clearly into your microphone');
+            } catch (error) {
+                console.error('Failed to start voice recognition:', error);
+                showNotification('Failed to start voice recognition');
+                stopVoiceInput();
+            }
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            
+            isListening = false;
+            
+            if (voiceButton) {
+                voiceButton.innerHTML = '🎤 Voice';
+                voiceButton.classList.remove('bg-red-600');
+                voiceButton.classList.add('bg-blue-600');
+            }
+            
+            if (currentVoiceTarget) {
+                currentVoiceTarget.classList.remove('voice-listening');
+            }
+            
+            currentVoiceTarget = null;
+            voiceButton = null;
+        }
+
+        // Prayer Recording
+        function startPrayerRecording() {
+            if (!prayerRecognition) {
+                showNotification('Voice recognition not supported');
+                return;
+            }
+            
+            try {
+                prayerRecognition.start();
+                isPrayerRecording = true;
+                
+                document.getElementById('prayerRecordBtn').disabled = true;
+                document.getElementById('stopPrayerBtn').disabled = false;
+                document.getElementById('prayerTranscript').classList.remove('hidden');
+                document.getElementById('transcriptText').textContent = '';
+                
+                showNotification('🎤 Recording prayer... Speak from your heart');
+            } catch (error) {
+                showNotification('Failed to start prayer recording');
+            }
+        }
+
+        function stopPrayerRecording() {
+            if (prayerRecognition && isPrayerRecording) {
+                prayerRecognition.stop();
+            }
+            
+            isPrayerRecording = false;
+            
+            document.getElementById('prayerRecordBtn').disabled = false;
+            document.getElementById('stopPrayerBtn').disabled = true;
+            
+            // Save the prayer
+            const transcript = document.getElementById('transcriptText').textContent.trim();
+            if (transcript) {
+                const prayer = {
+                    id: Date.now().toString(),
+                    date: new Date().toISOString(),
+                    transcript: transcript,
+                    type: 'prayer'
+                };
+                
+                appData.prayers.push(prayer);
+                saveAppData();
+                loadSavedPrayers();
+                
+                showNotification('🙏 Prayer saved');
+            }
+        }
+
+        function loadSavedPrayers() {
+            const container = document.getElementById('savedPrayers');
+            const recentPrayers = appData.prayers
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            if (recentPrayers.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No recorded prayers yet</div>';
+                return;
+            }
+            
+            let html = '<h4 class="text-white font-bold mb-3">Recent Prayers & Reflections:</h4>';
+            html += recentPrayers.map(prayer => `
+                <div class="bg-gray-800 p-3 rounded mb-3">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-accent text-sm font-bold">${new Date(prayer.date).toLocaleDateString()}</span>
+                        <button onclick="deletePrayer('${prayer.id}')" class="text-red-400 text-xs">Delete</button>
+                    </div>
+                    <p class="text-gray-300 text-sm">${prayer.transcript}</p>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function deletePrayer(prayerId) {
+            if (confirm('Delete this prayer? This cannot be undone.')) {
+                appData.prayers = appData.prayers.filter(p => p.id !== prayerId);
+                saveAppData();
+                loadSavedPrayers();
+                showNotification('🗑️ Prayer deleted');
+            }
+        }
+
+        // Vocabulary Management
+        function loadVocabulary() {
+            loadContemplativePhrases();
+            loadPrayerPhrases();
+            loadWisdomQuotes();
+            loadAffirmations();
+        }
+
+        function loadContemplativePhrases() {
+            const container = document.getElementById('contemplativePhrases');
+            container.innerHTML = appData.vocabulary.contemplative.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white text-sm flex-1">${phrase}</span>
+                        <button onclick="event.stopPropagation(); removePhrase('contemplative', ${index})" class="text-red-400 text-xs ml-2">✕</button>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadPrayerPhrases() {
+            const container = document.getElementById('prayerPhrases');
+            container.innerHTML = appData.vocabulary.prayer.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white text-sm flex-1">${phrase}</span>
+                        <button onclick="event.stopPropagation(); removePhrase('prayer', ${index})" class="text-red-400 text-xs ml-2">✕</button>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadWisdomQuotes() {
+            const container = document.getElementById('wisdomQuotes');
+            container.innerHTML = appData.vocabulary.wisdom.map((quote, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${quote}')">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white text-sm flex-1">${quote}</span>
+                        <button onclick="event.stopPropagation(); removePhrase('wisdom', ${index})" class="text-red-400 text-xs ml-2">✕</button>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadAffirmations() {
+            const container = document.getElementById('affirmations');
+            container.innerHTML = appData.vocabulary.affirmations.map((affirmation, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${affirmation}')">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white text-sm flex-1">${affirmation}</span>
+                        <button onclick="event.stopPropagation(); removePhrase('affirmations', ${index})" class="text-red-400 text-xs ml-2">✕</button>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addContemplativePhrase() {
+            const phrase = document.getElementById('newContemplativePhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.contemplative.push(phrase);
+                document.getElementById('newContemplativePhrase').value = '';
+                saveAppData();
+                loadContemplativePhrases();
+                showNotification('🧘 Contemplative phrase added!');
+            }
+        }
+
+        function addPrayerPhrase() {
+            const phrase = document.getElementById('newPrayerPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.prayer.push(phrase);
+                document.getElementById('newPrayerPhrase').value = '';
+                saveAppData();
+                loadPrayerPhrases();
+                showNotification('🙏 Prayer phrase added!');
+            }
+        }
+
+        function addWisdomQuote() {
+            const quote = document.getElementById('newWisdomQuote').value.trim();
+            if (quote) {
+                appData.vocabulary.wisdom.push(quote);
+                document.getElementById('newWisdomQuote').value = '';
+                saveAppData();
+                loadWisdomQuotes();
+                showNotification('💎 Wisdom quote added!');
+            }
+        }
+
+        function addAffirmation() {
+            const affirmation = document.getElementById('newAffirmation').value.trim();
+            if (affirmation) {
+                appData.vocabulary.affirmations.push(affirmation);
+                document.getElementById('newAffirmation').value = '';
+                saveAppData();
+                loadAffirmations();
+                showNotification('✨ Affirmation added!');
+            }
+        }
+
+        function removePhrase(category, index) {
+            if (confirm('Remove this phrase?')) {
+                appData.vocabulary[category].splice(index, 1);
+                saveAppData();
+                loadVocabulary();
+                showNotification('Phrase removed');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Guided Meditation Functions
+        const meditationPrograms = {
+            breathing: {
+                name: 'Breathing Focus',
+                phases: [
+                    { name: 'Preparation', duration: 60, instruction: 'Find a comfortable position and close your eyes' },
+                    { name: 'Breath Awareness', duration: 0.7, instruction: 'Focus on your natural breath' },
+                    { name: 'Counting Breaths', duration: 0.2, instruction: 'Count each exhale from 1 to 10' },
+                    { name: 'Deep Integration', duration: 0.1, instruction: 'Rest in the stillness you\'ve created' }
+                ]
+            },
+            bodyscan: {
+                name: 'Body Scan',
+                phases: [
+                    { name: 'Settling In', duration: 120, instruction: 'Lie down comfortably and close your eyes' },
+                    { name: 'Feet & Legs', duration: 0.25, instruction: 'Notice sensations in your feet and legs' },
+                    { name: 'Torso & Arms', duration: 0.25, instruction: 'Scan through your torso and arms' },
+                    { name: 'Head & Neck', duration: 0.25, instruction: 'Relax your head, face, and neck' },
+                    { name: 'Whole Body', duration: 0.25, instruction: 'Feel your entire body as one unified whole' }
+                ]
+            },
+            lovingkindness: {
+                name: 'Loving-Kindness',
+                phases: [
+                    { name: 'Self-Love', duration: 0.25, instruction: 'Send loving wishes to yourself' },
+                    { name: 'Loved Ones', duration: 0.25, instruction: 'Extend love to someone dear to you' },
+                    { name: 'Neutral Person', duration: 0.25, instruction: 'Send kindness to someone neutral' },
+                    { name: 'All Beings', duration: 0.25, instruction: 'Radiate love to all living beings' }
+                ]
+            }
+        };
+
+        function startGuidedMeditation(type) {
+            currentMeditationType = type;
+            const duration = parseInt(document.getElementById('meditationDuration').value);
+            const program = meditationPrograms[type];
+            
+            // Calculate phase durations
+            meditationPhases = program.phases.map(phase => ({
+                ...phase,
+                duration: phase.duration < 1 ? Math.floor(duration * 60 * phase.duration) : phase.duration
+            }));
+            
+            meditationDuration = duration * 60;
+            meditationTimeLeft = meditationDuration;
+            currentPhaseIndex = 0;
+            
+            // Show meditation interface
+            document.getElementById('meditationInterface').classList.remove('hidden');
+            document.getElementById('meditationSetup').classList.add('hidden');
+            
+            // Update UI
+            document.getElementById('meditationType').textContent = program.name;
+            document.getElementById('meditationTimer').textContent = `${duration}:00`;
+            document.getElementById('currentPhase').textContent = meditationPhases[0].name;
+            document.getElementById('meditationInstruction').textContent = meditationPhases[0].instruction;
+            
+            // Start meditation
+            startMeditationTimer();
+            startGuidedBreathing();
+            
+            showNotification(`🧘‍♀️ Starting ${program.name} meditation`);
+        }
+
+        function startMeditationTimer() {
+            let phaseTimeLeft = meditationPhases[currentPhaseIndex].duration;
+            
+            guidedMeditationTimer = setInterval(() => {
+                meditationTimeLeft--;
+                phaseTimeLeft--;
+                
+                updateMeditationDisplay();
+                
+                // Check for phase transition
+                if (phaseTimeLeft <= 0 && currentPhaseIndex < meditationPhases.length - 1) {
+                    currentPhaseIndex++;
+                    phaseTimeLeft = meditationPhases[currentPhaseIndex].duration;
+                    
+                    // Update phase display
+                    document.getElementById('currentPhase').textContent = meditationPhases[currentPhaseIndex].name;
+                    document.getElementById('meditationInstruction').textContent = meditationPhases[currentPhaseIndex].instruction;
+                    
+                    // Play bell if enabled
+                    const bellInterval = parseInt(document.getElementById('bellInterval').value);
+                    if (bellInterval > 0) {
+                        playMeditationBell();
+                    }
+                }
+                
+                // Check for completion
+                if (meditationTimeLeft <= 0) {
+                    completeMeditation();
+                }
+            }, 1000);
+        }
+
+        function startGuidedBreathing() {
+            const circle = document.getElementById('breathingCircle');
+            const cue = document.getElementById('breathingCue');
+            let breathingPhase = 'inhale';
+            
+            guidedBreathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    cue.textContent = 'Inhale';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    cue.textContent = 'Exhale';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateMeditationDisplay() {
+            const minutes = Math.floor(meditationTimeLeft / 60);
+            const seconds = meditationTimeLeft % 60;
+            document.getElementById('meditationTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const progress = ((meditationDuration - meditationTimeLeft) / meditationDuration) * 100;
+            document.getElementById('meditationProgress').style.width = `${progress}%`;
+        }
+
+        function pauseMeditation() {
+            if (guidedMeditationTimer) {
+                clearInterval(guidedMeditationTimer);
+                clearInterval(guidedBreathingInterval);
+                guidedMeditationTimer = null;
+                guidedBreathingInterval = null;
+                
+                document.getElementById('pauseMeditationBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseMeditationBtn').onclick = resumeMeditation;
+                
+                showNotification('⏸️ Meditation paused');
+            }
+        }
+
+        function resumeMeditation() {
+            startMeditationTimer();
+            startGuidedBreathing();
+            
+            document.getElementById('pauseMeditationBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseMeditationBtn').onclick = pauseMeditation;
+            
+            showNotification('▶️ Meditation resumed');
+        }
+
+        function stopMeditation() {
+            if (guidedMeditationTimer) {
+                clearInterval(guidedMeditationTimer);
+                clearInterval(guidedBreathingInterval);
+                guidedMeditationTimer = null;
+                guidedBreathingInterval = null;
+            }
+            
+            // Reset UI
+            document.getElementById('meditationInterface').classList.add('hidden');
+            document.getElementById('meditationSetup').classList.remove('hidden');
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+            document.getElementById('breathingCue').textContent = 'Ready';
+            
+            document.getElementById('pauseMeditationBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseMeditationBtn').onclick = pauseMeditation;
+            
+            showNotification('⏹️ Meditation stopped');
+        }
+
+        function completeMeditation() {
+            clearInterval(guidedMeditationTimer);
+            clearInterval(guidedBreathingInterval);
+            
+            // Save session
+            const session = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                type: currentMeditationType,
+                duration: Math.floor(meditationDuration / 60),
+                completed: true
+            };
+            
+            appData.guidedSessions.push(session);
+            saveAppData();
+            
+            // Reset UI
+            stopMeditation();
+            
+            showNotification('🌟 Guided meditation completed! Well done on your practice.');
+            playCompletionSound();
+        }
+
+        function playMeditationBell() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 2);
+            } catch (error) {
+                console.log('Bell sound not available');
+            }
+        }
+
+        function saveMeditationNote() {
+            const note = document.getElementById('meditationNotes').value.trim();
+            if (!note) {
+                showNotification('Please enter a meditation note');
+                return;
+            }
+            
+            const meditationNote = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                note: note,
+                type: 'meditation_journal'
+            };
+            
+            appData.meditationNotes.push(meditationNote);
+            saveAppData();
+            
+            document.getElementById('meditationNotes').value = '';
+            loadRecentMeditationNotes();
+            
+            showNotification('📝 Meditation note saved!');
+        }
+
+        function loadRecentMeditationNotes() {
+            const container = document.getElementById('recentMeditationNotes');
+            const recentNotes = appData.meditationNotes
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            if (recentNotes.length === 0) {
+                container.innerHTML = '<h4 class="text-white font-bold mb-3">Recent Journal Entries:</h4><div class="text-gray-400 text-center text-sm">No meditation notes yet</div>';
+                return;
+            }
+            
+            let html = '<h4 class="text-white font-bold mb-3">Recent Journal Entries:</h4>';
+            html += recentNotes.map(note => `
+                <div class="reflection-entry">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-accent text-sm font-bold">${new Date(note.date).toLocaleDateString()}</span>
+                        <button onclick="deleteMeditationNote('${note.id}')" class="text-red-400 text-xs">Delete</button>
+                    </div>
+                    <p class="text-gray-300 text-sm">${note.note}</p>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function deleteMeditationNote(noteId) {
+            if (confirm('Delete this meditation note?')) {
+                appData.meditationNotes = appData.meditationNotes.filter(n => n.id !== noteId);
+                saveAppData();
+                loadRecentMeditationNotes();
+                showNotification('🗑️ Note deleted');
+            }
+        }
+
+        // Streak Calculations
+        function calculateStreaks() {
+            calculateStillnessStreak();
+            calculateGratitudeStreak();
+        }
+
+        function calculateStillnessStreak() {
+            const today = new Date();
+            let streak = 0;
+            let currentDate = new Date(today);
+            
+            while (true) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const hasSession = appData.sessions.some(s => s.date.split('T')[0] === dateStr);
+                
+                if (hasSession) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            appData.streaks.stillness = streak;
+            if (streak > appData.streaks.longestStillness) {
+                appData.streaks.longestStillness = streak;
+            }
+        }
+
+        function calculateGratitudeStreak() {
+            const today = new Date();
+            let streak = 0;
+            let currentDate = new Date(today);
+            
+            while (true) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const hasGratitude = appData.gratitude.some(g => g.date === dateStr);
+                
+                if (hasGratitude) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            appData.streaks.gratitude = streak;
+            if (streak > appData.streaks.longestGratitude) {
+                appData.streaks.longestGratitude = streak;
+            }
+        }
+
+        function updateStillnessStreak() {
+            calculateStillnessStreak();
+        }
+
+        function updateGratitudeStreak() {
+            calculateGratitudeStreak();
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+            loadRecentActivity();
+        }
+
+        function updateAnalyticsStats() {
+            const totalSessions = appData.sessions.length;
+            const totalMinutes = appData.sessions.reduce((sum, session) => sum + session.duration, 0);
+            const gratitudeEntries = appData.gratitude.length;
+            const longestStreak = Math.max(appData.streaks.longestStillness, appData.streaks.longestGratitude);
+            
+            document.getElementById('totalSessions').textContent = totalSessions;
+            document.getElementById('totalMinutesAnalytics').textContent = totalMinutes;
+            document.getElementById('gratitudeEntries').textContent = gratitudeEntries;
+            document.getElementById('longestStreak').textContent = longestStreak;
+            
+            // Weekly progress
+            const weeklyStillness = getWeeklyCount('sessions');
+            const weeklyGratitude = getWeeklyCount('gratitude');
+            const avgSessionLength = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+            
+            document.getElementById('weeklyStillness').textContent = `${weeklyStillness}/7`;
+            document.getElementById('weeklyGratitude').textContent = `${weeklyGratitude}/7`;
+            document.getElementById('avgSessionLength').textContent = `${avgSessionLength} min`;
+            
+            // Update progress bars
+            document.getElementById('stillnessProgress').style.width = `${(weeklyStillness / 7) * 100}%`;
+            document.getElementById('gratitudeProgress').style.width = `${(weeklyGratitude / 7) * 100}%`;
+            document.getElementById('avgLengthProgress').style.width = `${Math.min(100, (avgSessionLength / 20) * 100)}%`;
+        }
+
+        function getWeeklyCount(type) {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            if (type === 'sessions') {
+                return appData.sessions.filter(s => new Date(s.date) >= oneWeekAgo).length;
+            } else if (type === 'gratitude') {
+                return appData.gratitude.filter(g => new Date(g.date) >= oneWeekAgo).length;
+            }
+            
+            return 0;
+        }
+
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            
+            // Combine sessions and gratitude entries
+            const activities = [];
+            
+            appData.sessions.forEach(session => {
+                activities.push({
+                    type: 'session',
+                    date: session.date,
+                    description: `${session.duration} minute meditation session`,
+                    rating: session.rating
+                });
+            });
+            
+            appData.gratitude.forEach(gratitude => {
+                activities.push({
+                    type: 'gratitude',
+                    date: gratitude.timestamp || gratitude.date,
+                    description: 'Gratitude trifecta completed'
+                });
+            });
+            
+            // Sort by date and take recent 10
+            const recentActivities = activities
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+            
+            if (recentActivities.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = recentActivities.map(activity => `
+                <div class="flex justify-between items-center py-2 border-b border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${activity.type === 'session' ? '🧘' : '🙏'}</span>
+                        <div>
+                            <div class="text-white text-sm">${activity.description}</div>
+                            <div class="text-gray-400 text-xs">${new Date(activity.date).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    ${activity.rating ? `<div class="text-accent">${'⭐'.repeat(activity.rating)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Export Functions
+        function exportWeeklyReflections() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Get last week's data
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            const weeklyGratitude = appData.gratitude.filter(g => new Date(g.date) >= oneWeekAgo);
+            const weeklySessions = appData.sessions.filter(s => new Date(s.date) >= oneWeekAgo);
+            
+            doc.setFontSize(20);
+            doc.text('Weekly Spiritual Reflections', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Week ending: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Meditation sessions: ${weeklySessions.length}`, 20, 60);
+            doc.text(`Gratitude entries: ${weeklyGratitude.length}`, 20, 75);
+            
+            let yPos = 95;
+            
+            // Add gratitude entries
+            if (weeklyGratitude.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Gratitude Entries', 20, yPos);
+                yPos += 15;
+                
+                weeklyGratitude.forEach((entry, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.setFontSize(12);
+                    doc.text(`${new Date(entry.date).toLocaleDateString()}:`, 25, yPos);
+                    yPos += 8;
+                    
+                    entry.gratitude.forEach(g => {
+                        const lines = doc.splitTextToSize(`• ${g}`, 170);
+                        doc.text(lines, 30, yPos);
+                        yPos += lines.length * 4 + 2;
+                    });
+                    
+                    yPos += 5;
+                });
+            }
+            
+            // Add session reflections
+            if (weeklySessions.length > 0) {
+                if (yPos > 200) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(16);
+                doc.text('Meditation Reflections', 20, yPos);
+                yPos += 15;
+                
+                weeklySessions.forEach(session => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.setFontSize(12);
+                    doc.text(`${new Date(session.date).toLocaleDateString()} - ${session.duration} minutes`, 25, yPos);
+                    yPos += 8;
+                    
+                    if (session.reflection) {
+                        const lines = doc.splitTextToSize(session.reflection, 170);
+                        doc.text(lines, 30, yPos);
+                        yPos += lines.length * 4 + 10;
+                    }
+                });
+            }
+            
+            doc.save(`spiritual-reflections-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Weekly reflections exported!');
+        }
+
+        function exportAllData() {
+            const exportData = {
+                sessions: appData.sessions,
+                gratitude: appData.gratitude,
+                prayers: appData.prayers,
+                vocabulary: appData.vocabulary,
+                streaks: appData.streaks,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `spiritual-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('📊 All data exported!');
+        }
+
+        function backupData() {
+            const backup = {
+                ...appData,
+                backupDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `spiritual-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Complete backup created!');
+        }
+
+        // Quick Add Modal
+        function showQuickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+            updateQuickAddForm();
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function updateQuickAddForm() {
+            const type = document.getElementById('quickAddType').value;
+            const form = document.getElementById('quickAddForm');
+            
+            switch(type) {
+                case 'gratitude':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Quick Gratitude</label>
+                            <button onclick="startVoiceInput('quickGratitudeText', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickGratitudeText" placeholder="What are you grateful for right now?" 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    `;
+                    break;
+                case 'reflection':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Quick Reflection</label>
+                            <button onclick="startVoiceInput('quickReflectionText', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickReflectionText" placeholder="What insights or observations do you have?" 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    `;
+                    break;
+                case 'phrase':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Phrase Type</label>
+                            <select id="phraseType" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white mb-3">
+                                <option value="contemplative">Contemplative</option>
+                                <option value="prayer">Prayer</option>
+                                <option value="wisdom">Wisdom</option>
+                                <option value="affirmations">Affirmation</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Phrase Text</label>
+                            <input type="text" id="quickPhraseText" placeholder="Enter your phrase or quote..." 
+                                   class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        </div>
+                    `;
+                    break;
+                case 'prayer':
+                    form.innerHTML = `
+                        <div class="text-center">
+                            <p class="text-gray-300 mb-4">Use the voice prayer feature in the Vocabulary section for full recording capabilities.</p>
+                            <button onclick="closeQuickAdd(); showScreen('vocabulary')" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                                Go to Voice Prayer
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function saveQuickAdd() {
+            const type = document.getElementById('quickAddType').value;
+            
+            switch(type) {
+                case 'gratitude':
+                    const gratitudeText = document.getElementById('quickGratitudeText').value.trim();
+                    
+                    if (!gratitudeText) {
+                        showNotification('Please enter gratitude text');
+                        return;
+                    }
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    const existingIndex = appData.gratitude.findIndex(g => g.date === today);
+                    
+                    if (existingIndex >= 0) {
+                        // Add to existing entry
+                        appData.gratitude[existingIndex].gratitude.push(gratitudeText);
+                    } else {
+                        // Create new entry
+                        const gratitudeEntry = {
+                            id: Date.now().toString(),
+                            date: today,
+                            gratitude: [gratitudeText],
+                            actOfService: '',
+                            intention: '',
+                            timestamp: new Date().toISOString()
+                        };
+                        appData.gratitude.push(gratitudeEntry);
+                        updateGratitudeStreak();
+                    }
+                    
+                    showNotification('🙏 Gratitude added!');
+                    break;
+                    
+                case 'reflection':
+                    const reflectionText = document.getElementById('quickReflectionText').value.trim();
+                    
+                    if (!reflectionText) {
+                        showNotification('Please enter reflection text');
+                        return;
+                    }
+                    
+                    const reflection = {
+                        id: Date.now().toString(),
+                        date: new Date().toISOString(),
+                        reflection: reflectionText,
+                        type: 'quick_reflection'
+                    };
+                    
+                    appData.prayers.push(reflection);
+                    showNotification('💭 Reflection saved!');
+                    break;
+                    
+                case 'phrase':
+                    const phraseType = document.getElementById('phraseType').value;
+                    const phraseText = document.getElementById('quickPhraseText').value.trim();
+                    
+                    if (!phraseText) {
+                        showNotification('Please enter phrase text');
+                        return;
+                    }
+                    
+                    appData.vocabulary[phraseType].push(phraseText);
+                    showNotification('📖 Phrase added!');
+                    break;
+            }
+            
+            saveAppData();
+            updateAllStats();
+            closeQuickAdd();
+            
+            // Refresh current screen
+            const activeScreen = document.querySelector('.nav-btn.active').id.replace('Btn', '');
+            showScreen(activeScreen);
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            calculateStreaks();
+            
+            const totalMinutes = appData.sessions.reduce((sum, session) => sum + session.duration, 0);
+            const weeklyStillness = getWeeklyCount('sessions');
+            const weeklyGratitude = getWeeklyCount('gratitude');
+            
+            document.getElementById('stillnessStreak').textContent = appData.streaks.stillness;
+            document.getElementById('gratitudeStreak').textContent = appData.streaks.gratitude;
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+            document.getElementById('weeklyGoal').textContent = `${Math.min(weeklyStillness + weeklyGratitude, 14)}/14`;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'customMinutes') {
+                    setCustomTimer();
+                } else if (activeElement.id === 'newContemplativePhrase') {
+                    addContemplativePhrase();
+                } else if (activeElement.id === 'newPrayerPhrase') {
+                    addPrayerPhrase();
+                } else if (activeElement.id === 'newWisdomQuote') {
+                    addWisdomQuote();
+                } else if (activeElement.id === 'newAffirmation') {
+                    addAffirmation();
+                } else if (activeElement.id === 'newResetMessage') {
+                    addResetMessage();
+                }
+            }
+        });
+
+        // Bible Verse Functions
+        function setDailyVerse() {
+            const today = new Date().toDateString();
+            const savedDaily = localStorage.getItem('dailyVerse');
+            const savedDate = localStorage.getItem('dailyVerseDate');
+            
+            if (savedDaily && savedDate === today) {
+                const dailyData = JSON.parse(savedDaily);
+                document.getElementById('dailyVerse').textContent = `"${dailyData.verse}"`;
+                document.getElementById('dailyReference').textContent = dailyData.reference;
+            } else {
+                getNewDailyVerse();
+            }
+        }
+
+        function getNewDailyVerse() {
+            const allVerses = Object.values(bibleVerses).flat();
+            const randomVerse = allVerses[Math.floor(Math.random() * allVerses.length)];
+            
+            document.getElementById('dailyVerse').textContent = `"${randomVerse.verse}"`;
+            document.getElementById('dailyReference').textContent = randomVerse.reference;
+            
+            // Save daily verse
+            localStorage.setItem('dailyVerse', JSON.stringify(randomVerse));
+            localStorage.setItem('dailyVerseDate', new Date().toDateString());
+            
+            showNotification('✨ New daily verse selected!');
+        }
+
+        function getRandomVerse(category = null) {
+            let verses;
+            
+            if (category && bibleVerses[category]) {
+                verses = bibleVerses[category];
+            } else {
+                verses = Object.values(bibleVerses).flat();
+            }
+            
+            const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+            
+            document.getElementById('randomVerse').textContent = `"${randomVerse.verse}"`;
+            document.getElementById('randomReference').textContent = randomVerse.reference;
+            
+            const categoryName = category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Random';
+            showNotification(`🎲 ${categoryName} verse selected!`);
+        }
+
+        function loadBibleVerses() {
+            loadCategoryVerses('strength', 'strengthVerses');
+            loadCategoryVerses('peace', 'peaceVerses');
+            loadCategoryVerses('hope', 'hopeVerses');
+            loadCategoryVerses('love', 'loveVerses');
+        }
+
+        function loadCategoryVerses(category, containerId) {
+            const container = document.getElementById(containerId);
+            const verses = bibleVerses[category];
+            
+            container.innerHTML = verses.map(verseData => `
+                <div class="phrase-card" onclick="copyToClipboard('${verseData.verse} - ${verseData.reference}')">
+                    <div class="text-white text-sm mb-2">"${verseData.verse}"</div>
+                    <div class="text-accent text-xs font-bold">${verseData.reference}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addFavoriteVerse() {
+            const verse = document.getElementById('customVerse').value.trim();
+            const reference = document.getElementById('customReference').value.trim();
+            
+            if (!verse || !reference) {
+                showNotification('Please enter both verse text and reference');
+                return;
+            }
+            
+            const favoriteVerse = {
+                id: Date.now().toString(),
+                verse: verse,
+                reference: reference,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appData.favoriteVerses.push(favoriteVerse);
+            saveAppData();
+            
+            document.getElementById('customVerse').value = '';
+            document.getElementById('customReference').value = '';
+            
+            loadFavoriteVerses();
+            showNotification('⭐ Verse added to favorites!');
+        }
+
+        function loadFavoriteVerses() {
+            const container = document.getElementById('favoriteVerses');
+            
+            if (appData.favoriteVerses.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No favorite verses yet. Add some above!</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.favoriteVerses.map(verseData => `
+                <div class="phrase-card">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <div class="text-white text-sm mb-2">"${verseData.verse}"</div>
+                            <div class="text-accent text-xs font-bold">${verseData.reference}</div>
+                        </div>
+                        <button onclick="removeFavoriteVerse('${verseData.id}')" class="text-red-400 text-xs ml-2">✕</button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="copyToClipboard('${verseData.verse} - ${verseData.reference}')" 
+                                class="text-xs text-gray-400 hover:text-white">📋 Copy</button>
+                        <button onclick="useForMeditation('${verseData.verse}', '${verseData.reference}')" 
+                                class="text-xs text-gray-400 hover:text-white">🧘 Meditate</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeFavoriteVerse(verseId) {
+            if (confirm('Remove this verse from favorites?')) {
+                appData.favoriteVerses = appData.favoriteVerses.filter(v => v.id !== verseId);
+                saveAppData();
+                loadFavoriteVerses();
+                showNotification('🗑️ Verse removed from favorites');
+            }
+        }
+
+        function useForMeditation(verse, reference) {
+            document.getElementById('meditationVerse').textContent = `"${verse}"`;
+            document.getElementById('meditationReference').textContent = reference;
+            showNotification('🧘 Verse set for meditation. Click "Start Meditation" when ready.');
+        }
+
+        function startVerseMeditation() {
+            const verse = document.getElementById('meditationVerse').textContent;
+            
+            if (verse === 'Select "Start Meditation" to begin with a random empowering verse') {
+                // Get random verse for meditation
+                const allVerses = Object.values(bibleVerses).flat();
+                const randomVerse = allVerses[Math.floor(Math.random() * allVerses.length)];
+                document.getElementById('meditationVerse').textContent = `"${randomVerse.verse}"`;
+                document.getElementById('meditationReference').textContent = randomVerse.reference;
+            }
+            
+            verseMeditationSeconds = verseMeditationDuration;
+            
+            document.getElementById('startVerseMeditationBtn').disabled = true;
+            document.getElementById('stopVerseMeditationBtn').disabled = false;
+            document.getElementById('verseMeditationTimer').classList.remove('hidden');
+            
+            updateVerseMeditationDisplay();
+            
+            verseMeditationTimer = setInterval(() => {
+                verseMeditationSeconds--;
+                updateVerseMeditationDisplay();
+                
+                if (verseMeditationSeconds <= 0) {
+                    completeVerseMeditation();
+                }
+            }, 1000);
+            
+            showNotification('🧘 Verse meditation started. Focus on the meaning and let it speak to your heart.');
+        }
+
+        function stopVerseMeditation() {
+            if (verseMeditationTimer) {
+                clearInterval(verseMeditationTimer);
+                verseMeditationTimer = null;
+            }
+            
+            document.getElementById('startVerseMeditationBtn').disabled = false;
+            document.getElementById('stopVerseMeditationBtn').disabled = true;
+            document.getElementById('verseMeditationTimer').classList.add('hidden');
+            
+            verseMeditationSeconds = verseMeditationDuration;
+            updateVerseMeditationDisplay();
+            
+            showNotification('⏹️ Verse meditation stopped');
+        }
+
+        function completeVerseMeditation() {
+            clearInterval(verseMeditationTimer);
+            verseMeditationTimer = null;
+            
+            document.getElementById('startVerseMeditationBtn').disabled = false;
+            document.getElementById('stopVerseMeditationBtn').disabled = true;
+            document.getElementById('verseMeditationTimer').classList.add('hidden');
+            
+            // Save meditation session
+            const verse = document.getElementById('meditationVerse').textContent;
+            const reference = document.getElementById('meditationReference').textContent;
+            
+            const session = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                type: 'verse_meditation',
+                duration: Math.floor(verseMeditationDuration / 60),
+                verse: verse,
+                reference: reference
+            };
+            
+            appData.sessions.push(session);
+            saveAppData();
+            updateAllStats();
+            
+            verseMeditationSeconds = verseMeditationDuration;
+            updateVerseMeditationDisplay();
+            
+            showNotification('🌟 Verse meditation completed! May God\'s word continue to guide you.');
+            playCompletionSound();
+        }
+
+        function updateVerseMeditationDisplay() {
+            const minutes = Math.floor(verseMeditationSeconds / 60);
+            const seconds = verseMeditationSeconds % 60;
+            document.getElementById('verseMeditationDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function searchVerses() {
+            const query = document.getElementById('verseSearch').value.trim().toLowerCase();
+            const container = document.getElementById('searchResults');
+            
+            if (!query) {
+                container.innerHTML = '<div class="text-gray-400 text-center">Enter a search term</div>';
+                return;
+            }
+            
+            const allVerses = Object.values(bibleVerses).flat();
+            const results = allVerses.filter(verseData => 
+                verseData.verse.toLowerCase().includes(query) || 
+                verseData.reference.toLowerCase().includes(query)
+            );
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No verses found matching your search</div>';
+                return;
+            }
+            
+            container.innerHTML = results.map(verseData => `
+                <div class="phrase-card">
+                    <div class="text-white text-sm mb-2">"${verseData.verse}"</div>
+                    <div class="text-accent text-xs font-bold mb-2">${verseData.reference}</div>
+                    <div class="flex gap-2">
+                        <button onclick="copyToClipboard('${verseData.verse} - ${verseData.reference}')" 
+                                class="text-xs text-gray-400 hover:text-white">📋 Copy</button>
+                        <button onclick="useForMeditation('${verseData.verse}', '${verseData.reference}')" 
+                                class="text-xs text-gray-400 hover:text-white">🧘 Meditate</button>
+                        <button onclick="addToFavorites('${verseData.verse}', '${verseData.reference}')" 
+                                class="text-xs text-gray-400 hover:text-white">⭐ Favorite</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            showNotification(`🔍 Found ${results.length} verses matching "${query}"`);
+        }
+
+        function addToFavorites(verse, reference) {
+            // Check if already in favorites
+            const exists = appData.favoriteVerses.some(v => v.verse === verse && v.reference === reference);
+            
+            if (exists) {
+                showNotification('⭐ This verse is already in your favorites');
+                return;
+            }
+            
+            const favoriteVerse = {
+                id: Date.now().toString(),
+                verse: verse,
+                reference: reference,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appData.favoriteVerses.push(favoriteVerse);
+            saveAppData();
+            
+            showNotification('⭐ Verse added to favorites!');
+        }
+
+        // Auto-save functionality
+        setInterval(() => {
+            if (appData.settings.autoSave) {
+                saveAppData();
+            }
+        }, 30000); // Auto-save every 30 seconds
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988365712479fee5',t:'MTc1OTM5OTY4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
