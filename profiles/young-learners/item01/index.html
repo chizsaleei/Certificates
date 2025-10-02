@@ -1,1 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Quest - Teen Study Adventures</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d, #1f4a35); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .quest-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quest-card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            border-color: #d4af37;
+        }
+        
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            border: 8px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .progress-ring::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: #d4af37;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .xp-badge {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+            margin: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, #2d5a3d, #1a3b2e);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .streak-flame {
+            color: #ff6b35;
+            font-size: 24px;
+            animation: flicker 1.5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        .vocab-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocab-card:hover {
+            border-color: #d4af37;
+            transform: scale(1.02);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.4); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .mission-timer {
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+        }
+        
+        .recording-indicator {
+            width: 20px;
+            height: 20px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: recordingPulse 1s infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            padding: 30px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 2000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            animation: achievementBounce 0.6s ease-out;
+        }
+        
+        @keyframes achievementBounce {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .online-indicator {
+            background: #44ff44;
+            color: #000;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="offline-indicator online-indicator">🟢 Online</div>
+
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">🎮 ESL QUEST</h1>
+        <p class="text-lg text-gray-300 mb-4">Level Up Your English Skills!</p>
+        
+        <!-- Player Stats -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="flex items-center gap-2">
+                <span class="level-badge">Level <span id="playerLevel">1</span></span>
+                <span class="xp-badge"><span id="playerXP">0</span> XP</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="streak-flame">🔥</span>
+                <span class="text-accent font-bold text-xl"><span id="currentStreak">0</span> Day Streak</span>
+            </div>
+            <div class="text-accent font-bold">
+                <span id="totalPoints">0</span> Quest Points
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('dashboard')" id="dashboardBtn" class="nav-btn active">Dashboard</button>
+        <button onclick="showScreen('missions')" id="missionsBtn" class="nav-btn">Missions</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Vocabulary</button>
+        <button onclick="showScreen('phrases')" id="phrasesBtn" class="nav-btn">Phrases</button>
+        <button onclick="showScreen('focus')" id="focusBtn" class="nav-btn">Focus</button>
+        <button onclick="showScreen('progress')" id="progressBtn" class="nav-btn">Progress</button>
+        <button onclick="showScreen('parent')" id="parentBtn" class="nav-btn">Parent View</button>
+    </nav>
+
+    <!-- Quick Mission Button -->
+    <div onclick="startQuickMission()" class="floating-btn pulse-glow" title="Quick Mission">⚡</div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="screen p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <!-- Daily Quests -->
+            <div class="quest-card">
+                <h2 class="text-2xl font-bold text-accent mb-6 flex items-center gap-3">
+                    🎯 Today's Quests
+                    <span class="text-sm bg-accent text-black px-3 py-1 rounded-full">
+                        <span id="dailyQuestsCompleted">0</span>/3 Complete
+                    </span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="quest-card cursor-pointer" onclick="startMission('speaking')">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">🗣️</div>
+                            <div class="font-bold text-accent text-lg mb-2">Speaking Quest</div>
+                            <div class="text-gray-300 text-sm mb-3">Practice pronunciation & fluency</div>
+                            <div class="xp-badge">+50 XP</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quest-card cursor-pointer" onclick="startMission('reading')">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">📚</div>
+                            <div class="font-bold text-accent text-lg mb-2">Reading Quest</div>
+                            <div class="text-gray-300 text-sm mb-3">Comprehension & speed reading</div>
+                            <div class="xp-badge">+40 XP</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quest-card cursor-pointer" onclick="startMission('vocabulary')">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">📝</div>
+                            <div class="font-bold text-accent text-lg mb-2">Vocab Quest</div>
+                            <div class="text-gray-300 text-sm mb-3">Learn new words & phrases</div>
+                            <div class="xp-badge">+30 XP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Challenge -->
+            <div class="quest-card">
+                <h2 class="text-2xl font-bold text-accent mb-4 flex items-center gap-3">
+                    🏆 Weekly Challenge
+                    <div class="text-sm text-gray-400">Ends in <span id="challengeTimeLeft">6 days</span></div>
+                </h2>
+                
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <div class="font-bold text-white text-lg">Complete 15 Missions This Week</div>
+                            <div class="text-gray-400">Progress: <span id="weeklyProgress">0</span>/15 missions</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="xp-badge">+200 XP</div>
+                            <div class="text-accent font-bold">🎁 Bonus Reward</div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full bg-gray-700 rounded-full h-3">
+                        <div id="weeklyProgressBar" class="bg-gradient-to-r from-accent to-yellow-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="quest-card">
+                <h2 class="text-2xl font-bold text-accent mb-4">📊 Recent Activity</h2>
+                <div id="recentActivity" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No recent activity</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Missions Screen -->
+    <div id="missionsScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-accent">🎮 Mission Control</h2>
+                <button onclick="createCustomMission()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                    ➕ Create Mission
+                </button>
+            </div>
+
+            <!-- Active Mission -->
+            <div id="activeMissionContainer" class="hidden">
+                <div class="mission-timer pulse-glow">
+                    <h3 class="text-2xl font-bold text-accent mb-4">🎯 Active Mission</h3>
+                    <div class="progress-ring mb-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-accent" id="missionTimer">25:00</div>
+                            <div class="text-sm text-gray-400" id="missionType">Speaking</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center gap-4 mb-4">
+                        <button onclick="pauseMission()" id="pauseMissionBtn" class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-bold">
+                            ⏸️ Pause
+                        </button>
+                        <button onclick="completeMission()" id="completeMissionBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                            ✅ Complete
+                        </button>
+                        <button onclick="stopMission()" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                    
+                    <!-- Recording Controls -->
+                    <div id="recordingControls" class="hidden">
+                        <div class="flex justify-center items-center gap-4 mb-4">
+                            <button onclick="startRecording()" id="startRecordBtn" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
+                                🎤 Start Recording
+                            </button>
+                            <button onclick="stopRecording()" id="stopRecordBtn" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold" disabled>
+                                ⏹️ Stop Recording
+                            </button>
+                            <div id="recordingIndicator" class="recording-indicator hidden"></div>
+                        </div>
+                        <div id="recordingsList" class="space-y-2"></div>
+                    </div>
+                    
+                    <!-- Mission Content -->
+                    <div id="missionContent" class="bg-black bg-opacity-40 rounded-lg p-6">
+                        <div class="text-center text-gray-400">Select a mission to begin</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2">
+                        🗣️ Speaking Missions
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="vocab-card" onclick="startMission('speaking', 'pronunciation')">
+                            <div class="font-semibold text-white mb-2">Pronunciation Practice</div>
+                            <div class="text-sm text-gray-400 mb-2">Focus on difficult sounds</div>
+                            <div class="xp-badge">+50 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('speaking', 'conversation')">
+                            <div class="font-semibold text-white mb-2">Conversation Simulation</div>
+                            <div class="text-sm text-gray-400 mb-2">Practice real-world dialogues</div>
+                            <div class="xp-badge">+60 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('speaking', 'storytelling')">
+                            <div class="font-semibold text-white mb-2">Storytelling Challenge</div>
+                            <div class="text-sm text-gray-400 mb-2">Create and tell stories</div>
+                            <div class="xp-badge">+70 XP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2">
+                        📚 Reading Missions
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="vocab-card" onclick="startMission('reading', 'comprehension')">
+                            <div class="font-semibold text-white mb-2">Reading Comprehension</div>
+                            <div class="text-sm text-gray-400 mb-2">Understand complex texts</div>
+                            <div class="xp-badge">+40 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('reading', 'speed')">
+                            <div class="font-semibold text-white mb-2">Speed Reading</div>
+                            <div class="text-sm text-gray-400 mb-2">Increase reading velocity</div>
+                            <div class="xp-badge">+45 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('reading', 'analysis')">
+                            <div class="font-semibold text-white mb-2">Text Analysis</div>
+                            <div class="text-sm text-gray-400 mb-2">Analyze themes and meanings</div>
+                            <div class="xp-badge">+55 XP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2">
+                        📝 Vocabulary Missions
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="vocab-card" onclick="startMission('vocabulary', 'advanced')">
+                            <div class="font-semibold text-white mb-2">Advanced Vocabulary</div>
+                            <div class="text-sm text-gray-400 mb-2">Learn complex words</div>
+                            <div class="xp-badge">+35 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('vocabulary', 'idioms')">
+                            <div class="font-semibold text-white mb-2">Idioms & Expressions</div>
+                            <div class="text-sm text-gray-400 mb-2">Master common phrases</div>
+                            <div class="xp-badge">+40 XP</div>
+                        </div>
+                        <div class="vocab-card" onclick="startMission('vocabulary', 'academic')">
+                            <div class="font-semibold text-white mb-2">Academic Vocabulary</div>
+                            <div class="text-sm text-gray-400 mb-2">School and test prep words</div>
+                            <div class="xp-badge">+50 XP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Missions -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎨 Custom Missions</h3>
+                <div id="customMissionsList" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No custom missions created yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-accent">📚 Vocabulary Bank</h2>
+                <div class="flex gap-3">
+                    <button onclick="getRandomVocab()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        🎲 Random Word
+                    </button>
+                    <button onclick="addCustomVocab()" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                        ➕ Add Word
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vocabulary Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">🎓 Advanced Vocabulary</h3>
+                    <div id="advancedVocabList" class="space-y-3">
+                        <!-- Advanced vocabulary will be populated here -->
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">📖 Academic Words</h3>
+                    <div id="academicVocabList" class="space-y-3">
+                        <!-- Academic vocabulary will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Vocabulary -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">✨ Your Custom Words</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <input type="text" id="newVocabWord" placeholder="Enter new word..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <input type="text" id="newVocabDefinition" placeholder="Enter definition..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                </div>
+                <button onclick="saveCustomVocab()" class="w-full bg-accent text-black p-3 rounded-lg font-bold mb-4">
+                    💾 Save Word
+                </button>
+                <div id="customVocabList" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No custom words added yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-accent">💬 Power Phrases & Transitions</h2>
+                <button onclick="getRandomPhrase()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    🎲 Random Phrase
+                </button>
+            </div>
+
+            <!-- Phrase Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">🔗 Transition Phrases</h3>
+                    <div class="space-y-2">
+                        <div class="vocab-card" onclick="copyPhrase('Furthermore, it\'s important to note that...')">
+                            <div class="font-semibold text-white">Furthermore, it's important to note that...</div>
+                            <div class="text-sm text-gray-400">Adding information</div>
+                        </div>
+                        <div class="vocab-card" onclick="copyPhrase('On the other hand, we should consider...')">
+                            <div class="font-semibold text-white">On the other hand, we should consider...</div>
+                            <div class="text-sm text-gray-400">Contrasting ideas</div>
+                        </div>
+                        <div class="vocab-card" onclick="copyPhrase('As a result of this, we can conclude...')">
+                            <div class="font-semibold text-white">As a result of this, we can conclude...</div>
+                            <div class="text-sm text-gray-400">Showing results</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">💪 Power Expressions</h3>
+                    <div class="space-y-2">
+                        <div class="vocab-card" onclick="copyPhrase('I\'d like to emphasize the significance of...')">
+                            <div class="font-semibold text-white">I'd like to emphasize the significance of...</div>
+                            <div class="text-sm text-gray-400">Highlighting importance</div>
+                        </div>
+                        <div class="vocab-card" onclick="copyPhrase('It\'s worth mentioning that...')">
+                            <div class="font-semibold text-white">It's worth mentioning that...</div>
+                            <div class="text-sm text-gray-400">Adding relevant points</div>
+                        </div>
+                        <div class="vocab-card" onclick="copyPhrase('From my perspective, I believe...')">
+                            <div class="font-semibold text-white">From my perspective, I believe...</div>
+                            <div class="text-sm text-gray-400">Expressing opinions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Phrases -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">✨ Your Custom Phrases</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <input type="text" id="newPhrase" placeholder="Enter new phrase..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <input type="text" id="newPhraseCategory" placeholder="Category (e.g., Agreement, Disagreement)..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                </div>
+                <button onclick="saveCustomPhrase()" class="w-full bg-accent text-black p-3 rounded-lg font-bold mb-4">
+                    💾 Save Phrase
+                </button>
+                <div id="customPhrasesList" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No custom phrases added yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Screen -->
+    <div id="focusScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-3xl font-bold text-accent">🧘 Focus & Reset</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Focus</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold" id="focusTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center bg-black bg-opacity-40 rounded-lg">
+                "Every expert was once a beginner. Keep practicing!"
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startFocusSession()" id="startFocusBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Focus Session
+                </button>
+                <button onclick="stopFocusSession()" id="stopFocusBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop Session
+                </button>
+            </div>
+            
+            <!-- Custom Motivational Messages -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMotivationalMessages" class="space-y-2">
+                    <!-- Custom messages will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Screen -->
+    <div id="progressScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <h2 class="text-3xl font-bold text-accent text-center">📊 Your Progress Journey</h2>
+            
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="totalMissionsCompleted">0</div>
+                    <div class="text-gray-400">Missions Completed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">⏱️</div>
+                    <div class="text-2xl font-bold text-white" id="totalStudyTime">0</div>
+                    <div class="text-gray-400">Hours Studied</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📚</div>
+                    <div class="text-2xl font-bold text-white" id="wordsLearned">0</div>
+                    <div class="text-gray-400">Words Learned</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="longestStreak">0</div>
+                    <div class="text-gray-400">Longest Streak</div>
+                </div>
+            </div>
+
+            <!-- Export & Backup -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Data Management</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportProgressPDF()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Export PDF Report
+                    </button>
+                    <button onclick="backupData()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup Data
+                    </button>
+                    <button onclick="importData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📥 Import Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recordings -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎤 Your Recordings</h3>
+                <div id="savedRecordingsList" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No recordings saved yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parent View Screen -->
+    <div id="parentScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <h2 class="text-3xl font-bold text-accent text-center">👨‍👩‍👧‍👦 Parent Dashboard</h2>
+            
+            <!-- Child Progress Overview -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">📈 Learning Progress</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="text-3xl text-accent mb-2">📅</div>
+                        <div class="text-xl font-bold text-white" id="parentDaysActive">0</div>
+                        <div class="text-gray-400">Days Active This Month</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="text-3xl text-accent mb-2">⏰</div>
+                        <div class="text-xl font-bold text-white" id="parentAvgSession">0</div>
+                        <div class="text-gray-400">Avg Session (minutes)</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="text-3xl text-accent mb-2">🎯</div>
+                        <div class="text-xl font-bold text-white" id="parentMissionsWeek">0</div>
+                        <div class="text-gray-400">Missions This Week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="text-3xl text-accent mb-2">📊</div>
+                        <div class="text-xl font-bold text-white" id="parentCurrentLevel">1</div>
+                        <div class="text-gray-400">Current Level</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Report -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">📋 Weekly Report</h3>
+                <div id="weeklyReport" class="space-y-4">
+                    <!-- Weekly report content will be generated here -->
+                </div>
+                <button onclick="emailWeeklyReport()" class="mt-4 bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                    📧 Email Report
+                </button>
+            </div>
+
+            <!-- Study Goals -->
+            <div class="quest-card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎯 Study Goals</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white">Daily Study Time Goal:</span>
+                        <input type="number" id="dailyGoal" value="25" min="10" max="120" 
+                               class="w-20 p-2 rounded bg-gray-800 border border-accent text-white text-center">
+                        <span class="text-gray-400">minutes</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-white">Weekly Mission Goal:</span>
+                        <input type="number" id="weeklyGoal" value="10" min="3" max="21" 
+                               class="w-20 p-2 rounded bg-gray-800 border border-accent text-white text-center">
+                        <span class="text-gray-400">missions</span>
+                    </div>
+                    <button onclick="saveParentSettings()" class="w-full bg-accent text-black p-3 rounded-lg font-bold">
+                        💾 Save Goals
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Custom Mission Modal -->
+    <div id="customMissionModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">🎨 Create Custom Mission</h3>
+                <button onclick="closeCustomMissionModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">Mission Title</label>
+                    <input type="text" id="customMissionTitle" placeholder="Enter mission title..." 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Mission Type</label>
+                    <select id="customMissionType" class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                        <option value="speaking">Speaking</option>
+                        <option value="reading">Reading</option>
+                        <option value="vocabulary">Vocabulary</option>
+                        <option value="mixed">Mixed Skills</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Mission Description</label>
+                    <textarea id="customMissionDescription" rows="4" placeholder="Describe what the student should do..." 
+                              class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">XP Reward</label>
+                    <input type="number" id="customMissionXP" value="50" min="10" max="200" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <button onclick="saveCustomMission()" class="w-full bg-accent text-black p-3 rounded-lg font-bold text-lg">
+                    💾 Create Mission
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let gameData = {
+            player: {
+                level: 1,
+                xp: 0,
+                points: 0,
+                streak: 0,
+                longestStreak: 0
+            },
+            missions: {
+                completed: 0,
+                totalTime: 0,
+                weeklyProgress: 0,
+                dailyCompleted: 0
+            },
+            vocabulary: {
+                learned: 0,
+                custom: []
+            },
+            phrases: {
+                custom: []
+            },
+            recordings: [],
+            customMissions: [],
+            motivationalMessages: [
+                "Every expert was once a beginner. Keep practicing!",
+                "Your English skills are growing stronger every day!",
+                "Mistakes are proof that you're trying. Keep going!",
+                "Consistency beats perfection. You're doing great!",
+                "Every word you learn opens new doors!"
+            ],
+            settings: {
+                dailyGoal: 25,
+                weeklyGoal: 10
+            },
+            analytics: {
+                sessionsToday: 0,
+                timeToday: 0,
+                lastActiveDate: null
+            }
+        };
+
+        let currentMission = null;
+        let missionTimer = null;
+        let focusTimer = null;
+        let breathingInterval = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isOnline = navigator.onLine;
+
+        // Advanced vocabulary bank
+        const advancedVocabulary = [
+            { word: "Eloquent", definition: "Fluent and persuasive in speaking or writing", example: "Her eloquent speech moved the audience to tears." },
+            { word: "Meticulous", definition: "Showing great attention to detail; very careful", example: "He was meticulous in his research methodology." },
+            { word: "Ubiquitous", definition: "Present, appearing, or found everywhere", example: "Smartphones have become ubiquitous in modern society." },
+            { word: "Pragmatic", definition: "Dealing with things sensibly and realistically", example: "She took a pragmatic approach to solving the problem." },
+            { word: "Ephemeral", definition: "Lasting for a very short time", example: "The beauty of cherry blossoms is ephemeral but memorable." }
+        ];
+
+        const academicVocabulary = [
+            { word: "Analyze", definition: "Examine methodically and in detail", example: "Students must analyze the data before drawing conclusions." },
+            { word: "Synthesize", definition: "Combine elements to form a coherent whole", example: "The essay should synthesize information from multiple sources." },
+            { word: "Evaluate", definition: "Form an idea of the amount, number, or value", example: "Teachers evaluate student performance using various criteria." },
+            { word: "Hypothesis", definition: "A supposition made as a starting point for investigation", example: "The scientist tested her hypothesis through experiments." },
+            { word: "Methodology", definition: "A system of methods used in a particular area", example: "The research methodology was clearly explained in the paper." }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameData();
+            updateAllStats();
+            loadVocabulary();
+            loadPhrases();
+            checkConnection();
+            updateDashboard();
+            
+            // Check for offline/online status
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateConnectionStatus();
+                syncOfflineData();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateConnectionStatus();
+            });
+        });
+
+        // Data Management
+        function loadGameData() {
+            const savedData = localStorage.getItem('eslQuestData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameData = { ...gameData, ...data };
+            }
+            updateStreak();
+        }
+
+        function saveGameData() {
+            gameData.analytics.lastSaveDate = new Date().toISOString();
+            localStorage.setItem('eslQuestData', JSON.stringify(gameData));
+            
+            if (isOnline) {
+                // In a real app, this would sync to cloud storage
+                console.log('Data synced to cloud');
+            }
+        }
+
+        function syncOfflineData() {
+            if (isOnline) {
+                // Simulate cloud sync
+                showAchievement('📡 Data synced successfully!');
+            }
+        }
+
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('connectionStatus');
+            if (isOnline) {
+                indicator.textContent = '🟢 Online';
+                indicator.className = 'offline-indicator online-indicator';
+            } else {
+                indicator.textContent = '🔴 Offline';
+                indicator.className = 'offline-indicator';
+            }
+        }
+
+        function checkConnection() {
+            isOnline = navigator.onLine;
+            updateConnectionStatus();
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'dashboard': updateDashboard(); break;
+                case 'vocabulary': loadVocabulary(); break;
+                case 'phrases': loadPhrases(); break;
+                case 'progress': updateProgressScreen(); break;
+                case 'parent': updateParentView(); break;
+            }
+        }
+
+        // Dashboard Functions
+        function updateDashboard() {
+            updateRecentActivity();
+            updateWeeklyChallenge();
+            updateDailyQuests();
+        }
+
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const activities = [
+                `🎯 Completed Speaking Mission (+50 XP)`,
+                `📚 Learned 5 new vocabulary words`,
+                `🔥 Maintained ${gameData.player.streak} day streak`,
+                `🎮 Reached Level ${gameData.player.level}`
+            ];
+            
+            if (gameData.missions.completed === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">Complete your first mission to see activity!</div>';
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 3).map(activity => `
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 flex items-center gap-3">
+                    <div class="text-white">${activity}</div>
+                    <div class="text-xs text-gray-400">${new Date().toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateWeeklyChallenge() {
+            const progress = Math.min(gameData.missions.weeklyProgress, 15);
+            const percentage = (progress / 15) * 100;
+            
+            document.getElementById('weeklyProgress').textContent = progress;
+            document.getElementById('weeklyProgressBar').style.width = percentage + '%';
+        }
+
+        function updateDailyQuests() {
+            document.getElementById('dailyQuestsCompleted').textContent = gameData.missions.dailyCompleted;
+        }
+
+        // Mission System
+        function startMission(type, subtype = '') {
+            if (currentMission) {
+                if (!confirm('You have an active mission. Start a new one?')) return;
+                stopMission();
+            }
+            
+            currentMission = {
+                type: type,
+                subtype: subtype,
+                startTime: Date.now(),
+                timeLeft: 25 * 60, // 25 minutes
+                xpReward: getXPReward(type, subtype)
+            };
+            
+            document.getElementById('activeMissionContainer').classList.remove('hidden');
+            document.getElementById('missionType').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            
+            loadMissionContent(type, subtype);
+            startMissionTimer();
+            
+            if (type === 'speaking') {
+                document.getElementById('recordingControls').classList.remove('hidden');
+            } else {
+                document.getElementById('recordingControls').classList.add('hidden');
+            }
+            
+            showScreen('missions');
+        }
+
+        function startQuickMission() {
+            const missionTypes = ['speaking', 'reading', 'vocabulary'];
+            const randomType = missionTypes[Math.floor(Math.random() * missionTypes.length)];
+            startMission(randomType);
+        }
+
+        function loadMissionContent(type, subtype) {
+            const container = document.getElementById('missionContent');
+            let content = '';
+            
+            switch(type) {
+                case 'speaking':
+                    content = getSpeakingMissionContent(subtype);
+                    break;
+                case 'reading':
+                    content = getReadingMissionContent(subtype);
+                    break;
+                case 'vocabulary':
+                    content = getVocabularyMissionContent(subtype);
+                    break;
+            }
+            
+            container.innerHTML = content;
+        }
+
+        function getSpeakingMissionContent(subtype) {
+            const contents = {
+                pronunciation: `
+                    <h4 class="text-xl font-bold text-accent mb-4">🗣️ Pronunciation Practice</h4>
+                    <div class="space-y-4">
+                        <p class="text-white">Practice these challenging sounds:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-700 p-4 rounded-lg">
+                                <h5 class="font-bold text-accent mb-2">TH Sounds</h5>
+                                <ul class="text-gray-300 space-y-1">
+                                    <li>• Think, Thank, Thought</li>
+                                    <li>• This, That, These</li>
+                                    <li>• Breathe, Smooth, Bathe</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-700 p-4 rounded-lg">
+                                <h5 class="font-bold text-accent mb-2">R vs L Sounds</h5>
+                                <ul class="text-gray-300 space-y-1">
+                                    <li>• Right vs Light</li>
+                                    <li>• Red vs Led</li>
+                                    <li>• Arrive vs Alive</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm">Record yourself saying each word 3 times. Focus on clear pronunciation.</p>
+                    </div>
+                `,
+                conversation: `
+                    <h4 class="text-xl font-bold text-accent mb-4">💬 Conversation Practice</h4>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-bold text-accent mb-2">Scenario: Job Interview</h5>
+                            <p class="text-white mb-3">Practice answering these questions:</p>
+                            <ul class="text-gray-300 space-y-2">
+                                <li>• Tell me about yourself</li>
+                                <li>• What are your strengths and weaknesses?</li>
+                                <li>• Why do you want this job?</li>
+                                <li>• Where do you see yourself in 5 years?</li>
+                            </ul>
+                        </div>
+                        <p class="text-gray-400 text-sm">Record your answers. Aim for 1-2 minutes per question.</p>
+                    </div>
+                `,
+                storytelling: `
+                    <h4 class="text-xl font-bold text-accent mb-4">📖 Storytelling Challenge</h4>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-bold text-accent mb-2">Create a Story Using These Elements:</h5>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="bg-accent text-black p-3 rounded">🏰 Castle</div>
+                                <div class="bg-accent text-black p-3 rounded">🐉 Dragon</div>
+                                <div class="bg-accent text-black p-3 rounded">💎 Treasure</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm">Tell a 3-5 minute story incorporating all three elements. Be creative!</p>
+                    </div>
+                `
+            };
+            
+            return contents[subtype] || contents.pronunciation;
+        }
+
+        function getReadingMissionContent(subtype) {
+            const contents = {
+                comprehension: `
+                    <h4 class="text-xl font-bold text-accent mb-4">📚 Reading Comprehension</h4>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-bold text-accent mb-2">Passage: The Future of Technology</h5>
+                            <p class="text-gray-300 leading-relaxed">
+                                Artificial intelligence is rapidly transforming various industries, from healthcare to transportation. 
+                                Machine learning algorithms can now diagnose diseases with remarkable accuracy, sometimes surpassing 
+                                human doctors. Autonomous vehicles are being tested on roads worldwide, promising safer and more 
+                                efficient transportation. However, these advances raise important questions about employment, privacy, 
+                                and the role of humans in an increasingly automated world.
+                            </p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-bold text-accent mb-2">Questions:</h5>
+                            <ol class="text-gray-300 space-y-2">
+                                <li>1. What industries are being transformed by AI?</li>
+                                <li>2. How do AI algorithms compare to human doctors?</li>
+                                <li>3. What concerns does the passage mention about automation?</li>
+                                <li>4. Summarize the main idea in your own words.</li>
+                            </ol>
+                        </div>
+                    </div>
+                `,
+                speed: `
+                    <h4 class="text-xl font-bold text-accent mb-4">⚡ Speed Reading Challenge</h4>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-bold text-accent mb-2">Instructions:</h5>
+                            <p class="text-gray-300 mb-3">Read the following text as quickly as possible while maintaining comprehension:</p>
+                            <div class="bg-black p-4 rounded text-gray-300 leading-relaxed">
+                                Climate change represents one of the most pressing challenges of our time. Rising global temperatures 
+                                are causing ice caps to melt, sea levels to rise, and weather patterns to become increasingly erratic. 
+                                Scientists worldwide are working on solutions, from renewable energy technologies to carbon capture 
+                                systems. Individual actions, such as reducing energy consumption and supporting sustainable practices, 
+                                also play a crucial role in addressing this global issue.
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm">Time yourself reading this passage. Then answer: What are three solutions mentioned for climate change?</p>
+                    </div>
+                `
+            };
+            
+            return contents[subtype] || contents.comprehension;
+        }
+
+        function getVocabularyMissionContent(subtype) {
+            const contents = {
+                advanced: `
+                    <h4 class="text-xl font-bold text-accent mb-4">🎓 Advanced Vocabulary</h4>
+                    <div class="space-y-4">
+                        <p class="text-white">Learn these advanced words and use each in a sentence:</p>
+                        ${advancedVocabulary.slice(0, 3).map(vocab => `
+                            <div class="vocab-card">
+                                <h5 class="font-bold text-accent">${vocab.word}</h5>
+                                <p class="text-gray-300 mb-2">${vocab.definition}</p>
+                                <p class="text-gray-400 text-sm italic">"${vocab.example}"</p>
+                            </div>
+                        `).join('')}
+                        <p class="text-gray-400 text-sm">Create your own sentences using these words and record yourself saying them.</p>
+                    </div>
+                `,
+                idioms: `
+                    <h4 class="text-xl font-bold text-accent mb-4">🗣️ Idioms & Expressions</h4>
+                    <div class="space-y-4">
+                        <p class="text-white">Master these common English idioms:</p>
+                        <div class="space-y-3">
+                            <div class="vocab-card">
+                                <h5 class="font-bold text-accent">"Break the ice"</h5>
+                                <p class="text-gray-300">Meaning: To start a conversation or make people feel comfortable</p>
+                                <p class="text-gray-400 text-sm italic">"She told a joke to break the ice at the meeting."</p>
+                            </div>
+                            <div class="vocab-card">
+                                <h5 class="font-bold text-accent">"Hit the books"</h5>
+                                <p class="text-gray-300">Meaning: To study hard</p>
+                                <p class="text-gray-400 text-sm italic">"I need to hit the books for my exam tomorrow."</p>
+                            </div>
+                            <div class="vocab-card">
+                                <h5 class="font-bold text-accent">"Piece of cake"</h5>
+                                <p class="text-gray-300">Meaning: Something very easy to do</p>
+                                <p class="text-gray-400 text-sm italic">"The math test was a piece of cake."</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return contents[subtype] || contents.advanced;
+        }
+
+        function getXPReward(type, subtype) {
+            const baseRewards = { speaking: 50, reading: 40, vocabulary: 30 };
+            const subtypeBonus = { advanced: 20, storytelling: 20, analysis: 15 };
+            
+            return baseRewards[type] + (subtypeBonus[subtype] || 0);
+        }
+
+        function startMissionTimer() {
+            if (missionTimer) clearInterval(missionTimer);
+            
+            missionTimer = setInterval(() => {
+                currentMission.timeLeft--;
+                updateMissionDisplay();
+                
+                if (currentMission.timeLeft <= 0) {
+                    completeMission();
+                }
+            }, 1000);
+        }
+
+        function updateMissionDisplay() {
+            const minutes = Math.floor(currentMission.timeLeft / 60);
+            const seconds = currentMission.timeLeft % 60;
+            document.getElementById('missionTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function pauseMission() {
+            if (missionTimer) {
+                clearInterval(missionTimer);
+                missionTimer = null;
+                document.getElementById('pauseMissionBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseMissionBtn').onclick = resumeMission;
+            }
+        }
+
+        function resumeMission() {
+            startMissionTimer();
+            document.getElementById('pauseMissionBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseMissionBtn').onclick = pauseMission;
+        }
+
+        function completeMission() {
+            if (!currentMission) return;
+            
+            const xpGained = currentMission.xpReward;
+            const pointsGained = Math.floor(xpGained * 1.5);
+            
+            // Update player stats
+            gameData.player.xp += xpGained;
+            gameData.player.points += pointsGained;
+            gameData.missions.completed++;
+            gameData.missions.weeklyProgress++;
+            gameData.missions.dailyCompleted++;
+            
+            // Calculate study time
+            const studyTime = Math.ceil((25 * 60 - currentMission.timeLeft) / 60);
+            gameData.missions.totalTime += studyTime;
+            gameData.analytics.timeToday += studyTime;
+            
+            // Check for level up
+            checkLevelUp();
+            updateStreak();
+            
+            stopMission();
+            showAchievement(`🎯 Mission Complete! +${xpGained} XP, +${pointsGained} Points`);
+            saveGameData();
+            updateAllStats();
+        }
+
+        function stopMission() {
+            if (missionTimer) {
+                clearInterval(missionTimer);
+                missionTimer = null;
+            }
+            
+            currentMission = null;
+            document.getElementById('activeMissionContainer').classList.add('hidden');
+            document.getElementById('recordingControls').classList.add('hidden');
+        }
+
+        function checkLevelUp() {
+            const xpNeeded = gameData.player.level * 100;
+            if (gameData.player.xp >= xpNeeded) {
+                gameData.player.level++;
+                gameData.player.xp -= xpNeeded;
+                showAchievement(`🎉 LEVEL UP! You're now Level ${gameData.player.level}!`);
+            }
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = gameData.analytics.lastActiveDate;
+            
+            if (lastActive !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastActive === yesterday.toDateString()) {
+                    gameData.player.streak++;
+                } else if (lastActive !== null) {
+                    gameData.player.streak = 1;
+                } else {
+                    gameData.player.streak = 1;
+                }
+                
+                gameData.analytics.lastActiveDate = today;
+                
+                if (gameData.player.streak > gameData.player.longestStreak) {
+                    gameData.player.longestStreak = gameData.player.streak;
+                }
+            }
+        }
+
+        // Recording Functions
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showNotification('Recording not supported in this browser');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    recordedChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        saveRecording(blob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    
+                    document.getElementById('startRecordBtn').disabled = true;
+                    document.getElementById('stopRecordBtn').disabled = false;
+                    document.getElementById('recordingIndicator').classList.remove('hidden');
+                })
+                .catch(error => {
+                    showNotification('Could not access microphone');
+                    console.error('Recording error:', error);
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                
+                document.getElementById('startRecordBtn').disabled = false;
+                document.getElementById('stopRecordBtn').disabled = true;
+                document.getElementById('recordingIndicator').classList.add('hidden');
+            }
+        }
+
+        function saveRecording(blob) {
+            const recording = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                missionType: currentMission?.type || 'practice',
+                blob: blob,
+                url: URL.createObjectURL(blob)
+            };
+            
+            gameData.recordings.push(recording);
+            saveGameData();
+            
+            displayRecording(recording);
+            showNotification('Recording saved!');
+        }
+
+        function displayRecording(recording) {
+            const container = document.getElementById('recordingsList');
+            const recordingElement = document.createElement('div');
+            recordingElement.className = 'bg-gray-700 p-3 rounded-lg flex justify-between items-center';
+            recordingElement.innerHTML = `
+                <div>
+                    <div class="font-semibold text-white">Recording ${new Date(recording.date).toLocaleTimeString()}</div>
+                    <div class="text-sm text-gray-400">${recording.missionType} mission</div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="playRecording('${recording.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                        ▶️ Play
+                    </button>
+                    <button onclick="deleteRecording('${recording.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        🗑️ Delete
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(recordingElement);
+        }
+
+        function playRecording(recordingId) {
+            const recording = gameData.recordings.find(r => r.id === recordingId);
+            if (recording) {
+                const audio = new Audio(recording.url);
+                audio.play();
+            }
+        }
+
+        function deleteRecording(recordingId) {
+            if (confirm('Delete this recording?')) {
+                gameData.recordings = gameData.recordings.filter(r => r.id !== recordingId);
+                saveGameData();
+                updateProgressScreen();
+                showNotification('Recording deleted');
+            }
+        }
+
+        // Vocabulary Functions
+        function loadVocabulary() {
+            loadAdvancedVocab();
+            loadAcademicVocab();
+            loadCustomVocab();
+        }
+
+        function loadAdvancedVocab() {
+            const container = document.getElementById('advancedVocabList');
+            container.innerHTML = advancedVocabulary.map(vocab => `
+                <div class="vocab-card" onclick="showVocabDetails('${vocab.word}', '${vocab.definition}', '${vocab.example}')">
+                    <div class="font-semibold text-white mb-1">${vocab.word}</div>
+                    <div class="text-sm text-gray-400">${vocab.definition}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadAcademicVocab() {
+            const container = document.getElementById('academicVocabList');
+            container.innerHTML = academicVocabulary.map(vocab => `
+                <div class="vocab-card" onclick="showVocabDetails('${vocab.word}', '${vocab.definition}', '${vocab.example}')">
+                    <div class="font-semibold text-white mb-1">${vocab.word}</div>
+                    <div class="text-sm text-gray-400">${vocab.definition}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadCustomVocab() {
+            const container = document.getElementById('customVocabList');
+            
+            if (gameData.vocabulary.custom.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No custom words added yet</div>';
+                return;
+            }
+            
+            container.innerHTML = gameData.vocabulary.custom.map(vocab => `
+                <div class="vocab-card">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-white mb-1">${vocab.word}</div>
+                            <div class="text-sm text-gray-400">${vocab.definition}</div>
+                        </div>
+                        <button onclick="deleteCustomVocab('${vocab.id}')" class="text-red-400 text-sm ml-3">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getRandomVocab() {
+            const allVocab = [...advancedVocabulary, ...academicVocabulary];
+            const randomVocab = allVocab[Math.floor(Math.random() * allVocab.length)];
+            showVocabDetails(randomVocab.word, randomVocab.definition, randomVocab.example);
+        }
+
+        function showVocabDetails(word, definition, example) {
+            showNotification(`📚 ${word}: ${definition}`);
+        }
+
+        function addCustomVocab() {
+            document.getElementById('newVocabWord').focus();
+        }
+
+        function saveCustomVocab() {
+            const word = document.getElementById('newVocabWord').value.trim();
+            const definition = document.getElementById('newVocabDefinition').value.trim();
+            
+            if (!word || !definition) {
+                showNotification('Please enter both word and definition');
+                return;
+            }
+            
+            const vocab = {
+                id: Date.now().toString(),
+                word: word,
+                definition: definition,
+                date: new Date().toISOString()
+            };
+            
+            gameData.vocabulary.custom.push(vocab);
+            gameData.vocabulary.learned++;
+            saveGameData();
+            
+            document.getElementById('newVocabWord').value = '';
+            document.getElementById('newVocabDefinition').value = '';
+            
+            loadCustomVocab();
+            showNotification('Word added successfully!');
+            updateAllStats();
+        }
+
+        function deleteCustomVocab(id) {
+            if (confirm('Delete this word?')) {
+                gameData.vocabulary.custom = gameData.vocabulary.custom.filter(v => v.id !== id);
+                gameData.vocabulary.learned = Math.max(0, gameData.vocabulary.learned - 1);
+                saveGameData();
+                loadCustomVocab();
+                updateAllStats();
+                showNotification('Word deleted');
+            }
+        }
+
+        // Phrases Functions
+        function loadPhrases() {
+            loadCustomPhrases();
+        }
+
+        function loadCustomPhrases() {
+            const container = document.getElementById('customPhrasesList');
+            
+            if (gameData.phrases.custom.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No custom phrases added yet</div>';
+                return;
+            }
+            
+            container.innerHTML = gameData.phrases.custom.map(phrase => `
+                <div class="vocab-card">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-white mb-1">${phrase.text}</div>
+                            <div class="text-sm text-gray-400">${phrase.category}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copyPhrase('${phrase.text}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">Copy</button>
+                            <button onclick="deleteCustomPhrase('${phrase.id}')" class="text-red-400 text-xs">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getRandomPhrase() {
+            const phrases = [
+                "Furthermore, it's important to note that...",
+                "On the other hand, we should consider...",
+                "As a result of this, we can conclude...",
+                "I'd like to emphasize the significance of...",
+                "It's worth mentioning that...",
+                "From my perspective, I believe..."
+            ];
+            
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            copyPhrase(randomPhrase);
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = phrase;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function saveCustomPhrase() {
+            const text = document.getElementById('newPhrase').value.trim();
+            const category = document.getElementById('newPhraseCategory').value.trim();
+            
+            if (!text || !category) {
+                showNotification('Please enter both phrase and category');
+                return;
+            }
+            
+            const phrase = {
+                id: Date.now().toString(),
+                text: text,
+                category: category,
+                date: new Date().toISOString()
+            };
+            
+            gameData.phrases.custom.push(phrase);
+            saveGameData();
+            
+            document.getElementById('newPhrase').value = '';
+            document.getElementById('newPhraseCategory').value = '';
+            
+            loadCustomPhrases();
+            showNotification('Phrase added successfully!');
+        }
+
+        function deleteCustomPhrase(id) {
+            if (confirm('Delete this phrase?')) {
+                gameData.phrases.custom = gameData.phrases.custom.filter(p => p.id !== id);
+                saveGameData();
+                loadCustomPhrases();
+                showNotification('Phrase deleted');
+            }
+        }
+
+        // Focus Session Functions
+        function startFocusSession() {
+            let focusTimeLeft = 25 * 60; // 25 minutes
+            let breathingPhase = 'inhale';
+            
+            document.getElementById('startFocusBtn').disabled = true;
+            document.getElementById('stopFocusBtn').disabled = false;
+            
+            focusTimer = setInterval(() => {
+                focusTimeLeft--;
+                updateFocusTimer(focusTimeLeft);
+                
+                if (focusTimeLeft <= 0) {
+                    stopFocusSession();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateFocusTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('focusTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            const messages = [...gameData.motivationalMessages];
+            if (messages.length > 0) {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopFocusSession() {
+            if (focusTimer) {
+                clearInterval(focusTimer);
+                clearInterval(breathingInterval);
+                focusTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startFocusBtn').disabled = false;
+            document.getElementById('stopFocusBtn').disabled = true;
+            
+            gameData.analytics.sessionsToday++;
+            saveGameData();
+            
+            showAchievement('🧘 Focus session completed! Mind refreshed!');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) {
+                showNotification('Please enter a message');
+                return;
+            }
+            
+            gameData.motivationalMessages.push(message);
+            saveGameData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMotivationalMessages();
+            showNotification('Motivational message added!');
+        }
+
+        function loadCustomMotivationalMessages() {
+            const container = document.getElementById('customMotivationalMessages');
+            const customMessages = gameData.motivationalMessages.slice(5); // Skip default messages
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            gameData.motivationalMessages.splice(index, 1);
+            saveGameData();
+            loadCustomMotivationalMessages();
+            showNotification('Message removed');
+        }
+
+        // Custom Mission Functions
+        function createCustomMission() {
+            document.getElementById('customMissionModal').classList.remove('hidden');
+        }
+
+        function closeCustomMissionModal() {
+            document.getElementById('customMissionModal').classList.add('hidden');
+        }
+
+        function saveCustomMission() {
+            const title = document.getElementById('customMissionTitle').value.trim();
+            const type = document.getElementById('customMissionType').value;
+            const description = document.getElementById('customMissionDescription').value.trim();
+            const xp = parseInt(document.getElementById('customMissionXP').value);
+            
+            if (!title || !description) {
+                showNotification('Please fill in all required fields');
+                return;
+            }
+            
+            const mission = {
+                id: Date.now().toString(),
+                title: title,
+                type: type,
+                description: description,
+                xp: xp,
+                date: new Date().toISOString()
+            };
+            
+            gameData.customMissions.push(mission);
+            saveGameData();
+            
+            closeCustomMissionModal();
+            loadCustomMissions();
+            showNotification('Custom mission created!');
+            
+            // Clear form
+            document.getElementById('customMissionTitle').value = '';
+            document.getElementById('customMissionDescription').value = '';
+            document.getElementById('customMissionXP').value = '50';
+        }
+
+        function loadCustomMissions() {
+            const container = document.getElementById('customMissionsList');
+            
+            if (gameData.customMissions.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No custom missions created yet</div>';
+                return;
+            }
+            
+            container.innerHTML = gameData.customMissions.map(mission => `
+                <div class="vocab-card">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-white mb-1">${mission.title}</div>
+                            <div class="text-sm text-gray-400 mb-2">${mission.description}</div>
+                            <div class="xp-badge">+${mission.xp} XP</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="startCustomMission('${mission.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                Start
+                            </button>
+                            <button onclick="deleteCustomMission('${mission.id}')" class="text-red-400 text-sm">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startCustomMission(missionId) {
+            const mission = gameData.customMissions.find(m => m.id === missionId);
+            if (!mission) return;
+            
+            currentMission = {
+                type: mission.type,
+                subtype: 'custom',
+                startTime: Date.now(),
+                timeLeft: 25 * 60,
+                xpReward: mission.xp,
+                customData: mission
+            };
+            
+            document.getElementById('activeMissionContainer').classList.remove('hidden');
+            document.getElementById('missionType').textContent = mission.title;
+            document.getElementById('missionContent').innerHTML = `
+                <h4 class="text-xl font-bold text-accent mb-4">${mission.title}</h4>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <p class="text-white">${mission.description}</p>
+                </div>
+            `;
+            
+            startMissionTimer();
+            showScreen('missions');
+        }
+
+        function deleteCustomMission(missionId) {
+            if (confirm('Delete this custom mission?')) {
+                gameData.customMissions = gameData.customMissions.filter(m => m.id !== missionId);
+                saveGameData();
+                loadCustomMissions();
+                showNotification('Custom mission deleted');
+            }
+        }
+
+        // Progress & Analytics Functions
+        function updateProgressScreen() {
+            document.getElementById('totalMissionsCompleted').textContent = gameData.missions.completed;
+            document.getElementById('totalStudyTime').textContent = Math.floor(gameData.missions.totalTime / 60);
+            document.getElementById('wordsLearned').textContent = gameData.vocabulary.learned;
+            document.getElementById('longestStreak').textContent = gameData.player.longestStreak;
+            
+            loadSavedRecordings();
+        }
+
+        function loadSavedRecordings() {
+            const container = document.getElementById('savedRecordingsList');
+            
+            if (gameData.recordings.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No recordings saved yet</div>';
+                return;
+            }
+            
+            container.innerHTML = gameData.recordings.map(recording => `
+                <div class="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+                    <div>
+                        <div class="font-semibold text-white">${recording.missionType} Recording</div>
+                        <div class="text-sm text-gray-400">${new Date(recording.date).toLocaleString()}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="playRecording('${recording.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                            ▶️ Play
+                        </button>
+                        <button onclick="deleteRecording('${recording.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function exportProgressPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('ESL Quest Progress Report', 20, 30);
+            
+            // Date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            // Player Stats
+            doc.setFontSize(16);
+            doc.text('Player Statistics', 20, 65);
+            
+            doc.setFontSize(12);
+            const stats = [
+                `Level: ${gameData.player.level}`,
+                `Total XP: ${gameData.player.xp}`,
+                `Quest Points: ${gameData.player.points}`,
+                `Current Streak: ${gameData.player.streak} days`,
+                `Longest Streak: ${gameData.player.longestStreak} days`,
+                `Missions Completed: ${gameData.missions.completed}`,
+                `Study Time: ${Math.floor(gameData.missions.totalTime / 60)} hours`,
+                `Words Learned: ${gameData.vocabulary.learned}`,
+                `Recordings Saved: ${gameData.recordings.length}`
+            ];
+            
+            let yPos = 80;
+            stats.forEach(stat => {
+                doc.text(stat, 20, yPos);
+                yPos += 10;
+            });
+            
+            // Custom Content
+            if (gameData.vocabulary.custom.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Custom Vocabulary', 20, yPos + 20);
+                
+                doc.setFontSize(10);
+                yPos += 35;
+                gameData.vocabulary.custom.slice(0, 10).forEach(vocab => {
+                    doc.text(`${vocab.word}: ${vocab.definition}`, 20, yPos);
+                    yPos += 8;
+                });
+            }
+            
+            doc.save(`esl-quest-progress-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('Progress report exported to PDF!');
+        }
+
+        function backupData() {
+            const backup = {
+                ...gameData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `esl-quest-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data backup created successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('Import data? This will overwrite your current progress.')) {
+                            gameData = { ...gameData, ...importedData };
+                            saveGameData();
+                            updateAllStats();
+                            showNotification('Data imported successfully!');
+                            location.reload(); // Refresh to show imported data
+                        }
+                    } catch (error) {
+                        showNotification('Error reading backup file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Parent View Functions
+        function updateParentView() {
+            const today = new Date();
+            const thisMonth = today.getMonth();
+            const thisWeek = getWeekNumber(today);
+            
+            // Calculate stats
+            document.getElementById('parentDaysActive').textContent = gameData.player.streak;
+            document.getElementById('parentAvgSession').textContent = gameData.missions.totalTime > 0 ? 
+                Math.round(gameData.missions.totalTime / Math.max(gameData.missions.completed, 1)) : 0;
+            document.getElementById('parentMissionsWeek').textContent = gameData.missions.weeklyProgress;
+            document.getElementById('parentCurrentLevel').textContent = gameData.player.level;
+            
+            generateWeeklyReport();
+        }
+
+        function generateWeeklyReport() {
+            const container = document.getElementById('weeklyReport');
+            const report = `
+                <div class="bg-black bg-opacity-40 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-300">Missions Completed:</span>
+                        <span class="text-accent font-bold">${gameData.missions.weeklyProgress}/15</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-300">Study Time:</span>
+                        <span class="text-accent font-bold">${Math.floor(gameData.missions.totalTime / 60)} hours</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-300">New Words Learned:</span>
+                        <span class="text-accent font-bold">${gameData.vocabulary.learned}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-300">Current Streak:</span>
+                        <span class="text-accent font-bold">${gameData.player.streak} days</span>
+                    </div>
+                    <div class="mt-4 p-3 bg-green-900 bg-opacity-30 rounded border-l-4 border-green-500">
+                        <div class="font-bold text-green-300 mb-1">Progress Summary</div>
+                        <div class="text-gray-300 text-sm">
+                            ${gameData.missions.weeklyProgress >= gameData.settings.weeklyGoal ? 
+                                '🎉 Weekly goal achieved! Excellent consistency.' : 
+                                `📈 ${gameData.settings.weeklyGoal - gameData.missions.weeklyProgress} more missions needed to reach weekly goal.`}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = report;
+        }
+
+        function emailWeeklyReport() {
+            const subject = encodeURIComponent('ESL Quest Weekly Progress Report');
+            const body = encodeURIComponent(`
+Weekly Progress Report for ESL Quest
+
+Missions Completed: ${gameData.missions.weeklyProgress}/15
+Study Time: ${Math.floor(gameData.missions.totalTime / 60)} hours
+New Words Learned: ${gameData.vocabulary.learned}
+Current Streak: ${gameData.player.streak} days
+Current Level: ${gameData.player.level}
+
+Generated on: ${new Date().toLocaleDateString()}
+            `);
+            
+            window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+        }
+
+        function saveParentSettings() {
+            gameData.settings.dailyGoal = parseInt(document.getElementById('dailyGoal').value);
+            gameData.settings.weeklyGoal = parseInt(document.getElementById('weeklyGoal').value);
+            saveGameData();
+            showNotification('Parent settings saved!');
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            document.getElementById('playerLevel').textContent = gameData.player.level;
+            document.getElementById('playerXP').textContent = gameData.player.xp;
+            document.getElementById('currentStreak').textContent = gameData.player.streak;
+            document.getElementById('totalPoints').textContent = gameData.player.points;
+        }
+
+        function showAchievement(message) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement-popup';
+            achievement.textContent = message;
+            
+            document.body.appendChild(achievement);
+            
+            setTimeout(() => {
+                achievement.remove();
+            }, 3000);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-6 py-3 rounded-lg font-bold z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+
+        // Initialize custom content on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomMissions();
+            loadCustomMotivationalMessages();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988297daa6affee5',t:'MTc1OTM5MTI2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
