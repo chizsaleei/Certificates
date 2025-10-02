@@ -1,1 +1,2527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Vision - 10-Year Backcast & Focus Fence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .milestone-ladder {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .milestone-ladder::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #d4af37, rgba(212, 175, 55, 0.3));
+            border-radius: 2px;
+        }
+        
+        .milestone-item {
+            position: relative;
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .milestone-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .milestone-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: #d4af37;
+            border-radius: 50%;
+            border: 3px solid #1a3b2e;
+        }
+        
+        .milestone-10year::before { background: #ef4444; }
+        .milestone-5year::before { background: #f59e0b; }
+        .milestone-3year::before { background: #22c55e; }
+        .milestone-1year::before { background: #3b82f6; }
+        .milestone-90day::before { background: #8b5cf6; }
+        
+        .vision-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .vision-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .focus-fence {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .allow-list {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .waitlist {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .goal-item {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .goal-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .goal-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(212, 175, 55, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .phrase-card {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .quick-setup {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+        
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .step-dot.active {
+            background: #d4af37;
+            transform: scale(1.2);
+        }
+        
+        .step-dot.completed {
+            background: #22c55e;
+        }
+        
+        .cap-warning {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            color: #fca5a5;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">🎯 Life Vision</h1>
+        <p class="text-lg text-gray-300 mb-4">10-Year Backcast & Focus Fence</p>
+        
+        <!-- Quick Stats -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="visionProgress">0%</div>
+                <div class="text-sm text-gray-400">Vision Complete</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="activeGoals">0/3</div>
+                <div class="text-sm text-gray-400">Active Goals</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="reviewStreak">0</div>
+                <div class="text-sm text-gray-400">Review Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="daysToGoal">90</div>
+                <div class="text-sm text-gray-400">Days to Next Goal</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('vision')" id="visionBtn" class="nav-btn active">🎯 Vision</button>
+        <button onclick="showScreen('backcast')" id="backcastBtn" class="nav-btn">📈 Backcast</button>
+        <button onclick="showScreen('focus')" id="focusBtn" class="nav-btn">🛡️ Focus Fence</button>
+        <button onclick="showScreen('wisdom')" id="wisdomBtn" class="nav-btn">💬 Vision Wisdom</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">🧘 25-Min Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">📊 Analytics</button>
+    </nav>
+
+    <!-- Floating Quick Add Button -->
+    <div onclick="showQuickAdd()" class="floating-btn" title="Quick Add">+</div>
+
+    <!-- Vision Screen -->
+    <div id="visionScreen" class="screen p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">🎯 Your Life Vision</h2>
+                <p class="text-gray-300">Create a vivid, sensory-rich picture of your ideal future</p>
+            </div>
+
+            <!-- Quick Setup -->
+            <div id="quickSetup" class="quick-setup">
+                <h3 class="text-xl font-bold text-green-400 mb-4">⚡ 3-Minute Vision Setup</h3>
+                <div class="step-indicator">
+                    <div class="step-dot active" id="step1"></div>
+                    <div class="step-dot" id="step2"></div>
+                    <div class="step-dot" id="step3"></div>
+                </div>
+                
+                <div id="setupStep1" class="setup-step">
+                    <h4 class="text-lg font-bold text-white mb-3">Step 1: What does success look like in 10 years?</h4>
+                    <div class="flex gap-3 mb-2">
+                        <button onclick="startVoiceInput('quickVisionOverview', this)" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
+                            🎤 Voice
+                        </button>
+                    </div>
+                    <textarea id="quickVisionOverview" placeholder="Describe your ideal life in 10 years. What are you doing? Where are you? How do you feel?" 
+                              class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    <button onclick="nextSetupStep()" class="mt-4 bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Next: Add Details →
+                    </button>
+                </div>
+                
+                <div id="setupStep2" class="setup-step hidden">
+                    <h4 class="text-lg font-bold text-white mb-3">Step 2: What do you see, hear, and feel?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">👁️ What you see</label>
+                            <button onclick="startVoiceInput('quickSenses', this)" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickSenses" placeholder="Visual details..." 
+                                      class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">🎵 What you hear</label>
+                            <button onclick="startVoiceInput('quickSounds', this)" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickSounds" placeholder="Sounds, conversations..." 
+                                      class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">❤️ How you feel</label>
+                            <button onclick="startVoiceInput('quickFeelings', this)" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickFeelings" placeholder="Emotions, sensations..." 
+                                      class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="prevSetupStep()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                            ← Back
+                        </button>
+                        <button onclick="nextSetupStep()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Next: Core Values →
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="setupStep3" class="setup-step hidden">
+                    <h4 class="text-lg font-bold text-white mb-3">Step 3: What values drive this vision?</h4>
+                    <div class="flex gap-3 mb-2">
+                        <button onclick="startVoiceInput('quickValues', this)" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
+                            🎤 Voice
+                        </button>
+                    </div>
+                    <textarea id="quickValues" placeholder="What principles and values are most important in this future?" 
+                              class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none mb-4"></textarea>
+                    <div class="flex gap-3">
+                        <button onclick="prevSetupStep()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                            ← Back
+                        </button>
+                        <button onclick="completeQuickSetup()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                            🎯 Create Vision
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vision Pages -->
+            <div id="visionPages" class="space-y-6">
+                <!-- Vision pages will be populated here -->
+            </div>
+
+            <!-- Add Vision Page -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">➕ Add Vision Page</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Title</label>
+                        <input type="text" id="visionTitle" placeholder="e.g., Career Success, Family Life" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Timeframe</label>
+                        <select id="visionTimeframe" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="10year">10 Years</option>
+                            <option value="5year">5 Years</option>
+                            <option value="3year">3 Years</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-white font-semibold mb-2">Vision Description</label>
+                    <div class="flex gap-3 mb-2">
+                        <button onclick="startVisionVoice()" id="visionVoiceBtn" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                            🎤 Voice Vision
+                        </button>
+                        <button onclick="stopVisionVoice()" id="stopVisionBtn" 
+                                class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold" disabled>
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                    <textarea id="visionDescription" placeholder="Describe this aspect of your vision in vivid detail..." 
+                              class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">👁️ Senses (What you see)</label>
+                        <button onclick="startVoiceInput('visionSenses', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="visionSenses" placeholder="Visual details, colors, scenes..." 
+                                  class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">🎵 Scenes (What's happening)</label>
+                        <button onclick="startVoiceInput('visionScenes', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="visionScenes" placeholder="Activities, interactions, moments..." 
+                                  class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">❤️ Values (What matters)</label>
+                        <button onclick="startVoiceInput('visionValues', this)" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mb-2">
+                            🎤 Voice
+                        </button>
+                        <textarea id="visionValues" placeholder="Core principles, what's important..." 
+                                  class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                </div>
+                
+                <button onclick="saveVisionPage()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                    💾 Save Vision Page
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backcast Screen -->
+    <div id="backcastScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📈 Milestone Backcast</h2>
+                <p class="text-gray-300">Work backwards from your vision to create actionable milestones</p>
+            </div>
+
+            <!-- Milestone Ladder -->
+            <div class="milestone-ladder">
+                <!-- 10 Year Vision -->
+                <div class="milestone-item milestone-10year">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-red-400 mb-2">🎯 10-Year Vision</h3>
+                            <div id="tenYearSummary" class="text-gray-300 mb-4">
+                                Complete your vision above to see your 10-year destination
+                            </div>
+                        </div>
+                        <button onclick="editMilestone('10year')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5 Year Milestone -->
+                <div class="milestone-item milestone-5year">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-orange-400 mb-2">🚀 5-Year Milestone</h3>
+                            <div id="fiveYearContent" class="text-gray-300 mb-4">
+                                What major progress will you have made by year 5?
+                            </div>
+                        </div>
+                        <button onclick="editMilestone('5year')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- 3 Year Milestone -->
+                <div class="milestone-item milestone-3year">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-green-400 mb-2">🌱 3-Year Milestone</h3>
+                            <div id="threeYearContent" class="text-gray-300 mb-4">
+                                What foundation will be established by year 3?
+                            </div>
+                        </div>
+                        <button onclick="editMilestone('3year')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
+                    </div>
+                </div>
+
+                <!-- 1 Year Milestone -->
+                <div class="milestone-item milestone-1year">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-blue-400 mb-2">⚡ 1-Year Milestone</h3>
+                            <div id="oneYearContent" class="text-gray-300 mb-4">
+                                What will you accomplish in the next 12 months?
+                            </div>
+                        </div>
+                        <button onclick="editMilestone('1year')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- 90 Day Sprint -->
+                <div class="milestone-item milestone-90day">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-purple-400 mb-2">🏃 90-Day Sprint</h3>
+                            <div id="ninetyDayContent" class="text-gray-300 mb-4">
+                                What specific actions will you take in the next 90 days?
+                            </div>
+                        </div>
+                        <button onclick="editMilestone('90day')" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick 90-Day Plan -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">⚡ Quick 90-Day Action Plan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">🎯 Goal 1</label>
+                        <input type="text" id="goal1" placeholder="Primary focus..." 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">🎯 Goal 2</label>
+                        <input type="text" id="goal2" placeholder="Secondary focus..." 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">🎯 Goal 3</label>
+                        <input type="text" id="goal3" placeholder="Third focus..." 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                <button onclick="create90DayPlan()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                    🚀 Create 90-Day Plan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Fence Screen -->
+    <div id="focusScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">🛡️ Focus Fence</h2>
+                <p class="text-gray-300">Protect your One Thing with hard caps and smart prioritization</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Allow List (Active Goals) -->
+                <div class="allow-list">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-green-400">✅ Allow List</h3>
+                        <div class="text-sm">
+                            <span id="allowCount">0</span>/3 Active
+                        </div>
+                    </div>
+                    <div id="allowListGoals" class="space-y-3 min-h-32">
+                        <!-- Active goals will be populated here -->
+                    </div>
+                    <div id="allowCapWarning" class="cap-warning hidden">
+                        ⚠️ Allow List is full! Move goals to waitlist or complete current ones.
+                    </div>
+                </div>
+
+                <!-- Waitlist -->
+                <div class="waitlist">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-orange-400">⏳ Waitlist</h3>
+                        <div class="text-sm">
+                            <span id="waitCount">0</span> Waiting
+                        </div>
+                    </div>
+                    <div id="waitlistGoals" class="space-y-3 min-h-32">
+                        <!-- Waitlist goals will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Rejected/Someday -->
+                <div class="focus-fence">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-red-400">🚫 Someday/Maybe</h3>
+                        <div class="text-sm">
+                            <span id="rejectedCount">0</span> Parked
+                        </div>
+                    </div>
+                    <div id="rejectedGoals" class="space-y-3 min-h-32">
+                        <!-- Rejected goals will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Goal -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">➕ Add New Goal</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Goal Title</label>
+                        <input type="text" id="newGoalTitle" placeholder="What do you want to achieve?" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Priority Level</label>
+                        <select id="newGoalPriority" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="high">🔥 High - Must do now</option>
+                            <option value="medium">⚡ Medium - Important but can wait</option>
+                            <option value="low">💭 Low - Someday/Maybe</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-white font-semibold mb-2">Description & Why</label>
+                    <button onclick="startVoiceInput('newGoalDescription', this)" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                        🎤 Voice
+                    </button>
+                    <textarea id="newGoalDescription" placeholder="Why is this goal important? What will achieving it do for you?" 
+                              class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Deadline</label>
+                        <input type="date" id="newGoalDeadline" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Effort Level</label>
+                        <select id="newGoalEffort" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="low">🟢 Low - 1-5 hours/week</option>
+                            <option value="medium">🟡 Medium - 5-15 hours/week</option>
+                            <option value="high">🔴 High - 15+ hours/week</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="addNewGoal()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                    🎯 Add Goal
+                </button>
+            </div>
+
+            <!-- Focus Rules -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📋 Focus Fence Rules</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-green-600 bg-opacity-20 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-400 mb-2">✅ Allow List (Max 3)</h4>
+                        <p class="text-sm text-gray-300">Your current active goals. Focus here until complete.</p>
+                    </div>
+                    <div class="bg-orange-600 bg-opacity-20 p-4 rounded-lg">
+                        <h4 class="font-bold text-orange-400 mb-2">⏳ Waitlist (No Limit)</h4>
+                        <p class="text-sm text-gray-300">Important goals waiting for a slot to open up.</p>
+                    </div>
+                    <div class="bg-red-600 bg-opacity-20 p-4 rounded-lg">
+                        <h4 class="font-bold text-red-400 mb-2">🚫 Someday/Maybe</h4>
+                        <p class="text-sm text-gray-300">Ideas parked for future consideration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vision Wisdom Screen -->
+    <div id="wisdomScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💬 Vision Wisdom & Power Phrases</h2>
+                <p class="text-gray-300">Powerful phrases for vision clarity, priority, and smart tradeoffs</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Vision Clarity -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🎯 Vision Clarity</h3>
+                    <div id="visionPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newVisionPhrase" placeholder="Add vision phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addVisionPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Priority Focus -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">⚡ Priority Focus</h3>
+                    <div id="priorityPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newPriorityPhrase" placeholder="Add priority phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addPriorityPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Smart Tradeoffs -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">⚖️ Smart Tradeoffs</h3>
+                    <div id="tradeoffPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newTradeoffPhrase" placeholder="Add tradeoff phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addTradeoffPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">🧘 25-Minute Vision Reset</h2>
+            
+            <div class="breathing-circle mb-8" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold mb-8" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 py-4 bg-black bg-opacity-40 rounded-lg mb-8">
+                "The future belongs to those who believe in the beauty of their dreams."
+            </div>
+            
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Vision Mantras</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newVisionMantra" placeholder="Add your vision mantra..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addVisionMantra()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMantras" class="space-y-2">
+                    <!-- Custom mantras will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📊 Vision Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="visionCompleteness">0%</div>
+                    <div class="text-gray-400">Vision Complete</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">📈</div>
+                    <div class="text-2xl font-bold text-white" id="milestonesSet">0/5</div>
+                    <div class="text-gray-400">Milestones Set</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">✅</div>
+                    <div class="text-2xl font-bold text-white" id="goalsCompleted">0</div>
+                    <div class="text-gray-400">Goals Completed</div>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="longestStreak">0</div>
+                    <div class="text-gray-400">Longest Streak</div>
+                </div>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📊 Progress Overview</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Vision Pages Created</span>
+                            <span class="text-accent font-bold" id="visionPagesCount">0</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="visionPagesProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Milestones Defined</span>
+                            <span class="text-accent font-bold" id="milestonesProgress">0/5</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="milestonesProgressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white">Focus Fence Usage</span>
+                            <span class="text-accent font-bold" id="focusUsage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="focusUsageBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportVisionPDF()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Vision PDF
+                    </button>
+                    <button onclick="export90DayPlan()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📋 90-Day Plan
+                    </button>
+                    <button onclick="backupAllData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">⚡ Quick Add</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">What would you like to add?</label>
+                    <select id="quickAddType" onchange="updateQuickAddForm()" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="vision">🎯 Vision Page</option>
+                        <option value="milestone">📈 Milestone</option>
+                        <option value="goal">🎯 Goal</option>
+                        <option value="mantra">💭 Vision Mantra</option>
+                    </select>
+                </div>
+                
+                <div id="quickAddForm">
+                    <!-- Form will be populated based on selection -->
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveQuickAdd()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                        💾 Save
+                    </button>
+                    <button onclick="closeQuickAdd()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Milestone Edit Modal -->
+    <div id="milestoneModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent" id="milestoneModalTitle">Edit Milestone</h3>
+                <button onclick="closeMilestoneModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">Milestone Description</label>
+                    <button onclick="startVoiceInput('milestoneDescription', this)" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                        🎤 Voice
+                    </button>
+                    <textarea id="milestoneDescription" placeholder="What will you achieve by this timeframe?" 
+                              class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Key Outcomes</label>
+                    <button onclick="startVoiceInput('milestoneOutcomes', this)" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                        🎤 Voice
+                    </button>
+                    <textarea id="milestoneOutcomes" placeholder="What specific results or changes will be visible?" 
+                              class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Success Metrics</label>
+                    <button onclick="startVoiceInput('milestoneMetrics', this)" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                        🎤 Voice
+                    </button>
+                    <textarea id="milestoneMetrics" placeholder="How will you measure success?" 
+                              class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveMilestone()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                        💾 Save Milestone
+                    </button>
+                    <button onclick="closeMilestoneModal()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            visionPages: [],
+            milestones: {
+                '10year': { description: '', outcomes: '', metrics: '' },
+                '5year': { description: '', outcomes: '', metrics: '' },
+                '3year': { description: '', outcomes: '', metrics: '' },
+                '1year': { description: '', outcomes: '', metrics: '' },
+                '90day': { description: '', outcomes: '', metrics: '' }
+            },
+            goals: {
+                allow: [],
+                waitlist: [],
+                rejected: []
+            },
+            wisdom: {
+                vision: [
+                    "A goal is a dream with a deadline.",
+                    "Vision without action is merely a dream. Action without vision just passes the time. Vision with action can change the world.",
+                    "The future belongs to those who believe in the beauty of their dreams.",
+                    "Your only limit is your mind.",
+                    "If you can dream it, you can achieve it."
+                ],
+                priority: [
+                    "The main thing is to keep the main thing the main thing.",
+                    "You can do anything, but not everything.",
+                    "Focus is about saying no to the hundred other good ideas.",
+                    "The successful warrior is the average person with laser-like focus.",
+                    "Concentrate all your thoughts upon the work at hand."
+                ],
+                tradeoffs: [
+                    "Every yes is a thousand nos.",
+                    "The art of being wise is knowing what to overlook.",
+                    "You can have anything you want in life, but you can't have everything you want.",
+                    "Good is the enemy of great.",
+                    "The difference between successful people and really successful people is that really successful people say no to almost everything."
+                ]
+            },
+            mantras: [
+                "The future belongs to those who believe in the beauty of their dreams.",
+                "I am creating my ideal future through focused action today.",
+                "My vision guides every decision I make.",
+                "I choose progress over perfection.",
+                "Every step forward brings my vision closer to reality."
+            ],
+            progress: {
+                reviewStreak: 0,
+                longestReviewStreak: 0,
+                goalsCompleted: 0,
+                visionPagesCreated: 0,
+                milestonesSet: 0
+            },
+            settings: {
+                maxActiveGoals: 3,
+                reviewFrequency: 'weekly'
+            }
+        };
+
+        // Quick setup state
+        let setupStep = 1;
+        let setupData = {};
+
+        // Timer variables
+        let resetTimer = null;
+        let breathingInterval = null;
+        let recognition = null;
+        let isListening = false;
+        let currentEditingMilestone = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            loadVisionPages();
+            loadMilestones();
+            loadFocusFence();
+            loadWisdom();
+            loadMantras();
+            initializeSpeechRecognition();
+            checkQuickSetupVisibility();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('lifeVisionData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('lifeVisionData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'vision': 
+                    loadVisionPages();
+                    checkQuickSetupVisibility();
+                    break;
+                case 'backcast': 
+                    loadMilestones();
+                    updateMilestoneSummary();
+                    break;
+                case 'focus': 
+                    loadFocusFence();
+                    break;
+                case 'wisdom': 
+                    loadWisdom(); 
+                    break;
+                case 'analytics': 
+                    loadAnalytics(); 
+                    break;
+            }
+        }
+
+        // Quick Setup Functions
+        function checkQuickSetupVisibility() {
+            const hasVisionPages = appData.visionPages.length > 0;
+            const quickSetup = document.getElementById('quickSetup');
+            
+            if (hasVisionPages) {
+                quickSetup.style.display = 'none';
+            } else {
+                quickSetup.style.display = 'block';
+                setupStep = 1;
+                showSetupStep(1);
+            }
+        }
+
+        function showSetupStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.setup-step').forEach(el => el.classList.add('hidden'));
+            
+            // Show current step
+            document.getElementById(`setupStep${step}`).classList.remove('hidden');
+            
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`step${i}`);
+                dot.classList.remove('active', 'completed');
+                
+                if (i < step) {
+                    dot.classList.add('completed');
+                } else if (i === step) {
+                    dot.classList.add('active');
+                }
+            }
+        }
+
+        function nextSetupStep() {
+            // Save current step data
+            if (setupStep === 1) {
+                setupData.overview = document.getElementById('quickVisionOverview').value.trim();
+                if (!setupData.overview) {
+                    showNotification('Please describe your 10-year vision');
+                    return;
+                }
+            } else if (setupStep === 2) {
+                setupData.senses = document.getElementById('quickSenses').value.trim();
+                setupData.sounds = document.getElementById('quickSounds').value.trim();
+                setupData.feelings = document.getElementById('quickFeelings').value.trim();
+            }
+            
+            setupStep++;
+            showSetupStep(setupStep);
+        }
+
+        function prevSetupStep() {
+            setupStep--;
+            showSetupStep(setupStep);
+        }
+
+        function completeQuickSetup() {
+            setupData.values = document.getElementById('quickValues').value.trim();
+            
+            if (!setupData.values) {
+                showNotification('Please enter your core values');
+                return;
+            }
+            
+            // Create vision page from setup data
+            const visionPage = {
+                id: Date.now().toString(),
+                title: '10-Year Life Vision',
+                timeframe: '10year',
+                description: setupData.overview,
+                senses: setupData.senses,
+                scenes: setupData.sounds,
+                values: setupData.values + ' ' + setupData.feelings,
+                createdAt: new Date().toISOString()
+            };
+            
+            appData.visionPages.push(visionPage);
+            appData.progress.visionPagesCreated++;
+            
+            // Update 10-year milestone
+            appData.milestones['10year'].description = setupData.overview;
+            appData.progress.milestonesSet++;
+            
+            saveAppData();
+            updateAllStats();
+            loadVisionPages();
+            checkQuickSetupVisibility();
+            
+            showNotification('🎯 Vision created! Now let\'s build your roadmap.');
+            
+            // Auto-switch to backcast screen
+            setTimeout(() => {
+                showScreen('backcast');
+            }, 2000);
+        }
+
+        // Vision Page Management
+        function loadVisionPages() {
+            const container = document.getElementById('visionPages');
+            
+            if (appData.visionPages.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3 class="text-lg font-bold mb-2">No vision pages yet</h3>
+                        <p class="mb-4">Complete the 3-minute setup above or add your first vision page</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.visionPages.map(page => `
+                <div class="vision-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-xl font-bold text-accent">${page.title}</h3>
+                                <span class="bg-purple-600 text-white px-2 py-1 rounded text-sm">${getTimeframeLabel(page.timeframe)}</span>
+                            </div>
+                            <div class="text-gray-300 mb-4">${page.description}</div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                ${page.senses ? `
+                                    <div class="bg-gray-800 p-3 rounded">
+                                        <h4 class="text-sm font-bold text-blue-400 mb-2">👁️ Senses</h4>
+                                        <p class="text-xs text-gray-300">${page.senses}</p>
+                                    </div>
+                                ` : ''}
+                                ${page.scenes ? `
+                                    <div class="bg-gray-800 p-3 rounded">
+                                        <h4 class="text-sm font-bold text-green-400 mb-2">🎵 Scenes</h4>
+                                        <p class="text-xs text-gray-300">${page.scenes}</p>
+                                    </div>
+                                ` : ''}
+                                ${page.values ? `
+                                    <div class="bg-gray-800 p-3 rounded">
+                                        <h4 class="text-sm font-bold text-purple-400 mb-2">❤️ Values</h4>
+                                        <p class="text-xs text-gray-300">${page.values}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="flex gap-2 ml-4">
+                            <button onclick="editVisionPage('${page.id}')" class="bg-purple-600 text-white px-3 py-2 rounded text-sm">
+                                ✏️
+                            </button>
+                            <button onclick="deleteVisionPage('${page.id}')" class="bg-red-600 text-white px-3 py-2 rounded text-sm">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTimeframeLabel(timeframe) {
+            const labels = {
+                '10year': '10 Years',
+                '5year': '5 Years',
+                '3year': '3 Years',
+                '1year': '1 Year',
+                '90day': '90 Days'
+            };
+            return labels[timeframe] || timeframe;
+        }
+
+        function saveVisionPage() {
+            const title = document.getElementById('visionTitle').value.trim();
+            const timeframe = document.getElementById('visionTimeframe').value;
+            const description = document.getElementById('visionDescription').value.trim();
+            const senses = document.getElementById('visionSenses').value.trim();
+            const scenes = document.getElementById('visionScenes').value.trim();
+            const values = document.getElementById('visionValues').value.trim();
+            
+            if (!title || !description) {
+                showNotification('Please enter title and description');
+                return;
+            }
+            
+            const visionPage = {
+                id: Date.now().toString(),
+                title: title,
+                timeframe: timeframe,
+                description: description,
+                senses: senses,
+                scenes: scenes,
+                values: values,
+                createdAt: new Date().toISOString()
+            };
+            
+            appData.visionPages.push(visionPage);
+            appData.progress.visionPagesCreated++;
+            
+            saveAppData();
+            updateAllStats();
+            loadVisionPages();
+            
+            // Clear form
+            document.getElementById('visionTitle').value = '';
+            document.getElementById('visionDescription').value = '';
+            document.getElementById('visionSenses').value = '';
+            document.getElementById('visionScenes').value = '';
+            document.getElementById('visionValues').value = '';
+            
+            showNotification('🎯 Vision page saved!');
+        }
+
+        function editVisionPage(pageId) {
+            const page = appData.visionPages.find(p => p.id === pageId);
+            if (page) {
+                document.getElementById('visionTitle').value = page.title;
+                document.getElementById('visionTimeframe').value = page.timeframe;
+                document.getElementById('visionDescription').value = page.description;
+                document.getElementById('visionSenses').value = page.senses;
+                document.getElementById('visionScenes').value = page.scenes;
+                document.getElementById('visionValues').value = page.values;
+                
+                // Store edit ID for save function
+                document.getElementById('visionTitle').dataset.editId = pageId;
+            }
+        }
+
+        function deleteVisionPage(pageId) {
+            if (confirm('Delete this vision page? This cannot be undone.')) {
+                appData.visionPages = appData.visionPages.filter(p => p.id !== pageId);
+                saveAppData();
+                updateAllStats();
+                loadVisionPages();
+                checkQuickSetupVisibility();
+                showNotification('🗑️ Vision page deleted');
+            }
+        }
+
+        // Milestone Management
+        function loadMilestones() {
+            updateMilestoneSummary();
+        }
+
+        function updateMilestoneSummary() {
+            // Update 10-year summary from vision pages
+            const tenYearVisions = appData.visionPages.filter(p => p.timeframe === '10year');
+            const tenYearSummary = document.getElementById('tenYearSummary');
+            
+            if (tenYearVisions.length > 0) {
+                const summary = tenYearVisions.map(v => v.description).join(' ');
+                tenYearSummary.textContent = summary.substring(0, 200) + (summary.length > 200 ? '...' : '');
+            } else {
+                tenYearSummary.textContent = 'Complete your vision above to see your 10-year destination';
+            }
+            
+            // Update other milestone content
+            const milestones = ['5year', '3year', '1year', '90day'];
+            milestones.forEach(milestone => {
+                const content = appData.milestones[milestone].description;
+                const element = document.getElementById(milestone.replace('year', 'Year').replace('day', 'Day') + 'Content');
+                if (element) {
+                    element.textContent = content || getDefaultMilestoneText(milestone);
+                }
+            });
+        }
+
+        function getDefaultMilestoneText(milestone) {
+            const defaults = {
+                '5year': 'What major progress will you have made by year 5?',
+                '3year': 'What foundation will be established by year 3?',
+                '1year': 'What will you accomplish in the next 12 months?',
+                '90day': 'What specific actions will you take in the next 90 days?'
+            };
+            return defaults[milestone];
+        }
+
+        function editMilestone(milestone) {
+            currentEditingMilestone = milestone;
+            const milestoneData = appData.milestones[milestone];
+            
+            document.getElementById('milestoneModalTitle').textContent = `Edit ${getTimeframeLabel(milestone)} Milestone`;
+            document.getElementById('milestoneDescription').value = milestoneData.description || '';
+            document.getElementById('milestoneOutcomes').value = milestoneData.outcomes || '';
+            document.getElementById('milestoneMetrics').value = milestoneData.metrics || '';
+            
+            document.getElementById('milestoneModal').classList.remove('hidden');
+        }
+
+        function closeMilestoneModal() {
+            document.getElementById('milestoneModal').classList.add('hidden');
+            currentEditingMilestone = null;
+        }
+
+        function saveMilestone() {
+            if (!currentEditingMilestone) return;
+            
+            const description = document.getElementById('milestoneDescription').value.trim();
+            const outcomes = document.getElementById('milestoneOutcomes').value.trim();
+            const metrics = document.getElementById('milestoneMetrics').value.trim();
+            
+            if (!description) {
+                showNotification('Please enter a milestone description');
+                return;
+            }
+            
+            appData.milestones[currentEditingMilestone] = {
+                description: description,
+                outcomes: outcomes,
+                metrics: metrics
+            };
+            
+            // Count milestones set
+            const milestonesWithContent = Object.values(appData.milestones).filter(m => m.description).length;
+            appData.progress.milestonesSet = milestonesWithContent;
+            
+            saveAppData();
+            updateAllStats();
+            updateMilestoneSummary();
+            closeMilestoneModal();
+            
+            showNotification(`📈 ${getTimeframeLabel(currentEditingMilestone)} milestone saved!`);
+        }
+
+        function create90DayPlan() {
+            const goal1 = document.getElementById('goal1').value.trim();
+            const goal2 = document.getElementById('goal2').value.trim();
+            const goal3 = document.getElementById('goal3').value.trim();
+            
+            if (!goal1) {
+                showNotification('Please enter at least one goal');
+                return;
+            }
+            
+            // Clear existing allow list and add new goals
+            appData.goals.allow = [];
+            
+            const goals = [goal1, goal2, goal3].filter(g => g);
+            goals.forEach((goal, index) => {
+                const newGoal = {
+                    id: Date.now().toString() + index,
+                    title: goal,
+                    description: `90-day focus goal ${index + 1}`,
+                    priority: 'high',
+                    deadline: getDateInDays(90),
+                    effort: 'medium',
+                    createdAt: new Date().toISOString(),
+                    status: 'active'
+                };
+                appData.goals.allow.push(newGoal);
+            });
+            
+            // Update 90-day milestone
+            appData.milestones['90day'].description = goals.join('; ');
+            
+            saveAppData();
+            updateAllStats();
+            loadFocusFence();
+            
+            // Clear form
+            document.getElementById('goal1').value = '';
+            document.getElementById('goal2').value = '';
+            document.getElementById('goal3').value = '';
+            
+            showNotification('🚀 90-day plan created! Check your Focus Fence.');
+            
+            // Auto-switch to focus screen
+            setTimeout(() => {
+                showScreen('focus');
+            }, 2000);
+        }
+
+        // Focus Fence Management
+        function loadFocusFence() {
+            loadAllowList();
+            loadWaitlist();
+            loadRejectedList();
+            updateFocusCounts();
+        }
+
+        function loadAllowList() {
+            const container = document.getElementById('allowListGoals');
+            
+            if (appData.goals.allow.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-4">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <p class="text-sm">No active goals</p>
+                        <p class="text-xs">Add up to 3 focus goals</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.goals.allow.map(goal => createGoalHTML(goal, 'allow')).join('');
+        }
+
+        function loadWaitlist() {
+            const container = document.getElementById('waitlistGoals');
+            
+            if (appData.goals.waitlist.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-4">
+                        <div class="text-2xl mb-2">⏳</div>
+                        <p class="text-sm">No goals waiting</p>
+                        <p class="text-xs">Goals queue up here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.goals.waitlist.map(goal => createGoalHTML(goal, 'waitlist')).join('');
+        }
+
+        function loadRejectedList() {
+            const container = document.getElementById('rejectedGoals');
+            
+            if (appData.goals.rejected.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-4">
+                        <div class="text-2xl mb-2">🚫</div>
+                        <p class="text-sm">No parked goals</p>
+                        <p class="text-xs">Ideas go here for later</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.goals.rejected.map(goal => createGoalHTML(goal, 'rejected')).join('');
+        }
+
+        function createGoalHTML(goal, listType) {
+            const priorityColors = {
+                high: 'text-red-400',
+                medium: 'text-orange-400',
+                low: 'text-gray-400'
+            };
+            
+            const effortIcons = {
+                low: '🟢',
+                medium: '🟡',
+                high: '🔴'
+            };
+            
+            return `
+                <div class="goal-item" draggable="true" data-goal-id="${goal.id}" data-list="${listType}">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="text-white font-bold text-sm flex-1">${goal.title}</h4>
+                        <div class="flex gap-1 ml-2">
+                            <button onclick="moveGoal('${goal.id}', '${listType}', 'up')" class="text-xs bg-green-600 text-white px-1 py-1 rounded">↑</button>
+                            <button onclick="moveGoal('${goal.id}', '${listType}', 'down')" class="text-xs bg-orange-600 text-white px-1 py-1 rounded">↓</button>
+                            <button onclick="completeGoal('${goal.id}', '${listType}')" class="text-xs bg-purple-600 text-white px-1 py-1 rounded">✓</button>
+                            <button onclick="deleteGoal('${goal.id}', '${listType}')" class="text-xs bg-red-600 text-white px-1 py-1 rounded">✕</button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">${goal.description}</div>
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="flex gap-2">
+                            <span class="${priorityColors[goal.priority]}">${goal.priority}</span>
+                            <span>${effortIcons[goal.effort]} ${goal.effort}</span>
+                        </div>
+                        ${goal.deadline ? `<span class="text-gray-500">${new Date(goal.deadline).toLocaleDateString()}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateFocusCounts() {
+            document.getElementById('allowCount').textContent = appData.goals.allow.length;
+            document.getElementById('waitCount').textContent = appData.goals.waitlist.length;
+            document.getElementById('rejectedCount').textContent = appData.goals.rejected.length;
+            
+            // Show/hide cap warning
+            const capWarning = document.getElementById('allowCapWarning');
+            if (appData.goals.allow.length >= appData.settings.maxActiveGoals) {
+                capWarning.classList.remove('hidden');
+            } else {
+                capWarning.classList.add('hidden');
+            }
+        }
+
+        function addNewGoal() {
+            const title = document.getElementById('newGoalTitle').value.trim();
+            const priority = document.getElementById('newGoalPriority').value;
+            const description = document.getElementById('newGoalDescription').value.trim();
+            const deadline = document.getElementById('newGoalDeadline').value;
+            const effort = document.getElementById('newGoalEffort').value;
+            
+            if (!title) {
+                showNotification('Please enter a goal title');
+                return;
+            }
+            
+            const newGoal = {
+                id: Date.now().toString(),
+                title: title,
+                description: description || 'No description provided',
+                priority: priority,
+                deadline: deadline || null,
+                effort: effort,
+                createdAt: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            // Determine which list to add to based on priority and capacity
+            if (priority === 'high' && appData.goals.allow.length < appData.settings.maxActiveGoals) {
+                appData.goals.allow.push(newGoal);
+                newGoal.status = 'active';
+            } else if (priority === 'low') {
+                appData.goals.rejected.push(newGoal);
+                newGoal.status = 'parked';
+            } else {
+                appData.goals.waitlist.push(newGoal);
+                newGoal.status = 'waiting';
+            }
+            
+            saveAppData();
+            updateAllStats();
+            loadFocusFence();
+            
+            // Clear form
+            document.getElementById('newGoalTitle').value = '';
+            document.getElementById('newGoalDescription').value = '';
+            document.getElementById('newGoalDeadline').value = '';
+            
+            showNotification(`🎯 Goal added to ${newGoal.status === 'active' ? 'Allow List' : newGoal.status === 'waiting' ? 'Waitlist' : 'Someday/Maybe'}!`);
+        }
+
+        function moveGoal(goalId, fromList, direction) {
+            const goal = findGoal(goalId, fromList);
+            if (!goal) return;
+            
+            // Remove from current list
+            appData.goals[fromList] = appData.goals[fromList].filter(g => g.id !== goalId);
+            
+            // Determine target list
+            let targetList;
+            if (direction === 'up') {
+                if (fromList === 'rejected') targetList = 'waitlist';
+                else if (fromList === 'waitlist') {
+                    targetList = appData.goals.allow.length < appData.settings.maxActiveGoals ? 'allow' : 'waitlist';
+                } else {
+                    targetList = 'allow'; // Already at top
+                }
+            } else { // down
+                if (fromList === 'allow') targetList = 'waitlist';
+                else if (fromList === 'waitlist') targetList = 'rejected';
+                else {
+                    targetList = 'rejected'; // Already at bottom
+                }
+            }
+            
+            // Add to target list
+            appData.goals[targetList].push(goal);
+            
+            // Update status
+            goal.status = targetList === 'allow' ? 'active' : targetList === 'waitlist' ? 'waiting' : 'parked';
+            
+            saveAppData();
+            updateAllStats();
+            loadFocusFence();
+            
+            showNotification(`🎯 Goal moved to ${targetList === 'allow' ? 'Allow List' : targetList === 'waitlist' ? 'Waitlist' : 'Someday/Maybe'}`);
+        }
+
+        function completeGoal(goalId, fromList) {
+            const goal = findGoal(goalId, fromList);
+            if (!goal) return;
+            
+            if (confirm(`Mark "${goal.title}" as completed?`)) {
+                // Remove from current list
+                appData.goals[fromList] = appData.goals[fromList].filter(g => g.id !== goalId);
+                
+                // Update progress
+                appData.progress.goalsCompleted++;
+                
+                // If removing from allow list, try to promote from waitlist
+                if (fromList === 'allow' && appData.goals.waitlist.length > 0) {
+                    const nextGoal = appData.goals.waitlist.shift();
+                    nextGoal.status = 'active';
+                    appData.goals.allow.push(nextGoal);
+                }
+                
+                saveAppData();
+                updateAllStats();
+                loadFocusFence();
+                
+                showNotification(`✅ Goal "${goal.title}" completed! Great work!`);
+            }
+        }
+
+        function deleteGoal(goalId, fromList) {
+            const goal = findGoal(goalId, fromList);
+            if (!goal) return;
+            
+            if (confirm(`Delete "${goal.title}"? This cannot be undone.`)) {
+                appData.goals[fromList] = appData.goals[fromList].filter(g => g.id !== goalId);
+                
+                saveAppData();
+                updateAllStats();
+                loadFocusFence();
+                
+                showNotification('🗑️ Goal deleted');
+            }
+        }
+
+        function findGoal(goalId, listType) {
+            return appData.goals[listType].find(g => g.id === goalId);
+        }
+
+        // Voice Recognition
+        let currentVoiceTarget = null;
+        let voiceButton = null;
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript && currentVoiceTarget) {
+                        const currentText = currentVoiceTarget.value;
+                        const newText = currentText ? currentText + ' ' + finalTranscript : finalTranscript;
+                        currentVoiceTarget.value = newText;
+                        
+                        // Auto-save for certain fields
+                        if (currentVoiceTarget.id === 'quickVisionOverview' || 
+                            currentVoiceTarget.id === 'quickSenses' || 
+                            currentVoiceTarget.id === 'quickSounds' || 
+                            currentVoiceTarget.id === 'quickFeelings' || 
+                            currentVoiceTarget.id === 'quickValues') {
+                            // Auto-save quick setup data
+                        }
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                    showNotification('Voice recognition error. Please try again.');
+                };
+                
+                recognition.onend = function() {
+                    if (isListening) {
+                        stopVoiceInput();
+                    }
+                };
+            }
+        }
+
+        function startVoiceInput(targetElementId, buttonElement) {
+            if (!recognition) {
+                showNotification('Voice recognition not supported in this browser');
+                return;
+            }
+            
+            if (isListening) {
+                stopVoiceInput();
+                return;
+            }
+            
+            currentVoiceTarget = document.getElementById(targetElementId);
+            voiceButton = buttonElement;
+            
+            if (!currentVoiceTarget) {
+                showNotification('Target element not found');
+                return;
+            }
+            
+            try {
+                recognition.start();
+                isListening = true;
+                
+                // Update button appearance
+                voiceButton.innerHTML = '⏹️ Stop';
+                voiceButton.classList.remove('bg-blue-600');
+                voiceButton.classList.add('bg-red-600');
+                
+                // Add visual feedback to target input
+                currentVoiceTarget.style.borderColor = '#ef4444';
+                currentVoiceTarget.style.boxShadow = '0 0 0 2px rgba(239, 68, 68, 0.3)';
+                
+                showNotification('🎤 Listening... Speak clearly into your microphone');
+            } catch (error) {
+                console.error('Failed to start voice recognition:', error);
+                showNotification('Failed to start voice recognition');
+                stopVoiceInput();
+            }
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+            
+            isListening = false;
+            
+            if (voiceButton) {
+                voiceButton.innerHTML = '🎤 Voice';
+                voiceButton.classList.remove('bg-red-600');
+                voiceButton.classList.add('bg-blue-600');
+            }
+            
+            if (currentVoiceTarget) {
+                currentVoiceTarget.style.borderColor = '#d4af37';
+                currentVoiceTarget.style.boxShadow = 'none';
+            }
+            
+            currentVoiceTarget = null;
+            voiceButton = null;
+        }
+
+        // Legacy functions for backward compatibility
+        function startVisionVoice() {
+            const button = document.getElementById('visionVoiceBtn');
+            startVoiceInput('visionDescription', button);
+        }
+
+        function stopVisionVoice() {
+            stopVoiceInput();
+        }
+
+        // Wisdom Management
+        function loadWisdom() {
+            loadVisionPhrases();
+            loadPriorityPhrases();
+            loadTradeoffPhrases();
+        }
+
+        function loadVisionPhrases() {
+            const container = document.getElementById('visionPhrases');
+            container.innerHTML = appData.wisdom.vision.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadPriorityPhrases() {
+            const container = document.getElementById('priorityPhrases');
+            container.innerHTML = appData.wisdom.priority.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadTradeoffPhrases() {
+            const container = document.getElementById('tradeoffPhrases');
+            container.innerHTML = appData.wisdom.tradeoffs.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addVisionPhrase() {
+            const phrase = document.getElementById('newVisionPhrase').value.trim();
+            if (phrase) {
+                appData.wisdom.vision.push(phrase);
+                document.getElementById('newVisionPhrase').value = '';
+                saveAppData();
+                loadVisionPhrases();
+                showNotification('🎯 Vision phrase added!');
+            }
+        }
+
+        function addPriorityPhrase() {
+            const phrase = document.getElementById('newPriorityPhrase').value.trim();
+            if (phrase) {
+                appData.wisdom.priority.push(phrase);
+                document.getElementById('newPriorityPhrase').value = '';
+                saveAppData();
+                loadPriorityPhrases();
+                showNotification('⚡ Priority phrase added!');
+            }
+        }
+
+        function addTradeoffPhrase() {
+            const phrase = document.getElementById('newTradeoffPhrase').value.trim();
+            if (phrase) {
+                appData.wisdom.tradeoffs.push(phrase);
+                document.getElementById('newTradeoffPhrase').value = '';
+                saveAppData();
+                loadTradeoffPhrases();
+                showNotification('⚖️ Tradeoff phrase added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Reset Session (25-minute breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                    showNotification('🧘 25-minute vision reset completed! Your mind is clear for focused action!');
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomVisionMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomVisionMessage() {
+            if (appData.mantras.length > 0) {
+                const randomMessage = appData.mantras[Math.floor(Math.random() * appData.mantras.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            document.getElementById('resetTimer').textContent = '25:00';
+            document.getElementById('breathingInstruction').textContent = 'Ready to Reset';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+        }
+
+        function addVisionMantra() {
+            const mantra = document.getElementById('newVisionMantra').value.trim();
+            if (!mantra) {
+                showNotification('Please enter a vision mantra');
+                return;
+            }
+            
+            appData.mantras.push(mantra);
+            saveAppData();
+            
+            document.getElementById('newVisionMantra').value = '';
+            loadMantras();
+            showNotification('💭 Vision mantra added!');
+        }
+
+        function loadMantras() {
+            const container = document.getElementById('customMantras');
+            const customMantras = appData.mantras.slice(5); // Skip default mantras
+            
+            if (customMantras.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom mantras yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMantras.map((mantra, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${mantra}"</span>
+                    <button onclick="removeMantra(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMantra(index) {
+            appData.mantras.splice(index, 1);
+            saveAppData();
+            loadMantras();
+            showNotification('🗑️ Mantra removed');
+        }
+
+        // Quick Add Modal
+        function showQuickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+            updateQuickAddForm();
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function updateQuickAddForm() {
+            const type = document.getElementById('quickAddType').value;
+            const form = document.getElementById('quickAddForm');
+            
+            switch(type) {
+                case 'vision':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Vision Title</label>
+                            <input type="text" id="quickVisionTitle" placeholder="e.g., Career Success" 
+                                   class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Description</label>
+                            <button onclick="startVoiceInput('quickVisionDesc', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickVisionDesc" placeholder="Describe this aspect of your vision..." 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    `;
+                    break;
+                case 'milestone':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Timeframe</label>
+                            <select id="quickMilestoneTime" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                                <option value="5year">5 Years</option>
+                                <option value="3year">3 Years</option>
+                                <option value="1year">1 Year</option>
+                                <option value="90day">90 Days</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Milestone Description</label>
+                            <button onclick="startVoiceInput('quickMilestoneDesc', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickMilestoneDesc" placeholder="What will you achieve by this time?" 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    `;
+                    break;
+                case 'goal':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Goal Title</label>
+                            <input type="text" id="quickGoalTitle" placeholder="What do you want to achieve?" 
+                                   class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Priority</label>
+                            <select id="quickGoalPriority" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                                <option value="high">🔥 High - Must do now</option>
+                                <option value="medium">⚡ Medium - Important but can wait</option>
+                                <option value="low">💭 Low - Someday/Maybe</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'mantra':
+                    form.innerHTML = `
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Vision Mantra</label>
+                            <button onclick="startVoiceInput('quickMantraText', this)" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm mb-2">
+                                🎤 Voice
+                            </button>
+                            <textarea id="quickMantraText" placeholder="Enter your inspiring vision mantra..." 
+                                      class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function saveQuickAdd() {
+            const type = document.getElementById('quickAddType').value;
+            
+            switch(type) {
+                case 'vision':
+                    const visionTitle = document.getElementById('quickVisionTitle').value.trim();
+                    const visionDesc = document.getElementById('quickVisionDesc').value.trim();
+                    
+                    if (!visionTitle || !visionDesc) {
+                        showNotification('Please fill in all fields');
+                        return;
+                    }
+                    
+                    const visionPage = {
+                        id: Date.now().toString(),
+                        title: visionTitle,
+                        timeframe: '10year',
+                        description: visionDesc,
+                        senses: '',
+                        scenes: '',
+                        values: '',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    appData.visionPages.push(visionPage);
+                    appData.progress.visionPagesCreated++;
+                    showNotification('🎯 Vision page added!');
+                    break;
+                    
+                case 'milestone':
+                    const milestoneTime = document.getElementById('quickMilestoneTime').value;
+                    const milestoneDesc = document.getElementById('quickMilestoneDesc').value.trim();
+                    
+                    if (!milestoneDesc) {
+                        showNotification('Please enter milestone description');
+                        return;
+                    }
+                    
+                    appData.milestones[milestoneTime].description = milestoneDesc;
+                    const milestonesWithContent = Object.values(appData.milestones).filter(m => m.description).length;
+                    appData.progress.milestonesSet = milestonesWithContent;
+                    showNotification('📈 Milestone added!');
+                    break;
+                    
+                case 'goal':
+                    const goalTitle = document.getElementById('quickGoalTitle').value.trim();
+                    const goalPriority = document.getElementById('quickGoalPriority').value;
+                    
+                    if (!goalTitle) {
+                        showNotification('Please enter goal title');
+                        return;
+                    }
+                    
+                    const newGoal = {
+                        id: Date.now().toString(),
+                        title: goalTitle,
+                        description: 'Quick added goal',
+                        priority: goalPriority,
+                        deadline: null,
+                        effort: 'medium',
+                        createdAt: new Date().toISOString(),
+                        status: 'pending'
+                    };
+                    
+                    // Add to appropriate list
+                    if (goalPriority === 'high' && appData.goals.allow.length < appData.settings.maxActiveGoals) {
+                        appData.goals.allow.push(newGoal);
+                        newGoal.status = 'active';
+                    } else if (goalPriority === 'low') {
+                        appData.goals.rejected.push(newGoal);
+                        newGoal.status = 'parked';
+                    } else {
+                        appData.goals.waitlist.push(newGoal);
+                        newGoal.status = 'waiting';
+                    }
+                    
+                    showNotification('🎯 Goal added!');
+                    break;
+                    
+                case 'mantra':
+                    const mantraText = document.getElementById('quickMantraText').value.trim();
+                    
+                    if (!mantraText) {
+                        showNotification('Please enter mantra text');
+                        return;
+                    }
+                    
+                    appData.mantras.push(mantraText);
+                    showNotification('💭 Mantra added!');
+                    break;
+            }
+            
+            saveAppData();
+            updateAllStats();
+            closeQuickAdd();
+            
+            // Refresh current screen
+            const activeScreen = document.querySelector('.nav-btn.active').id.replace('Btn', '');
+            showScreen(activeScreen);
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+        }
+
+        function updateAnalyticsStats() {
+            const visionCompleteness = calculateVisionCompleteness();
+            const milestonesSet = Object.values(appData.milestones).filter(m => m.description).length;
+            const focusUsage = calculateFocusUsage();
+            
+            document.getElementById('visionCompleteness').textContent = `${visionCompleteness}%`;
+            document.getElementById('milestonesSet').textContent = `${milestonesSet}/5`;
+            document.getElementById('goalsCompleted').textContent = appData.progress.goalsCompleted;
+            document.getElementById('longestStreak').textContent = appData.progress.longestReviewStreak;
+            
+            document.getElementById('visionPagesCount').textContent = appData.visionPages.length;
+            document.getElementById('milestonesProgress').textContent = `${milestonesSet}/5`;
+            document.getElementById('focusUsage').textContent = `${focusUsage}%`;
+            
+            // Update progress bars
+            document.getElementById('visionPagesProgress').style.width = `${Math.min(100, (appData.visionPages.length / 5) * 100)}%`;
+            document.getElementById('milestonesProgressBar').style.width = `${(milestonesSet / 5) * 100}%`;
+            document.getElementById('focusUsageBar').style.width = `${focusUsage}%`;
+        }
+
+        function calculateVisionCompleteness() {
+            if (appData.visionPages.length === 0) return 0;
+            
+            let totalFields = 0;
+            let completedFields = 0;
+            
+            appData.visionPages.forEach(page => {
+                totalFields += 5; // title, description, senses, scenes, values
+                if (page.title) completedFields++;
+                if (page.description) completedFields++;
+                if (page.senses) completedFields++;
+                if (page.scenes) completedFields++;
+                if (page.values) completedFields++;
+            });
+            
+            return totalFields > 0 ? Math.round((completedFields / totalFields) * 100) : 0;
+        }
+
+        function calculateFocusUsage() {
+            const totalGoals = appData.goals.allow.length + appData.goals.waitlist.length + appData.goals.rejected.length;
+            if (totalGoals === 0) return 0;
+            
+            const activeGoals = appData.goals.allow.length;
+            const maxActive = appData.settings.maxActiveGoals;
+            
+            return Math.round((activeGoals / maxActive) * 100);
+        }
+
+        // Export Functions
+        function exportVisionPDF() {
+            if (appData.visionPages.length === 0) {
+                showNotification('No vision pages to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Life Vision Document', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Vision Pages: ${appData.visionPages.length}`, 20, 60);
+            
+            let yPos = 80;
+            
+            appData.visionPages.forEach((page, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(16);
+                doc.text(`${index + 1}. ${page.title}`, 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.text(`Timeframe: ${getTimeframeLabel(page.timeframe)}`, 25, yPos);
+                yPos += 8;
+                
+                const descLines = doc.splitTextToSize(`Description: ${page.description}`, 170);
+                doc.text(descLines, 25, yPos);
+                yPos += descLines.length * 4 + 5;
+                
+                if (page.senses) {
+                    const senseLines = doc.splitTextToSize(`Senses: ${page.senses}`, 170);
+                    doc.text(senseLines, 25, yPos);
+                    yPos += senseLines.length * 4 + 3;
+                }
+                
+                if (page.scenes) {
+                    const sceneLines = doc.splitTextToSize(`Scenes: ${page.scenes}`, 170);
+                    doc.text(sceneLines, 25, yPos);
+                    yPos += sceneLines.length * 4 + 3;
+                }
+                
+                if (page.values) {
+                    const valueLines = doc.splitTextToSize(`Values: ${page.values}`, 170);
+                    doc.text(valueLines, 25, yPos);
+                    yPos += valueLines.length * 4 + 10;
+                }
+            });
+            
+            doc.save(`life-vision-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Vision PDF exported!');
+        }
+
+        function export90DayPlan() {
+            if (appData.goals.allow.length === 0) {
+                showNotification('No active goals to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('90-Day Action Plan', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Active Goals: ${appData.goals.allow.length}`, 20, 60);
+            
+            let yPos = 80;
+            
+            doc.setFontSize(16);
+            doc.text('Active Goals (Allow List)', 20, yPos);
+            yPos += 15;
+            
+            appData.goals.allow.forEach((goal, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`${index + 1}. ${goal.title}`, 25, yPos);
+                yPos += 8;
+                
+                doc.setFontSize(10);
+                doc.text(`Priority: ${goal.priority} | Effort: ${goal.effort}`, 30, yPos);
+                yPos += 6;
+                
+                if (goal.deadline) {
+                    doc.text(`Deadline: ${new Date(goal.deadline).toLocaleDateString()}`, 30, yPos);
+                    yPos += 6;
+                }
+                
+                const descLines = doc.splitTextToSize(`Description: ${goal.description}`, 160);
+                doc.text(descLines, 30, yPos);
+                yPos += descLines.length * 4 + 10;
+            });
+            
+            doc.save(`90-day-plan-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📋 90-day plan exported!');
+        }
+
+        function backupAllData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `life-vision-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Complete backup created!');
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            const visionProgress = calculateVisionCompleteness();
+            const activeGoals = appData.goals.allow.length;
+            const maxGoals = appData.settings.maxActiveGoals;
+            
+            document.getElementById('visionProgress').textContent = `${visionProgress}%`;
+            document.getElementById('activeGoals').textContent = `${activeGoals}/${maxGoals}`;
+            document.getElementById('reviewStreak').textContent = appData.progress.reviewStreak;
+            
+            // Calculate days to next goal (simplified)
+            const nextGoalDays = 90; // Default 90-day cycle
+            document.getElementById('daysToGoal').textContent = nextGoalDays;
+        }
+
+        function getDateInDays(days) {
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            return date.toISOString().split('T')[0];
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'visionTitle') {
+                    saveVisionPage();
+                } else if (activeElement.id === 'newGoalTitle') {
+                    addNewGoal();
+                } else if (activeElement.id === 'newVisionPhrase') {
+                    addVisionPhrase();
+                } else if (activeElement.id === 'newPriorityPhrase') {
+                    addPriorityPhrase();
+                } else if (activeElement.id === 'newTradeoffPhrase') {
+                    addTradeoffPhrase();
+                } else if (activeElement.id === 'newVisionMantra') {
+                    addVisionMantra();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98833559f417fee5',t:'MTc1OTM5NzcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
