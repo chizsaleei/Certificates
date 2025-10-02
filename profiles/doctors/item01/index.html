@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical English Simulator - Medical Case Practice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #1e3a2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --primary-gold: #d4af37;
+            --medium-gold: #b8941f;
+            --light-gold: #f4e4a6;
+            --pale-gold: #faf6e8;
+        }
+        
+        .bg-primary-green { background-color: var(--primary-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-primary-gold { background-color: var(--primary-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        
+        .text-primary-green { color: var(--primary-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-primary-gold { color: var(--primary-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-primary-green { border-color: var(--primary-green); }
+        .border-primary-gold { border-color: var(--primary-gold); }
+        
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .recording-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .case-card {
+            background: linear-gradient(135deg, var(--pale-gold) 0%, #ffffff 100%);
+            border: 2px solid var(--light-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+            border-color: var(--primary-gold);
+        }
+        
+        .specialty-badge {
+            background: linear-gradient(45deg, var(--medium-green), var(--light-green));
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        
+        .rubric-band {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+        
+        .band-1 { background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .band-2 { background: linear-gradient(90deg, #ea580c, #f97316); }
+        .band-3 { background: linear-gradient(90deg, #ca8a04, #eab308); }
+        .band-4 { background: linear-gradient(90deg, #16a34a, #22c55e); }
+        .band-5 { background: linear-gradient(90deg, #059669, #10b981); }
+        
+        .phrase-card {
+            background: linear-gradient(135deg, var(--pale-gold) 0%, #f8fafc 100%);
+            border: 1px solid var(--light-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            background: rgba(30, 58, 46, 0.7);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .clinical-input {
+            border: 2px solid var(--light-gold);
+            border-radius: 8px;
+            padding: 12px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .clinical-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .examiner-question {
+            background: linear-gradient(135deg, var(--medium-green) 0%, var(--light-green) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            position: relative;
+        }
+        
+        .examiner-question::before {
+            content: '👨‍⚕️';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-primary-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-primary-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🩺</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Clinical English Simulator</h1>
+                        <p class="text-accent-green font-medium">Medical Case Practice & Professional Communication</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <div class="text-sm text-accent-green">Cases Completed</div>
+                        <div class="text-2xl font-bold text-primary-gold" id="totalCases">0</div>
+                    </div>
+                    <button id="createCaseBtn" class="bg-medium-gold hover:bg-primary-gold px-4 py-2 rounded-lg transition-colors font-semibold mr-3">
+                        ➕ Create Case
+                    </button>
+                    <button id="importBtn" class="bg-medium-gold hover:bg-primary-gold px-4 py-2 rounded-lg transition-colors font-semibold">
+                        📁 Import Cases
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Case Selection -->
+        <div id="caseSelection" class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-primary-green mb-8 text-center">Select Your Clinical Case</h2>
+            
+            <!-- Specialty Filter -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <h3 class="text-xl font-bold text-primary-green mb-4">Choose Specialty</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <button class="specialty-btn bg-medium-gold text-white px-4 py-3 rounded-lg hover:bg-primary-gold transition-colors font-semibold" data-specialty="random">
+                        🎲 Random Case
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="cardiology">
+                        ❤️ Cardiology
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="emergency">
+                        🚨 Emergency
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="critical-care">
+                        🏥 Critical Care
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="hematology">
+                        🩸 Hematology
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="neurology">
+                        🧠 Neurology
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="gastroenterology">
+                        🫁 Gastro
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="endocrinology">
+                        ⚖️ Endocrine
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="nephrology">
+                        🫘 Nephrology
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="infectious-disease">
+                        🦠 Infectious
+                    </button>
+                    <button class="specialty-btn bg-light-green text-white px-4 py-3 rounded-lg hover:bg-medium-green transition-colors" data-specialty="anesthesiology">
+                        💉 Anesthesia
+                    </button>
+                </div>
+            </div>
+
+            <!-- Available Cases -->
+            <div id="casesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cases will be populated here -->
+            </div>
+        </div>
+
+        <!-- Active Simulation -->
+        <div id="activeSimulation" class="hidden max-w-6xl mx-auto">
+            <!-- Simulation Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary-green" id="caseTitle">Clinical Case Simulation</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="specialty-badge" id="caseSpecialty">Cardiology</span>
+                            <span class="text-sm text-gray-600">Phase: <span id="currentPhase">History Taking</span></span>
+                            <span class="text-sm text-gray-600">Time: <span class="timer-display text-primary-gold" id="phaseTimer">15:00</span></span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="pauseBtn" class="bg-medium-gold text-white px-4 py-2 rounded-lg hover:bg-primary-gold transition-colors">
+                            ⏸️ Pause
+                        </button>
+                        <button id="endSimBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            🛑 End
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Case Information -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Patient Presentation -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">📋 Patient Presentation</h3>
+                        <div class="bg-pale-gold p-4 rounded-lg border-l-4 border-primary-gold">
+                            <p class="text-primary-green" id="patientPresentation">Loading case...</p>
+                        </div>
+                        <div class="mt-4" id="vitalSigns"></div>
+                    </div>
+
+                    <!-- Clinical Scaffolds -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">💡 Clinical Scaffolds</h3>
+                        <div class="space-y-3" id="clinicalScaffolds">
+                            <div class="bg-light-gold p-3 rounded-lg">
+                                <div class="font-semibold text-primary-green text-sm">History Framework</div>
+                                <div class="text-xs text-medium-green mt-1">HPC → PMH → DH → FH → SH → Systems Review</div>
+                            </div>
+                            <div class="bg-light-gold p-3 rounded-lg">
+                                <div class="font-semibold text-primary-green text-sm">Differential Approach</div>
+                                <div class="text-xs text-medium-green mt-1">Most likely → Alternative → Red flags</div>
+                            </div>
+                            <div class="bg-light-gold p-3 rounded-lg">
+                                <div class="font-semibold text-primary-green text-sm">Management Structure</div>
+                                <div class="text-xs text-medium-green mt-1">Immediate → Investigations → Treatment → Follow-up</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Simulation Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Phase 1: History Taking -->
+                    <div id="historyPhase" class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">🗣️ History Taking & Summary</h3>
+                        
+                        <!-- Recording Controls -->
+                        <div class="mb-6">
+                            <div class="flex justify-center space-x-4 mb-4">
+                                <button id="startHistoryRecording" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                                    🎤 Record History Questions
+                                </button>
+                                <button id="stopHistoryRecording" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold hidden">
+                                    ⏹️ Stop Recording
+                                </button>
+                            </div>
+                            <div id="historyRecordingStatus" class="text-center text-sm text-gray-600"></div>
+                        </div>
+
+                        <!-- History Summary -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-primary-green mb-2">Clinical History Summary</label>
+                            <textarea id="historySummary" class="clinical-input w-full h-32 resize-none" placeholder="Summarize the key history points you would gather from this patient..."></textarea>
+                        </div>
+
+                        <button id="proceedToDiagnosis" class="w-full bg-medium-green text-white py-3 rounded-lg hover:bg-primary-green transition-colors font-semibold">
+                            Proceed to Diagnosis & Management →
+                        </button>
+                    </div>
+
+                    <!-- Phase 2: Diagnosis & Management -->
+                    <div id="diagnosisPhase" class="bg-white p-6 rounded-xl shadow-lg hidden">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">🔍 Diagnosis & Initial Management</h3>
+                        
+                        <!-- Differential Diagnosis -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-primary-green mb-2">Primary Differential Diagnoses (Select up to 3)</label>
+                            <div id="diagnosisOptions" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <!-- Diagnosis options will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Management Plan -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-primary-green mb-2">Initial Management Plan</label>
+                            <textarea id="managementPlan" class="clinical-input w-full h-32 resize-none" placeholder="Outline your immediate management approach, investigations, and treatment plan..."></textarea>
+                        </div>
+
+                        <button id="proceedToExaminer" class="w-full bg-medium-green text-white py-3 rounded-lg hover:bg-primary-green transition-colors font-semibold">
+                            Submit for Examiner Questions →
+                        </button>
+                    </div>
+
+                    <!-- Phase 3: Examiner Questions -->
+                    <div id="examinerPhase" class="bg-white p-6 rounded-xl shadow-lg hidden">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">👨‍⚕️ Examiner Follow-up Questions</h3>
+                        
+                        <div id="examinerQuestions" class="space-y-6">
+                            <!-- Examiner questions will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Phase 4: Feedback & Results -->
+                    <div id="feedbackPhase" class="bg-white p-6 rounded-xl shadow-lg hidden">
+                        <h3 class="text-xl font-bold text-primary-green mb-6">📊 Performance Feedback</h3>
+                        
+                        <!-- Rubric Scores -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-primary-green mb-4">Clinical Performance Bands</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700">History Taking</span>
+                                        <span class="text-sm font-bold text-primary-gold" id="historyBand">Band 0</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="rubric-band h-2 rounded-full" id="historyBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Clinical Reasoning</span>
+                                        <span class="text-sm font-bold text-primary-gold" id="reasoningBand">Band 0</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="rubric-band h-2 rounded-full" id="reasoningBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Management Planning</span>
+                                        <span class="text-sm font-bold text-primary-gold" id="managementBand">Band 0</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="rubric-band h-2 rounded-full" id="managementBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700">Professional Communication</span>
+                                        <span class="text-sm font-bold text-primary-gold" id="communicationBand">Band 0</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="rubric-band h-2 rounded-full" id="communicationBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Points Missed -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-primary-green mb-4">📝 Key Points & Areas for Improvement</h4>
+                            <div id="missedPoints" class="space-y-2">
+                                <!-- Missed points will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Professional Phrases -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-primary-green mb-4">🎯 Professional Phrases to Practice</h4>
+                            <div id="professionalPhrases" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <!-- Professional phrases will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-4">
+                            <button id="exportPDF" class="flex-1 bg-primary-gold text-white py-3 rounded-lg hover:bg-medium-gold transition-colors font-semibold">
+                                📄 Export PDF Summary
+                            </button>
+                            <button id="newCase" class="flex-1 bg-medium-green text-white py-3 rounded-lg hover:bg-primary-green transition-colors font-semibold">
+                                🔄 New Case
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Case Modal -->
+    <div id="createCaseModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-primary-green mb-6">Create New Clinical Case</h3>
+            
+            <form id="createCaseForm" class="space-y-6">
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-primary-green mb-2">Case Title *</label>
+                        <input type="text" id="newCaseTitle" class="clinical-input w-full" placeholder="e.g., Acute Chest Pain" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-primary-green mb-2">Specialty *</label>
+                        <select id="newCaseSpecialty" class="clinical-input w-full" required>
+                            <option value="">Select specialty...</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="emergency">Emergency Medicine</option>
+                            <option value="critical-care">Critical Care</option>
+                            <option value="hematology">Hematology</option>
+                            <option value="neurology">Neurology</option>
+                            <option value="gastroenterology">Gastroenterology</option>
+                            <option value="endocrinology">Endocrinology</option>
+                            <option value="nephrology">Nephrology</option>
+                            <option value="infectious-disease">Infectious Disease</option>
+                            <option value="anesthesiology">Anesthesiology</option>
+                            <option value="general">General Medicine</option>
+                            <option value="surgery">Surgery</option>
+                            <option value="pediatrics">Pediatrics</option>
+                            <option value="psychiatry">Psychiatry</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Patient Presentation -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Patient Presentation *</label>
+                    <textarea id="newCasePresentation" class="clinical-input w-full h-24 resize-none" placeholder="Describe the patient's presenting complaint, age, relevant background, and initial symptoms..." required></textarea>
+                </div>
+
+                <!-- Vital Signs -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-3">Vital Signs</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Blood Pressure</label>
+                            <input type="text" id="newCaseBP" class="clinical-input w-full text-sm" placeholder="120/80 mmHg">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Heart Rate</label>
+                            <input type="text" id="newCaseHR" class="clinical-input w-full text-sm" placeholder="80 bpm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Respiratory Rate</label>
+                            <input type="text" id="newCaseRR" class="clinical-input w-full text-sm" placeholder="16/min">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Oxygen Saturation</label>
+                            <input type="text" id="newCaseSpO2" class="clinical-input w-full text-sm" placeholder="98% on air">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Temperature</label>
+                            <input type="text" id="newCaseTemp" class="clinical-input w-full text-sm" placeholder="37.0°C">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Differential Diagnoses -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Differential Diagnoses *</label>
+                    <div id="differentialsList" class="space-y-2 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm differential-input" placeholder="Enter differential diagnosis...">
+                            <button type="button" onclick="removeDifferential(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addDifferential" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors text-sm">
+                        + Add Differential
+                    </button>
+                </div>
+
+                <!-- Correct Diagnoses -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Correct/Most Likely Diagnoses *</label>
+                    <div id="correctDiagnosesList" class="space-y-2 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm correct-diagnosis-input" placeholder="Enter correct diagnosis...">
+                            <button type="button" onclick="removeCorrectDiagnosis(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addCorrectDiagnosis" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors text-sm">
+                        + Add Correct Diagnosis
+                    </button>
+                </div>
+
+                <!-- Key Management Points -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Key Management Points *</label>
+                    <div id="keyPointsList" class="space-y-2 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm key-point-input" placeholder="Enter key management point...">
+                            <button type="button" onclick="removeKeyPoint(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addKeyPoint" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors text-sm">
+                        + Add Key Point
+                    </button>
+                </div>
+
+                <!-- Examiner Questions -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Examiner Follow-up Questions</label>
+                    <div id="examinerQuestionsList" class="space-y-2 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm examiner-question-input" placeholder="Enter examiner question...">
+                            <button type="button" onclick="removeExaminerQuestion(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm examiner-question-input" placeholder="Enter examiner question...">
+                            <button type="button" onclick="removeExaminerQuestion(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addExaminerQuestion" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors text-sm">
+                        + Add Question
+                    </button>
+                </div>
+
+                <!-- Professional Phrases -->
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Professional Phrases for Learning</label>
+                    <div id="phrasesList" class="space-y-2 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="clinical-input flex-1 text-sm phrase-input" placeholder="Enter professional phrase...">
+                            <button type="button" onclick="removePhrase(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addPhrase" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors text-sm">
+                        + Add Phrase
+                    </button>
+                </div>
+            </form>
+
+            <div class="flex space-x-4 mt-8 pt-6 border-t border-gray-200">
+                <button id="saveCase" class="flex-1 bg-primary-gold text-white py-3 rounded-lg hover:bg-medium-gold transition-colors font-semibold">
+                    💾 Save Case
+                </button>
+                <button id="previewCase" class="px-6 py-3 bg-medium-green text-white rounded-lg hover:bg-primary-green transition-colors">
+                    👁️ Preview
+                </button>
+                <button id="closeCreateCase" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-primary-green mb-6">Import Clinical Cases</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-primary-green mb-2">Upload JSON or CSV File</label>
+                    <input type="file" id="fileInput" accept=".json,.csv" class="clinical-input w-full">
+                </div>
+                <div class="text-sm text-gray-600">
+                    <p class="mb-2"><strong>JSON Format:</strong></p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">
+                        {"cases": [{"title": "...", "specialty": "...", "presentation": "...", ...}]}
+                    </code>
+                </div>
+            </div>
+            <div class="flex space-x-4 mt-6">
+                <button id="importFile" class="flex-1 bg-primary-gold text-white py-3 rounded-lg hover:bg-medium-gold transition-colors">
+                    Import Cases
+                </button>
+                <button id="closeImport" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let appState = {
+            currentCase: null,
+            currentPhase: 'selection',
+            selectedSpecialty: 'random',
+            timer: null,
+            timeRemaining: 900, // 15 minutes default
+            isRecording: false,
+            mediaRecorder: null,
+            recordedChunks: [],
+            
+            // Performance tracking
+            completedCases: JSON.parse(localStorage.getItem('clinical_cases') || '[]'),
+            currentSession: {
+                startTime: null,
+                historyRecording: null,
+                historySummary: '',
+                selectedDiagnoses: [],
+                managementPlan: '',
+                examinerResponses: [],
+                scores: {},
+                phrases: []
+            }
+        };
+
+        // Clinical case database
+        const clinicalCases = {
+            cardiology: [
+                {
+                    id: 'card_001',
+                    title: 'Acute Chest Pain',
+                    specialty: 'cardiology',
+                    presentation: 'A 58-year-old male presents to the emergency department with severe central chest pain that started 2 hours ago while climbing stairs. The pain is described as crushing, radiates to the left arm and jaw, and is associated with sweating and nausea.',
+                    vitalSigns: {
+                        bp: '160/95 mmHg',
+                        hr: '110 bpm',
+                        rr: '22/min',
+                        spo2: '96% on air',
+                        temp: '37.1°C'
+                    },
+                    differentials: [
+                        'ST-elevation myocardial infarction (STEMI)',
+                        'Non-ST elevation myocardial infarction (NSTEMI)',
+                        'Unstable angina',
+                        'Aortic dissection',
+                        'Pulmonary embolism',
+                        'Pericarditis'
+                    ],
+                    correctDiagnoses: ['ST-elevation myocardial infarction (STEMI)'],
+                    keyPoints: [
+                        'Immediate ECG within 10 minutes',
+                        'Dual antiplatelet therapy (aspirin + clopidogrel)',
+                        'Primary PCI within 90 minutes if available',
+                        'Pain relief with morphine',
+                        'Continuous cardiac monitoring'
+                    ],
+                    examinerQuestions: [
+                        'What are the contraindications to thrombolytic therapy in this patient?',
+                        'How would you manage this patient if primary PCI is not available within 90 minutes?'
+                    ],
+                    phrases: [
+                        'The patient presents with typical cardiac chest pain',
+                        'This clinical picture is highly suggestive of acute coronary syndrome',
+                        'We need to expedite reperfusion therapy',
+                        'The ECG changes are consistent with anterior STEMI',
+                        'Time is myocardium - we must act quickly'
+                    ]
+                },
+                {
+                    id: 'card_002',
+                    title: 'Heart Failure Exacerbation',
+                    specialty: 'cardiology',
+                    presentation: 'A 72-year-old female with known heart failure presents with worsening shortness of breath over the past week. She reports orthopnea, paroxysmal nocturnal dyspnea, and ankle swelling. She admits to poor medication compliance.',
+                    vitalSigns: {
+                        bp: '140/85 mmHg',
+                        hr: '95 bpm irregular',
+                        rr: '28/min',
+                        spo2: '88% on air',
+                        temp: '36.8°C'
+                    },
+                    differentials: [
+                        'Acute heart failure exacerbation',
+                        'Pneumonia',
+                        'Pulmonary embolism',
+                        'Atrial fibrillation with rapid ventricular response',
+                        'Medication non-compliance',
+                        'Fluid overload'
+                    ],
+                    correctDiagnoses: ['Acute heart failure exacerbation'],
+                    keyPoints: [
+                        'IV diuretics (furosemide)',
+                        'Oxygen therapy to maintain SpO2 >94%',
+                        'Daily weights and fluid balance',
+                        'Medication reconciliation and compliance',
+                        'Echocardiogram to assess function'
+                    ],
+                    examinerQuestions: [
+                        'What are the precipitating factors for heart failure exacerbation?',
+                        'How would you optimize this patient\'s heart failure medications before discharge?'
+                    ],
+                    phrases: [
+                        'The patient shows signs of fluid overload',
+                        'We need to optimize diuretic therapy',
+                        'Medication compliance is crucial for heart failure management',
+                        'The patient requires careful fluid balance monitoring',
+                        'We should consider ACE inhibitor optimization'
+                    ]
+                }
+            ],
+            emergency: [
+                {
+                    id: 'emerg_001',
+                    title: 'Severe Sepsis',
+                    specialty: 'emergency',
+                    presentation: 'A 45-year-old diabetic male presents with fever, confusion, and hypotension. His wife reports he has been unwell for 3 days with urinary symptoms. He appears flushed and has rapid breathing.',
+                    vitalSigns: {
+                        bp: '85/50 mmHg',
+                        hr: '125 bpm',
+                        rr: '32/min',
+                        spo2: '94% on air',
+                        temp: '39.2°C'
+                    },
+                    differentials: [
+                        'Severe sepsis/septic shock',
+                        'Urosepsis',
+                        'Diabetic ketoacidosis',
+                        'Pneumonia with sepsis',
+                        'Meningitis',
+                        'Intra-abdominal sepsis'
+                    ],
+                    correctDiagnoses: ['Severe sepsis/septic shock', 'Urosepsis'],
+                    keyPoints: [
+                        'Immediate IV access and fluid resuscitation',
+                        'Blood cultures before antibiotics',
+                        'Broad-spectrum antibiotics within 1 hour',
+                        'Lactate measurement',
+                        'Consider vasopressors if fluid unresponsive'
+                    ],
+                    examinerQuestions: [
+                        'What are the sepsis-3 criteria for septic shock?',
+                        'Which antibiotic regimen would you choose for suspected urosepsis?'
+                    ],
+                    phrases: [
+                        'This patient meets criteria for severe sepsis',
+                        'We need to implement the sepsis bundle immediately',
+                        'Time-sensitive antibiotic administration is critical',
+                        'The patient requires aggressive fluid resuscitation',
+                        'We should consider ICU admission for close monitoring'
+                    ]
+                }
+            ],
+            'critical-care': [
+                {
+                    id: 'cc_001',
+                    title: 'Acute Respiratory Failure',
+                    specialty: 'critical-care',
+                    presentation: 'A 65-year-old male with COPD presents with acute worsening dyspnea, productive cough with purulent sputum, and confusion. He is using accessory muscles and appears cyanotic.',
+                    vitalSigns: {
+                        bp: '145/90 mmHg',
+                        hr: '110 bpm',
+                        rr: '35/min',
+                        spo2: '78% on air',
+                        temp: '38.5°C'
+                    },
+                    differentials: [
+                        'COPD exacerbation with type 2 respiratory failure',
+                        'Pneumonia',
+                        'Pulmonary embolism',
+                        'Pneumothorax',
+                        'Acute heart failure',
+                        'Respiratory muscle fatigue'
+                    ],
+                    correctDiagnoses: ['COPD exacerbation with type 2 respiratory failure'],
+                    keyPoints: [
+                        'Controlled oxygen therapy (target SpO2 88-92%)',
+                        'Non-invasive ventilation (BiPAP)',
+                        'Bronchodilators and corticosteroids',
+                        'Antibiotics for infective exacerbation',
+                        'Consider intubation if NIV fails'
+                    ],
+                    examinerQuestions: [
+                        'What are the indications for intubation in COPD exacerbation?',
+                        'How do you set up non-invasive ventilation for this patient?'
+                    ],
+                    phrases: [
+                        'The patient has acute-on-chronic respiratory failure',
+                        'We need to initiate non-invasive ventilation urgently',
+                        'Controlled oxygen therapy is essential in COPD',
+                        'The patient shows signs of CO2 retention',
+                        'We should prepare for potential intubation'
+                    ]
+                }
+            ],
+            hematology: [
+                {
+                    id: 'hem_001',
+                    title: 'Acute Leukemia',
+                    specialty: 'hematology',
+                    presentation: 'A 35-year-old female presents with fatigue, easy bruising, and recurrent infections over the past month. She has noticed petechiae on her legs and has had two episodes of epistaxis.',
+                    vitalSigns: {
+                        bp: '110/70 mmHg',
+                        hr: '105 bpm',
+                        rr: '18/min',
+                        spo2: '98% on air',
+                        temp: '37.8°C'
+                    },
+                    differentials: [
+                        'Acute leukemia',
+                        'Aplastic anemia',
+                        'Thrombotic thrombocytopenic purpura',
+                        'Immune thrombocytopenic purpura',
+                        'Myelodysplastic syndrome',
+                        'Viral infection with bone marrow suppression'
+                    ],
+                    correctDiagnoses: ['Acute leukemia'],
+                    keyPoints: [
+                        'Urgent full blood count and blood film',
+                        'Bone marrow biopsy and cytogenetics',
+                        'Coagulation studies',
+                        'Infection screening and prophylaxis',
+                        'Platelet transfusion if <10 or bleeding'
+                    ],
+                    examinerQuestions: [
+                        'What are the differences between AML and ALL presentation?',
+                        'How would you manage tumor lysis syndrome in this patient?'
+                    ],
+                    phrases: [
+                        'The clinical picture suggests acute hematological malignancy',
+                        'We need urgent hematological assessment',
+                        'The patient requires immediate supportive care',
+                        'Bone marrow examination is essential for diagnosis',
+                        'We should initiate infection prophylaxis'
+                    ]
+                }
+            ],
+            neurology: [
+                {
+                    id: 'neuro_001',
+                    title: 'Acute Stroke',
+                    specialty: 'neurology',
+                    presentation: 'A 68-year-old male presents with sudden onset left-sided weakness and speech difficulties that started 90 minutes ago. His wife noticed facial drooping and slurred speech when he tried to speak.',
+                    vitalSigns: {
+                        bp: '180/100 mmHg',
+                        hr: '88 bpm',
+                        rr: '16/min',
+                        spo2: '97% on air',
+                        temp: '36.9°C'
+                    },
+                    differentials: [
+                        'Acute ischemic stroke',
+                        'Hemorrhagic stroke',
+                        'Transient ischemic attack',
+                        'Hypoglycemia',
+                        'Seizure with Todd\'s paresis',
+                        'Migraine with aura'
+                    ],
+                    correctDiagnoses: ['Acute ischemic stroke'],
+                    keyPoints: [
+                        'Immediate CT head to exclude hemorrhage',
+                        'NIHSS score assessment',
+                        'Thrombolysis if within 4.5 hours',
+                        'Blood glucose and basic metabolic panel',
+                        'Swallow assessment before oral intake'
+                    ],
+                    examinerQuestions: [
+                        'What are the contraindications to thrombolytic therapy in stroke?',
+                        'How would you manage this patient\'s hypertension acutely?'
+                    ],
+                    phrases: [
+                        'The patient presents with acute focal neurological deficit',
+                        'Time is brain - we need rapid assessment',
+                        'The clinical features suggest anterior circulation stroke',
+                        'We must exclude hemorrhage before thrombolysis',
+                        'The patient is within the thrombolytic window'
+                    ]
+                }
+            ],
+            gastroenterology: [
+                {
+                    id: 'gastro_001',
+                    title: 'Upper GI Bleeding',
+                    specialty: 'gastroenterology',
+                    presentation: 'A 55-year-old male with a history of alcohol excess presents with hematemesis and melena. He reports epigastric pain and has vomited bright red blood twice in the past hour.',
+                    vitalSigns: {
+                        bp: '95/60 mmHg',
+                        hr: '120 bpm',
+                        rr: '22/min',
+                        spo2: '96% on air',
+                        temp: '36.5°C'
+                    },
+                    differentials: [
+                        'Esophageal varices',
+                        'Peptic ulcer disease',
+                        'Mallory-Weiss tear',
+                        'Boerhaave syndrome',
+                        'Erosive esophagitis',
+                        'Upper GI malignancy'
+                    ],
+                    correctDiagnoses: ['Esophageal varices'],
+                    keyPoints: [
+                        'IV access and fluid resuscitation',
+                        'Cross-match for blood transfusion',
+                        'Urgent upper endoscopy',
+                        'Proton pump inhibitor therapy',
+                        'Consider octreotide if variceal bleeding'
+                    ],
+                    examinerQuestions: [
+                        'What is the Rockall score and how is it used?',
+                        'How would you manage refractory variceal bleeding?'
+                    ],
+                    phrases: [
+                        'The patient has significant upper GI hemorrhage',
+                        'We need urgent endoscopic intervention',
+                        'The history suggests variceal bleeding',
+                        'Hemodynamic stabilization is the priority',
+                        'We should consider balloon tamponade if refractory'
+                    ]
+                }
+            ],
+            endocrinology: [
+                {
+                    id: 'endo_001',
+                    title: 'Diabetic Ketoacidosis',
+                    specialty: 'endocrinology',
+                    presentation: 'A 28-year-old female with type 1 diabetes presents with nausea, vomiting, and abdominal pain for 2 days. She appears dehydrated and has deep, rapid breathing with a fruity odor on her breath.',
+                    vitalSigns: {
+                        bp: '100/65 mmHg',
+                        hr: '115 bpm',
+                        rr: '28/min deep',
+                        spo2: '98% on air',
+                        temp: '37.2°C'
+                    },
+                    differentials: [
+                        'Diabetic ketoacidosis',
+                        'Hyperosmolar hyperglycemic state',
+                        'Gastroenteritis with dehydration',
+                        'Acute pancreatitis',
+                        'Urinary tract infection',
+                        'Pregnancy complications'
+                    ],
+                    correctDiagnoses: ['Diabetic ketoacidosis'],
+                    keyPoints: [
+                        'IV fluid resuscitation with normal saline',
+                        'Insulin infusion protocol',
+                        'Electrolyte monitoring and replacement',
+                        'Identify and treat precipitating cause',
+                        'Monitor for cerebral edema'
+                    ],
+                    examinerQuestions: [
+                        'What are the diagnostic criteria for DKA?',
+                        'How do you manage the transition from IV to subcutaneous insulin?'
+                    ],
+                    phrases: [
+                        'The patient presents with diabetic ketoacidosis',
+                        'We need to correct the metabolic acidosis',
+                        'Fluid resuscitation is the initial priority',
+                        'The patient requires continuous insulin infusion',
+                        'We must monitor for complications closely'
+                    ]
+                }
+            ],
+            nephrology: [
+                {
+                    id: 'nephro_001',
+                    title: 'Acute Kidney Injury',
+                    specialty: 'nephrology',
+                    presentation: 'A 70-year-old male presents with decreased urine output and confusion. He was started on ACE inhibitors and diuretics last week for hypertension. His family reports he has been drinking less fluid.',
+                    vitalSigns: {
+                        bp: '160/95 mmHg',
+                        hr: '90 bpm',
+                        rr: '18/min',
+                        spo2: '96% on air',
+                        temp: '36.8°C'
+                    },
+                    differentials: [
+                        'Acute kidney injury (pre-renal)',
+                        'Drug-induced nephrotoxicity',
+                        'Acute tubular necrosis',
+                        'Obstructive uropathy',
+                        'Acute interstitial nephritis',
+                        'Glomerulonephritis'
+                    ],
+                    correctDiagnoses: ['Acute kidney injury (pre-renal)'],
+                    keyPoints: [
+                        'Discontinue nephrotoxic medications',
+                        'Fluid challenge if volume depleted',
+                        'Renal ultrasound to exclude obstruction',
+                        'Monitor electrolytes and acid-base status',
+                        'Consider renal replacement therapy if severe'
+                    ],
+                    examinerQuestions: [
+                        'What are the KDIGO criteria for AKI staging?',
+                        'When would you consider starting dialysis in AKI?'
+                    ],
+                    phrases: [
+                        'The patient has developed acute kidney injury',
+                        'We need to identify the underlying cause',
+                        'Medication review is essential in AKI',
+                        'The patient requires careful fluid management',
+                        'We should monitor for uremic complications'
+                    ]
+                }
+            ],
+            'infectious-disease': [
+                {
+                    id: 'id_001',
+                    title: 'Community-Acquired Pneumonia',
+                    specialty: 'infectious-disease',
+                    presentation: 'A 45-year-old smoker presents with fever, productive cough with purulent sputum, and pleuritic chest pain for 3 days. He appears unwell and has reduced air entry at the right base.',
+                    vitalSigns: {
+                        bp: '120/80 mmHg',
+                        hr: '100 bpm',
+                        rr: '24/min',
+                        spo2: '92% on air',
+                        temp: '38.8°C'
+                    },
+                    differentials: [
+                        'Community-acquired pneumonia',
+                        'Hospital-acquired pneumonia',
+                        'Atypical pneumonia',
+                        'Pulmonary embolism',
+                        'Lung abscess',
+                        'Pleural effusion'
+                    ],
+                    correctDiagnoses: ['Community-acquired pneumonia'],
+                    keyPoints: [
+                        'Chest X-ray for diagnosis',
+                        'CURB-65 score for severity assessment',
+                        'Empirical antibiotic therapy',
+                        'Oxygen therapy if hypoxic',
+                        'Consider admission criteria'
+                    ],
+                    examinerQuestions: [
+                        'What is the CURB-65 score and how does it guide management?',
+                        'Which antibiotic regimen would you choose for severe CAP?'
+                    ],
+                    phrases: [
+                        'The clinical picture is consistent with pneumonia',
+                        'We need to assess disease severity',
+                        'The patient requires empirical antibiotic therapy',
+                        'Chest imaging confirms consolidation',
+                        'We should monitor response to treatment'
+                    ]
+                }
+            ],
+            anesthesiology: [
+                {
+                    id: 'anesth_001',
+                    title: 'Perioperative Hypotension',
+                    specialty: 'anesthesiology',
+                    presentation: 'A 60-year-old male undergoing elective surgery develops sudden hypotension during the procedure. His blood pressure drops from 130/80 to 70/40 mmHg with no obvious bleeding.',
+                    vitalSigns: {
+                        bp: '70/40 mmHg',
+                        hr: '120 bpm',
+                        rr: '16/min (ventilated)',
+                        spo2: '98% on 50% O2',
+                        temp: '36.2°C'
+                    },
+                    differentials: [
+                        'Anesthetic-induced hypotension',
+                        'Anaphylaxis',
+                        'Myocardial infarction',
+                        'Pulmonary embolism',
+                        'Hemorrhage',
+                        'Pneumothorax'
+                    ],
+                    correctDiagnoses: ['Anesthetic-induced hypotension'],
+                    keyPoints: [
+                        'Immediate fluid bolus',
+                        'Reduce anesthetic depth',
+                        'Vasopressor support (ephedrine/phenylephrine)',
+                        'Check for bleeding sources',
+                        'Consider cardiac causes'
+                    ],
+                    examinerQuestions: [
+                        'How do you differentiate between anaphylaxis and anesthetic hypotension?',
+                        'What is your approach to perioperative cardiac arrest?'
+                    ],
+                    phrases: [
+                        'The patient has developed intraoperative hypotension',
+                        'We need to restore hemodynamic stability',
+                        'The anesthetic may need adjustment',
+                        'Vasopressor support is indicated',
+                        'We should exclude other causes systematically'
+                    ]
+                }
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadCustomCases(); // Load custom cases first
+            updateDisplays();
+            loadCases();
+            checkMicrophonePermission();
+        });
+
+        function setupEventListeners() {
+            // Specialty selection
+            document.querySelectorAll('.specialty-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => selectSpecialty(e.target.dataset.specialty));
+            });
+
+            // Simulation controls
+            document.getElementById('startHistoryRecording').addEventListener('click', startHistoryRecording);
+            document.getElementById('stopHistoryRecording').addEventListener('click', stopHistoryRecording);
+            document.getElementById('proceedToDiagnosis').addEventListener('click', proceedToDiagnosis);
+            document.getElementById('proceedToExaminer').addEventListener('click', proceedToExaminer);
+            
+            // Session controls
+            document.getElementById('pauseBtn').addEventListener('click', pauseSimulation);
+            document.getElementById('endSimBtn').addEventListener('click', endSimulation);
+            
+            // Results actions
+            document.getElementById('exportPDF').addEventListener('click', exportPDF);
+            document.getElementById('newCase').addEventListener('click', newCase);
+            
+            // Create case functionality
+            document.getElementById('createCaseBtn').addEventListener('click', openCreateCaseModal);
+            document.getElementById('closeCreateCase').addEventListener('click', closeCreateCaseModal);
+            document.getElementById('saveCase').addEventListener('click', saveNewCase);
+            document.getElementById('previewCase').addEventListener('click', previewNewCase);
+            
+            // Dynamic form controls
+            document.getElementById('addDifferential').addEventListener('click', addDifferentialField);
+            document.getElementById('addCorrectDiagnosis').addEventListener('click', addCorrectDiagnosisField);
+            document.getElementById('addKeyPoint').addEventListener('click', addKeyPointField);
+            document.getElementById('addExaminerQuestion').addEventListener('click', addExaminerQuestionField);
+            document.getElementById('addPhrase').addEventListener('click', addPhraseField);
+            
+            // Import functionality
+            document.getElementById('importBtn').addEventListener('click', openImportModal);
+            document.getElementById('closeImport').addEventListener('click', closeImportModal);
+            document.getElementById('importFile').addEventListener('click', importCases);
+        }
+
+        async function checkMicrophonePermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                console.error('Microphone permission denied:', error);
+                showNotification('Microphone access is required for recording. Please enable it in your browser settings.', 'error');
+            }
+        }
+
+        function selectSpecialty(specialty) {
+            appState.selectedSpecialty = specialty;
+            
+            // Update UI
+            document.querySelectorAll('.specialty-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-gold', 'text-white');
+                btn.classList.add('bg-light-green', 'text-white');
+            });
+            
+            const selectedBtn = document.querySelector(`[data-specialty="${specialty}"]`);
+            selectedBtn.classList.remove('bg-light-green');
+            selectedBtn.classList.add('bg-primary-gold');
+            
+            loadCases();
+        }
+
+        function loadCases() {
+            const container = document.getElementById('casesContainer');
+            let casesToShow = [];
+            
+            if (appState.selectedSpecialty === 'random') {
+                // Get cases from all specialties
+                Object.values(clinicalCases).forEach(specialtyCases => {
+                    casesToShow = casesToShow.concat(specialtyCases);
+                });
+                // Shuffle the cases
+                casesToShow = casesToShow.sort(() => Math.random() - 0.5);
+            } else {
+                casesToShow = clinicalCases[appState.selectedSpecialty] || [];
+            }
+            
+            container.innerHTML = casesToShow.map(caseData => `
+                <div class="case-card p-6 rounded-xl cursor-pointer" onclick="selectCase('${caseData.id}')">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold text-primary-green">${caseData.title}</h3>
+                        <span class="specialty-badge">${caseData.specialty.charAt(0).toUpperCase() + caseData.specialty.slice(1)}</span>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-4">${caseData.presentation.substring(0, 150)}...</p>
+                    <div class="flex justify-between items-center text-xs text-gray-600">
+                        <span>🎯 ${caseData.differentials.length} differentials</span>
+                        <span>⏱️ ~15 min</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            if (casesToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">🏥</div>
+                        <p class="text-lg">No cases available for this specialty</p>
+                        <p class="text-sm">Try importing custom cases or select a different specialty</p>
+                    </div>
+                `;
+            }
+        }
+
+        function selectCase(caseId) {
+            // Find the case
+            let selectedCase = null;
+            Object.values(clinicalCases).forEach(specialtyCases => {
+                const found = specialtyCases.find(c => c.id === caseId);
+                if (found) selectedCase = found;
+            });
+            
+            if (!selectedCase) return;
+            
+            appState.currentCase = selectedCase;
+            appState.currentPhase = 'history';
+            appState.currentSession = {
+                startTime: new Date(),
+                caseId: caseId,
+                historyRecording: null,
+                historySummary: '',
+                selectedDiagnoses: [],
+                managementPlan: '',
+                examinerResponses: [],
+                scores: {},
+                phrases: []
+            };
+            
+            startSimulation();
+        }
+
+        function startSimulation() {
+            // Hide case selection, show simulation
+            document.getElementById('caseSelection').classList.add('hidden');
+            document.getElementById('activeSimulation').classList.remove('hidden');
+            
+            // Load case data
+            loadCaseData();
+            
+            // Start timer
+            startTimer(900); // 15 minutes
+            
+            showNotification('Clinical simulation started! Begin with history taking.');
+        }
+
+        function loadCaseData() {
+            const caseData = appState.currentCase;
+            
+            // Update header
+            document.getElementById('caseTitle').textContent = caseData.title;
+            document.getElementById('caseSpecialty').textContent = caseData.specialty.charAt(0).toUpperCase() + caseData.specialty.slice(1);
+            document.getElementById('currentPhase').textContent = 'History Taking';
+            
+            // Load patient presentation
+            document.getElementById('patientPresentation').textContent = caseData.presentation;
+            
+            // Load vital signs
+            const vitalsContainer = document.getElementById('vitalSigns');
+            vitalsContainer.innerHTML = `
+                <div class="mt-4 p-3 bg-white rounded-lg border border-light-gold">
+                    <h4 class="font-semibold text-primary-green text-sm mb-2">Vital Signs</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>BP: ${caseData.vitalSigns.bp}</div>
+                        <div>HR: ${caseData.vitalSigns.hr}</div>
+                        <div>RR: ${caseData.vitalSigns.rr}</div>
+                        <div>SpO2: ${caseData.vitalSigns.spo2}</div>
+                        <div>Temp: ${caseData.vitalSigns.temp}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Load diagnosis options for later
+            loadDiagnosisOptions();
+        }
+
+        function loadDiagnosisOptions() {
+            const container = document.getElementById('diagnosisOptions');
+            const differentials = appState.currentCase.differentials;
+            
+            container.innerHTML = differentials.map((diagnosis, index) => `
+                <label class="flex items-center p-3 border-2 border-light-gold rounded-lg cursor-pointer hover:border-primary-gold transition-colors">
+                    <input type="checkbox" name="diagnosis" value="${diagnosis}" class="mr-3">
+                    <span class="text-sm text-primary-green">${diagnosis}</span>
+                </label>
+            `).join('');
+        }
+
+        function startTimer(seconds) {
+            appState.timeRemaining = seconds;
+            
+            appState.timer = setInterval(() => {
+                appState.timeRemaining--;
+                updateTimerDisplay();
+                
+                if (appState.timeRemaining <= 0) {
+                    clearInterval(appState.timer);
+                    showNotification('Time is up! Proceeding to feedback.', 'warning');
+                    proceedToFeedback();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(appState.timeRemaining / 60);
+            const seconds = appState.timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('phaseTimer').textContent = display;
+            
+            // Change color when time is running low
+            const timerElement = document.getElementById('phaseTimer');
+            if (appState.timeRemaining < 300) { // Less than 5 minutes
+                timerElement.classList.add('text-red-600');
+                timerElement.classList.remove('text-primary-gold');
+            }
+        }
+
+        async function startHistoryRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                
+                appState.mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                appState.recordedChunks = [];
+                
+                appState.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        appState.recordedChunks.push(event.data);
+                    }
+                };
+                
+                appState.mediaRecorder.onstop = () => {
+                    const blob = new Blob(appState.recordedChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(blob);
+                    appState.currentSession.historyRecording = audioUrl;
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    showNotification('History recording saved successfully!');
+                };
+                
+                // Start recording
+                appState.mediaRecorder.start(100);
+                appState.isRecording = true;
+                
+                // Update UI
+                document.getElementById('startHistoryRecording').classList.add('hidden');
+                document.getElementById('stopHistoryRecording').classList.remove('hidden');
+                document.getElementById('historyRecordingStatus').innerHTML = `
+                    <div class="recording-pulse text-red-600">🔴 Recording history questions...</div>
+                `;
+                
+                showNotification('Recording started! Ask your history questions.');
+                
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                showNotification('Failed to start recording. Please check microphone permissions.', 'error');
+            }
+        }
+
+        function stopHistoryRecording() {
+            if (appState.mediaRecorder && appState.isRecording) {
+                appState.mediaRecorder.stop();
+                appState.isRecording = false;
+                
+                // Update UI
+                document.getElementById('startHistoryRecording').classList.remove('hidden');
+                document.getElementById('stopHistoryRecording').classList.add('hidden');
+                document.getElementById('historyRecordingStatus').innerHTML = `
+                    <div class="text-green-600">✅ History recording completed</div>
+                `;
+            }
+        }
+
+        function proceedToDiagnosis() {
+            // Save history summary
+            appState.currentSession.historySummary = document.getElementById('historySummary').value;
+            
+            if (!appState.currentSession.historySummary.trim()) {
+                showNotification('Please provide a history summary before proceeding.', 'warning');
+                return;
+            }
+            
+            // Update phase
+            appState.currentPhase = 'diagnosis';
+            document.getElementById('currentPhase').textContent = 'Diagnosis & Management';
+            
+            // Show diagnosis phase
+            document.getElementById('historyPhase').classList.add('hidden');
+            document.getElementById('diagnosisPhase').classList.remove('hidden');
+            
+            showNotification('Now provide your differential diagnoses and management plan.');
+        }
+
+        function proceedToExaminer() {
+            // Save selected diagnoses
+            const selectedDiagnoses = Array.from(document.querySelectorAll('input[name="diagnosis"]:checked'))
+                .map(input => input.value);
+            appState.currentSession.selectedDiagnoses = selectedDiagnoses;
+            
+            // Save management plan
+            appState.currentSession.managementPlan = document.getElementById('managementPlan').value;
+            
+            if (selectedDiagnoses.length === 0 || !appState.currentSession.managementPlan.trim()) {
+                showNotification('Please select diagnoses and provide a management plan.', 'warning');
+                return;
+            }
+            
+            // Update phase
+            appState.currentPhase = 'examiner';
+            document.getElementById('currentPhase').textContent = 'Examiner Questions';
+            
+            // Show examiner phase
+            document.getElementById('diagnosisPhase').classList.add('hidden');
+            document.getElementById('examinerPhase').classList.remove('hidden');
+            
+            // Load examiner questions
+            loadExaminerQuestions();
+        }
+
+        function loadExaminerQuestions() {
+            const container = document.getElementById('examinerQuestions');
+            const questions = appState.currentCase.examinerQuestions;
+            
+            container.innerHTML = questions.map((question, index) => `
+                <div class="examiner-question">
+                    <h4 class="font-semibold mb-3">Question ${index + 1}:</h4>
+                    <p class="mb-4">${question}</p>
+                    <div class="space-y-3">
+                        <textarea id="examinerResponse${index}" class="clinical-input w-full h-24 resize-none bg-white" placeholder="Type your response here..."></textarea>
+                        <div class="flex space-x-3">
+                            <button onclick="recordExaminerResponse(${index})" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                🎤 Record Response
+                            </button>
+                            <button onclick="stopExaminerRecording(${index})" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors hidden" id="stopExaminer${index}">
+                                ⏹️ Stop
+                            </button>
+                        </div>
+                        <div id="examinerStatus${index}" class="text-sm text-gray-600"></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add submit button
+            container.innerHTML += `
+                <div class="text-center mt-8">
+                    <button onclick="submitExaminerResponses()" class="bg-primary-gold text-white px-8 py-3 rounded-lg hover:bg-medium-gold transition-colors font-semibold">
+                        Submit Responses & Get Feedback
+                    </button>
+                </div>
+            `;
+        }
+
+        async function recordExaminerResponse(questionIndex) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    chunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(blob);
+                    
+                    if (!appState.currentSession.examinerResponses[questionIndex]) {
+                        appState.currentSession.examinerResponses[questionIndex] = {};
+                    }
+                    appState.currentSession.examinerResponses[questionIndex].audio = audioUrl;
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    document.getElementById(`examinerStatus${questionIndex}`).innerHTML = `
+                        <div class="text-green-600">✅ Audio response recorded</div>
+                    `;
+                };
+                
+                mediaRecorder.start();
+                
+                // Update UI
+                document.querySelector(`button[onclick="recordExaminerResponse(${questionIndex})"]`).classList.add('hidden');
+                document.getElementById(`stopExaminer${questionIndex}`).classList.remove('hidden');
+                document.getElementById(`examinerStatus${questionIndex}`).innerHTML = `
+                    <div class="recording-pulse text-red-600">🔴 Recording response...</div>
+                `;
+                
+                // Store recorder for stopping
+                window[`examinerRecorder${questionIndex}`] = mediaRecorder;
+                
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                showNotification('Failed to start recording.', 'error');
+            }
+        }
+
+        function stopExaminerRecording(questionIndex) {
+            const recorder = window[`examinerRecorder${questionIndex}`];
+            if (recorder) {
+                recorder.stop();
+                
+                // Update UI
+                document.querySelector(`button[onclick="recordExaminerResponse(${questionIndex})"]`).classList.remove('hidden');
+                document.getElementById(`stopExaminer${questionIndex}`).classList.add('hidden');
+            }
+        }
+
+        function submitExaminerResponses() {
+            // Save text responses
+            const questions = appState.currentCase.examinerQuestions;
+            questions.forEach((question, index) => {
+                const textResponse = document.getElementById(`examinerResponse${index}`).value;
+                if (!appState.currentSession.examinerResponses[index]) {
+                    appState.currentSession.examinerResponses[index] = {};
+                }
+                appState.currentSession.examinerResponses[index].text = textResponse;
+            });
+            
+            // Proceed to feedback
+            proceedToFeedback();
+        }
+
+        function proceedToFeedback() {
+            // Stop timer
+            if (appState.timer) {
+                clearInterval(appState.timer);
+            }
+            
+            // Calculate scores
+            calculateScores();
+            
+            // Update phase
+            appState.currentPhase = 'feedback';
+            document.getElementById('currentPhase').textContent = 'Performance Feedback';
+            
+            // Show feedback phase
+            document.getElementById('examinerPhase').classList.add('hidden');
+            document.getElementById('feedbackPhase').classList.remove('hidden');
+            
+            // Display feedback
+            displayFeedback();
+            
+            // Save session
+            appState.currentSession.completedAt = new Date();
+            appState.completedCases.push(appState.currentSession);
+            saveToStorage();
+            updateDisplays();
+        }
+
+        function calculateScores() {
+            const caseData = appState.currentCase;
+            const session = appState.currentSession;
+            
+            // Mock scoring algorithm (in real app, this would be more sophisticated)
+            const scores = {
+                history: calculateHistoryScore(),
+                reasoning: calculateReasoningScore(),
+                management: calculateManagementScore(),
+                communication: calculateCommunicationScore()
+            };
+            
+            session.scores = scores;
+        }
+
+        function calculateHistoryScore() {
+            // Mock scoring based on history summary length and recording presence
+            const hasRecording = !!appState.currentSession.historyRecording;
+            const summaryLength = appState.currentSession.historySummary.length;
+            
+            let score = 2; // Base score
+            if (hasRecording) score += 1;
+            if (summaryLength > 100) score += 1;
+            if (summaryLength > 200) score += 1;
+            
+            return Math.min(5, score);
+        }
+
+        function calculateReasoningScore() {
+            // Score based on correct diagnoses selected
+            const correctDiagnoses = appState.currentCase.correctDiagnoses;
+            const selectedDiagnoses = appState.currentSession.selectedDiagnoses;
+            
+            let correctCount = 0;
+            correctDiagnoses.forEach(correct => {
+                if (selectedDiagnoses.includes(correct)) correctCount++;
+            });
+            
+            const accuracy = correctCount / correctDiagnoses.length;
+            return Math.max(1, Math.min(5, Math.round(1 + accuracy * 4)));
+        }
+
+        function calculateManagementScore() {
+            // Score based on management plan length and key points
+            const planLength = appState.currentSession.managementPlan.length;
+            const keyPoints = appState.currentCase.keyPoints;
+            
+            let score = 2;
+            if (planLength > 100) score += 1;
+            if (planLength > 200) score += 1;
+            
+            // Check for key management points
+            let keyPointsFound = 0;
+            keyPoints.forEach(point => {
+                if (appState.currentSession.managementPlan.toLowerCase().includes(point.toLowerCase().split(' ')[0])) {
+                    keyPointsFound++;
+                }
+            });
+            
+            if (keyPointsFound > 0) score += 1;
+            
+            return Math.min(5, score);
+        }
+
+        function calculateCommunicationScore() {
+            // Score based on examiner responses
+            const responses = appState.currentSession.examinerResponses;
+            let score = 3; // Base score
+            
+            responses.forEach(response => {
+                if (response.text && response.text.length > 50) score += 0.5;
+                if (response.audio) score += 0.5;
+            });
+            
+            return Math.min(5, Math.round(score));
+        }
+
+        function displayFeedback() {
+            const scores = appState.currentSession.scores;
+            
+            // Display rubric scores
+            displayRubricScores(scores);
+            
+            // Display missed points
+            displayMissedPoints();
+            
+            // Display professional phrases
+            displayProfessionalPhrases();
+        }
+
+        function displayRubricScores(scores) {
+            const criteria = ['history', 'reasoning', 'management', 'communication'];
+            
+            criteria.forEach(criterion => {
+                const score = scores[criterion];
+                const band = `Band ${score}`;
+                const percentage = (score / 5) * 100;
+                
+                document.getElementById(`${criterion}Band`).textContent = band;
+                document.getElementById(`${criterion}Bar`).style.width = `${percentage}%`;
+                document.getElementById(`${criterion}Bar`).className = `rubric-band h-2 rounded-full band-${score}`;
+            });
+        }
+
+        function displayMissedPoints() {
+            const container = document.getElementById('missedPoints');
+            const keyPoints = appState.currentCase.keyPoints;
+            const managementPlan = appState.currentSession.managementPlan.toLowerCase();
+            
+            const missedPoints = keyPoints.filter(point => 
+                !managementPlan.includes(point.toLowerCase().split(' ')[0])
+            );
+            
+            if (missedPoints.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="text-green-800 font-medium">✅ Excellent! You covered all key management points.</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = missedPoints.map(point => `
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="text-yellow-800 font-medium">⚠️ Consider: ${point}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function displayProfessionalPhrases() {
+            const container = document.getElementById('professionalPhrases');
+            const phrases = appState.currentCase.phrases;
+            
+            container.innerHTML = phrases.map(phrase => `
+                <div class="phrase-card p-4 rounded-lg cursor-pointer" onclick="copyPhrase('${phrase}')">
+                    <div class="text-sm font-medium text-primary-green">"${phrase}"</div>
+                    <div class="text-xs text-medium-green mt-1">Click to copy</div>
+                </div>
+            `).join('');
+            
+            // Save phrases to session
+            appState.currentSession.phrases = phrases;
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function pauseSimulation() {
+            if (appState.timer) {
+                clearInterval(appState.timer);
+                appState.timer = null;
+                showNotification('Simulation paused. Click any action to resume.');
+            }
+        }
+
+        function endSimulation() {
+            if (confirm('Are you sure you want to end this simulation? Your progress will be saved.')) {
+                if (appState.timer) {
+                    clearInterval(appState.timer);
+                }
+                
+                // Save partial session
+                appState.currentSession.completedAt = new Date();
+                appState.currentSession.isPartial = true;
+                appState.completedCases.push(appState.currentSession);
+                saveToStorage();
+                
+                newCase();
+            }
+        }
+
+        function newCase() {
+            // Reset state
+            appState.currentCase = null;
+            appState.currentPhase = 'selection';
+            appState.currentSession = {};
+            
+            if (appState.timer) {
+                clearInterval(appState.timer);
+            }
+            
+            // Show case selection
+            document.getElementById('activeSimulation').classList.add('hidden');
+            document.getElementById('caseSelection').classList.remove('hidden');
+            
+            // Reset forms
+            document.getElementById('historySummary').value = '';
+            document.getElementById('managementPlan').value = '';
+            
+            updateDisplays();
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const session = appState.currentSession;
+            const caseData = appState.currentCase;
+            
+            // Title
+            doc.setFontSize(18);
+            doc.text('Clinical Case Simulation Report', 20, 30);
+            
+            // Case information
+            doc.setFontSize(12);
+            doc.text(`Case: ${caseData.title}`, 20, 50);
+            doc.text(`Specialty: ${caseData.specialty}`, 20, 60);
+            doc.text(`Date: ${new Date(session.startTime).toLocaleDateString()}`, 20, 70);
+            doc.text(`Duration: ${calculateDuration(session)}`, 20, 80);
+            
+            // Scores
+            doc.text('Performance Scores:', 20, 100);
+            let yPos = 110;
+            Object.entries(session.scores).forEach(([criterion, score]) => {
+                doc.text(`${criterion.charAt(0).toUpperCase() + criterion.slice(1)}: Band ${score}/5`, 30, yPos);
+                yPos += 10;
+            });
+            
+            // History Summary
+            yPos += 10;
+            doc.text('History Summary:', 20, yPos);
+            yPos += 10;
+            const historyLines = doc.splitTextToSize(session.historySummary, 170);
+            doc.text(historyLines, 20, yPos);
+            yPos += historyLines.length * 5 + 10;
+            
+            // Selected Diagnoses
+            doc.text('Selected Diagnoses:', 20, yPos);
+            yPos += 10;
+            session.selectedDiagnoses.forEach(diagnosis => {
+                doc.text(`• ${diagnosis}`, 30, yPos);
+                yPos += 7;
+            });
+            
+            // Management Plan
+            yPos += 10;
+            if (yPos > 250) {
+                doc.addPage();
+                yPos = 30;
+            }
+            doc.text('Management Plan:', 20, yPos);
+            yPos += 10;
+            const managementLines = doc.splitTextToSize(session.managementPlan, 170);
+            doc.text(managementLines, 20, yPos);
+            yPos += managementLines.length * 5 + 10;
+            
+            // Professional Phrases
+            if (yPos > 200) {
+                doc.addPage();
+                yPos = 30;
+            }
+            doc.text('Professional Phrases to Practice:', 20, yPos);
+            yPos += 10;
+            session.phrases.forEach(phrase => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                const phraseLines = doc.splitTextToSize(`• "${phrase}"`, 170);
+                doc.text(phraseLines, 30, yPos);
+                yPos += phraseLines.length * 5 + 5;
+            });
+            
+            doc.save(`Clinical_Case_${caseData.specialty}_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        function calculateDuration(session) {
+            if (!session.completedAt) return 'Incomplete';
+            
+            const start = new Date(session.startTime);
+            const end = new Date(session.completedAt);
+            const minutes = Math.round((end - start) / (1000 * 60));
+            
+            return `${minutes} minutes`;
+        }
+
+        // Create case functionality
+        function openCreateCaseModal() {
+            document.getElementById('createCaseModal').classList.remove('hidden');
+            document.getElementById('createCaseModal').classList.add('flex');
+            resetCreateCaseForm();
+        }
+
+        function closeCreateCaseModal() {
+            document.getElementById('createCaseModal').classList.add('hidden');
+            document.getElementById('createCaseModal').classList.remove('flex');
+        }
+
+        function resetCreateCaseForm() {
+            document.getElementById('createCaseForm').reset();
+            
+            // Reset dynamic fields to initial state
+            resetDynamicFields('differentialsList', 'differential-input', 'Enter differential diagnosis...');
+            resetDynamicFields('correctDiagnosesList', 'correct-diagnosis-input', 'Enter correct diagnosis...');
+            resetDynamicFields('keyPointsList', 'key-point-input', 'Enter key management point...');
+            resetDynamicFields('examinerQuestionsList', 'examiner-question-input', 'Enter examiner question...', 2);
+            resetDynamicFields('phrasesList', 'phrase-input', 'Enter professional phrase...');
+        }
+
+        function resetDynamicFields(containerId, inputClass, placeholder, count = 1) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const fieldHtml = `
+                    <div class="flex items-center space-x-2">
+                        <input type="text" class="clinical-input flex-1 text-sm ${inputClass}" placeholder="${placeholder}">
+                        <button type="button" onclick="remove${inputClass.split('-')[0].charAt(0).toUpperCase() + inputClass.split('-')[0].slice(1)}${inputClass.includes('diagnosis') ? 'Diagnosis' : inputClass.includes('point') ? 'Point' : inputClass.includes('question') ? 'Question' : inputClass.includes('phrase') ? 'Phrase' : ''}(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', fieldHtml);
+            }
+        }
+
+        // Dynamic field management functions
+        function addDifferentialField() {
+            const container = document.getElementById('differentialsList');
+            const fieldHtml = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="clinical-input flex-1 text-sm differential-input" placeholder="Enter differential diagnosis...">
+                    <button type="button" onclick="removeDifferential(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+
+        function removeDifferential(button) {
+            const container = document.getElementById('differentialsList');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                showNotification('At least one differential diagnosis is required.', 'warning');
+            }
+        }
+
+        function addCorrectDiagnosisField() {
+            const container = document.getElementById('correctDiagnosesList');
+            const fieldHtml = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="clinical-input flex-1 text-sm correct-diagnosis-input" placeholder="Enter correct diagnosis...">
+                    <button type="button" onclick="removeCorrectDiagnosis(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+
+        function removeCorrectDiagnosis(button) {
+            const container = document.getElementById('correctDiagnosesList');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                showNotification('At least one correct diagnosis is required.', 'warning');
+            }
+        }
+
+        function addKeyPointField() {
+            const container = document.getElementById('keyPointsList');
+            const fieldHtml = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="clinical-input flex-1 text-sm key-point-input" placeholder="Enter key management point...">
+                    <button type="button" onclick="removeKeyPoint(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+
+        function removeKeyPoint(button) {
+            const container = document.getElementById('keyPointsList');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                showNotification('At least one key management point is required.', 'warning');
+            }
+        }
+
+        function addExaminerQuestionField() {
+            const container = document.getElementById('examinerQuestionsList');
+            const fieldHtml = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="clinical-input flex-1 text-sm examiner-question-input" placeholder="Enter examiner question...">
+                    <button type="button" onclick="removeExaminerQuestion(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+
+        function removeExaminerQuestion(button) {
+            button.parentElement.remove();
+        }
+
+        function addPhraseField() {
+            const container = document.getElementById('phrasesList');
+            const fieldHtml = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" class="clinical-input flex-1 text-sm phrase-input" placeholder="Enter professional phrase...">
+                    <button type="button" onclick="removePhrase(this)" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+
+        function removePhrase(button) {
+            button.parentElement.remove();
+        }
+
+        function collectFormData() {
+            const formData = {
+                title: document.getElementById('newCaseTitle').value.trim(),
+                specialty: document.getElementById('newCaseSpecialty').value,
+                presentation: document.getElementById('newCasePresentation').value.trim(),
+                vitalSigns: {
+                    bp: document.getElementById('newCaseBP').value.trim() || 'Not recorded',
+                    hr: document.getElementById('newCaseHR').value.trim() || 'Not recorded',
+                    rr: document.getElementById('newCaseRR').value.trim() || 'Not recorded',
+                    spo2: document.getElementById('newCaseSpO2').value.trim() || 'Not recorded',
+                    temp: document.getElementById('newCaseTemp').value.trim() || 'Not recorded'
+                },
+                differentials: [],
+                correctDiagnoses: [],
+                keyPoints: [],
+                examinerQuestions: [],
+                phrases: []
+            };
+
+            // Collect differentials
+            document.querySelectorAll('.differential-input').forEach(input => {
+                if (input.value.trim()) {
+                    formData.differentials.push(input.value.trim());
+                }
+            });
+
+            // Collect correct diagnoses
+            document.querySelectorAll('.correct-diagnosis-input').forEach(input => {
+                if (input.value.trim()) {
+                    formData.correctDiagnoses.push(input.value.trim());
+                }
+            });
+
+            // Collect key points
+            document.querySelectorAll('.key-point-input').forEach(input => {
+                if (input.value.trim()) {
+                    formData.keyPoints.push(input.value.trim());
+                }
+            });
+
+            // Collect examiner questions
+            document.querySelectorAll('.examiner-question-input').forEach(input => {
+                if (input.value.trim()) {
+                    formData.examinerQuestions.push(input.value.trim());
+                }
+            });
+
+            // Collect phrases
+            document.querySelectorAll('.phrase-input').forEach(input => {
+                if (input.value.trim()) {
+                    formData.phrases.push(input.value.trim());
+                }
+            });
+
+            return formData;
+        }
+
+        function validateCaseData(data) {
+            const errors = [];
+
+            if (!data.title) errors.push('Case title is required');
+            if (!data.specialty) errors.push('Specialty is required');
+            if (!data.presentation) errors.push('Patient presentation is required');
+            if (data.differentials.length === 0) errors.push('At least one differential diagnosis is required');
+            if (data.correctDiagnoses.length === 0) errors.push('At least one correct diagnosis is required');
+            if (data.keyPoints.length === 0) errors.push('At least one key management point is required');
+
+            return errors;
+        }
+
+        function saveNewCase() {
+            const formData = collectFormData();
+            const errors = validateCaseData(formData);
+
+            if (errors.length > 0) {
+                showNotification(`Please fix the following errors:\n• ${errors.join('\n• ')}`, 'error');
+                return;
+            }
+
+            // Create case object
+            const newCase = {
+                id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                title: formData.title,
+                specialty: formData.specialty,
+                presentation: formData.presentation,
+                vitalSigns: formData.vitalSigns,
+                differentials: formData.differentials,
+                correctDiagnoses: formData.correctDiagnoses,
+                keyPoints: formData.keyPoints,
+                examinerQuestions: formData.examinerQuestions.length > 0 ? formData.examinerQuestions : [
+                    'What additional investigations would you consider?',
+                    'How would you monitor this patient\'s response to treatment?'
+                ],
+                phrases: formData.phrases.length > 0 ? formData.phrases : [
+                    'The clinical presentation is consistent with...',
+                    'Based on the history and examination findings...',
+                    'The differential diagnosis includes...',
+                    'The management priorities are...',
+                    'We should monitor for complications such as...'
+                ]
+            };
+
+            // Add to appropriate specialty
+            if (!clinicalCases[formData.specialty]) {
+                clinicalCases[formData.specialty] = [];
+            }
+            clinicalCases[formData.specialty].push(newCase);
+
+            // Save to localStorage for persistence
+            const customCases = JSON.parse(localStorage.getItem('custom_clinical_cases') || '{}');
+            if (!customCases[formData.specialty]) {
+                customCases[formData.specialty] = [];
+            }
+            customCases[formData.specialty].push(newCase);
+            localStorage.setItem('custom_clinical_cases', JSON.stringify(customCases));
+
+            showNotification(`Case "${formData.title}" created successfully!`);
+            closeCreateCaseModal();
+            
+            // Refresh the case display if we're viewing this specialty
+            if (appState.selectedSpecialty === formData.specialty || appState.selectedSpecialty === 'random') {
+                loadCases();
+            }
+        }
+
+        function previewNewCase() {
+            const formData = collectFormData();
+            const errors = validateCaseData(formData);
+
+            if (errors.length > 0) {
+                showNotification(`Please fix the following errors before previewing:\n• ${errors.join('\n• ')}`, 'warning');
+                return;
+            }
+
+            // Create preview modal
+            const previewModal = document.createElement('div');
+            previewModal.className = 'fixed inset-0 modal-backdrop flex items-center justify-center z-50';
+            previewModal.innerHTML = `
+                <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <h3 class="text-2xl font-bold text-primary-green mb-6">Case Preview: ${formData.title}</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="case-card p-6 rounded-xl">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-lg font-bold text-primary-green">${formData.title}</h4>
+                                <span class="specialty-badge">${formData.specialty.charAt(0).toUpperCase() + formData.specialty.slice(1)}</span>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-4">${formData.presentation}</p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs bg-pale-gold p-3 rounded-lg">
+                                <div><strong>BP:</strong> ${formData.vitalSigns.bp}</div>
+                                <div><strong>HR:</strong> ${formData.vitalSigns.hr}</div>
+                                <div><strong>RR:</strong> ${formData.vitalSigns.rr}</div>
+                                <div><strong>SpO2:</strong> ${formData.vitalSigns.spo2}</div>
+                                <div><strong>Temp:</strong> ${formData.vitalSigns.temp}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-semibold text-primary-green mb-2">Differential Diagnoses (${formData.differentials.length})</h5>
+                                <ul class="text-sm space-y-1">
+                                    ${formData.differentials.map(d => `<li>• ${d}</li>`).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h5 class="font-semibold text-primary-green mb-2">Correct Diagnoses (${formData.correctDiagnoses.length})</h5>
+                                <ul class="text-sm space-y-1">
+                                    ${formData.correctDiagnoses.map(d => `<li>• ${d}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 class="font-semibold text-primary-green mb-2">Key Management Points (${formData.keyPoints.length})</h5>
+                            <ul class="text-sm space-y-1">
+                                ${formData.keyPoints.map(p => `<li>• ${p}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        ${formData.examinerQuestions.length > 0 ? `
+                        <div>
+                            <h5 class="font-semibold text-primary-green mb-2">Examiner Questions (${formData.examinerQuestions.length})</h5>
+                            <ul class="text-sm space-y-1">
+                                ${formData.examinerQuestions.map(q => `<li>• ${q}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        ${formData.phrases.length > 0 ? `
+                        <div>
+                            <h5 class="font-semibold text-primary-green mb-2">Professional Phrases (${formData.phrases.length})</h5>
+                            <ul class="text-sm space-y-1">
+                                ${formData.phrases.map(p => `<li>• "${p}"</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="flex space-x-4 mt-8 pt-6 border-t border-gray-200">
+                        <button onclick="this.closest('.modal-backdrop').remove()" class="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            Close Preview
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(previewModal);
+        }
+
+        // Load custom cases on app initialization
+        function loadCustomCases() {
+            const customCases = JSON.parse(localStorage.getItem('custom_clinical_cases') || '{}');
+            
+            Object.entries(customCases).forEach(([specialty, cases]) => {
+                if (!clinicalCases[specialty]) {
+                    clinicalCases[specialty] = [];
+                }
+                
+                // Add custom cases to the main cases object
+                cases.forEach(customCase => {
+                    // Check if case already exists (avoid duplicates)
+                    const exists = clinicalCases[specialty].some(existingCase => existingCase.id === customCase.id);
+                    if (!exists) {
+                        clinicalCases[specialty].push(customCase);
+                    }
+                });
+            });
+        }
+
+        // Import functionality
+        function openImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+            document.getElementById('importModal').classList.add('flex');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('importModal').classList.remove('flex');
+        }
+
+        function importCases() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Please select a file to import.', 'warning');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let importedCases = [];
+                    
+                    if (file.name.endsWith('.json')) {
+                        const data = JSON.parse(e.target.result);
+                        importedCases = data.cases || [];
+                    } else if (file.name.endsWith('.csv')) {
+                        // Simple CSV parsing (in real app, use proper CSV parser)
+                        const lines = e.target.result.split('\n');
+                        const headers = lines[0].split(',');
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',');
+                            if (values.length >= headers.length) {
+                                const caseObj = {};
+                                headers.forEach((header, index) => {
+                                    caseObj[header.trim()] = values[index].trim();
+                                });
+                                importedCases.push(caseObj);
+                            }
+                        }
+                    }
+                    
+                    // Add imported cases to the appropriate specialty
+                    importedCases.forEach(caseData => {
+                        const specialty = caseData.specialty || 'general';
+                        if (!clinicalCases[specialty]) {
+                            clinicalCases[specialty] = [];
+                        }
+                        
+                        // Generate ID if not provided
+                        if (!caseData.id) {
+                            caseData.id = `imported_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                        }
+                        
+                        clinicalCases[specialty].push(caseData);
+                    });
+                    
+                    showNotification(`Successfully imported ${importedCases.length} cases!`);
+                    closeImportModal();
+                    loadCases();
+                    
+                } catch (error) {
+                    console.error('Import error:', error);
+                    showNotification('Error importing file. Please check the format.', 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' : 
+                type === 'warning' ? 'bg-yellow-600 text-white' : 
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        function updateDisplays() {
+            document.getElementById('totalCases').textContent = appState.completedCases.length;
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('clinical_cases', JSON.stringify(appState.completedCases));
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9872e04ba74ab9fb',t:'MTc1OTIyNjQ1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
