@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance English Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #0f2027, #203a43, #2c5530); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .template-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .template-card:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .phrase-chip {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .phrase-chip:hover {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .document-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #d4af37;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .vocab-card {
+            background: rgba(15, 32, 39, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 12px 0;
+            text-align: center;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background-color: #d4af37;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .editor-toolbar {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px 8px 0 0;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: #d4af37;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin: 0 2px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .toolbar-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+        
+        .risk-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .risk-low { background: #10b981; color: white; }
+        .risk-medium { background: #f59e0b; color: white; }
+        .risk-high { background: #ef4444; color: white; }
+        
+        .csv-drop-zone {
+            border: 2px dashed #d4af37;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(212, 175, 55, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .csv-drop-zone.dragover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #f4d03f;
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Sync Indicator -->
+    <div id="syncIndicator" class="sync-indicator hidden">
+        <div class="bg-green-600 text-white px-3 py-1 rounded-full flex items-center">
+            <span class="mr-1">✓</span> Synced
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="p-4 text-center border-b border-gray-700">
+        <h1 class="text-3xl font-bold text-accent">💼 Finance English Pro</h1>
+        <p class="text-sm text-gray-300 mt-1">Professional Financial Communication</p>
+        <div class="mt-3 flex justify-center gap-6 text-xs">
+            <span>Streak: <span id="currentStreak" class="text-accent font-bold">0</span></span>
+            <span>Documents: <span id="totalDocs" class="text-accent font-bold">0</span></span>
+            <span>Vocab Reviews: <span id="vocabReviews" class="text-accent font-bold">0</span></span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-2 flex-wrap">
+        <button onclick="showScreen('home')" id="homeBtn" class="nav-btn active">Home</button>
+        <button onclick="showScreen('documents')" id="documentsBtn" class="nav-btn">Documents</button>
+        <button onclick="showScreen('templates')" id="templatesBtn" class="nav-btn">Templates</button>
+        <button onclick="showScreen('editor')" id="editorBtn" class="nav-btn">Editor</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Vocab</button>
+        <button onclick="showScreen('phrases')" id="phrasesBtn" class="nav-btn">Phrases</button>
+        <button onclick="showScreen('breathing')" id="breathingBtn" class="nav-btn">Focus</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">Analytics</button>
+    </nav>
+
+    <!-- Floating Quick Add -->
+    <div onclick="quickAdd()" class="floating-btn">+</div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="template-card" onclick="createFromTemplate('memo')">
+                    <div class="text-accent font-bold text-lg mb-2">📝 Executive Memo</div>
+                    <div class="text-sm text-gray-300">Create professional memos with clarity templates</div>
+                </div>
+                <div class="template-card" onclick="createFromTemplate('kpi')">
+                    <div class="text-accent font-bold text-lg mb-2">📊 KPI Update</div>
+                    <div class="text-sm text-gray-300">Performance metrics with variance analysis</div>
+                </div>
+                <div class="template-card" onclick="createFromTemplate('risk')">
+                    <div class="text-accent font-bold text-lg mb-2">⚠️ Risk Report</div>
+                    <div class="text-sm text-gray-300">Risk assessment with professional language</div>
+                </div>
+            </div>
+
+            <!-- CSV Helper -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">📈 CSV to Memo Helper</h2>
+                <div id="csvDropZone" class="csv-drop-zone">
+                    <div class="text-accent text-2xl mb-2">📁</div>
+                    <div class="text-lg font-semibold text-accent mb-2">Drop CSV File Here</div>
+                    <div class="text-sm text-gray-400 mb-4">Or click to browse files</div>
+                    <input type="file" id="csvInput" accept=".csv" class="hidden">
+                    <button onclick="document.getElementById('csvInput').click()" 
+                            class="bg-accent text-black px-6 py-2 rounded-lg font-semibold">
+                        Choose File
+                    </button>
+                </div>
+                <div id="csvPreview" class="mt-4 hidden">
+                    <!-- CSV preview will be shown here -->
+                </div>
+            </div>
+
+            <!-- Recent Documents -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-accent">Recent Documents</h2>
+                    <button onclick="showScreen('documents')" class="text-accent text-sm hover:underline">View All</button>
+                </div>
+                <div id="recentDocs" class="space-y-3">
+                    <!-- Recent documents will be populated here -->
+                </div>
+            </div>
+
+            <!-- Daily Goals -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Today's Goals</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="dailyVocab">0/5</div>
+                        <div class="text-sm text-gray-400">Vocabulary Reviews</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="dailyDocs">0/2</div>
+                        <div class="text-sm text-gray-400">Documents Created</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents Screen -->
+    <div id="documentsScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">My Documents</h2>
+                <button onclick="quickAdd()" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                    + New Document
+                </button>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                <div class="flex gap-4 flex-wrap">
+                    <input type="text" id="docSearch" placeholder="Search documents..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white"
+                           oninput="filterDocuments()">
+                    <select id="docFilter" onchange="filterDocuments()" 
+                            class="p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="">All Types</option>
+                        <option value="memo">Memos</option>
+                        <option value="kpi">KPI Updates</option>
+                        <option value="risk">Risk Reports</option>
+                        <option value="variance">Variance Analysis</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Documents List -->
+            <div id="documentsList" class="space-y-3">
+                <!-- Documents will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates Screen -->
+    <div id="templatesScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Professional Templates</h2>
+            
+            <!-- Template Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Memo Templates -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📝 Executive Memos</h3>
+                    <div class="space-y-3">
+                        <div class="template-card" onclick="useTemplate('memo-quarterly')">
+                            <div class="font-semibold text-accent">Quarterly Results Memo</div>
+                            <div class="text-sm text-gray-400">Financial performance summary with key insights</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('memo-budget')">
+                            <div class="font-semibold text-accent">Budget Variance Memo</div>
+                            <div class="text-sm text-gray-400">Budget vs actual analysis with explanations</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('memo-forecast')">
+                            <div class="font-semibold text-accent">Forecast Update Memo</div>
+                            <div class="text-sm text-gray-400">Revised projections with rationale</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Templates -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📊 KPI Reports</h3>
+                    <div class="space-y-3">
+                        <div class="template-card" onclick="useTemplate('kpi-monthly')">
+                            <div class="font-semibold text-accent">Monthly KPI Dashboard</div>
+                            <div class="text-sm text-gray-400">Key metrics with trend analysis</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('kpi-operational')">
+                            <div class="font-semibold text-accent">Operational Metrics</div>
+                            <div class="text-sm text-gray-400">Efficiency and productivity indicators</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('kpi-financial')">
+                            <div class="font-semibold text-accent">Financial KPIs</div>
+                            <div class="text-sm text-gray-400">Revenue, margin, and cash flow metrics</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Templates -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">⚠️ Risk Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="template-card" onclick="useTemplate('risk-assessment')">
+                            <div class="font-semibold text-accent">Risk Assessment Report</div>
+                            <div class="text-sm text-gray-400">Comprehensive risk evaluation framework</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('risk-mitigation')">
+                            <div class="font-semibold text-accent">Risk Mitigation Plan</div>
+                            <div class="text-sm text-gray-400">Action plans for identified risks</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('risk-monitoring')">
+                            <div class="font-semibold text-accent">Risk Monitoring Update</div>
+                            <div class="text-sm text-gray-400">Ongoing risk status and changes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Caption Templates -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📈 Chart Captions</h3>
+                    <div class="space-y-3">
+                        <div class="template-card" onclick="useTemplate('chart-trend')">
+                            <div class="font-semibold text-accent">Trend Analysis Captions</div>
+                            <div class="text-sm text-gray-400">Professional chart descriptions</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('chart-comparison')">
+                            <div class="font-semibold text-accent">Comparison Charts</div>
+                            <div class="text-sm text-gray-400">Period-over-period analysis</div>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('chart-variance')">
+                            <div class="font-semibold text-accent">Variance Explanations</div>
+                            <div class="text-sm text-gray-400">Clear variance commentary</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Screen -->
+    <div id="editorScreen" class="screen hidden p-4">
+        <div class="max-w-6xl mx-auto space-y-4">
+            <!-- Editor Header -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <input type="text" id="docTitle" placeholder="Document Title..." 
+                           class="text-xl font-bold bg-transparent border-b border-accent text-accent placeholder-gray-400 pb-1">
+                    <div class="text-sm text-gray-400 mt-1">
+                        <select id="docType" class="bg-transparent text-accent">
+                            <option value="memo">Executive Memo</option>
+                            <option value="kpi">KPI Update</option>
+                            <option value="risk">Risk Report</option>
+                            <option value="variance">Variance Analysis</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="saveDocument()" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                        💾 Save
+                    </button>
+                    <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📄 PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <!-- Main Editor -->
+                <div class="lg:col-span-3">
+                    <!-- Toolbar -->
+                    <div class="editor-toolbar flex gap-2 flex-wrap">
+                        <button onclick="formatText('bold')" class="toolbar-btn">B</button>
+                        <button onclick="formatText('italic')" class="toolbar-btn">I</button>
+                        <button onclick="formatText('underline')" class="toolbar-btn">U</button>
+                        <button onclick="insertRiskIndicator('low')" class="toolbar-btn">Risk: Low</button>
+                        <button onclick="insertRiskIndicator('medium')" class="toolbar-btn">Risk: Med</button>
+                        <button onclick="insertRiskIndicator('high')" class="toolbar-btn">Risk: High</button>
+                        <button onclick="startVoiceInput()" id="voiceBtn" class="toolbar-btn">🎤 Voice</button>
+                    </div>
+                    
+                    <!-- Editor Content -->
+                    <div class="bg-white text-black rounded-b-lg" style="min-height: 500px;">
+                        <div id="editor" contenteditable="true" 
+                             class="p-6 outline-none" 
+                             style="min-height: 500px; font-family: 'Times New Roman', serif; line-height: 1.6;">
+                            <p>Start writing your professional financial document...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-4">
+                    <!-- Quick Phrases -->
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                        <h3 class="font-bold text-accent mb-3">Quick Phrases</h3>
+                        <div class="space-y-2 max-h-60 overflow-y-auto">
+                            <div class="phrase-chip" onclick="insertPhrase('The variance is primarily attributable to')">
+                                Variance Attribution
+                            </div>
+                            <div class="phrase-chip" onclick="insertPhrase('Performance exceeded expectations due to')">
+                                Positive Performance
+                            </div>
+                            <div class="phrase-chip" onclick="insertPhrase('The decline reflects')">
+                                Negative Trend
+                            </div>
+                            <div class="phrase-chip" onclick="insertPhrase('Key drivers include')">
+                                Key Drivers
+                            </div>
+                            <div class="phrase-chip" onclick="insertPhrase('Going forward, we anticipate')">
+                                Forward Looking
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Document Stats -->
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                        <h3 class="font-bold text-accent mb-3">Document Stats</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Words:</span>
+                                <span id="wordCount" class="text-accent">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Characters:</span>
+                                <span id="charCount" class="text-accent">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Reading Time:</span>
+                                <span id="readTime" class="text-accent">0 min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Suggestions -->
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4">
+                        <h3 class="font-bold text-accent mb-3">Suggestions</h3>
+                        <div id="suggestions" class="space-y-2 text-sm">
+                            <div class="text-gray-400">Start writing to get suggestions...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Advanced Finance Vocabulary</h2>
+            
+            <!-- Daily Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-accent">Today's Progress</h3>
+                    <span id="vocabProgress" class="text-accent font-bold">0/5</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-3">
+                    <div id="vocabProgressBar" class="bg-accent h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Review Card -->
+            <div id="vocabCard" class="vocab-card">
+                <div id="vocabTerm" class="text-3xl font-bold text-accent mb-4">amortization</div>
+                <div id="vocabDefinition" class="text-lg text-gray-300 mb-4">
+                    The gradual reduction of a debt through regular payments over time
+                </div>
+                <div id="vocabExample" class="text-sm text-gray-400 italic mb-6">
+                    "The loan amortization schedule shows decreasing interest payments over the 5-year term."
+                </div>
+                <div class="flex justify-center gap-3">
+                    <button onclick="rateVocab('again')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        Again
+                    </button>
+                    <button onclick="rateVocab('hard')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        Hard
+                    </button>
+                    <button onclick="rateVocab('good')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        Good
+                    </button>
+                    <button onclick="rateVocab('easy')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        Easy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Add Custom Vocabulary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Add Custom Term</h3>
+                <div class="space-y-3">
+                    <input type="text" id="newVocabTerm" placeholder="Financial term..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <textarea id="newVocabDefinition" rows="2" placeholder="Definition..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <input type="text" id="newVocabExample" placeholder="Example sentence..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addCustomVocab()" class="w-full bg-accent text-black p-3 rounded-lg font-semibold">
+                        Add Term
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Power Phrases & Transitions</h2>
+            
+            <!-- Phrase Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Financial Analysis -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📊 Financial Analysis</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('The variance is primarily attributable to')">
+                            The variance is primarily attributable to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('This represents a significant improvement over')">
+                            This represents a significant improvement over
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('The underlying drivers of this performance include')">
+                            The underlying drivers of this performance include
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('On a normalized basis, excluding one-time items')">
+                            On a normalized basis, excluding one-time items
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Language -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">⚠️ Risk Language</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('We have identified potential exposure to')">
+                            We have identified potential exposure to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Mitigation strategies are being implemented to')">
+                            Mitigation strategies are being implemented to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('The probability of occurrence is assessed as')">
+                            The probability of occurrence is assessed as
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Contingency plans have been developed to address')">
+                            Contingency plans have been developed to address
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Commentary -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📈 Performance Commentary</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('Performance exceeded expectations due to')">
+                            Performance exceeded expectations due to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('The decline reflects challenging market conditions')">
+                            The decline reflects challenging market conditions
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Year-over-year growth was driven by')">
+                            Year-over-year growth was driven by
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Sequential improvement demonstrates')">
+                            Sequential improvement demonstrates
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forward-Looking Statements -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🔮 Forward-Looking</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('Going forward, we anticipate')">
+                            Going forward, we anticipate
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Based on current trends, we expect')">
+                            Based on current trends, we expect
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Our revised outlook reflects')">
+                            Our revised outlook reflects
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('Key assumptions underlying our forecast include')">
+                            Key assumptions underlying our forecast include
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Phrases -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Custom Phrases</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newPhrase" placeholder="Add your custom phrase..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <select id="phraseCategory" class="p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="analysis">Analysis</option>
+                        <option value="risk">Risk</option>
+                        <option value="performance">Performance</option>
+                        <option value="forward">Forward-Looking</option>
+                    </select>
+                    <button onclick="addCustomPhrase()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add
+                    </button>
+                </div>
+                <div id="customPhrases" class="space-y-2">
+                    <!-- Custom phrases will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breathing Screen -->
+    <div id="breathingScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-2xl font-bold text-accent">Focus Reset Session</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Breathe</div>
+            </div>
+            
+            <div class="text-accent text-4xl font-bold" id="breathingTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center">
+                "Focus on clarity and precision in your financial communication."
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startBreathing()" id="startBreathingBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Session
+                </button>
+                <button onclick="pauseBreathing()" id="pauseBreathingBtn" 
+                        class="bg-yellow-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏸️ Pause
+                </button>
+                <button onclick="stopBreathing()" id="stopBreathingBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add Message
+                    </button>
+                </div>
+                <div id="customMessages" class="space-y-2">
+                    <!-- Custom messages will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Performance Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-accent" id="totalDocsCount">0</div>
+                    <div class="text-sm text-gray-400">Documents Created</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-accent" id="currentStreakCount">0</div>
+                    <div class="text-sm text-gray-400">Day Streak</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-accent" id="vocabReviewsCount">0</div>
+                    <div class="text-sm text-gray-400">Vocab Reviews</div>
+                </div>
+                <div class="bg-black bg-opacity-40 rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-accent" id="avgWordsPerDoc">0</div>
+                    <div class="text-sm text-gray-400">Avg Words/Doc</div>
+                </div>
+            </div>
+
+            <!-- Document Types Chart -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Document Types</h3>
+                <div id="docTypesChart" class="space-y-3">
+                    <!-- Chart will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Recent Activity</h3>
+                <div id="recentActivity" class="space-y-3">
+                    <!-- Recent activity will be populated here -->
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Data Management</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="exportAllData()" class="bg-blue-600 text-white p-3 rounded-lg font-semibold">
+                        📤 Export Data
+                    </button>
+                    <button onclick="importData()" class="bg-green-600 text-white p-3 rounded-lg font-semibold">
+                        📥 Import Data
+                    </button>
+                    <button onclick="backupData()" class="bg-purple-600 text-white p-3 rounded-lg font-semibold">
+                        💾 Backup
+                    </button>
+                    <button onclick="syncData()" class="bg-accent text-black p-3 rounded-lg font-semibold">
+                        🔄 Sync
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-accent mb-6">Create New Document</h3>
+            <div class="space-y-4">
+                <input type="text" id="quickTitle" placeholder="Document title..." 
+                       class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                <select id="quickType" class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                    <option value="memo">Executive Memo</option>
+                    <option value="kpi">KPI Update</option>
+                    <option value="risk">Risk Report</option>
+                    <option value="variance">Variance Analysis</option>
+                </select>
+                <div class="flex gap-3">
+                    <button onclick="createQuickDocument()" class="flex-1 bg-accent text-black p-3 rounded-lg font-semibold">
+                        Create
+                    </button>
+                    <button onclick="closeQuickAdd()" class="flex-1 bg-gray-600 text-white p-3 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Recording Indicator -->
+    <div id="voiceIndicator" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white p-6 rounded-lg hidden z-50">
+        <div class="text-center">
+            <div class="text-4xl mb-4">🎤</div>
+            <div class="text-lg font-bold mb-2">Recording...</div>
+            <div class="text-sm mb-4">Speak clearly for best results</div>
+            <button onclick="stopVoiceInput()" class="bg-white text-red-600 px-6 py-2 rounded-lg font-semibold">
+                Stop Recording
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentDocument = null;
+        let documents = [];
+        let vocabulary = [];
+        let phrases = [];
+        let motivationalMessages = [];
+        let analytics = {
+            totalDocs: 0,
+            currentStreak: 0,
+            vocabReviews: 0,
+            lastActiveDate: null
+        };
+        let breathingTimer = null;
+        let breathingInterval = null;
+        let breathingTimeLeft = 25 * 60;
+        let breathingPhase = 'inhale';
+        let isRecording = false;
+        let recognition = null;
+        let isOnline = navigator.onLine;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadHomeScreen();
+            updateStats();
+            setupOfflineHandling();
+            setupCSVHandler();
+            setupEditor();
+        });
+
+        // Data management
+        function initializeData() {
+            const savedData = localStorage.getItem('financeEnglishData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                documents = data.documents || [];
+                vocabulary = data.vocabulary || getDefaultVocabulary();
+                phrases = data.phrases || getDefaultPhrases();
+                motivationalMessages = data.messages || getDefaultMessages();
+                analytics = data.analytics || analytics;
+            } else {
+                vocabulary = getDefaultVocabulary();
+                phrases = getDefaultPhrases();
+                motivationalMessages = getDefaultMessages();
+                saveData();
+            }
+        }
+
+        function saveData() {
+            const data = {
+                documents,
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                analytics,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('financeEnglishData', JSON.stringify(data));
+            if (isOnline) {
+                showSyncIndicator();
+            }
+        }
+
+        function getDefaultVocabulary() {
+            return [
+                {
+                    id: '1',
+                    term: 'amortization',
+                    definition: 'The gradual reduction of a debt through regular payments over time',
+                    example: 'The loan amortization schedule shows decreasing interest payments over the 5-year term.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '2',
+                    term: 'EBITDA',
+                    definition: 'Earnings Before Interest, Taxes, Depreciation, and Amortization',
+                    example: 'Our EBITDA margin improved by 200 basis points year-over-year.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '3',
+                    term: 'variance analysis',
+                    definition: 'The investigation of differences between planned and actual performance',
+                    example: 'The variance analysis revealed that higher material costs drove the unfavorable budget variance.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '4',
+                    term: 'working capital',
+                    definition: 'Current assets minus current liabilities, indicating short-term financial health',
+                    example: 'Working capital increased due to higher inventory levels and extended payment terms.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '5',
+                    term: 'basis points',
+                    definition: 'A unit of measure equal to 1/100th of a percentage point',
+                    example: 'The interest rate increased by 25 basis points to 3.75%.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                }
+            ];
+        }
+
+        function getDefaultPhrases() {
+            return [
+                { id: '1', category: 'analysis', text: 'The variance is primarily attributable to' },
+                { id: '2', category: 'analysis', text: 'This represents a significant improvement over' },
+                { id: '3', category: 'risk', text: 'We have identified potential exposure to' },
+                { id: '4', category: 'risk', text: 'Mitigation strategies are being implemented to' },
+                { id: '5', category: 'performance', text: 'Performance exceeded expectations due to' },
+                { id: '6', category: 'forward', text: 'Going forward, we anticipate' }
+            ];
+        }
+
+        function getDefaultMessages() {
+            return [
+                "Focus on clarity and precision in your financial communication.",
+                "Every number tells a story - make sure yours is compelling.",
+                "Professional writing builds trust and credibility.",
+                "Clear communication drives better business decisions.",
+                "Your analysis can influence important strategic choices."
+            ];
+        }
+
+        // Screen management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'home': loadHomeScreen(); break;
+                case 'documents': loadDocumentsScreen(); break;
+                case 'templates': loadTemplatesScreen(); break;
+                case 'editor': loadEditorScreen(); break;
+                case 'vocabulary': loadVocabularyScreen(); break;
+                case 'phrases': loadPhrasesScreen(); break;
+                case 'breathing': loadBreathingScreen(); break;
+                case 'analytics': loadAnalyticsScreen(); break;
+            }
+        }
+
+        // Home screen
+        function loadHomeScreen() {
+            loadRecentDocuments();
+            updateDailyGoals();
+        }
+
+        function loadRecentDocuments() {
+            const recentDocs = documents.slice(0, 3);
+            const container = document.getElementById('recentDocs');
+            
+            if (recentDocs.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-8">No documents yet</div>';
+                return;
+            }
+            
+            container.innerHTML = recentDocs.map(doc => `
+                <div class="document-item cursor-pointer" onclick="editDocument('${doc.id}')">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-semibold text-accent text-lg">${doc.title}</div>
+                            <div class="text-sm text-gray-400 mt-1">${doc.type.toUpperCase()} • ${new Date(doc.createdAt).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-500 mt-2">${doc.content.replace(/<[^>]*>/g, '').substring(0, 100)}...</div>
+                        </div>
+                        <div class="text-xs text-gray-400">${doc.wordCount || 0} words</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateDailyGoals() {
+            const today = new Date().toDateString();
+            const todayDocs = documents.filter(doc => new Date(doc.createdAt).toDateString() === today).length;
+            const todayVocab = vocabulary.filter(word => {
+                const lastReview = word.lastReview ? new Date(word.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            document.getElementById('dailyDocs').textContent = `${todayDocs}/2`;
+            document.getElementById('dailyVocab').textContent = `${todayVocab}/5`;
+        }
+
+        // CSV Handler
+        function setupCSVHandler() {
+            const dropZone = document.getElementById('csvDropZone');
+            const csvInput = document.getElementById('csvInput');
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleCSVFile(files[0]);
+                }
+            });
+            
+            csvInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleCSVFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleCSVFile(file) {
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showNotification('Please select a CSV file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                // Show preview
+                const preview = document.getElementById('csvPreview');
+                preview.classList.remove('hidden');
+                preview.innerHTML = `
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h4 class="font-bold text-accent mb-3">CSV Preview (${lines.length - 1} rows)</h4>
+                        <div class="text-sm text-gray-300 mb-3">Headers: ${headers.join(', ')}</div>
+                        <div class="flex gap-3">
+                            <button onclick="generateMemoFromCSV('${btoa(csv)}')" class="bg-accent text-black px-4 py-2 rounded font-semibold">
+                                Generate KPI Memo
+                            </button>
+                            <button onclick="generateVarianceFromCSV('${btoa(csv)}')" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold">
+                                Generate Variance Analysis
+                            </button>
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsText(file);
+        }
+
+        function generateMemoFromCSV(encodedCSV) {
+            const csv = atob(encodedCSV);
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            // Create a new document with CSV data
+            const title = `KPI Update - ${new Date().toLocaleDateString()}`;
+            const content = generateKPIMemoContent(lines, headers);
+            
+            createDocumentFromTemplate(title, 'kpi', content);
+            showScreen('editor');
+            showNotification('KPI memo generated from CSV data!');
+        }
+
+        function generateVarianceFromCSV(encodedCSV) {
+            const csv = atob(encodedCSV);
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            const title = `Variance Analysis - ${new Date().toLocaleDateString()}`;
+            const content = generateVarianceContent(lines, headers);
+            
+            createDocumentFromTemplate(title, 'variance', content);
+            showScreen('editor');
+            showNotification('Variance analysis generated from CSV data!');
+        }
+
+        function generateKPIMemoContent(lines, headers) {
+            return `
+                <h2>Key Performance Indicators Update</h2>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                <p><strong>Period:</strong> [Insert Period]</p>
+                
+                <h3>Executive Summary</h3>
+                <p>The following report presents our key performance indicators for the current period, highlighting significant variances and underlying drivers.</p>
+                
+                <h3>Performance Metrics</h3>
+                <p>Based on the data analysis, the following metrics demonstrate our operational performance:</p>
+                
+                <ul>
+                ${lines.slice(1, 6).map(line => {
+                    const values = line.split(',');
+                    return `<li><strong>${values[0] || 'Metric'}:</strong> ${values[1] || 'Value'} ${values[2] ? `(${values[2]})` : ''}</li>`;
+                }).join('')}
+                </ul>
+                
+                <h3>Key Observations</h3>
+                <p>The variance is primarily attributable to [insert key drivers]. Performance exceeded expectations due to [insert reasons].</p>
+                
+                <h3>Forward-Looking Perspective</h3>
+                <p>Going forward, we anticipate [insert outlook]. Key assumptions underlying our forecast include [insert assumptions].</p>
+            `;
+        }
+
+        function generateVarianceContent(lines, headers) {
+            return `
+                <h2>Variance Analysis Report</h2>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                <p><strong>Analysis Period:</strong> [Insert Period]</p>
+                
+                <h3>Executive Summary</h3>
+                <p>This analysis examines the variances between budgeted and actual performance, providing insights into the underlying drivers and their financial impact.</p>
+                
+                <h3>Variance Summary</h3>
+                <p>The following table presents the key variances identified in our analysis:</p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <tr style="background-color: #f0f0f0;">
+                        ${headers.slice(0, 4).map(header => `<th style="border: 1px solid #ddd; padding: 8px;">${header}</th>`).join('')}
+                    </tr>
+                    ${lines.slice(1, 6).map(line => {
+                        const values = line.split(',');
+                        return `<tr>${values.slice(0, 4).map(value => `<td style="border: 1px solid #ddd; padding: 8px;">${value || ''}</td>`).join('')}</tr>`;
+                    }).join('')}
+                </table>
+                
+                <h3>Variance Analysis</h3>
+                <p>The decline reflects challenging market conditions and operational adjustments. Key drivers include [insert specific factors].</p>
+                
+                <h3>Risk Assessment</h3>
+                <p>We have identified potential exposure to [insert risks]. <span class="risk-indicator risk-medium">MEDIUM RISK</span></p>
+                
+                <h3>Recommendations</h3>
+                <p>Based on current trends, we expect [insert recommendations]. Mitigation strategies are being implemented to address identified variances.</p>
+            `;
+        }
+
+        // Templates
+        function createFromTemplate(templateType) {
+            const templates = {
+                memo: {
+                    title: `Executive Memo - ${new Date().toLocaleDateString()}`,
+                    type: 'memo',
+                    content: `
+                        <h2>Executive Memorandum</h2>
+                        <p><strong>To:</strong> [Recipients]</p>
+                        <p><strong>From:</strong> [Your Name]</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                        <p><strong>Subject:</strong> [Subject Line]</p>
+                        
+                        <h3>Executive Summary</h3>
+                        <p>[Provide a concise overview of the key points and recommendations]</p>
+                        
+                        <h3>Background</h3>
+                        <p>[Context and relevant background information]</p>
+                        
+                        <h3>Analysis</h3>
+                        <p>The variance is primarily attributable to [insert key factors]. This represents a significant improvement over [previous period/benchmark].</p>
+                        
+                        <h3>Recommendations</h3>
+                        <p>Going forward, we anticipate [insert recommendations and next steps].</p>
+                    `
+                },
+                kpi: {
+                    title: `KPI Dashboard - ${new Date().toLocaleDateString()}`,
+                    type: 'kpi',
+                    content: `
+                        <h2>Key Performance Indicators Report</h2>
+                        <p><strong>Reporting Period:</strong> [Insert Period]</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                        
+                        <h3>Performance Summary</h3>
+                        <p>Performance exceeded expectations due to [insert key drivers]. The underlying drivers of this performance include:</p>
+                        
+                        <ul>
+                            <li>[Key Driver 1]</li>
+                            <li>[Key Driver 2]</li>
+                            <li>[Key Driver 3]</li>
+                        </ul>
+                        
+                        <h3>Financial Metrics</h3>
+                        <p>Year-over-year growth was driven by [insert factors]. On a normalized basis, excluding one-time items, [insert analysis].</p>
+                        
+                        <h3>Operational Metrics</h3>
+                        <p>Sequential improvement demonstrates [insert operational insights].</p>
+                        
+                        <h3>Outlook</h3>
+                        <p>Based on current trends, we expect [insert forward-looking statements].</p>
+                    `
+                },
+                risk: {
+                    title: `Risk Assessment - ${new Date().toLocaleDateString()}`,
+                    type: 'risk',
+                    content: `
+                        <h2>Risk Assessment Report</h2>
+                        <p><strong>Assessment Date:</strong> ${new Date().toLocaleDateString()}</p>
+                        <p><strong>Risk Period:</strong> [Insert Period]</p>
+                        
+                        <h3>Executive Summary</h3>
+                        <p>We have identified potential exposure to [insert risk categories]. The probability of occurrence is assessed as [insert assessment].</p>
+                        
+                        <h3>Risk Identification</h3>
+                        <p>Key risks include:</p>
+                        <ul>
+                            <li>[Risk 1] <span class="risk-indicator risk-high">HIGH RISK</span></li>
+                            <li>[Risk 2] <span class="risk-indicator risk-medium">MEDIUM RISK</span></li>
+                            <li>[Risk 3] <span class="risk-indicator risk-low">LOW RISK</span></li>
+                        </ul>
+                        
+                        <h3>Risk Mitigation</h3>
+                        <p>Mitigation strategies are being implemented to [insert mitigation plans]. Contingency plans have been developed to address [insert contingencies].</p>
+                        
+                        <h3>Monitoring and Review</h3>
+                        <p>Ongoing monitoring will focus on [insert monitoring approach].</p>
+                    `
+                }
+            };
+            
+            const template = templates[templateType];
+            if (template) {
+                createDocumentFromTemplate(template.title, template.type, template.content);
+                showScreen('editor');
+            }
+        }
+
+        function createDocumentFromTemplate(title, type, content) {
+            currentDocument = {
+                id: Date.now().toString(),
+                title: title,
+                type: type,
+                content: content,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                wordCount: content.replace(/<[^>]*>/g, '').split(/\s+/).length
+            };
+            
+            document.getElementById('docTitle').value = title;
+            document.getElementById('docType').value = type;
+            document.getElementById('editor').innerHTML = content;
+            
+            updateDocumentStats();
+        }
+
+        // Editor
+        function setupEditor() {
+            const editor = document.getElementById('editor');
+            
+            editor.addEventListener('input', () => {
+                updateDocumentStats();
+                generateSuggestions();
+            });
+            
+            // Setup speech recognition if available
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        insertTextAtCursor(finalTranscript);
+                        updateDocumentStats();
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                };
+            }
+        }
+
+        function loadEditorScreen() {
+            if (currentDocument) {
+                document.getElementById('docTitle').value = currentDocument.title;
+                document.getElementById('docType').value = currentDocument.type;
+                document.getElementById('editor').innerHTML = currentDocument.content;
+                updateDocumentStats();
+            }
+        }
+
+        function updateDocumentStats() {
+            const editor = document.getElementById('editor');
+            const text = editor.innerText || editor.textContent || '';
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const wordCount = words.length;
+            const charCount = text.length;
+            const readTime = Math.ceil(wordCount / 200); // Average reading speed
+            
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('readTime').textContent = `${readTime} min`;
+            
+            if (currentDocument) {
+                currentDocument.wordCount = wordCount;
+            }
+        }
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('editor').focus();
+        }
+
+        function insertRiskIndicator(level) {
+            const riskText = {
+                low: '<span class="risk-indicator risk-low">LOW RISK</span>',
+                medium: '<span class="risk-indicator risk-medium">MEDIUM RISK</span>',
+                high: '<span class="risk-indicator risk-high">HIGH RISK</span>'
+            };
+            
+            insertTextAtCursor(riskText[level]);
+        }
+
+        function insertPhrase(phrase) {
+            insertTextAtCursor(phrase + ' ');
+        }
+
+        function insertTextAtCursor(text) {
+            const editor = document.getElementById('editor');
+            editor.focus();
+            
+            if (window.getSelection) {
+                const selection = window.getSelection();
+                if (selection.getRangeAt && selection.rangeCount) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    
+                    const el = document.createElement('div');
+                    el.innerHTML = text;
+                    const frag = document.createDocumentFragment();
+                    let node, lastNode;
+                    while ((node = el.firstChild)) {
+                        lastNode = frag.appendChild(node);
+                    }
+                    range.insertNode(frag);
+                    
+                    if (lastNode) {
+                        range = range.cloneRange();
+                        range.setStartAfter(lastNode);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            }
+            
+            updateDocumentStats();
+        }
+
+        function startVoiceInput() {
+            if (!recognition) {
+                showNotification('Speech recognition not supported');
+                return;
+            }
+            
+            if (isRecording) {
+                stopVoiceInput();
+                return;
+            }
+            
+            isRecording = true;
+            document.getElementById('voiceIndicator').classList.remove('hidden');
+            document.getElementById('voiceBtn').textContent = '⏹️ Stop';
+            
+            recognition.start();
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById('voiceIndicator').classList.add('hidden');
+                document.getElementById('voiceBtn').textContent = '🎤 Voice';
+            }
+        }
+
+        function generateSuggestions() {
+            const editor = document.getElementById('editor');
+            const text = editor.innerText || editor.textContent || '';
+            const suggestions = [];
+            
+            // Simple suggestion logic
+            if (text.includes('variance') && !text.includes('attributable')) {
+                suggestions.push('Consider using "The variance is primarily attributable to..."');
+            }
+            
+            if (text.includes('performance') && !text.includes('exceeded')) {
+                suggestions.push('Try "Performance exceeded expectations due to..."');
+            }
+            
+            if (text.includes('risk') && !text.includes('mitigation')) {
+                suggestions.push('Add risk mitigation strategies');
+            }
+            
+            const container = document.getElementById('suggestions');
+            if (suggestions.length === 0) {
+                container.innerHTML = '<div class="text-gray-400">Looking good! Keep writing...</div>';
+            } else {
+                container.innerHTML = suggestions.map(suggestion => 
+                    `<div class="text-sm text-gray-300 p-2 bg-gray-700 rounded cursor-pointer" onclick="insertPhrase('${suggestion}')">${suggestion}</div>`
+                ).join('');
+            }
+        }
+
+        function saveDocument() {
+            if (!currentDocument) {
+                currentDocument = {
+                    id: Date.now().toString(),
+                    createdAt: new Date().toISOString()
+                };
+            }
+            
+            currentDocument.title = document.getElementById('docTitle').value || 'Untitled Document';
+            currentDocument.type = document.getElementById('docType').value;
+            currentDocument.content = document.getElementById('editor').innerHTML;
+            currentDocument.updatedAt = new Date().toISOString();
+            currentDocument.wordCount = document.getElementById('wordCount').textContent;
+            
+            // Add to documents array if new
+            const existingIndex = documents.findIndex(doc => doc.id === currentDocument.id);
+            if (existingIndex === -1) {
+                documents.unshift(currentDocument);
+                analytics.totalDocs++;
+                updateStreak();
+            } else {
+                documents[existingIndex] = currentDocument;
+            }
+            
+            saveData();
+            showNotification('Document saved successfully!');
+            updateStats();
+        }
+
+        function exportPDF() {
+            if (!window.jsPDF) {
+                showNotification('PDF export not available');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const title = document.getElementById('docTitle').value || 'Document';
+            const content = document.getElementById('editor').innerText || '';
+            
+            doc.setFontSize(20);
+            doc.text(title, 20, 20);
+            
+            doc.setFontSize(12);
+            const lines = doc.splitTextToSize(content, 170);
+            doc.text(lines, 20, 40);
+            
+            doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+            showNotification('PDF exported successfully!');
+        }
+
+        // Documents screen
+        function loadDocumentsScreen() {
+            filterDocuments();
+        }
+
+        function filterDocuments() {
+            const search = document.getElementById('docSearch').value.toLowerCase();
+            const filter = document.getElementById('docFilter').value;
+            
+            let filteredDocs = documents;
+            
+            if (search) {
+                filteredDocs = filteredDocs.filter(doc => 
+                    doc.title.toLowerCase().includes(search) || 
+                    doc.content.toLowerCase().includes(search)
+                );
+            }
+            
+            if (filter) {
+                filteredDocs = filteredDocs.filter(doc => doc.type === filter);
+            }
+            
+            const container = document.getElementById('documentsList');
+            
+            if (filteredDocs.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-8">No documents found</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredDocs.map(doc => `
+                <div class="document-item">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1 cursor-pointer" onclick="editDocument('${doc.id}')">
+                            <div class="font-semibold text-accent text-lg">${doc.title}</div>
+                            <div class="text-sm text-gray-400 mt-1">
+                                ${doc.type.toUpperCase()} • ${new Date(doc.createdAt).toLocaleDateString()} • ${doc.wordCount || 0} words
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">
+                                ${doc.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
+                            </div>
+                        </div>
+                        <div class="flex gap-2 ml-4">
+                            <button onclick="editDocument('${doc.id}')" class="text-accent text-sm hover:underline">Edit</button>
+                            <button onclick="deleteDocument('${doc.id}')" class="text-red-400 text-sm hover:underline">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editDocument(docId) {
+            const doc = documents.find(d => d.id === docId);
+            if (doc) {
+                currentDocument = doc;
+                showScreen('editor');
+            }
+        }
+
+        function deleteDocument(docId) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                documents = documents.filter(doc => doc.id !== docId);
+                saveData();
+                filterDocuments();
+                showNotification('Document deleted');
+                updateStats();
+            }
+        }
+
+        // Vocabulary screen
+        function loadVocabularyScreen() {
+            loadVocabularyReview();
+            updateVocabularyProgress();
+        }
+
+        function loadVocabularyReview() {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            
+            if (dueWords.length === 0) {
+                document.getElementById('vocabCard').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl text-accent mb-4">🎉</div>
+                        <div class="text-2xl font-bold text-accent mb-2">All Caught Up!</div>
+                        <div class="text-gray-400">No vocabulary due for review</div>
+                        <button onclick="addRandomVocab()" class="mt-4 bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                            Add Random Term
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currentWord = dueWords[0];
+            document.getElementById('vocabTerm').textContent = currentWord.term;
+            document.getElementById('vocabDefinition').textContent = currentWord.definition;
+            document.getElementById('vocabExample').textContent = currentWord.example;
+        }
+
+        function updateVocabularyProgress() {
+            const today = new Date().toDateString();
+            const reviewedToday = vocabulary.filter(word => {
+                const lastReview = word.lastReview ? new Date(word.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            const dailyGoal = 5;
+            const progress = Math.min((reviewedToday / dailyGoal) * 100, 100);
+            
+            document.getElementById('vocabProgress').textContent = `${reviewedToday}/${dailyGoal}`;
+            document.getElementById('vocabProgressBar').style.width = `${progress}%`;
+        }
+
+        function rateVocab(rating) {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            if (dueWords.length === 0) return;
+            
+            const currentWord = dueWords[0];
+            const wordIndex = vocabulary.findIndex(w => w.id === currentWord.id);
+            
+            if (wordIndex === -1) return;
+            
+            // Spaced repetition algorithm
+            let newEase = currentWord.ease;
+            let newInterval = currentWord.interval;
+            
+            switch (rating) {
+                case 'again':
+                    newEase = Math.max(1.3, newEase - 0.2);
+                    newInterval = 1;
+                    break;
+                case 'hard':
+                    newEase = Math.max(1.3, newEase - 0.15);
+                    newInterval = Math.max(1, Math.round(newInterval * 1.2));
+                    break;
+                case 'good':
+                    newInterval = Math.round(newInterval * newEase);
+                    break;
+                case 'easy':
+                    newEase = newEase + 0.15;
+                    newInterval = Math.round(newInterval * newEase * 1.3);
+                    break;
+            }
+            
+            vocabulary[wordIndex] = {
+                ...currentWord,
+                ease: newEase,
+                interval: newInterval,
+                due: Date.now() + (newInterval * 24 * 60 * 60 * 1000),
+                lastReview: Date.now()
+            };
+            
+            analytics.vocabReviews++;
+            saveData();
+            
+            loadVocabularyReview();
+            updateVocabularyProgress();
+            updateStats();
+        }
+
+        function addCustomVocab() {
+            const term = document.getElementById('newVocabTerm').value.trim();
+            const definition = document.getElementById('newVocabDefinition').value.trim();
+            const example = document.getElementById('newVocabExample').value.trim();
+            
+            if (!term || !definition) {
+                showNotification('Please enter both term and definition');
+                return;
+            }
+            
+            vocabulary.push({
+                id: Date.now().toString(),
+                term: term,
+                definition: definition,
+                example: example || `Example usage of ${term} in financial context.`,
+                due: Date.now(),
+                ease: 2.5,
+                interval: 1,
+                lastReview: null
+            });
+            
+            saveData();
+            
+            document.getElementById('newVocabTerm').value = '';
+            document.getElementById('newVocabDefinition').value = '';
+            document.getElementById('newVocabExample').value = '';
+            
+            showNotification('Vocabulary term added!');
+            loadVocabularyReview();
+        }
+
+        function addRandomVocab() {
+            const advancedTerms = [
+                {
+                    term: 'covenant',
+                    definition: 'A clause in a loan agreement that requires the borrower to fulfill certain conditions',
+                    example: 'The debt covenant requires maintaining a minimum debt-to-equity ratio of 2:1.'
+                },
+                {
+                    term: 'impairment',
+                    definition: 'A reduction in the recoverable amount of an asset below its carrying value',
+                    example: 'Goodwill impairment charges totaled $50 million due to declining market conditions.'
+                },
+                {
+                    term: 'hedge accounting',
+                    definition: 'Accounting method that matches gains/losses on hedging instruments with hedged items',
+                    example: 'We apply hedge accounting to our foreign currency forward contracts.'
+                }
+            ];
+            
+            const randomTerm = advancedTerms[Math.floor(Math.random() * advancedTerms.length)];
+            
+            vocabulary.push({
+                id: Date.now().toString(),
+                ...randomTerm,
+                due: Date.now(),
+                ease: 2.5,
+                interval: 1,
+                lastReview: null
+            });
+            
+            saveData();
+            loadVocabularyReview();
+            showNotification('Random advanced term added!');
+        }
+
+        // Phrases screen
+        function loadPhrasesScreen() {
+            loadCustomPhrases();
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = phrase;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function addCustomPhrase() {
+            const phrase = document.getElementById('newPhrase').value.trim();
+            const category = document.getElementById('phraseCategory').value;
+            
+            if (!phrase) {
+                showNotification('Please enter a phrase');
+                return;
+            }
+            
+            phrases.push({
+                id: Date.now().toString(),
+                category: category,
+                text: phrase,
+                custom: true
+            });
+            
+            saveData();
+            
+            document.getElementById('newPhrase').value = '';
+            loadCustomPhrases();
+            showNotification('Custom phrase added!');
+        }
+
+        function loadCustomPhrases() {
+            const customPhrases = phrases.filter(p => p.custom);
+            const container = document.getElementById('customPhrases');
+            
+            if (customPhrases.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No custom phrases yet</div>';
+                return;
+            }
+            
+            const groupedPhrases = customPhrases.reduce((acc, phrase) => {
+                if (!acc[phrase.category]) acc[phrase.category] = [];
+                acc[phrase.category].push(phrase);
+                return acc;
+            }, {});
+            
+            container.innerHTML = Object.entries(groupedPhrases).map(([category, categoryPhrases]) => `
+                <div class="mb-4">
+                    <h4 class="font-bold text-accent mb-2">${category.toUpperCase()}</h4>
+                    <div class="space-y-1">
+                        ${categoryPhrases.map(phrase => `
+                            <div class="flex justify-between items-center bg-gray-800 p-2 rounded">
+                                <span class="phrase-chip" onclick="copyPhrase('${phrase.text}')">${phrase.text}</span>
+                                <button onclick="deletePhrase('${phrase.id}')" class="text-red-400 text-xs">Delete</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePhrase(phraseId) {
+            phrases = phrases.filter(p => p.id !== phraseId);
+            saveData();
+            loadCustomPhrases();
+            showNotification('Phrase deleted');
+        }
+
+        // Breathing screen
+        function loadBreathingScreen() {
+            loadCustomMessages();
+        }
+
+        function startBreathing() {
+            breathingTimeLeft = 25 * 60;
+            breathingPhase = 'inhale';
+            
+            document.getElementById('startBreathingBtn').disabled = true;
+            document.getElementById('pauseBreathingBtn').disabled = false;
+            document.getElementById('stopBreathingBtn').disabled = false;
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                updateBreathingTimer();
+                
+                if (breathingTimeLeft <= 0) {
+                    stopBreathing();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateBreathingTimer() {
+            const minutes = Math.floor(breathingTimeLeft / 60);
+            const seconds = breathingTimeLeft % 60;
+            document.getElementById('breathingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (motivationalMessages.length > 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function pauseBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+                
+                document.getElementById('pauseBreathingBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseBreathingBtn').onclick = resumeBreathing;
+            }
+        }
+
+        function resumeBreathing() {
+            startBreathing();
+            document.getElementById('pauseBreathingBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseBreathingBtn').onclick = pauseBreathing;
+        }
+
+        function stopBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startBreathingBtn').disabled = false;
+            document.getElementById('pauseBreathingBtn').disabled = true;
+            document.getElementById('stopBreathingBtn').disabled = true;
+            
+            showNotification('Focus session completed! 🧘');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) return;
+            
+            motivationalMessages.push(message);
+            saveData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMessages();
+            showNotification('Motivational message added!');
+        }
+
+        function loadCustomMessages() {
+            const customMessages = motivationalMessages.slice(5); // Skip default messages
+            const container = document.getElementById('customMessages');
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            motivationalMessages.splice(index, 1);
+            saveData();
+            loadCustomMessages();
+            showNotification('Message removed');
+        }
+
+        // Analytics screen
+        function loadAnalyticsScreen() {
+            updateAnalyticsDisplay();
+            loadDocumentTypesChart();
+            loadRecentActivity();
+        }
+
+        function updateAnalyticsDisplay() {
+            document.getElementById('totalDocsCount').textContent = analytics.totalDocs;
+            document.getElementById('currentStreakCount').textContent = analytics.currentStreak;
+            document.getElementById('vocabReviewsCount').textContent = analytics.vocabReviews;
+            
+            const avgWords = documents.length > 0 ? 
+                Math.round(documents.reduce((sum, doc) => sum + (doc.wordCount || 0), 0) / documents.length) : 0;
+            document.getElementById('avgWordsPerDoc').textContent = avgWords;
+        }
+
+        function loadDocumentTypesChart() {
+            const typeCounts = documents.reduce((acc, doc) => {
+                acc[doc.type] = (acc[doc.type] || 0) + 1;
+                return acc;
+            }, {});
+            
+            const container = document.getElementById('docTypesChart');
+            const total = documents.length;
+            
+            if (total === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No documents yet</div>';
+                return;
+            }
+            
+            container.innerHTML = Object.entries(typeCounts).map(([type, count]) => {
+                const percentage = Math.round((count / total) * 100);
+                return `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-accent font-semibold">${type.toUpperCase()}</span>
+                        <span class="text-gray-400">${count} (${percentage}%)</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mb-3">
+                        <div class="bg-accent h-2 rounded-full" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadRecentActivity() {
+            const activities = [];
+            
+            // Add recent documents
+            documents.slice(0, 5).forEach(doc => {
+                activities.push({
+                    text: `Created: ${doc.title}`,
+                    date: new Date(doc.createdAt),
+                    type: 'document'
+                });
+            });
+            
+            // Add recent vocab reviews
+            const recentVocab = vocabulary
+                .filter(word => word.lastReview)
+                .sort((a, b) => new Date(b.lastReview) - new Date(a.lastReview))
+                .slice(0, 3);
+            
+            recentVocab.forEach(word => {
+                activities.push({
+                    text: `Reviewed: ${word.term}`,
+                    date: new Date(word.lastReview),
+                    type: 'vocab'
+                });
+            });
+            
+            activities.sort((a, b) => b.date - a.date);
+            
+            const container = document.getElementById('recentActivity');
+            
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="text-gray-400">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 8).map(activity => `
+                <div class="flex justify-between items-center py-2 border-b border-gray-700">
+                    <span class="text-sm">${activity.text}</span>
+                    <span class="text-xs text-gray-400">${activity.date.toLocaleDateString()}</span>
+                </div>
+            `).join('');
+        }
+
+        // Quick add
+        function quickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function createQuickDocument() {
+            const title = document.getElementById('quickTitle').value.trim();
+            const type = document.getElementById('quickType').value;
+            
+            if (!title) {
+                showNotification('Please enter a document title');
+                return;
+            }
+            
+            createFromTemplate(type);
+            currentDocument.title = title;
+            document.getElementById('docTitle').value = title;
+            
+            closeQuickAdd();
+            showNotification('Document created!');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+            document.getElementById('quickTitle').value = '';
+        }
+
+        // Data management
+        function exportAllData() {
+            const data = {
+                documents,
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                analytics,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `finance-english-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('This will replace all current data. Are you sure?')) {
+                            documents = importedData.documents || [];
+                            vocabulary = importedData.vocabulary || [];
+                            phrases = importedData.phrases || [];
+                            motivationalMessages = importedData.messages || [];
+                            analytics = importedData.analytics || analytics;
+                            
+                            saveData();
+                            showNotification('Data imported successfully!');
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    } catch (error) {
+                        showNotification('Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function backupData() {
+            exportAllData();
+        }
+
+        function syncData() {
+            showSyncIndicator();
+            showNotification('Data synced (offline mode)');
+        }
+
+        // Utility functions
+        function updateStats() {
+            document.getElementById('currentStreak').textContent = analytics.currentStreak;
+            document.getElementById('totalDocs').textContent = analytics.totalDocs;
+            document.getElementById('vocabReviews').textContent = analytics.vocabReviews;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = analytics.lastActiveDate ? new Date(analytics.lastActiveDate).toDateString() : null;
+            
+            if (lastActive === today) {
+                // Already active today, no change
+                return;
+            }
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastActive === yesterday.toDateString()) {
+                // Consecutive day
+                analytics.currentStreak++;
+            } else if (lastActive !== today) {
+                // Streak broken or first day
+                analytics.currentStreak = 1;
+            }
+            
+            analytics.lastActiveDate = new Date().toISOString();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-6 py-3 rounded-lg font-semibold z-50 shadow-lg';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        function showSyncIndicator() {
+            document.getElementById('syncIndicator').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('syncIndicator').classList.add('hidden');
+            }, 2000);
+        }
+
+        function setupOfflineHandling() {
+            window.addEventListener('online', () => {
+                isOnline = true;
+                showSyncIndicator();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                showNotification('Working offline');
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988241c616c9fee5',t:'MTc1OTM4NzczNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
