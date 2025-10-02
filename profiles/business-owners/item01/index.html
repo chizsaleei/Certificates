@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch English Rhythm - Master Your Investor Pitch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d, #1f4a35); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .pitch-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .pitch-card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background-color: #d4af37;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .timer-circle {
+            width: 200px;
+            height: 200px;
+            border: 8px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .qa-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .qa-card:hover {
+            border-color: #d4af37;
+            transform: scale(1.02);
+        }
+        
+        .phrase-chip {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .phrase-chip:hover {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .progress-bar {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .pitch-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .pitch-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+        }
+        
+        .stats-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 12px 0;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-4 text-center border-b border-gray-700">
+        <h1 class="text-3xl font-bold text-accent">🎯 Pitch English Rhythm</h1>
+        <p class="text-sm text-gray-300 mt-1">Master Your Investor & Partner Pitches</p>
+        <div class="mt-3 flex justify-center gap-6 text-xs">
+            <span>Streak: <span id="currentStreak" class="text-accent font-bold">0</span></span>
+            <span>Pitches: <span id="totalPitches" class="text-accent font-bold">0</span></span>
+            <span>Practice Time: <span id="totalTime" class="text-accent font-bold">0</span>min</span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-2 flex-wrap">
+        <button onclick="showScreen('home')" id="homeBtn" class="nav-btn active">Home</button>
+        <button onclick="showScreen('builder')" id="builderBtn" class="nav-btn">Pitch Builder</button>
+        <button onclick="showScreen('practice')" id="practiceBtn" class="nav-btn">Practice</button>
+        <button onclick="showScreen('qa')" id="qaBtn" class="nav-btn">Q&A Bank</button>
+        <button onclick="showScreen('phrases')" id="phrasesBtn" class="nav-btn">Phrases</button>
+        <button onclick="showScreen('focus')" id="focusBtn" class="nav-btn">Focus</button>
+        <button onclick="showScreen('library')" id="libraryBtn" class="nav-btn">Library</button>
+    </nav>
+
+    <!-- Floating Quick Practice -->
+    <div onclick="quickPractice()" class="floating-btn">🎤</div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="pitch-card cursor-pointer" onclick="showScreen('builder')">
+                    <div class="text-accent font-bold text-xl mb-3">🏗️ Build New Pitch</div>
+                    <div class="text-gray-300 mb-4">Create structured investor presentations</div>
+                    <div class="text-sm text-gray-400">Problem • Solution • Market • Traction • Ask</div>
+                </div>
+                <div class="pitch-card cursor-pointer" onclick="showScreen('practice')">
+                    <div class="text-accent font-bold text-xl mb-3">🎯 Practice Session</div>
+                    <div class="text-gray-300 mb-4">Time your pitch delivery</div>
+                    <div class="text-sm text-gray-400">1min • 3min • 10min formats</div>
+                </div>
+            </div>
+
+            <!-- Today's Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Today's Progress</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayPitches">0</div>
+                        <div class="text-sm text-gray-400">Pitches Built</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayPractice">0</div>
+                        <div class="text-sm text-gray-400">Practice Sessions</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayQA">0</div>
+                        <div class="text-sm text-gray-400">Q&A Reviews</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayFocus">0</div>
+                        <div class="text-sm text-gray-400">Focus Sessions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Pitches -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-accent">Recent Pitches</h2>
+                    <button onclick="showScreen('library')" class="text-accent text-sm hover:underline">View All</button>
+                </div>
+                <div id="recentPitches" class="space-y-3">
+                    <div class="text-gray-400 text-center py-4">No pitches created yet</div>
+                </div>
+            </div>
+
+            <!-- Quick Q&A -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Investor Question Spotlight</h2>
+                <div id="spotlightQA" class="qa-card" onclick="flipQACard()">
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-accent mb-4">How do you make money?</div>
+                        <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pitch Builder Screen -->
+    <div id="builderScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Pitch Builder</h2>
+                <button onclick="savePitch()" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                    💾 Save Pitch
+                </button>
+            </div>
+
+            <!-- Pitch Format Selection -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Choose Pitch Format</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="selectPitchFormat('elevator')" class="pitch-card text-left">
+                        <div class="font-bold text-accent mb-2">🚀 Elevator Pitch</div>
+                        <div class="text-sm text-gray-300">30-60 seconds</div>
+                    </button>
+                    <button onclick="selectPitchFormat('demo')" class="pitch-card text-left">
+                        <div class="font-bold text-accent mb-2">📊 Demo Day</div>
+                        <div class="text-sm text-gray-300">3-5 minutes</div>
+                    </button>
+                    <button onclick="selectPitchFormat('investor')" class="pitch-card text-left">
+                        <div class="font-bold text-accent mb-2">💼 Investor Meeting</div>
+                        <div class="text-sm text-gray-300">10-15 minutes</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pitch Sections -->
+            <div class="space-y-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">1. Problem</h3>
+                    <textarea id="pitchProblem" rows="4" placeholder="What problem are you solving? Make it relatable and urgent..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="text-xs text-gray-400 mt-2">Tip: Start with a story or statistic that resonates</div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">2. Solution</h3>
+                    <textarea id="pitchSolution" rows="4" placeholder="How do you solve this problem uniquely?" 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="text-xs text-gray-400 mt-2">Tip: Focus on your unique approach and key benefits</div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">3. Market Opportunity</h3>
+                    <textarea id="pitchMarket" rows="3" placeholder="What's the market size and opportunity?" 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="text-xs text-gray-400 mt-2">Tip: Use TAM, SAM, SOM framework if relevant</div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">4. Traction & Proof</h3>
+                    <textarea id="pitchTraction" rows="3" placeholder="What progress have you made? Customers, revenue, partnerships..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="text-xs text-gray-400 mt-2">Tip: Include specific numbers and growth metrics</div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">5. The Ask</h3>
+                    <textarea id="pitchAsk" rows="3" placeholder="What do you need? Investment, partnership, customers..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <div class="text-xs text-gray-400 mt-2">Tip: Be specific about amount and use of funds</div>
+                </div>
+            </div>
+
+            <!-- Generated Pitch Preview -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6" id="pitchPreview" style="display: none;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">Your Pitch</h3>
+                    <button onclick="exportPitchToPDF()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📄 Export PDF
+                    </button>
+                </div>
+                <div id="pitchOutput" class="bg-gray-800 p-6 rounded-lg">
+                    <!-- Generated pitch will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Screen -->
+    <div id="practiceScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto space-y-8">
+            <h2 class="text-2xl font-bold text-accent text-center">Practice Session</h2>
+            
+            <!-- Timer Setup -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Time Limit</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="setTimer(60)" class="pitch-card text-center">
+                        <div class="font-bold text-accent">1 Minute</div>
+                        <div class="text-sm text-gray-400">Elevator</div>
+                    </button>
+                    <button onclick="setTimer(180)" class="pitch-card text-center">
+                        <div class="font-bold text-accent">3 Minutes</div>
+                        <div class="text-sm text-gray-400">Demo Day</div>
+                    </button>
+                    <button onclick="setTimer(600)" class="pitch-card text-center">
+                        <div class="font-bold text-accent">10 Minutes</div>
+                        <div class="text-sm text-gray-400">Full Pitch</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Timer Display -->
+            <div class="timer-circle">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-accent" id="timerDisplay">00:00</div>
+                    <div class="text-sm text-gray-400" id="timerStatus">Select Time</div>
+                </div>
+            </div>
+
+            <!-- Practice Controls -->
+            <div class="flex justify-center gap-4">
+                <button onclick="startPractice()" id="startPracticeBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Practice
+                </button>
+                <button onclick="stopPractice()" id="stopPracticeBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q&A Bank Screen -->
+    <div id="qaScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Investor Q&A Bank</h2>
+                <button onclick="randomQuestion()" class="bg-accent text-black px-4 py-2 rounded-lg font-semibold">
+                    🎲 Random Question
+                </button>
+            </div>
+
+            <!-- Q&A Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💼 Business Model</h3>
+                    <div class="space-y-3">
+                        <div class="qa-card" onclick="showQA('How do you make money?', 'Our revenue model is based on [subscription/transaction/licensing] with [specific pricing structure]. We generate revenue through [primary revenue streams] and have validated this with [customer evidence].')">
+                            <div class="font-semibold text-white mb-2">How do you make money?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                        <div class="qa-card" onclick="showQA('What are your unit economics?', 'Our customer acquisition cost is $X and lifetime value is $Y, giving us a healthy LTV/CAC ratio of Z:1. Our gross margins are X% and we achieve payback in Y months.')">
+                            <div class="font-semibold text-white mb-2">What are your unit economics?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                        <div class="qa-card" onclick="showQA('How do you scale this business?', 'We scale through [key growth levers] including [specific strategies]. Our scalable technology platform allows us to serve more customers with minimal additional costs.')">
+                            <div class="font-semibold text-white mb-2">How do you scale this business?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📊 Market & Competition</h3>
+                    <div class="space-y-3">
+                        <div class="qa-card" onclick="showQA('Who are your competitors?', 'Our main competitors are [competitor names], but we differentiate through [unique value proposition]. While they focus on [their approach], we [your unique approach] which gives us [competitive advantage].')">
+                            <div class="font-semibold text-white mb-2">Who are your competitors?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                        <div class="qa-card" onclick="showQA('How big is the market?', 'The total addressable market is $X billion, with our serviceable addressable market being $Y billion. We are targeting the serviceable obtainable market of $Z million initially.')">
+                            <div class="font-semibold text-white mb-2">How big is the market?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                        <div class="qa-card" onclick="showQA('What if Google/Amazon builds this?', 'While that is possible, we have first-mover advantage and deep domain expertise. Our strategy focuses on [specific niche/approach] where we can maintain competitive advantages.')">
+                            <div class="font-semibold text-white mb-2">What if Google/Amazon builds this?</div>
+                            <div class="text-sm text-gray-400">Click to see suggested answer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Q&A -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Add Custom Q&A</h3>
+                <div class="space-y-3">
+                    <input type="text" id="newQuestion" placeholder="Enter investor question..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <textarea id="newAnswer" rows="3" placeholder="Your suggested answer..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <button onclick="addCustomQA()" class="w-full bg-accent text-black p-3 rounded-lg font-semibold">
+                        Add Q&A
+                    </button>
+                </div>
+                <div id="customQAList" class="mt-4 space-y-2">
+                    <!-- Custom Q&As will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Credibility Phrases & Transitions</h2>
+            
+            <!-- Phrase Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🏆 Credibility Builders</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('we\'ve validated this with 50+ customer interviews')">
+                            we've validated this with 50+ customer interviews
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('our team has 20+ years combined experience')">
+                            our team has 20+ years combined experience
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('we\'re backed by industry-leading investors')">
+                            we're backed by industry-leading investors
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('our advisors include former executives from')">
+                            our advisors include former executives from
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">📈 Traction Language</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('we\'ve grown 300% month-over-month')">
+                            we've grown 300% month-over-month
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('our customers have a 95% retention rate')">
+                            our customers have a 95% retention rate
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('we\'re seeing strong product-market fit')">
+                            we're seeing strong product-market fit
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('early customers are paying premium pricing')">
+                            early customers are paying premium pricing
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🔗 Smooth Transitions</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('this brings me to my next point')">
+                            this brings me to my next point
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('let me show you how this works')">
+                            let me show you how this works
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('the key insight here is')">
+                            the key insight here is
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('what makes this exciting is')">
+                            what makes this exciting is
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💰 Investment Language</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('we\'re raising $X to accelerate growth')">
+                            we're raising $X to accelerate growth
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('this funding will enable us to')">
+                            this funding will enable us to
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('we\'re looking for strategic investors who')">
+                            we're looking for strategic investors who
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('the opportunity for returns is significant')">
+                            the opportunity for returns is significant
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Phrases -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Add Custom Phrase</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newPhrase" placeholder="Add your custom phrase..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addCustomPhrase()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add
+                    </button>
+                </div>
+                <div id="customPhrases" class="space-y-2">
+                    <!-- Custom phrases will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Screen -->
+    <div id="focusScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-2xl font-bold text-accent">Pre-Pitch Focus Session</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Focus</div>
+            </div>
+            
+            <div class="text-accent text-4xl font-bold" id="breathingTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center">
+                "Confidence comes from preparation. You've got this."
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startBreathing()" id="startBreathingBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Session
+                </button>
+                <button onclick="stopBreathing()" id="stopBreathingBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMessages" class="space-y-2">
+                    <!-- Custom messages will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Library Screen -->
+    <div id="libraryScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Pitch Library</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportAllPitches()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📤 Export All
+                    </button>
+                    <button onclick="importPitches()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📥 Import
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <input type="text" id="librarySearch" placeholder="Search pitches..." onkeyup="searchLibrary()"
+                       class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+            </div>
+
+            <!-- Pitch List -->
+            <div id="pitchLibrary" class="space-y-4">
+                <div class="text-gray-400 text-center py-8">No pitches saved yet</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q&A Modal -->
+    <div id="qaModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-accent">Investor Q&A</h3>
+                <button onclick="closeQAModal()" class="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div id="qaModalContent">
+                <!-- Q&A content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let savedPitches = [];
+        let customQAs = [];
+        let customPhrases = [];
+        let motivationalMessages = [
+            "Confidence comes from preparation. You've got this.",
+            "Every great company started with a pitch like yours.",
+            "Your passion for solving this problem shows.",
+            "Investors invest in people, not just ideas.",
+            "Clear communication beats complex jargon."
+        ];
+        let analytics = {
+            totalPitches: 0,
+            totalTime: 0,
+            currentStreak: 0,
+            focusSessions: 0,
+            practiceTime: 0
+        };
+        
+        let practiceTimer = null;
+        let practiceTimeLeft = 0;
+        let breathingTimer = null;
+        let breathingTimeLeft = 25 * 60;
+        let breathingPhase = 'inhale';
+        let breathingInterval = null;
+        let selectedPitchFormat = '';
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            loadHomeScreen();
+        });
+
+        // Data management
+        function loadData() {
+            const savedData = localStorage.getItem('pitchEnglishRhythmData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                savedPitches = data.pitches || [];
+                customQAs = data.customQAs || [];
+                customPhrases = data.customPhrases || [];
+                motivationalMessages = data.messages || motivationalMessages;
+                analytics = { ...analytics, ...data.analytics };
+            }
+        }
+
+        function saveData() {
+            const data = {
+                pitches: savedPitches,
+                customQAs,
+                customPhrases,
+                messages: motivationalMessages,
+                analytics,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('pitchEnglishRhythmData', JSON.stringify(data));
+        }
+
+        // Screen management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'home': loadHomeScreen(); break;
+                case 'qa': loadQAScreen(); break;
+                case 'phrases': loadPhrasesScreen(); break;
+                case 'focus': loadFocusScreen(); break;
+                case 'library': loadLibraryScreen(); break;
+            }
+        }
+
+        // Home screen
+        function loadHomeScreen() {
+            updateTodayProgress();
+            loadRecentPitches();
+        }
+
+        function updateTodayProgress() {
+            const today = new Date().toDateString();
+            const todayPitches = savedPitches.filter(pitch => new Date(pitch.date).toDateString() === today);
+            
+            document.getElementById('todayPitches').textContent = todayPitches.length;
+            document.getElementById('todayPractice').textContent = analytics.practiceTime || 0;
+            document.getElementById('todayQA').textContent = customQAs.length;
+            document.getElementById('todayFocus').textContent = analytics.focusSessions || 0;
+        }
+
+        function loadRecentPitches() {
+            const recentPitches = savedPitches.slice(-3).reverse();
+            const container = document.getElementById('recentPitches');
+            
+            if (recentPitches.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No pitches created yet</div>';
+                return;
+            }
+            
+            container.innerHTML = recentPitches.map(pitch => `
+                <div class="pitch-item cursor-pointer" onclick="viewPitch('${pitch.id}')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-semibold text-accent">${pitch.format?.toUpperCase() || 'PITCH'}</span>
+                            <span class="text-sm text-gray-400 ml-2">${new Date(pitch.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-400">${pitch.wordCount || 0} words</div>
+                        </div>
+                    </div>
+                    <div class="text-white mt-2 truncate">${pitch.title || 'Untitled Pitch'}</div>
+                </div>
+            `).join('');
+        }
+
+        function flipQACard() {
+            const qaCards = [
+                { q: "How do you make money?", a: "Our revenue model is based on subscription fees with tiered pricing. We generate $X per customer monthly and have validated this with 50+ paying customers." },
+                { q: "Who are your competitors?", a: "Our main competitors are X and Y, but we differentiate through our unique approach to Z, giving us a 3x faster implementation time." },
+                { q: "What's your traction?", a: "We've grown 200% month-over-month for the past 6 months, with $X in revenue and Y active customers showing 95% retention." }
+            ];
+            
+            const randomQA = qaCards[Math.floor(Math.random() * qaCards.length)];
+            document.getElementById('spotlightQA').innerHTML = `
+                <div class="text-center">
+                    <div class="text-lg font-bold text-accent mb-4">${randomQA.q}</div>
+                    <div class="text-white mb-4">${randomQA.a}</div>
+                    <div class="text-sm text-gray-400">Click for another question</div>
+                </div>
+            `;
+        }
+
+        // Pitch Builder
+        function selectPitchFormat(format) {
+            selectedPitchFormat = format;
+            document.querySelectorAll('.pitch-card').forEach(card => {
+                card.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+            });
+            event.target.closest('.pitch-card').style.borderColor = '#d4af37';
+        }
+
+        function savePitch() {
+            const problem = document.getElementById('pitchProblem').value.trim();
+            const solution = document.getElementById('pitchSolution').value.trim();
+            const market = document.getElementById('pitchMarket').value.trim();
+            const traction = document.getElementById('pitchTraction').value.trim();
+            const ask = document.getElementById('pitchAsk').value.trim();
+            
+            if (!problem || !solution) {
+                showNotification('Please fill in at least the problem and solution sections');
+                return;
+            }
+            
+            const pitchContent = generatePitchContent(problem, solution, market, traction, ask);
+            const wordCount = pitchContent.replace(/<[^>]*>/g, '').split(/\s+/).length;
+            
+            const pitch = {
+                id: Date.now().toString(),
+                title: `${selectedPitchFormat || 'Custom'} Pitch`,
+                format: selectedPitchFormat || 'custom',
+                problem,
+                solution,
+                market,
+                traction,
+                ask,
+                content: pitchContent,
+                wordCount,
+                date: new Date().toISOString()
+            };
+            
+            savedPitches.push(pitch);
+            analytics.totalPitches++;
+            updateStreak();
+            saveData();
+            
+            document.getElementById('pitchOutput').innerHTML = pitchContent;
+            document.getElementById('pitchPreview').style.display = 'block';
+            
+            showNotification('Pitch saved successfully!');
+            updateStats();
+            
+            document.getElementById('pitchPreview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generatePitchContent(problem, solution, market, traction, ask) {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <h1 class="text-3xl font-bold text-accent mb-4">The Problem</h1>
+                        <p class="text-lg text-gray-300">${problem}</p>
+                    </div>
+                    
+                    <div class="bg-green-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-green-500">
+                        <h2 class="text-2xl font-bold text-green-300 mb-3">Our Solution</h2>
+                        <p class="text-gray-300">${solution}</p>
+                    </div>
+                    
+                    ${market ? `
+                    <div class="bg-blue-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-blue-500">
+                        <h2 class="text-2xl font-bold text-blue-300 mb-3">Market Opportunity</h2>
+                        <p class="text-gray-300">${market}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${traction ? `
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-purple-500">
+                        <h2 class="text-2xl font-bold text-purple-300 mb-3">Traction & Proof</h2>
+                        <p class="text-gray-300">${traction}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${ask ? `
+                    <div class="bg-yellow-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-yellow-500 text-center">
+                        <h2 class="text-2xl font-bold text-yellow-300 mb-3">The Ask</h2>
+                        <p class="text-gray-300 mb-4">${ask}</p>
+                        <div class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg inline-block">
+                            Let's Partner Together
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function exportPitchToPDF() {
+            const outputElement = document.getElementById('pitchOutput');
+            const content = outputElement.textContent;
+            
+            if (!content.trim()) {
+                showNotification('No pitch content to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Investor Pitch', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            doc.setFontSize(11);
+            const splitText = doc.splitTextToSize(content, 170);
+            doc.text(splitText, 20, 60);
+            
+            doc.save(`investor-pitch-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('Pitch exported to PDF!');
+        }
+
+        // Practice Screen
+        function setTimer(seconds) {
+            practiceTimeLeft = seconds;
+            updateTimerDisplay();
+            
+            document.querySelectorAll('.pitch-card').forEach(card => {
+                card.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+            });
+            event.target.closest('.pitch-card').style.borderColor = '#d4af37';
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(practiceTimeLeft / 60);
+            const seconds = practiceTimeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startPractice() {
+            if (practiceTimeLeft === 0) {
+                showNotification('Please select a time limit first');
+                return;
+            }
+            
+            document.getElementById('startPracticeBtn').disabled = true;
+            document.getElementById('stopPracticeBtn').disabled = false;
+            document.getElementById('timerStatus').textContent = 'Practice in Progress...';
+            
+            practiceTimer = setInterval(() => {
+                practiceTimeLeft--;
+                updateTimerDisplay();
+                
+                if (practiceTimeLeft <= 0) {
+                    stopPractice();
+                }
+            }, 1000);
+        }
+
+        function stopPractice() {
+            if (practiceTimer) {
+                clearInterval(practiceTimer);
+                practiceTimer = null;
+            }
+            
+            document.getElementById('startPracticeBtn').disabled = false;
+            document.getElementById('stopPracticeBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Completed';
+            
+            analytics.practiceTime++;
+            analytics.totalTime++;
+            saveData();
+            updateStats();
+            
+            showNotification('Practice session completed! 🎯');
+        }
+
+        // Q&A Bank
+        function loadQAScreen() {
+            loadCustomQAs();
+        }
+
+        function showQA(question, answer) {
+            document.getElementById('qaModalContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-900 bg-opacity-30 p-4 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-blue-300 mb-2">Question:</h4>
+                        <p class="text-white">${question}</p>
+                    </div>
+                    <div class="bg-green-900 bg-opacity-30 p-4 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-bold text-green-300 mb-2">Suggested Answer:</h4>
+                        <p class="text-white">${answer}</p>
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        <p><strong>Tip:</strong> Customize this answer with your specific details and practice delivering it naturally.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('qaModal').classList.remove('hidden');
+        }
+
+        function closeQAModal() {
+            document.getElementById('qaModal').classList.add('hidden');
+        }
+
+        function randomQuestion() {
+            const questions = [
+                { q: "How do you make money?", a: "Our revenue model is based on subscription fees with tiered pricing. We generate $X per customer monthly." },
+                { q: "Who are your competitors?", a: "Our main competitors are X and Y, but we differentiate through our unique approach to Z." },
+                { q: "What's your traction?", a: "We've grown 200% month-over-month for the past 6 months, with $X in revenue." },
+                { q: "How big is the market?", a: "The total addressable market is $X billion, with our serviceable market being $Y billion." },
+                { q: "What are your unit economics?", a: "Our customer acquisition cost is $X and lifetime value is $Y, giving us a healthy ratio." }
+            ];
+            
+            const randomQA = questions[Math.floor(Math.random() * questions.length)];
+            showQA(randomQA.q, randomQA.a);
+        }
+
+        function addCustomQA() {
+            const question = document.getElementById('newQuestion').value.trim();
+            const answer = document.getElementById('newAnswer').value.trim();
+            
+            if (!question || !answer) {
+                showNotification('Please enter both question and answer');
+                return;
+            }
+            
+            customQAs.push({
+                id: Date.now().toString(),
+                question,
+                answer,
+                date: new Date().toISOString()
+            });
+            
+            saveData();
+            
+            document.getElementById('newQuestion').value = '';
+            document.getElementById('newAnswer').value = '';
+            
+            loadCustomQAs();
+            showNotification('Q&A added successfully!');
+        }
+
+        function loadCustomQAs() {
+            const container = document.getElementById('customQAList');
+            
+            if (customQAs.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom Q&As yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customQAs.map(qa => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="font-semibold text-accent mb-1">${qa.question}</div>
+                        <div class="text-sm text-gray-300">${qa.answer.substring(0, 100)}...</div>
+                    </div>
+                    <button onclick="deleteCustomQA('${qa.id}')" class="text-red-400 text-xs ml-3">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteCustomQA(id) {
+            customQAs = customQAs.filter(qa => qa.id !== id);
+            saveData();
+            loadCustomQAs();
+            showNotification('Q&A deleted');
+        }
+
+        // Phrases Screen
+        function loadPhrasesScreen() {
+            loadCustomPhrases();
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = phrase;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function addCustomPhrase() {
+            const phrase = document.getElementById('newPhrase').value.trim();
+            
+            if (!phrase) {
+                showNotification('Please enter a phrase');
+                return;
+            }
+            
+            customPhrases.push({
+                id: Date.now().toString(),
+                text: phrase,
+                date: new Date().toISOString()
+            });
+            
+            saveData();
+            
+            document.getElementById('newPhrase').value = '';
+            loadCustomPhrases();
+            showNotification('Custom phrase added!');
+        }
+
+        function loadCustomPhrases() {
+            const container = document.getElementById('customPhrases');
+            
+            if (customPhrases.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No custom phrases yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customPhrases.map(phrase => `
+                <div class="flex justify-between items-center bg-gray-800 p-2 rounded">
+                    <span class="phrase-chip" onclick="copyPhrase('${phrase.text}')">${phrase.text}</span>
+                    <button onclick="deleteCustomPhrase('${phrase.id}')" class="text-red-400 text-xs">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteCustomPhrase(id) {
+            customPhrases = customPhrases.filter(p => p.id !== id);
+            saveData();
+            loadCustomPhrases();
+            showNotification('Phrase deleted');
+        }
+
+        // Focus Screen
+        function loadFocusScreen() {
+            loadCustomMessages();
+        }
+
+        function startBreathing() {
+            breathingTimeLeft = 25 * 60;
+            breathingPhase = 'inhale';
+            
+            document.getElementById('startBreathingBtn').disabled = true;
+            document.getElementById('stopBreathingBtn').disabled = false;
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                updateBreathingTimer();
+                
+                if (breathingTimeLeft <= 0) {
+                    stopBreathing();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateBreathingTimer() {
+            const minutes = Math.floor(breathingTimeLeft / 60);
+            const seconds = breathingTimeLeft % 60;
+            document.getElementById('breathingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (motivationalMessages.length > 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startBreathingBtn').disabled = false;
+            document.getElementById('stopBreathingBtn').disabled = true;
+            
+            analytics.focusSessions++;
+            saveData();
+            updateStats();
+            
+            showNotification('Focus session completed! 🧘');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) return;
+            
+            motivationalMessages.push(message);
+            saveData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMessages();
+            showNotification('Motivational message added!');
+        }
+
+        function loadCustomMessages() {
+            const customMessages = motivationalMessages.slice(5);
+            const container = document.getElementById('customMessages');
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            motivationalMessages.splice(index, 1);
+            saveData();
+            loadCustomMessages();
+            showNotification('Message removed');
+        }
+
+        // Library Screen
+        function loadLibraryScreen() {
+            displayPitches(savedPitches);
+        }
+
+        function searchLibrary() {
+            const searchTerm = document.getElementById('librarySearch').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayPitches(savedPitches);
+                return;
+            }
+            
+            const filteredPitches = savedPitches.filter(pitch => 
+                (pitch.title || '').toLowerCase().includes(searchTerm) ||
+                (pitch.content || '').toLowerCase().includes(searchTerm)
+            );
+            
+            displayPitches(filteredPitches);
+        }
+
+        function displayPitches(pitches) {
+            const container = document.getElementById('pitchLibrary');
+            
+            if (pitches.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-8">No pitches found</div>';
+                return;
+            }
+            
+            container.innerHTML = pitches.reverse().map(pitch => `
+                <div class="pitch-item">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-accent">${pitch.title || 'Untitled Pitch'}</h3>
+                            <div class="text-sm text-gray-400">
+                                ${(pitch.format || 'PITCH').toUpperCase()} • ${new Date(pitch.date).toLocaleDateString()} • ${pitch.wordCount || 0} words
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="viewPitch('${pitch.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                View
+                            </button>
+                            <button onclick="deletePitch('${pitch.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-gray-300 text-sm">
+                        ${(pitch.content || '').replace(/<[^>]*>/g, '').substring(0, 200)}...
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewPitch(pitchId) {
+            const pitch = savedPitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-accent">${pitch.title || 'Untitled Pitch'}</h3>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white">
+                                ✕
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-400 mb-4">
+                            ${(pitch.format || 'PITCH').toUpperCase()} • ${new Date(pitch.date).toLocaleDateString()} • ${pitch.wordCount || 0} words
+                        </div>
+                        <div class="bg-gray-900 p-6 rounded-lg">
+                            ${pitch.content || 'No content available'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function deletePitch(pitchId) {
+            if (confirm('Are you sure you want to delete this pitch?')) {
+                savedPitches = savedPitches.filter(p => p.id !== pitchId);
+                analytics.totalPitches = Math.max(0, analytics.totalPitches - 1);
+                saveData();
+                
+                showNotification('Pitch deleted');
+                displayPitches(savedPitches);
+                updateStats();
+            }
+        }
+
+        function exportAllPitches() {
+            if (savedPitches.length === 0) {
+                showNotification('No pitches to export');
+                return;
+            }
+            
+            const data = {
+                pitches: savedPitches,
+                exportDate: new Date().toISOString(),
+                totalPitches: savedPitches.length
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `pitch-library-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('All pitches exported successfully!');
+        }
+
+        function importPitches() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.pitches && Array.isArray(importedData.pitches)) {
+                            if (confirm(`Import ${importedData.pitches.length} pitches?`)) {
+                                importedData.pitches.forEach(pitch => {
+                                    pitch.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                                    savedPitches.push(pitch);
+                                });
+                                
+                                analytics.totalPitches += importedData.pitches.length;
+                                saveData();
+                                showNotification(`${importedData.pitches.length} pitches imported!`);
+                                displayPitches(savedPitches);
+                                updateStats();
+                            }
+                        } else {
+                            showNotification('Invalid file format');
+                        }
+                    } catch (error) {
+                        showNotification('Error reading file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Quick practice
+        function quickPractice() {
+            showScreen('practice');
+            setTimer(60);
+        }
+
+        // Utility functions
+        function updateStats() {
+            document.getElementById('currentStreak').textContent = analytics.currentStreak;
+            document.getElementById('totalPitches').textContent = analytics.totalPitches;
+            document.getElementById('totalTime').textContent = analytics.totalTime;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = analytics.lastActiveDate;
+            
+            if (lastActive === today) {
+                return;
+            }
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastActive === yesterday.toDateString()) {
+                analytics.currentStreak++;
+            } else {
+                analytics.currentStreak = 1;
+            }
+            
+            analytics.lastActiveDate = today;
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-accent text-black px-6 py-3 rounded-lg font-semibold z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988288c761f8fee5',t:'MTc1OTM5MDY0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
