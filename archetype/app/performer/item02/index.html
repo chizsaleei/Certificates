@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Prep App - Performance Anxiety Relief & Mental Preparation</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #2d5a3d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: lotus-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes lotus-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lotus-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: lotus-float 3s ease-in-out infinite;
+        }
+
+        @keyframes lotus-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.2);
+            border-color: #daa520;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(218, 165, 32, 0.1);
+            color: #ffd700;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .prep-card {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .prep-card:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(218, 165, 32, 0.4);
+        }
+
+        .prep-card.high-anxiety {
+            border-left: 4px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .prep-card.medium-anxiety {
+            border-left: 4px solid #ffa726;
+            background: rgba(255, 167, 38, 0.1);
+        }
+
+        .prep-card.low-anxiety {
+            border-left: 4px solid #66bb6a;
+            background: rgba(102, 187, 106, 0.1);
+        }
+
+        .prep-card.completed {
+            opacity: 0.7;
+            border-left-color: #66bb6a;
+        }
+
+        .prep-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .prep-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .anxiety-level {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .anxiety-high {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .anxiety-medium {
+            background: #ffa726;
+            color: white;
+        }
+
+        .anxiety-low {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .performance-info {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .breathing-guide {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+            background: rgba(45, 90, 61, 0.8);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 14px 18px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+            background: linear-gradient(45deg, #b8941c, #e6c200);
+        }
+
+        .voice-btn.recording {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            color: white;
+            border: none;
+            padding: 18px 28px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            min-height: 45px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .checklist-item:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateX(5px);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            background: rgba(102, 187, 106, 0.2);
+        }
+
+        .checklist-item.swiping {
+            transform: translateX(-100px);
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #daa520;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0d2818;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #66bb6a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .checklist-item.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .focus-timer {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .focus-timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 14px 28px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+        }
+
+        .timer-btn.active {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .breathing-exercise {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #daa520;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            transition: all 4s ease-in-out;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+            background: rgba(218, 165, 32, 0.1);
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.8);
+            background: rgba(45, 90, 61, 0.3);
+        }
+
+        .visualization-script {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            line-height: 1.8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(45, 90, 61, 0.95);
+            margin: 3% auto;
+            padding: 35px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            border: 2px solid #daa520;
+            max-height: 85vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.4rem;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 18px 25px;
+            background: rgba(102, 187, 106, 0.95);
+            color: white;
+            border-radius: 10px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .motivational-message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #daa520;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motivational-message:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .chart-placeholder {
+            height: 120px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 15px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 10px 15px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .offline-indicator.online {
+            background: rgba(102, 187, 106, 0.9);
+        }
+
+        .countdown-timer {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .countdown-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .performance-prep {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .prep-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .prep-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 8px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2.5rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .delete-btn {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff8a80;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Lotus-themed decorative elements */
+        .lotus-decoration {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 4rem;
+            color: #daa520;
+            pointer-events: none;
+            animation: lotus-float 6s ease-in-out infinite;
+        }
+
+        .lotus-decoration:nth-child(2) {
+            animation-delay: -2s;
+        }
+
+        .lotus-decoration:nth-child(3) {
+            animation-delay: -4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <span class="lotus-icon">🪷</span>
+            <h1>Performance Prep App</h1>
+            <p>Performance Anxiety Relief & Mental Preparation</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPreps">0</div>
+                <div class="stat-label">Prep Routines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedSessions">0</div>
+                <div class="stat-label">Sessions Done</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="prepStreak">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="anxietyLevel">CALM</div>
+                <div class="stat-label">Current State</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "Like a lotus rising from muddy waters, your performance blooms from preparation and inner calm."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('routines')">🪷 Routines</button>
+            <button class="nav-tab" onclick="switchTab('create')">📝 Create</button>
+            <button class="nav-tab" onclick="switchTab('breathing')">🫁 Breathing</button>
+            <button class="nav-tab" onclick="switchTab('visualization')">🧘 Visualization</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Routines Tab -->
+        <div id="routines" class="tab-content active">
+            <div class="input-group">
+                <input type="text" class="search-bar" id="routineSearch" placeholder="Search routines by performance type, venue, or tags..." oninput="filterRoutines()">
+            </div>
+
+            <div class="performance-prep">
+                <h4>🎭 Quick Performance Prep</h4>
+                <div class="prep-item">
+                    <span>Pre-show Anxiety Relief</span>
+                    <button class="do-it-now-btn" onclick="startQuickPrep('anxiety')">DO IT NOW</button>
+                </div>
+                <div class="prep-item">
+                    <span>5-Minute Confidence Boost</span>
+                    <button class="action-btn" onclick="startQuickPrep('confidence')">Start</button>
+                </div>
+            </div>
+
+            <div id="routinesList"></div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="quickRoutine" placeholder="Quick add routine..." aria-label="Quick routine">
+                <button class="voice-btn" onclick="startVoiceInput('quickRoutine')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickAddRoutine()">Quick Add</button>
+                <button class="do-it-now-btn" onclick="startEmergencyCalm()">🚨 EMERGENCY CALM</button>
+            </div>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content">
+            <div class="prep-card">
+                <h3>🪷 Performance Prep Creator</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="routineTitle" placeholder="Performance/routine title..." aria-label="Routine title">
+                    <button class="voice-btn" onclick="startVoiceInput('routineTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="form-input" id="routineVenue" placeholder="Venue or performance location..." aria-label="Venue">
+                    <input type="text" class="form-input" id="routineAudience" placeholder="Audience size/type..." aria-label="Audience">
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="routineDescription" placeholder="Performance details and objectives..." rows="3"></textarea>
+                    <button class="voice-btn" onclick="startVoiceInput('routineDescription')" aria-label="Voice input for description">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="performanceType">
+                        <option value="music">Music Performance</option>
+                        <option value="theater">Theater/Acting</option>
+                        <option value="dance">Dance Performance</option>
+                        <option value="public-speaking">Public Speaking</option>
+                        <option value="comedy">Comedy/Stand-up</option>
+                        <option value="sports">Sports Competition</option>
+                        <option value="presentation">Business Presentation</option>
+                        <option value="audition">Audition</option>
+                    </select>
+                    <select class="form-select" id="anxietyAssessment">
+                        <option value="low">Low Anxiety</option>
+                        <option value="medium">Medium Anxiety</option>
+                        <option value="high">High Anxiety</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="datetime-local" class="form-input" id="performanceTime" aria-label="Performance time">
+                    <input type="number" class="form-input" id="prepDuration" placeholder="Prep time (minutes)" min="5" max="180" aria-label="Prep duration">
+                </div>
+                
+                <div class="tags-input" id="routineTags" onclick="focusTagInput('routineTagInput')">
+                    <input type="text" id="routineTagInput" placeholder="Add tags (breathing, visualization, warm-up)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <h4>📋 Prep Checklist</h4>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checklistItem" placeholder="Prep step..." aria-label="Checklist item">
+                    <select class="form-select" id="checklistPriority">
+                        <option value="essential">Essential</option>
+                        <option value="important">Important</option>
+                        <option value="optional">Optional</option>
+                    </select>
+                    <button class="add-btn" onclick="addChecklistItem()">Add</button>
+                </div>
+                <div id="checklistPreview"></div>
+                
+                <h4>🧘 Breathing Exercises</h4>
+                <div class="input-group">
+                    <select class="form-select" id="breathingType">
+                        <option value="4-7-8">4-7-8 Technique</option>
+                        <option value="box">Box Breathing</option>
+                        <option value="belly">Belly Breathing</option>
+                        <option value="alternate">Alternate Nostril</option>
+                        <option value="coherent">Coherent Breathing</option>
+                    </select>
+                    <input type="number" class="form-input" id="breathingDuration" placeholder="Duration (minutes)" min="1" max="20" value="5">
+                    <button class="add-btn" onclick="addBreathingExercise()">Add Exercise</button>
+                </div>
+                <div id="breathingPreview"></div>
+                
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="add-btn" onclick="createPrepRoutine()">🪷 Create Routine</button>
+                    <button class="do-it-now-btn" onclick="createAndStart()">⚡ CREATE & START</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breathing Tab -->
+        <div id="breathing" class="tab-content">
+            <div class="breathing-exercise">
+                <h3>🫁 Guided Breathing Exercise</h3>
+                <div class="breathing-circle" id="breathingCircle">BREATHE</div>
+                <div id="breathingInstructions">Click start to begin your breathing exercise</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startBreathing('4-7-8')">4-7-8 Technique</button>
+                    <button class="timer-btn" onclick="startBreathing('box')">Box Breathing</button>
+                    <button class="timer-btn" onclick="startBreathing('belly')">Belly Breathing</button>
+                    <button class="timer-btn" onclick="stopBreathing()">Stop</button>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>🌬️ Breathing Techniques Library</h3>
+                <div id="breathingLibrary">
+                    <div class="breathing-guide">
+                        <h4>4-7-8 Technique</h4>
+                        <p>Inhale for 4, hold for 7, exhale for 8. Perfect for reducing anxiety and promoting calm.</p>
+                        <button class="action-btn" onclick="startBreathing('4-7-8')">Practice Now</button>
+                    </div>
+                    <div class="breathing-guide">
+                        <h4>Box Breathing</h4>
+                        <p>Inhale 4, hold 4, exhale 4, hold 4. Used by performers and athletes for focus.</p>
+                        <button class="action-btn" onclick="startBreathing('box')">Practice Now</button>
+                    </div>
+                    <div class="breathing-guide">
+                        <h4>Belly Breathing</h4>
+                        <p>Deep diaphragmatic breathing to activate the body's relaxation response.</p>
+                        <button class="action-btn" onclick="startBreathing('belly')">Practice Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>📊 Breathing Session Tracker</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="logBreathingSession()">📝 Log Session</button>
+                    <button class="action-btn" onclick="setBreathingReminder()">⏰ Set Reminder</button>
+                    <button class="action-btn" onclick="viewBreathingStats()">📈 View Stats</button>
+                </div>
+                <div id="breathingStats">
+                    <p>🫁 Sessions today: <span id="todayBreathingSessions">0</span></p>
+                    <p>⏱️ Total practice time: <span id="totalBreathingTime">0</span> minutes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Tab -->
+        <div id="visualization" class="tab-content">
+            <div class="visualization-script">
+                <h3>🧘 Guided Visualization</h3>
+                <div id="visualizationContent">
+                    <p>Select a visualization script below to begin your mental preparation journey.</p>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startVisualization('performance')">Performance Success</button>
+                    <button class="timer-btn" onclick="startVisualization('confidence')">Confidence Building</button>
+                    <button class="timer-btn" onclick="startVisualization('calm')">Calm & Centered</button>
+                    <button class="timer-btn" onclick="stopVisualization()">Stop</button>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>🎭 Visualization Scripts</h3>
+                <div id="visualizationScripts">
+                    <div class="prep-card">
+                        <h4>🌟 Performance Success Visualization</h4>
+                        <p>Imagine yourself delivering a flawless, confident performance that captivates your audience.</p>
+                        <button class="action-btn" onclick="startVisualization('performance')">Begin Script</button>
+                    </div>
+                    <div class="prep-card">
+                        <h4>💪 Confidence Building Journey</h4>
+                        <p>Build unshakeable confidence through mental rehearsal and positive self-imagery.</p>
+                        <button class="action-btn" onclick="startVisualization('confidence')">Begin Script</button>
+                    </div>
+                    <div class="prep-card">
+                        <h4>🧘 Calm & Centered State</h4>
+                        <p>Find your center of calm and carry that peaceful energy into your performance.</p>
+                        <button class="action-btn" onclick="startVisualization('calm')">Begin Script</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>📝 Custom Visualization Builder</h3>
+                <div class="input-group">
+                    <textarea class="form-textarea" id="customVisualization" placeholder="Create your own visualization script..." rows="6"></textarea>
+                </div>
+                <div class="input-group">
+                    <button class="add-btn" onclick="saveCustomVisualization()">Save Script</button>
+                    <button class="action-btn" onclick="previewCustomVisualization()">Preview</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Performance Prep Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                    <button class="timer-btn" onclick="setCustomTimer()">Custom</button>
+                </div>
+                <p style="color: #e0e0e0; margin-top: 20px;">Focus on mental preparation and performance readiness</p>
+            </div>
+
+            <div class="prep-card">
+                <h3>💡 Daily Performance Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+
+            <div class="prep-card">
+                <h3>🎯 Performance Action Items</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="reviewPerformancePlan()">📋 Review Performance Plan</button>
+                    <button class="action-btn" onclick="practiceRoutine()">🎭 Practice Routine</button>
+                    <button class="action-btn" onclick="mentalRehearsal()">🧠 Mental Rehearsal</button>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>📚 Performance Tips</h3>
+                <div id="performanceTips">
+                    <div class="performance-info">
+                        <h4>🎵 Music Performance</h4>
+                        <p>Visualize your fingers moving across the instrument. Hear the music in your mind before you play.</p>
+                    </div>
+                    <div class="performance-info">
+                        <h4>🎭 Theater & Acting</h4>
+                        <p>Connect with your character's emotions. Let the character's truth guide your performance.</p>
+                    </div>
+                    <div class="performance-info">
+                        <h4>🗣️ Public Speaking</h4>
+                        <p>Know your opening line by heart. Make eye contact with friendly faces in the audience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>🪷 Prep Stats</h4>
+                    <div class="stat-value" id="totalPrepRoutines">0</div>
+                    <div class="stat-label">Total prep routines</div>
+                    <div class="chart-placeholder">Routine Timeline</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Prep Streak</h4>
+                    <div class="stat-value" id="prepStreakAnalytics">0</div>
+                    <div class="stat-label">Days of consistent preparation</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⏱️ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTimeAnalytics">0h</div>
+                    <div class="stat-label">This month</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>📊 Anxiety Levels</h4>
+                    <div class="stat-value" id="avgAnxietyLevel">MEDIUM</div>
+                    <div class="chart-placeholder">Anxiety Trends</div>
+                </div>
+            </div>
+
+            <div class="prep-card">
+                <h3>📈 Detailed Analytics</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>🎭 Performance Types</h4>
+                        <div id="performanceBreakdown"></div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>📈 Progress Trends</h4>
+                        <div id="progressTrends"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportPrepReport()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Routine Edit Modal -->
+    <div id="routineModal" class="modal">
+        <div class="modal-content">
+            <h3 id="routineModalTitle">Edit Prep Routine <span class="close" onclick="closeRoutineModal()">&times;</span></h3>
+            <div id="routineModalContent">
+                <input type="text" class="form-input" id="editRoutineTitle" placeholder="Routine title...">
+                <input type="text" class="form-input" id="editRoutineVenue" placeholder="Venue...">
+                <textarea class="form-textarea" id="editRoutineDescription" placeholder="Description..." rows="3"></textarea>
+                <select class="form-select" id="editPerformanceType">
+                    <option value="music">Music Performance</option>
+                    <option value="theater">Theater/Acting</option>
+                    <option value="dance">Dance Performance</option>
+                    <option value="public-speaking">Public Speaking</option>
+                    <option value="comedy">Comedy/Stand-up</option>
+                    <option value="sports">Sports Competition</option>
+                    <option value="presentation">Business Presentation</option>
+                    <option value="audition">Audition</option>
+                </select>
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="action-btn" onclick="saveRoutineEdit()">Save Changes</button>
+                    <button class="action-btn" onclick="startRoutine()">Start Routine</button>
+                    <button class="action-btn delete-btn" onclick="deleteCurrentRoutine()">Delete Routine</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Countdown Timer Modal -->
+    <div id="countdownModal" class="modal">
+        <div class="modal-content">
+            <h3>⏰ Performance Countdown <span class="close" onclick="closeCountdownModal()">&times;</span></h3>
+            <div class="countdown-timer">
+                <div class="countdown-display" id="countdownDisplay">00:00:00</div>
+                <div id="countdownMessage">Time until your performance</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="setCountdownTime()">Set Time</button>
+                    <button class="timer-btn" onclick="startCountdown()">Start</button>
+                    <button class="timer-btn" onclick="stopCountdown()">Stop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your performance motivation message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let prepRoutines = [];
+        let currentRoutine = null;
+        let currentChecklist = [];
+        let currentBreathingExercises = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let breathingInterval = null;
+        let visualizationInterval = null;
+        let countdownInterval = null;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let prepStreak = 0;
+        let breathingSessions = 0;
+        let totalBreathingTime = 0;
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "Like a lotus rising from muddy waters, your performance blooms from preparation and inner calm.",
+            "Every breath you take in preparation is a step toward performance excellence.",
+            "Your talent is the seed, your preparation is the water, your performance is the beautiful bloom.",
+            "Anxiety is just excitement without breath. Breathe, and transform fear into power.",
+            "The stage is your sacred space. Enter it with the calm confidence of a prepared performer.",
+            "Like the lotus that opens to the sun, let your performance unfold with natural grace.",
+            "Preparation is the foundation of confidence. Confidence is the foundation of great performance.",
+            "Your nervous energy is creative energy waiting to be channeled into something beautiful.",
+            "Every moment of preparation is an investment in your performance success.",
+            "Breathe in calm, breathe out doubt. Your performance awaits your centered presence."
+        ];
+
+        // Daily performance prompts
+        const performancePrompts = [
+            "Practice your opening moment - the first impression sets the tone",
+            "Visualize your ideal performance from start to finish",
+            "Do a full run-through of your breathing exercises",
+            "Review and mentally rehearse your most challenging sections",
+            "Practice your pre-performance ritual and warm-up routine",
+            "Spend time connecting with the emotional core of your performance",
+            "Work on your stage presence and audience connection",
+            "Practice recovering gracefully from potential mistakes"
+        ];
+
+        // Breathing techniques
+        const breathingTechniques = {
+            '4-7-8': {
+                name: '4-7-8 Technique',
+                inhale: 4,
+                hold: 7,
+                exhale: 8,
+                description: 'Inhale for 4, hold for 7, exhale for 8'
+            },
+            'box': {
+                name: 'Box Breathing',
+                inhale: 4,
+                hold: 4,
+                exhale: 4,
+                pause: 4,
+                description: 'Inhale 4, hold 4, exhale 4, pause 4'
+            },
+            'belly': {
+                name: 'Belly Breathing',
+                inhale: 6,
+                exhale: 6,
+                description: 'Deep diaphragmatic breathing'
+            }
+        };
+
+        // Visualization scripts
+        const visualizationScripts = {
+            performance: [
+                "Close your eyes and take three deep breaths...",
+                "Imagine yourself arriving at your performance venue feeling calm and prepared...",
+                "See yourself walking confidently to your performance space...",
+                "Feel the positive energy from your audience as they welcome you...",
+                "Begin your performance with perfect timing and complete confidence...",
+                "Notice how naturally and effortlessly your skills flow...",
+                "Feel the joy and satisfaction of sharing your talent...",
+                "See the appreciative faces in your audience...",
+                "Complete your performance with a sense of accomplishment and pride...",
+                "Take a moment to appreciate this successful visualization..."
+            ],
+            confidence: [
+                "Breathe deeply and settle into a comfortable position...",
+                "Imagine a warm, golden light surrounding your entire body...",
+                "This light represents your inner confidence and strength...",
+                "Feel this confidence growing stronger with each breath...",
+                "See yourself standing tall and proud, ready for any challenge...",
+                "Your voice is clear, your movements are graceful and sure...",
+                "You trust in your preparation and your natural abilities...",
+                "Confidence flows through you like a gentle, powerful river...",
+                "You are exactly where you need to be, doing exactly what you love...",
+                "Carry this feeling of confidence with you always..."
+            ],
+            calm: [
+                "Begin by taking slow, deep breaths...",
+                "Imagine yourself in a peaceful garden filled with lotus flowers...",
+                "The air is warm and gentle, filled with a subtle, calming fragrance...",
+                "You sit beside a still pond, watching the lotus flowers float serenely...",
+                "Each flower represents a moment of perfect calm and centeredness...",
+                "Feel this tranquility flowing through your entire being...",
+                "Your mind is clear, your body is relaxed, your spirit is at peace...",
+                "This calm is always available to you, no matter where you are...",
+                "Take this feeling of serenity with you into your performance...",
+                "You are centered, you are calm, you are ready..."
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            renderRoutines();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (prepRoutines.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+        });
+
+        function initializeSampleData() {
+            prepRoutines = [
+                {
+                    id: 1,
+                    title: 'Piano Recital Preparation',
+                    venue: 'Community Arts Center',
+                    audience: '150 people',
+                    description: 'Solo piano performance featuring Chopin and Debussy pieces',
+                    performanceType: 'music',
+                    anxietyLevel: 'medium',
+                    performanceTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    prepDuration: 45,
+                    tags: ['classical', 'solo', 'recital', 'chopin'],
+                    checklist: [
+                        { id: 1, text: 'Practice opening piece 3 times', priority: 'essential', completed: true },
+                        { id: 2, text: 'Do breathing exercises', priority: 'essential', completed: false },
+                        { id: 3, text: 'Visualize successful performance', priority: 'important', completed: false },
+                        { id: 4, text: 'Warm up hands and fingers', priority: 'essential', completed: false }
+                    ],
+                    breathingExercises: [
+                        { type: '4-7-8', duration: 5 },
+                        { type: 'box', duration: 3 }
+                    ],
+                    progress: 25,
+                    createdAt: new Date(),
+                    active: false,
+                    completed: false
+                },
+                {
+                    id: 2,
+                    title: 'Business Presentation',
+                    venue: 'Corporate Conference Room',
+                    audience: '25 executives',
+                    description: 'Quarterly results presentation to board of directors',
+                    performanceType: 'presentation',
+                    anxietyLevel: 'high',
+                    performanceTime: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    prepDuration: 30,
+                    tags: ['business', 'quarterly', 'executives', 'presentation'],
+                    checklist: [
+                        { id: 1, text: 'Review slides and talking points', priority: 'essential', completed: false },
+                        { id: 2, text: 'Practice opening statement', priority: 'essential', completed: false },
+                        { id: 3, text: 'Prepare for Q&A session', priority: 'important', completed: false }
+                    ],
+                    breathingExercises: [
+                        { type: 'box', duration: 10 }
+                    ],
+                    progress: 0,
+                    createdAt: new Date(),
+                    active: false,
+                    completed: false
+                }
+            ];
+            
+            updateStats();
+            renderRoutines();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Routine management
+        function createPrepRoutine() {
+            const title = document.getElementById('routineTitle').value.trim();
+            const venue = document.getElementById('routineVenue').value.trim();
+            const audience = document.getElementById('routineAudience').value.trim();
+            const description = document.getElementById('routineDescription').value.trim();
+            const performanceType = document.getElementById('performanceType').value;
+            const anxietyLevel = document.getElementById('anxietyAssessment').value;
+            const performanceTime = document.getElementById('performanceTime').value;
+            const prepDuration = parseInt(document.getElementById('prepDuration').value) || 30;
+            const tagInput = document.getElementById('routineTagInput');
+            
+            if (!title || !venue || !description || !performanceTime) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const routine = {
+                id: Date.now(),
+                title: title,
+                venue: venue,
+                audience: audience,
+                description: description,
+                performanceType: performanceType,
+                anxietyLevel: anxietyLevel,
+                performanceTime: performanceTime,
+                prepDuration: prepDuration,
+                tags: tags,
+                checklist: [...currentChecklist],
+                breathingExercises: [...currentBreathingExercises],
+                progress: 0,
+                createdAt: new Date(),
+                active: false,
+                completed: false
+            };
+            
+            prepRoutines.push(routine);
+            
+            // Clear form
+            clearRoutineForm();
+            
+            updateStats();
+            updateStreak();
+            renderRoutines();
+            saveData();
+            showNotification('Performance prep routine created! 🪷');
+        }
+
+        function createAndStart() {
+            createPrepRoutine();
+            if (prepRoutines.length > 0) {
+                const latestRoutine = prepRoutines[prepRoutines.length - 1];
+                latestRoutine.active = true;
+                switchTab('routines');
+                document.querySelector('[onclick="switchTab(\'routines\')"]').classList.add('active');
+                showNotification(`Prep routine "${latestRoutine.title}" is now active! 🚨`);
+                saveData();
+            }
+        }
+
+        function quickAddRoutine() {
+            const title = document.getElementById('quickRoutine').value.trim();
+            if (!title) {
+                showNotification('Please enter a routine title', 'error');
+                return;
+            }
+            
+            const routine = {
+                id: Date.now(),
+                title: title,
+                venue: 'Venue TBD',
+                audience: 'Audience TBD',
+                description: 'Quick prep routine - add details later',
+                performanceType: 'music',
+                anxietyLevel: 'medium',
+                performanceTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                prepDuration: 30,
+                tags: ['quick-add'],
+                checklist: [],
+                breathingExercises: [],
+                progress: 0,
+                createdAt: new Date(),
+                active: false,
+                completed: false
+            };
+            
+            prepRoutines.push(routine);
+            document.getElementById('quickRoutine').value = '';
+            
+            updateStats();
+            renderRoutines();
+            saveData();
+            showNotification('Quick prep routine added! 🚀');
+        }
+
+        function startEmergencyCalm() {
+            showNotification('Emergency calm mode activated! 🚨', 'emergency');
+            
+            // Switch to breathing tab and start immediate breathing exercise
+            switchTab('breathing');
+            document.querySelector('[onclick="switchTab(\'breathing\')"]').classList.add('active');
+            
+            // Start 4-7-8 breathing immediately
+            setTimeout(() => {
+                startBreathing('4-7-8');
+            }, 500);
+        }
+
+        function startQuickPrep(type) {
+            if (type === 'anxiety') {
+                showNotification('Starting anxiety relief protocol...', 'info');
+                switchTab('breathing');
+                document.querySelector('[onclick="switchTab(\'breathing\')"]').classList.add('active');
+                setTimeout(() => startBreathing('4-7-8'), 500);
+            } else if (type === 'confidence') {
+                showNotification('Starting confidence boost session...', 'info');
+                switchTab('visualization');
+                document.querySelector('[onclick="switchTab(\'visualization\')"]').classList.add('active');
+                setTimeout(() => startVisualization('confidence'), 500);
+            }
+        }
+
+        function clearRoutineForm() {
+            document.getElementById('routineTitle').value = '';
+            document.getElementById('routineVenue').value = '';
+            document.getElementById('routineAudience').value = '';
+            document.getElementById('routineDescription').value = '';
+            document.getElementById('performanceType').value = 'music';
+            document.getElementById('anxietyAssessment').value = 'low';
+            document.getElementById('performanceTime').value = '';
+            document.getElementById('prepDuration').value = '';
+            document.getElementById('routineTagInput').value = '';
+            document.getElementById('routineTags').innerHTML = '<input type="text" id="routineTagInput" placeholder="Add tags (breathing, visualization, warm-up)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentChecklist = [];
+            currentBreathingExercises = [];
+            renderChecklistPreview();
+            renderBreathingPreview();
+        }
+
+        function renderRoutines() {
+            const container = document.getElementById('routinesList');
+            container.innerHTML = '';
+            
+            const filteredRoutines = filterRoutinesBySearch();
+            
+            if (filteredRoutines.length === 0) {
+                container.innerHTML = '<div class="prep-card"><p>No prep routines found. Create your first routine to begin your performance preparation journey!</p></div>';
+                return;
+            }
+            
+            filteredRoutines.forEach(routine => {
+                const card = createRoutineCard(routine);
+                container.appendChild(card);
+            });
+        }
+
+        function createRoutineCard(routine) {
+            const card = document.createElement('div');
+            card.className = `prep-card ${routine.anxietyLevel}-anxiety ${routine.completed ? 'completed' : ''}`;
+            
+            const completedChecks = routine.checklist.filter(item => item.completed).length;
+            const totalChecks = routine.checklist.length;
+            const progress = totalChecks > 0 ? Math.round((completedChecks / totalChecks) * 100) : 0;
+            
+            const performanceTime = new Date(routine.performanceTime);
+            const now = new Date();
+            const isActive = routine.active || (now >= performanceTime && now <= new Date(performanceTime.getTime() + routine.prepDuration * 60000));
+            
+            card.innerHTML = `
+                <div class="prep-header">
+                    <div>
+                        <div class="prep-title">${routine.title}</div>
+                        <div style="color: #e0e0e0; font-size: 0.9rem;">🎭 ${routine.venue}</div>
+                        <div style="color: #e0e0e0; font-size: 0.9rem;">${routine.description}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="anxiety-level anxiety-${routine.anxietyLevel}">${routine.anxietyLevel} anxiety</div>
+                        <div style="color: #e0e0e0; font-size: 0.8rem;">${completedChecks}/${totalChecks} steps</div>
+                        ${isActive ? '<div style="color: #ff6b6b; font-weight: bold; font-size: 0.8rem;">🔴 ACTIVE</div>' : ''}
+                    </div>
+                </div>
+                
+                <div class="performance-info">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>🎯 Type: ${routine.performanceType}</span>
+                        <span>👥 Audience: ${routine.audience}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>🕐 Performance: ${performanceTime.toLocaleDateString()} ${performanceTime.toLocaleTimeString()}</span>
+                        <span>⏱️ Prep: ${routine.prepDuration} minutes</span>
+                    </div>
+                </div>
+                
+                ${routine.breathingExercises.length > 0 ? `
+                    <div class="breathing-guide">
+                        <strong>🫁 Breathing Exercises:</strong>
+                        ${routine.breathingExercises.slice(0, 2).map(ex => `
+                            <div style="font-size: 0.9rem; margin: 3px 0;">
+                                • ${breathingTechniques[ex.type]?.name || ex.type} (${ex.duration} min)
+                            </div>
+                        `).join('')}
+                        ${routine.breathingExercises.length > 2 ? `<div style="font-size: 0.8rem; color: #e0e0e0;">+${routine.breathingExercises.length - 2} more exercises</div>` : ''}
+                    </div>
+                ` : ''}
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0;">
+                    ${routine.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <span>Prep Progress: ${progress}%</span>
+                    <div style="width: 120px; height: 8px; background: rgba(45, 90, 61, 0.6); border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${progress}%; height: 100%; background: linear-gradient(45deg, #daa520, #ffd700);"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+                    <button class="action-btn" onclick="editRoutine(${routine.id})">✏️ Edit</button>
+                    <button class="action-btn" onclick="viewChecklist(${routine.id})">📋 Checklist</button>
+                    ${!routine.active ? `
+                        <button class="action-btn" onclick="activateRoutine(${routine.id})">🔴 Activate</button>
+                    ` : `
+                        <button class="action-btn" onclick="deactivateRoutine(${routine.id})">⏹️ Deactivate</button>
+                    `}
+                    ${!routine.completed ? `
+                        <button class="do-it-now-btn" onclick="executeRoutine(${routine.id})">🚀 START PREP</button>
+                    ` : `
+                        <button class="action-btn" onclick="archiveRoutine(${routine.id})">📦 Archive</button>
+                    `}
+                    <button class="action-btn delete-btn" onclick="deleteRoutine(${routine.id})">🗑️ Delete</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function filterRoutines() {
+            renderRoutines();
+        }
+
+        function filterRoutinesBySearch() {
+            const searchTerm = document.getElementById('routineSearch').value.toLowerCase();
+            if (!searchTerm) return prepRoutines;
+            
+            return prepRoutines.filter(routine => 
+                routine.title.toLowerCase().includes(searchTerm) ||
+                routine.venue.toLowerCase().includes(searchTerm) ||
+                routine.description.toLowerCase().includes(searchTerm) ||
+                routine.performanceType.toLowerCase().includes(searchTerm) ||
+                routine.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        function editRoutine(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (!routine) return;
+            
+            currentRoutine = routine;
+            document.getElementById('editRoutineTitle').value = routine.title;
+            document.getElementById('editRoutineVenue').value = routine.venue;
+            document.getElementById('editRoutineDescription').value = routine.description;
+            document.getElementById('editPerformanceType').value = routine.performanceType;
+            document.getElementById('routineModal').style.display = 'block';
+        }
+
+        function saveRoutineEdit() {
+            if (!currentRoutine) return;
+            
+            currentRoutine.title = document.getElementById('editRoutineTitle').value;
+            currentRoutine.venue = document.getElementById('editRoutineVenue').value;
+            currentRoutine.description = document.getElementById('editRoutineDescription').value;
+            currentRoutine.performanceType = document.getElementById('editPerformanceType').value;
+            
+            renderRoutines();
+            closeRoutineModal();
+            saveData();
+            showNotification('Prep routine updated! ✏️');
+        }
+
+        function startRoutine() {
+            if (!currentRoutine) return;
+            
+            // Deactivate all other routines
+            prepRoutines.forEach(routine => routine.active = false);
+            
+            currentRoutine.active = true;
+            
+            renderRoutines();
+            closeRoutineModal();
+            updateStats();
+            saveData();
+            showNotification('🔴 Prep routine activated! Time to prepare for greatness!');
+        }
+
+        function deleteCurrentRoutine() {
+            if (!currentRoutine) return;
+            
+            if (confirm('Are you sure you want to delete this prep routine?')) {
+                prepRoutines = prepRoutines.filter(r => r.id !== currentRoutine.id);
+                renderRoutines();
+                closeRoutineModal();
+                updateStats();
+                saveData();
+                showNotification('Prep routine deleted');
+            }
+        }
+
+        function activateRoutine(routineId) {
+            // Deactivate all routines first
+            prepRoutines.forEach(routine => routine.active = false);
+            
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (routine) {
+                routine.active = true;
+                renderRoutines();
+                updateStats();
+                saveData();
+                showNotification(`🔴 "${routine.title}" activated!`);
+            }
+        }
+
+        function deactivateRoutine(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (routine) {
+                routine.active = false;
+                renderRoutines();
+                updateStats();
+                saveData();
+                showNotification(`⏹️ "${routine.title}" deactivated`);
+            }
+        }
+
+        function executeRoutine(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (!routine) return;
+            
+            showNotification(`🚀 Starting prep routine: "${routine.title}"!`);
+            
+            // Activate the routine and mark as in progress
+            activateRoutine(routineId);
+            
+            // Show checklist for immediate action
+            viewChecklist(routineId);
+        }
+
+        function viewChecklist(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (!routine) return;
+            
+            // For now, just show notification - in a full app this would open a detailed checklist view
+            showNotification(`📋 Opening checklist for "${routine.title}"`);
+        }
+
+        function archiveRoutine(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (!routine) return;
+            
+            routine.archived = true;
+            routine.active = false;
+            renderRoutines();
+            saveData();
+            showNotification('Prep routine archived 📦');
+        }
+
+        function deleteRoutine(routineId) {
+            const routine = prepRoutines.find(r => r.id === routineId);
+            if (!routine) return;
+            
+            const confirmMessage = routine.completed ? 
+                `Are you sure you want to delete the completed prep routine "${routine.title}"?` :
+                `Are you sure you want to delete "${routine.title}"? This action cannot be undone.`;
+            
+            if (confirm(confirmMessage)) {
+                prepRoutines = prepRoutines.filter(r => r.id !== routineId);
+                renderRoutines();
+                updateStats();
+                saveData();
+                showNotification(`Prep routine "${routine.title}" deleted 🗑️`);
+            }
+        }
+
+        // Checklist management
+        function addChecklistItem() {
+            const text = document.getElementById('checklistItem').value.trim();
+            const priority = document.getElementById('checklistPriority').value;
+            
+            if (!text) {
+                showNotification('Please enter a checklist item', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                text: text,
+                priority: priority,
+                completed: false
+            };
+            
+            currentChecklist.push(item);
+            
+            document.getElementById('checklistItem').value = '';
+            renderChecklistPreview();
+            showNotification('Prep step added! 📋');
+        }
+
+        function renderChecklistPreview() {
+            const container = document.getElementById('checklistPreview');
+            container.innerHTML = '';
+            
+            currentChecklist.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'checklist-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <span class="tag" style="margin-left: auto;">${item.priority}</span>
+                    <button class="action-btn" onclick="removeChecklistItem(${index})" style="padding: 6px 10px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeChecklistItem(index) {
+            currentChecklist.splice(index, 1);
+            renderChecklistPreview();
+        }
+
+        // Breathing exercise management
+        function addBreathingExercise() {
+            const type = document.getElementById('breathingType').value;
+            const duration = parseInt(document.getElementById('breathingDuration').value) || 5;
+            
+            const exercise = {
+                type: type,
+                duration: duration
+            };
+            
+            currentBreathingExercises.push(exercise);
+            
+            document.getElementById('breathingDuration').value = '5';
+            renderBreathingPreview();
+            showNotification('Breathing exercise added! 🫁');
+        }
+
+        function renderBreathingPreview() {
+            const container = document.getElementById('breathingPreview');
+            container.innerHTML = '';
+            
+            currentBreathingExercises.forEach((exercise, index) => {
+                const element = document.createElement('div');
+                element.className = 'breathing-guide';
+                element.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${breathingTechniques[exercise.type]?.name || exercise.type}</strong>
+                            <div style="font-size: 0.8rem; color: #e0e0e0;">${exercise.duration} minutes</div>
+                        </div>
+                        <button class="action-btn" onclick="removeBreathingExercise(${index})" style="padding: 6px 10px;">✕</button>
+                    </div>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeBreathingExercise(index) {
+            currentBreathingExercises.splice(index, 1);
+            renderBreathingPreview();
+        }
+
+        // Breathing exercises
+        function startBreathing(technique) {
+            if (breathingInterval) {
+                stopBreathing();
+            }
+            
+            const breathingTechnique = breathingTechniques[technique];
+            if (!breathingTechnique) return;
+            
+            const circle = document.getElementById('breathingCircle');
+            const instructions = document.getElementById('breathingInstructions');
+            
+            let phase = 'inhale';
+            let count = 0;
+            let phaseCount = 0;
+            
+            showNotification(`Starting ${breathingTechnique.name}...`, 'info');
+            
+            breathingInterval = setInterval(() => {
+                count++;
+                
+                if (phase === 'inhale') {
+                    circle.textContent = `INHALE ${breathingTechnique.inhale - phaseCount}`;
+                    circle.className = 'breathing-circle inhale';
+                    instructions.textContent = `Breathe in slowly through your nose for ${breathingTechnique.inhale} seconds`;
+                    
+                    if (count >= breathingTechnique.inhale) {
+                        phase = breathingTechnique.hold ? 'hold' : 'exhale';
+                        count = 0;
+                        phaseCount = 0;
+                    } else {
+                        phaseCount++;
+                    }
+                } else if (phase === 'hold') {
+                    circle.textContent = `HOLD ${breathingTechnique.hold - phaseCount}`;
+                    circle.className = 'breathing-circle';
+                    instructions.textContent = `Hold your breath for ${breathingTechnique.hold} seconds`;
+                    
+                    if (count >= breathingTechnique.hold) {
+                        phase = 'exhale';
+                        count = 0;
+                        phaseCount = 0;
+                    } else {
+                        phaseCount++;
+                    }
+                } else if (phase === 'exhale') {
+                    circle.textContent = `EXHALE ${breathingTechnique.exhale - phaseCount}`;
+                    circle.className = 'breathing-circle exhale';
+                    instructions.textContent = `Breathe out slowly through your mouth for ${breathingTechnique.exhale} seconds`;
+                    
+                    if (count >= breathingTechnique.exhale) {
+                        phase = breathingTechnique.pause ? 'pause' : 'inhale';
+                        count = 0;
+                        phaseCount = 0;
+                    } else {
+                        phaseCount++;
+                    }
+                } else if (phase === 'pause') {
+                    circle.textContent = `PAUSE ${breathingTechnique.pause - phaseCount}`;
+                    circle.className = 'breathing-circle';
+                    instructions.textContent = `Pause and relax for ${breathingTechnique.pause} seconds`;
+                    
+                    if (count >= breathingTechnique.pause) {
+                        phase = 'inhale';
+                        count = 0;
+                        phaseCount = 0;
+                    } else {
+                        phaseCount++;
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopBreathing() {
+            if (breathingInterval) {
+                clearInterval(breathingInterval);
+                breathingInterval = null;
+                
+                const circle = document.getElementById('breathingCircle');
+                const instructions = document.getElementById('breathingInstructions');
+                
+                circle.textContent = 'BREATHE';
+                circle.className = 'breathing-circle';
+                instructions.textContent = 'Click start to begin your breathing exercise';
+                
+                showNotification('Breathing exercise stopped');
+                logBreathingSession();
+            }
+        }
+
+        function logBreathingSession() {
+            breathingSessions++;
+            totalBreathingTime += 5; // Approximate session time
+            updateBreathingStats();
+            saveData();
+        }
+
+        function updateBreathingStats() {
+            document.getElementById('todayBreathingSessions').textContent = breathingSessions;
+            document.getElementById('totalBreathingTime').textContent = totalBreathingTime;
+        }
+
+        function setBreathingReminder() {
+            showNotification('Breathing reminder set for every 2 hours 🫁');
+        }
+
+        function viewBreathingStats() {
+            showNotification(`Today: ${breathingSessions} sessions, ${totalBreathingTime} minutes total`);
+        }
+
+        // Visualization exercises
+        function startVisualization(type) {
+            if (visualizationInterval) {
+                stopVisualization();
+            }
+            
+            const script = visualizationScripts[type];
+            if (!script) return;
+            
+            const content = document.getElementById('visualizationContent');
+            let currentLine = 0;
+            
+            showNotification(`Starting ${type} visualization...`, 'info');
+            
+            content.innerHTML = `<p style="font-size: 1.1rem; line-height: 1.8;">${script[0]}</p>`;
+            
+            visualizationInterval = setInterval(() => {
+                currentLine++;
+                if (currentLine < script.length) {
+                    content.innerHTML = `<p style="font-size: 1.1rem; line-height: 1.8;">${script[currentLine]}</p>`;
+                } else {
+                    stopVisualization();
+                    showNotification('Visualization complete! 🧘');
+                }
+            }, 8000); // 8 seconds per line
+        }
+
+        function stopVisualization() {
+            if (visualizationInterval) {
+                clearInterval(visualizationInterval);
+                visualizationInterval = null;
+                
+                const content = document.getElementById('visualizationContent');
+                content.innerHTML = '<p>Select a visualization script below to begin your mental preparation journey.</p>';
+                
+                showNotification('Visualization stopped');
+            }
+        }
+
+        function saveCustomVisualization() {
+            const script = document.getElementById('customVisualization').value.trim();
+            if (!script) {
+                showNotification('Please enter a visualization script', 'error');
+                return;
+            }
+            
+            // In a full app, this would save to a custom scripts collection
+            showNotification('Custom visualization script saved! 📝');
+            document.getElementById('customVisualization').value = '';
+        }
+
+        function previewCustomVisualization() {
+            const script = document.getElementById('customVisualization').value.trim();
+            if (!script) {
+                showNotification('Please enter a visualization script first', 'error');
+                return;
+            }
+            
+            const content = document.getElementById('visualizationContent');
+            content.innerHTML = `<p style="font-size: 1.1rem; line-height: 1.8;">${script}</p>`;
+            showNotification('Previewing your custom visualization script');
+        }
+
+        // Focus timer functionality
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Performance prep session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function setCustomTimer() {
+            const minutes = prompt('Enter timer duration in minutes (1-180):', '25');
+            if (minutes && !isNaN(minutes) && minutes > 0 && minutes <= 180) {
+                timerSeconds = parseInt(minutes) * 60;
+                updateTimerDisplay();
+                showNotification(`Timer set to ${minutes} minutes`);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Performance prep session complete! You\'re ready to shine!');
+            updateStats();
+            saveData();
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyPerformancePromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...performancePrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyPerformancePrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyPerformancePromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailyPerformancePrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="prep-card" style="margin-bottom: 12px;">
+                    <div class="prep-title">💡 ${prompt}</div>
+                    <div style="margin-top: 12px;">
+                        <button class="do-it-now-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyPerformancePrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyPerformancePrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great preparation work! 🌟');
+            updateStreak();
+        }
+
+        // Performance action functions
+        function reviewPerformancePlan() {
+            showNotification('📋 Opening performance plan review...');
+        }
+
+        function practiceRoutine() {
+            showNotification('🎭 Starting practice session...');
+        }
+
+        function mentalRehearsal() {
+            showNotification('🧠 Beginning mental rehearsal...');
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customPerformanceMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customPerformanceMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const activeRoutines = prepRoutines.filter(r => r.active && !r.completed).length;
+            const totalSessions = prepRoutines.reduce((sum, routine) => 
+                sum + routine.checklist.filter(item => item.completed).length, 0);
+            
+            // Calculate current anxiety level
+            const activeRoutine = prepRoutines.find(r => r.active);
+            const currentAnxiety = activeRoutine ? activeRoutine.anxietyLevel.toUpperCase() : 'CALM';
+            
+            document.getElementById('totalPreps').textContent = prepRoutines.length;
+            document.getElementById('completedSessions').textContent = totalSessions;
+            document.getElementById('prepStreak').textContent = prepStreak;
+            document.getElementById('anxietyLevel').textContent = currentAnxiety;
+            
+            // Update anxiety level color
+            const anxietyElement = document.getElementById('anxietyLevel');
+            anxietyElement.className = 'stat-value';
+            if (currentAnxiety === 'HIGH') {
+                anxietyElement.style.color = '#ff6b6b';
+            } else if (currentAnxiety === 'MEDIUM') {
+                anxietyElement.style.color = '#ffa726';
+            } else {
+                anxietyElement.style.color = '#66bb6a';
+            }
+            
+            // Analytics tab stats
+            document.getElementById('totalPrepRoutines').textContent = prepRoutines.length;
+            document.getElementById('prepStreakAnalytics').textContent = prepStreak;
+            document.getElementById('totalFocusTimeAnalytics').textContent = Math.round(totalFocusTime / 60) + 'h';
+            
+            // Calculate average anxiety level
+            const anxietyLevels = prepRoutines.map(r => r.anxietyLevel);
+            const avgAnxiety = calculateAverageAnxiety(anxietyLevels);
+            document.getElementById('avgAnxietyLevel').textContent = avgAnxiety;
+            
+            updatePerformanceBreakdown();
+            updateProgressTrends();
+        }
+
+        function calculateAverageAnxiety(anxietyLevels) {
+            if (anxietyLevels.length === 0) return 'LOW';
+            
+            const anxietyValues = { low: 1, medium: 2, high: 3 };
+            const avgValue = anxietyLevels.reduce((sum, anxiety) => sum + anxietyValues[anxiety], 0) / anxietyLevels.length;
+            
+            if (avgValue <= 1.5) return 'LOW';
+            if (avgValue <= 2.5) return 'MEDIUM';
+            return 'HIGH';
+        }
+
+        function updatePerformanceBreakdown() {
+            const performances = {};
+            prepRoutines.forEach(routine => {
+                performances[routine.performanceType] = (performances[routine.performanceType] || 0) + 1;
+            });
+            
+            const container = document.getElementById('performanceBreakdown');
+            container.innerHTML = Object.entries(performances)
+                .map(([type, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+                        <span>${type}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateProgressTrends() {
+            const container = document.getElementById('progressTrends');
+            const anxietyCounts = { low: 0, medium: 0, high: 0 };
+            
+            prepRoutines.forEach(routine => {
+                anxietyCounts[routine.anxietyLevel]++;
+            });
+            
+            container.innerHTML = Object.entries(anxietyCounts)
+                .map(([anxiety, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+                        <span>${anxiety.toUpperCase()}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastPrepActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    prepStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    prepStreak = 1;
+                }
+            } else {
+                // First time
+                prepStreak = 1;
+            }
+            
+            localStorage.setItem('lastPrepActiveDate', today);
+            localStorage.setItem('prepStreak', prepStreak.toString());
+            updateStats();
+        }
+
+        // Export and backup
+        function exportPrepReport() {
+            const activeRoutines = prepRoutines.filter(r => r.active);
+            const completedRoutines = prepRoutines.filter(r => r.completed);
+            const totalSessions = prepRoutines.reduce((sum, routine) => 
+                sum + routine.checklist.filter(item => item.completed).length, 0);
+            
+            const content = `
+Performance Prep App Report
+Generated: ${new Date().toLocaleDateString()}
+
+PERFORMANCE OVERVIEW
+===================
+Total Prep Routines: ${prepRoutines.length}
+Active Routines: ${activeRoutines.length}
+Completed Routines: ${completedRoutines.length}
+Completed Sessions: ${totalSessions}
+Current Prep Streak: ${prepStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+Breathing Sessions: ${breathingSessions}
+
+ACTIVE PREP ROUTINES
+===================
+${activeRoutines.map(routine => `
+🪷 ${routine.title}
+   Venue: ${routine.venue}
+   Anxiety Level: ${routine.anxietyLevel.toUpperCase()}
+   Performance Type: ${routine.performanceType}
+   Audience: ${routine.audience}
+   Performance Time: ${new Date(routine.performanceTime).toLocaleString()}
+   
+   Prep Checklist:
+   ${routine.checklist.map(item => `   ${item.completed ? '✅' : '☐'} ${item.text} (${item.priority})`).join('\n   ')}
+   
+   Breathing Exercises:
+   ${routine.breathingExercises.map(ex => `   🫁 ${breathingTechniques[ex.type]?.name || ex.type} (${ex.duration} min)`).join('\n   ')}
+`).join('\n')}
+
+RECENT PREP ROUTINES
+===================
+${prepRoutines.slice(-10).map(r => `🪷 ${r.title} - ${r.performanceType} - ${r.anxietyLevel.toUpperCase()} anxiety`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `performance-prep-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Performance report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                prepRoutines: prepRoutines,
+                totalFocusTime: totalFocusTime,
+                prepStreak: prepStreak,
+                breathingSessions: breathingSessions,
+                totalBreathingTime: totalBreathingTime,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `performance-prep-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        prepRoutines = data.prepRoutines || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        prepStreak = data.prepStreak || 0;
+                        breathingSessions = data.breathingSessions || 0;
+                        totalBreathingTime = data.totalBreathingTime || 0;
+                        
+                        renderRoutines();
+                        updateStats();
+                        updateBreathingStats();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            prepRoutines.forEach(routine => {
+                if (routine.completed || !routine.active) return;
+                
+                const performanceTime = new Date(routine.performanceTime);
+                const timeDiff = performanceTime - now;
+                const hoursDiff = timeDiff / (1000 * 60 * 60);
+                
+                // Remind 2 hours before performance time
+                if (hoursDiff <= 2 && hoursDiff > 0) {
+                    showNotification(`Performance Reminder: "${routine.title}" in ${Math.round(hoursDiff)} hours`, 'reminder');
+                }
+                
+                // Remind if performance is soon
+                if (timeDiff < 0 && Math.abs(hoursDiff) <= 1) {
+                    showNotification(`Performance Alert: "${routine.title}" is starting soon!`, 'emergency');
+                }
+            });
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('performancePrep_routines', JSON.stringify(prepRoutines));
+            localStorage.setItem('performancePrep_focusTime', totalFocusTime);
+            localStorage.setItem('performancePrep_streak', prepStreak);
+            localStorage.setItem('performancePrep_breathingSessions', breathingSessions);
+            localStorage.setItem('performancePrep_breathingTime', totalBreathingTime);
+        }
+
+        function loadData() {
+            const savedRoutines = localStorage.getItem('performancePrep_routines');
+            const savedFocusTime = localStorage.getItem('performancePrep_focusTime');
+            const savedStreak = localStorage.getItem('performancePrep_streak');
+            const savedBreathingSessions = localStorage.getItem('performancePrep_breathingSessions');
+            const savedBreathingTime = localStorage.getItem('performancePrep_breathingTime');
+            
+            if (savedRoutines) prepRoutines = JSON.parse(savedRoutines);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) prepStreak = parseInt(savedStreak);
+            if (savedBreathingSessions) breathingSessions = parseInt(savedBreathingSessions);
+            if (savedBreathingTime) totalBreathingTime = parseInt(savedBreathingTime);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeRoutineModal() {
+            document.getElementById('routineModal').style.display = 'none';
+        }
+
+        function closeCountdownModal() {
+            document.getElementById('countdownModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+            } else if (type === 'emergency') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+                notification.style.color = 'white';
+                notification.style.fontWeight = 'bold';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 167, 38, 0.95)';
+                notification.style.color = 'white';
+            } else if (type === 'info') {
+                notification.style.background = 'rgba(33, 150, 243, 0.95)';
+                notification.style.color = 'white';
+            } else {
+                notification.style.background = 'rgba(102, 187, 106, 0.95)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, type === 'emergency' ? 8000 : 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('routineTitle').focus();
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        switchTab('breathing');
+                        document.querySelector('[onclick="switchTab(\'breathing\')"]').classList.add('active');
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const routineModal = document.getElementById('routineModal');
+            const messageModal = document.getElementById('messageModal');
+            const countdownModal = document.getElementById('countdownModal');
+            
+            if (event.target === routineModal) {
+                closeRoutineModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+            if (event.target === countdownModal) {
+                closeCountdownModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98718e8017e5bc4b',t:'MTc1OTIxMjYyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
