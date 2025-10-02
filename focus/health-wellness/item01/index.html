@@ -1,1 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnergyFlow - Energy Diary & Micro Workouts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .energy-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .energy-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .energy-card.high-energy {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .energy-card.low-energy {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+        
+        .quick-tap {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .quick-tap:hover {
+            transform: scale(1.1);
+            border-color: #d4af37;
+        }
+        
+        .quick-tap.selected {
+            background: #d4af37;
+            color: #000;
+            border-color: #d4af37;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .workout-timer {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+            position: relative;
+        }
+        
+        .timer-progress {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 212px;
+            height: 212px;
+            border-radius: 50%;
+            background: conic-gradient(#4ade80 0deg, transparent 0deg);
+            transition: background 0.1s ease;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(212, 175, 55, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .energy-level-1 { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        .energy-level-2 { background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; }
+        .energy-level-3 { background: rgba(234, 179, 8, 0.2); border-color: #eab308; }
+        .energy-level-4 { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
+        .energy-level-5 { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+        
+        .phrase-card {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .workout-cue {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">⚡ EnergyFlow</h1>
+        <p class="text-lg text-gray-300 mb-4">Energy Diary & Micro Workouts</p>
+        
+        <!-- Quick Stats -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="currentStreak">0</div>
+                <div class="text-sm text-gray-400">Day Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="avgEnergy">0</div>
+                <div class="text-sm text-gray-400">Avg Energy</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="totalWorkouts">0</div>
+                <div class="text-sm text-gray-400">Workouts</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="weeklyMinutes">0</div>
+                <div class="text-sm text-gray-400">Weekly Min</div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('diary')" id="diaryBtn" class="nav-btn active">📊 Energy Diary</button>
+        <button onclick="showScreen('workouts')" id="workoutsBtn" class="nav-btn">💪 Micro Workouts</button>
+        <button onclick="showScreen('motivation')" id="motivationBtn" class="nav-btn">💬 Motivation</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">🧘 25-Min Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">📈 Analytics</button>
+    </nav>
+
+    <!-- Floating Add Button -->
+    <div onclick="showQuickLog()" class="floating-btn" title="Quick Log">+</div>
+
+    <!-- Energy Diary Screen -->
+    <div id="diaryScreen" class="screen p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📊 Energy Diary</h2>
+                <p class="text-gray-300">Track sleep, meals, movement, sunlight, mood & focus</p>
+            </div>
+
+            <!-- Today's Quick Log -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-accent">⚡ Today's Energy Log</h3>
+                    <div class="text-sm text-gray-400" id="todayDate"></div>
+                </div>
+                
+                <!-- Quick Tap Interface -->
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Sleep (hrs)</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('sleep', 6)">6</div>
+                            <div class="quick-tap" onclick="quickLog('sleep', 7)">7</div>
+                            <div class="quick-tap" onclick="quickLog('sleep', 8)">8</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Meals</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('meals', 2)">2</div>
+                            <div class="quick-tap" onclick="quickLog('meals', 3)">3</div>
+                            <div class="quick-tap" onclick="quickLog('meals', 4)">4</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Movement</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('movement', 1)">🚶</div>
+                            <div class="quick-tap" onclick="quickLog('movement', 2)">🏃</div>
+                            <div class="quick-tap" onclick="quickLog('movement', 3)">💪</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Sunlight</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('sunlight', 1)">🌤️</div>
+                            <div class="quick-tap" onclick="quickLog('sunlight', 2)">☀️</div>
+                            <div class="quick-tap" onclick="quickLog('sunlight', 3)">🌞</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Mood</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('mood', 1)">😔</div>
+                            <div class="quick-tap" onclick="quickLog('mood', 3)">😐</div>
+                            <div class="quick-tap" onclick="quickLog('mood', 5)">😊</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-300 mb-2">Focus</div>
+                        <div class="flex justify-center gap-1">
+                            <div class="quick-tap" onclick="quickLog('focus', 1)">😵</div>
+                            <div class="quick-tap" onclick="quickLog('focus', 3)">🤔</div>
+                            <div class="quick-tap" onclick="quickLog('focus', 5)">🎯</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Today's Summary -->
+                <div id="todaySummary" class="bg-gray-800 p-4 rounded-lg">
+                    <div class="text-center text-gray-400">Tap values above to log your day in under 20 seconds</div>
+                </div>
+            </div>
+
+            <!-- Recent Logs -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📅 Recent Energy Logs</h3>
+                <div id="recentLogs" class="space-y-3">
+                    <!-- Recent logs will be populated here -->
+                </div>
+            </div>
+
+            <!-- Voice Reflection -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎤 Voice Reflection</h3>
+                <div class="flex gap-3 mb-4">
+                    <button onclick="startVoiceReflection()" id="voiceReflectionBtn" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                        🎤 Start Reflection
+                    </button>
+                    <button onclick="stopVoiceReflection()" id="stopReflectionBtn" 
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold" disabled>
+                        ⏹️ Stop
+                    </button>
+                </div>
+                <textarea id="reflectionText" placeholder="Your reflections will appear here..." 
+                          class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Micro Workouts Screen -->
+    <div id="workoutsScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💪 Micro Workouts</h2>
+                <p class="text-gray-300">Quick 5, 10, 15 minute workouts with guided cues</p>
+            </div>
+
+            <!-- Timer Presets -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">⏱️ Workout Timer</h3>
+                
+                <div class="workout-timer mb-6">
+                    <div class="timer-progress" id="timerProgress"></div>
+                    <div class="text-center z-10 relative">
+                        <div class="text-4xl font-bold text-accent" id="timerDisplay">5:00</div>
+                        <div class="text-sm text-gray-300" id="timerStatus">Ready</div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-4 mb-6">
+                    <button onclick="setTimer(5)" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        5 Min
+                    </button>
+                    <button onclick="setTimer(10)" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        10 Min
+                    </button>
+                    <button onclick="setTimer(15)" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        15 Min
+                    </button>
+                </div>
+                
+                <div class="flex justify-center gap-4">
+                    <button onclick="startWorkoutTimer()" id="startTimerBtn" 
+                            class="bg-accent text-black px-8 py-3 rounded-lg font-bold">
+                        ▶️ Start Workout
+                    </button>
+                    <button onclick="pauseWorkoutTimer()" id="pauseTimerBtn" 
+                            class="bg-yellow-600 text-white px-8 py-3 rounded-lg font-bold" disabled>
+                        ⏸️ Pause
+                    </button>
+                    <button onclick="stopWorkoutTimer()" id="stopTimerBtn" 
+                            class="bg-red-600 text-white px-8 py-3 rounded-lg font-bold" disabled>
+                        ⏹️ Stop
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workout Cues -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💡 Workout Cues</h3>
+                <div id="workoutCues" class="space-y-3">
+                    <div class="text-center text-gray-400 py-4">Start a workout to see exercise cues</div>
+                </div>
+            </div>
+
+            <!-- Workout History -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📋 Recent Workouts</h3>
+                <div id="workoutHistory" class="space-y-3">
+                    <!-- Workout history will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivation Screen -->
+    <div id="motivationScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💬 Motivation & Self-Talk</h2>
+                <p class="text-gray-300">Power phrases for energy, motivation, and positive self-talk</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Energy Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">⚡ Energy Boosters</h3>
+                    <div id="energyPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newEnergyPhrase" placeholder="Add energy phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addEnergyPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Motivation Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🔥 Motivation</h3>
+                    <div id="motivationPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newMotivationPhrase" placeholder="Add motivation phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addMotivationPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Self-Talk Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🗣️ Positive Self-Talk</h3>
+                    <div id="selfTalkPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newSelfTalkPhrase" placeholder="Add self-talk phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addSelfTalkPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">🧘 25-Minute Wellness Reset</h2>
+            
+            <div class="breathing-circle mb-8" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold mb-8" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 py-4 bg-black bg-opacity-40 rounded-lg mb-8">
+                "Your body is your temple. Keep it pure and clean for the soul to reside in."
+            </div>
+            
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Wellness Mantras</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newWellnessMantra" placeholder="Add your wellness mantra..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addWellnessMantra()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMantras" class="space-y-2">
+                    <!-- Custom mantras will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📈 Energy & Workout Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="longestStreak">0</div>
+                    <div class="text-gray-400">Longest Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">⚡</div>
+                    <div class="text-2xl font-bold text-white" id="avgEnergyLevel">0</div>
+                    <div class="text-gray-400">Avg Energy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">💪</div>
+                    <div class="text-2xl font-bold text-white" id="totalWorkoutMinutes">0</div>
+                    <div class="text-gray-400">Total Minutes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📊</div>
+                    <div class="text-2xl font-bold text-white" id="totalLogs">0</div>
+                    <div class="text-gray-400">Total Logs</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-xl font-bold text-accent mb-4">📊 Energy Trends (7 Days)</h3>
+                    <canvas id="energyChart" width="400" height="200"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-bold text-accent mb-4">💪 Workout Minutes (7 Days)</h3>
+                    <canvas id="workoutChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportWeeklyReport()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Weekly Report
+                    </button>
+                    <button onclick="exportWorkoutLog()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💪 Workout Log
+                    </button>
+                    <button onclick="backupAllData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Log Modal -->
+    <div id="quickLogModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">⚡ Quick Energy Log</h3>
+                <button onclick="closeQuickLog()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Sleep Hours</label>
+                        <input type="number" id="quickSleep" min="0" max="12" step="0.5" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Meals Count</label>
+                        <input type="number" id="quickMeals" min="0" max="6" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Movement</label>
+                        <select id="quickMovement" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="1">Light</option>
+                            <option value="2">Moderate</option>
+                            <option value="3">Intense</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Sunlight</label>
+                        <select id="quickSunlight" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="1">Little</option>
+                            <option value="2">Some</option>
+                            <option value="3">Plenty</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Overall Energy</label>
+                        <select id="quickEnergy" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="1">Very Low</option>
+                            <option value="2">Low</option>
+                            <option value="3">Medium</option>
+                            <option value="4">High</option>
+                            <option value="5">Very High</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Mood (1-5)</label>
+                        <input type="range" id="quickMood" min="1" max="5" value="3" 
+                               class="w-full accent-yellow-500">
+                        <div class="text-center text-sm text-gray-400" id="moodValue">3</div>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Focus (1-5)</label>
+                        <input type="range" id="quickFocus" min="1" max="5" value="3" 
+                               class="w-full accent-yellow-500">
+                        <div class="text-center text-sm text-gray-400" id="focusValue">3</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Notes (Optional)</label>
+                    <textarea id="quickNotes" placeholder="How are you feeling today?" 
+                              class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveQuickLog()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold flex-1">
+                        💾 Save Log
+                    </button>
+                    <button onclick="closeQuickLog()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            energyLogs: [],
+            workouts: [],
+            motivation: {
+                energy: [
+                    "I am energized and ready to take on the day!",
+                    "My body is strong and my mind is clear.",
+                    "I choose to fuel my body with nutritious foods.",
+                    "Every breath fills me with vitality and strength.",
+                    "I am grateful for my healthy, capable body."
+                ],
+                motivation: [
+                    "Progress, not perfection, is my goal.",
+                    "Small consistent actions create big results.",
+                    "I am becoming the healthiest version of myself.",
+                    "Every workout makes me stronger than yesterday.",
+                    "I choose movement because I love my body."
+                ],
+                selfTalk: [
+                    "I am worthy of taking care of myself.",
+                    "My health is my greatest investment.",
+                    "I listen to my body and honor its needs.",
+                    "I celebrate every small victory.",
+                    "I am patient and kind with myself."
+                ]
+            },
+            mantras: [
+                "Your body is your temple. Keep it pure and clean for the soul to reside in.",
+                "Health is not about the weight you lose, but about the life you gain.",
+                "Take care of your body. It's the only place you have to live.",
+                "A healthy outside starts from the inside.",
+                "Your body can do it. It's your mind you need to convince."
+            ],
+            progress: {
+                currentStreak: 0,
+                longestStreak: 0,
+                totalWorkouts: 0,
+                totalMinutes: 0
+            }
+        };
+
+        // Timer variables
+        let workoutTimer = null;
+        let workoutTimeLeft = 0;
+        let workoutDuration = 5;
+        let isWorkoutRunning = false;
+        let resetTimer = null;
+        let breathingInterval = null;
+        let recognition = null;
+        let isListening = false;
+
+        // Workout cues for different durations
+        const workoutCues = {
+            5: [
+                "Warm up with arm circles and light stretching",
+                "30 seconds jumping jacks - get that heart rate up!",
+                "30 seconds bodyweight squats - feel those legs!",
+                "30 seconds push-ups (modify as needed)",
+                "30 seconds mountain climbers - keep moving!",
+                "30 seconds plank hold - engage that core!",
+                "30 seconds high knees - almost there!",
+                "Cool down with deep breathing and stretching"
+            ],
+            10: [
+                "2 minutes warm-up: light movement and stretching",
+                "1 minute jumping jacks - energize your body!",
+                "1 minute squats - build those legs!",
+                "1 minute push-ups - strengthen your upper body!",
+                "1 minute mountain climbers - cardio boost!",
+                "1 minute plank - core stability!",
+                "1 minute burpees - full body challenge!",
+                "1 minute lunges - balance and strength!",
+                "1 minute cool-down stretching"
+            ],
+            15: [
+                "3 minutes warm-up: dynamic stretching and light cardio",
+                "2 minutes jumping jacks and high knees",
+                "2 minutes squats and squat jumps",
+                "2 minutes push-ups and tricep dips",
+                "2 minutes mountain climbers and burpees",
+                "2 minutes plank variations",
+                "2 minutes cool-down and deep stretching"
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            loadEnergyLogs();
+            loadWorkoutHistory();
+            loadMotivation();
+            loadMantras();
+            initializeSpeechRecognition();
+            updateTodayDate();
+            setupSliders();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('energyFlowData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('energyFlowData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'diary': 
+                    loadEnergyLogs(); 
+                    updateTodaySummary();
+                    break;
+                case 'workouts': 
+                    loadWorkoutHistory(); 
+                    break;
+                case 'motivation': 
+                    loadMotivation(); 
+                    break;
+                case 'analytics': 
+                    loadAnalytics(); 
+                    break;
+            }
+        }
+
+        // Quick Logging
+        function updateTodayDate() {
+            const today = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('todayDate').textContent = today;
+        }
+
+        function quickLog(category, value) {
+            const today = new Date().toISOString().split('T')[0];
+            let todayLog = appData.energyLogs.find(log => log.date === today);
+            
+            if (!todayLog) {
+                todayLog = {
+                    id: Date.now().toString(),
+                    date: today,
+                    sleep: 0,
+                    meals: 0,
+                    movement: 0,
+                    sunlight: 0,
+                    mood: 0,
+                    focus: 0,
+                    notes: '',
+                    energy: 0
+                };
+                appData.energyLogs.push(todayLog);
+            }
+            
+            todayLog[category] = value;
+            
+            // Calculate overall energy based on inputs
+            calculateOverallEnergy(todayLog);
+            
+            // Update UI
+            updateQuickTapSelection(category, value);
+            updateTodaySummary();
+            
+            saveAppData();
+            updateAllStats();
+            showNotification(`${category} logged: ${value}`);
+        }
+
+        function calculateOverallEnergy(log) {
+            // Simple energy calculation based on all factors
+            const sleepScore = Math.min(log.sleep / 8, 1) * 5;
+            const mealScore = Math.min(log.meals / 3, 1) * 5;
+            const movementScore = log.movement;
+            const sunlightScore = log.sunlight;
+            const moodScore = log.mood;
+            const focusScore = log.focus;
+            
+            const totalScore = (sleepScore + mealScore + movementScore + sunlightScore + moodScore + focusScore) / 6;
+            log.energy = Math.round(totalScore * 10) / 10;
+        }
+
+        function updateQuickTapSelection(category, value) {
+            // Clear previous selections for this category
+            document.querySelectorAll(`.quick-tap`).forEach(tap => {
+                if (tap.onclick && tap.onclick.toString().includes(category)) {
+                    tap.classList.remove('selected');
+                }
+            });
+            
+            // Add selection to clicked item
+            event.target.classList.add('selected');
+        }
+
+        function updateTodaySummary() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayLog = appData.energyLogs.find(log => log.date === today);
+            const container = document.getElementById('todaySummary');
+            
+            if (!todayLog || Object.values(todayLog).every(val => val === 0 || val === '' || val === today || val.toString().length === 13)) {
+                container.innerHTML = '<div class="text-center text-gray-400">Tap values above to log your day in under 20 seconds</div>';
+                return;
+            }
+            
+            const energyClass = todayLog.energy >= 4 ? 'text-green-400' : todayLog.energy >= 3 ? 'text-yellow-400' : 'text-red-400';
+            
+            container.innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl mb-1">😴</div>
+                        <div class="text-white font-bold">${todayLog.sleep}h</div>
+                        <div class="text-xs text-gray-400">Sleep</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl mb-1">🍽️</div>
+                        <div class="text-white font-bold">${todayLog.meals}</div>
+                        <div class="text-xs text-gray-400">Meals</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl mb-1">🏃</div>
+                        <div class="text-white font-bold">${getMovementEmoji(todayLog.movement)}</div>
+                        <div class="text-xs text-gray-400">Movement</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl mb-1">☀️</div>
+                        <div class="text-white font-bold">${getSunlightEmoji(todayLog.sunlight)}</div>
+                        <div class="text-xs text-gray-400">Sunlight</div>
+                    </div>
+                </div>
+                <div class="text-center mt-4 pt-4 border-t border-gray-600">
+                    <div class="text-3xl ${energyClass} font-bold">${todayLog.energy}/5</div>
+                    <div class="text-sm text-gray-400">Overall Energy Level</div>
+                </div>
+            `;
+        }
+
+        function getMovementEmoji(level) {
+            switch(level) {
+                case 1: return '🚶';
+                case 2: return '🏃';
+                case 3: return '💪';
+                default: return '❓';
+            }
+        }
+
+        function getSunlightEmoji(level) {
+            switch(level) {
+                case 1: return '🌤️';
+                case 2: return '☀️';
+                case 3: return '🌞';
+                default: return '❓';
+            }
+        }
+
+        // Energy Logs
+        function loadEnergyLogs() {
+            const container = document.getElementById('recentLogs');
+            
+            if (appData.energyLogs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-lg font-bold mb-2">No energy logs yet</h3>
+                        <p class="mb-4">Start tracking your daily energy inputs</p>
+                        <button onclick="showQuickLog()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Log Your First Day
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const recentLogs = appData.energyLogs.slice(-7).reverse();
+            
+            container.innerHTML = recentLogs.map(log => {
+                const energyClass = log.energy >= 4 ? 'high-energy' : log.energy <= 2 ? 'low-energy' : '';
+                return `
+                    <div class="energy-card ${energyClass}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h4 class="text-lg font-bold text-white">${new Date(log.date).toLocaleDateString()}</h4>
+                                    <div class="streak-indicator">
+                                        <span class="text-accent font-bold">${log.energy}/5</span>
+                                        <span class="text-xs">Energy</span>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-gray-300 grid grid-cols-3 gap-2">
+                                    <span>😴 ${log.sleep}h</span>
+                                    <span>🍽️ ${log.meals} meals</span>
+                                    <span>🏃 ${getMovementEmoji(log.movement)}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-400">Mood: ${getMoodEmoji(log.mood)}</div>
+                                <div class="text-sm text-gray-400">Focus: ${getFocusEmoji(log.focus)}</div>
+                            </div>
+                        </div>
+                        
+                        ${log.notes ? `
+                            <div class="bg-gray-800 p-2 rounded text-sm text-gray-300">
+                                "${log.notes}"
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="editEnergyLog('${log.id}')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                                ✏️ Edit
+                            </button>
+                            <button onclick="deleteEnergyLog('${log.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getMoodEmoji(level) {
+            switch(level) {
+                case 1: return '😔';
+                case 2: return '😕';
+                case 3: return '😐';
+                case 4: return '😊';
+                case 5: return '😄';
+                default: return '❓';
+            }
+        }
+
+        function getFocusEmoji(level) {
+            switch(level) {
+                case 1: return '😵';
+                case 2: return '😴';
+                case 3: return '🤔';
+                case 4: return '🎯';
+                case 5: return '🔥';
+                default: return '❓';
+            }
+        }
+
+        function showQuickLog() {
+            document.getElementById('quickLogModal').classList.remove('hidden');
+        }
+
+        function closeQuickLog() {
+            document.getElementById('quickLogModal').classList.add('hidden');
+        }
+
+        function setupSliders() {
+            const moodSlider = document.getElementById('quickMood');
+            const focusSlider = document.getElementById('quickFocus');
+            
+            moodSlider.addEventListener('input', function() {
+                document.getElementById('moodValue').textContent = this.value;
+            });
+            
+            focusSlider.addEventListener('input', function() {
+                document.getElementById('focusValue').textContent = this.value;
+            });
+        }
+
+        function saveQuickLog() {
+            const logData = {
+                sleep: parseFloat(document.getElementById('quickSleep').value) || 0,
+                meals: parseInt(document.getElementById('quickMeals').value) || 0,
+                movement: parseInt(document.getElementById('quickMovement').value) || 1,
+                sunlight: parseInt(document.getElementById('quickSunlight').value) || 1,
+                mood: parseInt(document.getElementById('quickMood').value) || 3,
+                focus: parseInt(document.getElementById('quickFocus').value) || 3,
+                notes: document.getElementById('quickNotes').value.trim()
+            };
+            
+            const today = new Date().toISOString().split('T')[0];
+            let todayLog = appData.energyLogs.find(log => log.date === today);
+            
+            if (todayLog) {
+                Object.assign(todayLog, logData);
+            } else {
+                todayLog = {
+                    id: Date.now().toString(),
+                    date: today,
+                    ...logData
+                };
+                appData.energyLogs.push(todayLog);
+            }
+            
+            calculateOverallEnergy(todayLog);
+            
+            saveAppData();
+            updateAllStats();
+            loadEnergyLogs();
+            updateTodaySummary();
+            closeQuickLog();
+            
+            showNotification('📊 Energy log saved successfully!');
+        }
+
+        function editEnergyLog(logId) {
+            const log = appData.energyLogs.find(l => l.id === logId);
+            if (log) {
+                // Populate modal with existing data
+                document.getElementById('quickSleep').value = log.sleep;
+                document.getElementById('quickMeals').value = log.meals;
+                document.getElementById('quickMovement').value = log.movement;
+                document.getElementById('quickSunlight').value = log.sunlight;
+                document.getElementById('quickMood').value = log.mood;
+                document.getElementById('quickFocus').value = log.focus;
+                document.getElementById('quickNotes').value = log.notes;
+                
+                // Update slider displays
+                document.getElementById('moodValue').textContent = log.mood;
+                document.getElementById('focusValue').textContent = log.focus;
+                
+                // Store edit ID and show modal
+                document.getElementById('quickLogModal').dataset.editId = logId;
+                showQuickLog();
+            }
+        }
+
+        function deleteEnergyLog(logId) {
+            if (confirm('Delete this energy log? This cannot be undone.')) {
+                appData.energyLogs = appData.energyLogs.filter(l => l.id !== logId);
+                saveAppData();
+                updateAllStats();
+                loadEnergyLogs();
+                updateTodaySummary();
+                showNotification('🗑️ Energy log deleted');
+            }
+        }
+
+        // Workout Timer
+        function setTimer(minutes) {
+            workoutDuration = minutes;
+            workoutTimeLeft = minutes * 60;
+            updateTimerDisplay();
+            loadWorkoutCues(minutes);
+            showNotification(`Timer set to ${minutes} minutes`);
+        }
+
+        function startWorkoutTimer() {
+            if (workoutTimeLeft === 0) {
+                workoutTimeLeft = workoutDuration * 60;
+            }
+            
+            isWorkoutRunning = true;
+            
+            document.getElementById('startTimerBtn').disabled = true;
+            document.getElementById('pauseTimerBtn').disabled = false;
+            document.getElementById('stopTimerBtn').disabled = false;
+            
+            workoutTimer = setInterval(() => {
+                workoutTimeLeft--;
+                updateTimerDisplay();
+                updateTimerProgress();
+                
+                if (workoutTimeLeft <= 0) {
+                    completeWorkout();
+                }
+            }, 1000);
+            
+            document.getElementById('timerStatus').textContent = 'Working Out!';
+            showNotification('💪 Workout started!');
+        }
+
+        function pauseWorkoutTimer() {
+            if (workoutTimer) {
+                clearInterval(workoutTimer);
+                workoutTimer = null;
+                isWorkoutRunning = false;
+                
+                document.getElementById('startTimerBtn').disabled = false;
+                document.getElementById('pauseTimerBtn').disabled = true;
+                document.getElementById('timerStatus').textContent = 'Paused';
+                
+                showNotification('⏸️ Workout paused');
+            }
+        }
+
+        function stopWorkoutTimer() {
+            if (workoutTimer) {
+                clearInterval(workoutTimer);
+                workoutTimer = null;
+            }
+            
+            isWorkoutRunning = false;
+            workoutTimeLeft = workoutDuration * 60;
+            
+            document.getElementById('startTimerBtn').disabled = false;
+            document.getElementById('pauseTimerBtn').disabled = true;
+            document.getElementById('stopTimerBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Ready';
+            
+            updateTimerDisplay();
+            updateTimerProgress();
+            
+            showNotification('⏹️ Workout stopped');
+        }
+
+        function completeWorkout() {
+            clearInterval(workoutTimer);
+            workoutTimer = null;
+            isWorkoutRunning = false;
+            
+            // Log the workout
+            const workout = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                duration: workoutDuration,
+                completed: true
+            };
+            
+            appData.workouts.push(workout);
+            appData.progress.totalWorkouts++;
+            appData.progress.totalMinutes += workoutDuration;
+            
+            saveAppData();
+            updateAllStats();
+            loadWorkoutHistory();
+            
+            // Reset timer UI
+            workoutTimeLeft = workoutDuration * 60;
+            document.getElementById('startTimerBtn').disabled = false;
+            document.getElementById('pauseTimerBtn').disabled = true;
+            document.getElementById('stopTimerBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Completed!';
+            
+            updateTimerDisplay();
+            updateTimerProgress();
+            
+            showNotification(`🎉 ${workoutDuration}-minute workout completed!`);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(workoutTimeLeft / 60);
+            const seconds = workoutTimeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerProgress() {
+            const totalSeconds = workoutDuration * 60;
+            const progress = ((totalSeconds - workoutTimeLeft) / totalSeconds) * 360;
+            document.getElementById('timerProgress').style.background = 
+                `conic-gradient(#4ade80 ${progress}deg, transparent ${progress}deg)`;
+        }
+
+        function loadWorkoutCues(duration) {
+            const container = document.getElementById('workoutCues');
+            const cues = workoutCues[duration] || workoutCues[5];
+            
+            container.innerHTML = cues.map((cue, index) => `
+                <div class="workout-cue">
+                    <div class="text-lg font-bold text-accent mb-2">Step ${index + 1}</div>
+                    <div class="text-white">${cue}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadWorkoutHistory() {
+            const container = document.getElementById('workoutHistory');
+            
+            if (appData.workouts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <div class="text-4xl mb-4">💪</div>
+                        <h3 class="text-lg font-bold mb-2">No workouts completed yet</h3>
+                        <p class="mb-4">Start your first micro workout above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const recentWorkouts = appData.workouts.slice(-10).reverse();
+            
+            container.innerHTML = recentWorkouts.map(workout => `
+                <div class="energy-card">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">💪</div>
+                            <div>
+                                <div class="text-white font-bold">${workout.duration} Minute Workout</div>
+                                <div class="text-sm text-gray-400">${new Date(workout.date).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-accent font-bold">✅ Completed</div>
+                            <div class="text-xs text-gray-400">${new Date(workout.date).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Voice Recognition
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const currentText = document.getElementById('reflectionText').value;
+                        document.getElementById('reflectionText').value = currentText + ' ' + finalTranscript;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    showNotification('Voice recognition error: ' + event.error);
+                    stopVoiceReflection();
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceReflection();
+                };
+            }
+        }
+
+        function startVoiceReflection() {
+            if (!recognition) {
+                showNotification('Voice recognition not supported');
+                return;
+            }
+            
+            if (isListening) {
+                stopVoiceReflection();
+                return;
+            }
+            
+            recognition.start();
+            isListening = true;
+            
+            document.getElementById('voiceReflectionBtn').textContent = '⏹️ Stop Listening';
+            document.getElementById('voiceReflectionBtn').classList.remove('bg-blue-600');
+            document.getElementById('voiceReflectionBtn').classList.add('bg-red-600');
+            document.getElementById('stopReflectionBtn').disabled = false;
+            
+            showNotification('🎤 Listening for reflection...');
+        }
+
+        function stopVoiceReflection() {
+            if (recognition && isListening) {
+                recognition.stop();
+                isListening = false;
+                
+                document.getElementById('voiceReflectionBtn').textContent = '🎤 Start Reflection';
+                document.getElementById('voiceReflectionBtn').classList.remove('bg-red-600');
+                document.getElementById('voiceReflectionBtn').classList.add('bg-blue-600');
+                document.getElementById('stopReflectionBtn').disabled = true;
+            }
+        }
+
+        // Motivation Management
+        function loadMotivation() {
+            loadEnergyPhrases();
+            loadMotivationPhrases();
+            loadSelfTalkPhrases();
+        }
+
+        function loadEnergyPhrases() {
+            const container = document.getElementById('energyPhrases');
+            container.innerHTML = appData.motivation.energy.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadMotivationPhrases() {
+            const container = document.getElementById('motivationPhrases');
+            container.innerHTML = appData.motivation.motivation.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadSelfTalkPhrases() {
+            const container = document.getElementById('selfTalkPhrases');
+            container.innerHTML = appData.motivation.selfTalk.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addEnergyPhrase() {
+            const phrase = document.getElementById('newEnergyPhrase').value.trim();
+            if (phrase) {
+                appData.motivation.energy.push(phrase);
+                document.getElementById('newEnergyPhrase').value = '';
+                saveAppData();
+                loadEnergyPhrases();
+                showNotification('⚡ Energy phrase added!');
+            }
+        }
+
+        function addMotivationPhrase() {
+            const phrase = document.getElementById('newMotivationPhrase').value.trim();
+            if (phrase) {
+                appData.motivation.motivation.push(phrase);
+                document.getElementById('newMotivationPhrase').value = '';
+                saveAppData();
+                loadMotivationPhrases();
+                showNotification('🔥 Motivation phrase added!');
+            }
+        }
+
+        function addSelfTalkPhrase() {
+            const phrase = document.getElementById('newSelfTalkPhrase').value.trim();
+            if (phrase) {
+                appData.motivation.selfTalk.push(phrase);
+                document.getElementById('newSelfTalkPhrase').value = '';
+                saveAppData();
+                loadSelfTalkPhrases();
+                showNotification('🗣️ Self-talk phrase added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Reset Session (25-minute breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                    showNotification('🧘 25-minute wellness reset completed! Mind and body refreshed!');
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomWellnessMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomWellnessMessage() {
+            if (appData.mantras.length > 0) {
+                const randomMessage = appData.mantras[Math.floor(Math.random() * appData.mantras.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            document.getElementById('resetTimer').textContent = '25:00';
+            document.getElementById('breathingInstruction').textContent = 'Ready to Reset';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+        }
+
+        function addWellnessMantra() {
+            const mantra = document.getElementById('newWellnessMantra').value.trim();
+            if (!mantra) {
+                showNotification('Please enter a wellness mantra');
+                return;
+            }
+            
+            appData.mantras.push(mantra);
+            saveAppData();
+            
+            document.getElementById('newWellnessMantra').value = '';
+            loadMantras();
+            showNotification('💭 Wellness mantra added!');
+        }
+
+        function loadMantras() {
+            const container = document.getElementById('customMantras');
+            const customMantras = appData.mantras.slice(5); // Skip default mantras
+            
+            if (customMantras.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom mantras yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMantras.map((mantra, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${mantra}"</span>
+                    <button onclick="removeMantra(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMantra(index) {
+            appData.mantras.splice(index, 1);
+            saveAppData();
+            loadMantras();
+            showNotification('🗑️ Mantra removed');
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+            renderEnergyChart();
+            renderWorkoutChart();
+        }
+
+        function updateAnalyticsStats() {
+            const totalLogs = appData.energyLogs.length;
+            const avgEnergy = totalLogs > 0 ? 
+                (appData.energyLogs.reduce((sum, log) => sum + log.energy, 0) / totalLogs).toFixed(1) : 0;
+            
+            document.getElementById('longestStreak').textContent = appData.progress.longestStreak;
+            document.getElementById('avgEnergyLevel').textContent = avgEnergy;
+            document.getElementById('totalWorkoutMinutes').textContent = appData.progress.totalMinutes;
+            document.getElementById('totalLogs').textContent = totalLogs;
+        }
+
+        function renderEnergyChart() {
+            const ctx = document.getElementById('energyChart').getContext('2d');
+            
+            // Get last 7 days of data
+            const last7Days = [];
+            const energyData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                last7Days.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+                
+                const log = appData.energyLogs.find(l => l.date === dateStr);
+                energyData.push(log ? log.energy : 0);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last7Days,
+                    datasets: [{
+                        label: 'Energy Level',
+                        data: energyData,
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderWorkoutChart() {
+            const ctx = document.getElementById('workoutChart').getContext('2d');
+            
+            // Get last 7 days of workout data
+            const last7Days = [];
+            const workoutData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                last7Days.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+                
+                const dayWorkouts = appData.workouts.filter(w => 
+                    w.date.split('T')[0] === dateStr
+                );
+                const totalMinutes = dayWorkouts.reduce((sum, w) => sum + w.duration, 0);
+                workoutData.push(totalMinutes);
+            }
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: last7Days,
+                    datasets: [{
+                        label: 'Workout Minutes',
+                        data: workoutData,
+                        backgroundColor: '#4ade80',
+                        borderColor: '#22c55e',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export Functions
+        function exportWeeklyReport() {
+            if (appData.energyLogs.length === 0) {
+                showNotification('No energy logs to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Weekly Energy & Wellness Report', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            // Get last 7 days
+            const last7Days = appData.energyLogs.slice(-7);
+            
+            let yPos = 70;
+            doc.setFontSize(16);
+            doc.text('Energy Logs (Last 7 Days)', 20, yPos);
+            yPos += 20;
+            
+            last7Days.forEach(log => {
+                doc.setFontSize(12);
+                doc.text(`${new Date(log.date).toLocaleDateString()}`, 20, yPos);
+                doc.text(`Energy: ${log.energy}/5`, 120, yPos);
+                yPos += 8;
+                
+                doc.setFontSize(10);
+                doc.text(`Sleep: ${log.sleep}h | Meals: ${log.meals} | Movement: ${log.movement} | Mood: ${log.mood}`, 25, yPos);
+                yPos += 6;
+                
+                if (log.notes) {
+                    const notesLines = doc.splitTextToSize(`Notes: ${log.notes}`, 170);
+                    doc.text(notesLines, 25, yPos);
+                    yPos += notesLines.length * 4;
+                }
+                yPos += 5;
+            });
+            
+            // Workout summary
+            const recentWorkouts = appData.workouts.slice(-10);
+            if (recentWorkouts.length > 0) {
+                yPos += 10;
+                doc.setFontSize(16);
+                doc.text('Recent Workouts', 20, yPos);
+                yPos += 15;
+                
+                recentWorkouts.forEach(workout => {
+                    doc.setFontSize(10);
+                    doc.text(`${new Date(workout.date).toLocaleDateString()} - ${workout.duration} minutes`, 25, yPos);
+                    yPos += 6;
+                });
+            }
+            
+            doc.save(`energy-wellness-report-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Weekly report exported!');
+        }
+
+        function exportWorkoutLog() {
+            if (appData.workouts.length === 0) {
+                showNotification('No workouts to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Workout Log', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Total Workouts: ${appData.workouts.length}`, 20, 60);
+            doc.text(`Total Minutes: ${appData.progress.totalMinutes}`, 20, 75);
+            
+            let yPos = 95;
+            
+            appData.workouts.forEach((workout, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(10);
+                doc.text(`${index + 1}. ${new Date(workout.date).toLocaleDateString()} - ${workout.duration} minutes`, 20, yPos);
+                yPos += 8;
+            });
+            
+            doc.save(`workout-log-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('💪 Workout log exported!');
+        }
+
+        function backupAllData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `energyflow-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Complete backup created!');
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            // Calculate current streak
+            calculateCurrentStreak();
+            
+            // Update header stats
+            const avgEnergy = appData.energyLogs.length > 0 ? 
+                Math.round(appData.energyLogs.reduce((sum, log) => sum + log.energy, 0) / appData.energyLogs.length * 10) / 10 : 0;
+            
+            const weeklyMinutes = getWeeklyWorkoutMinutes();
+            
+            document.getElementById('currentStreak').textContent = appData.progress.currentStreak;
+            document.getElementById('avgEnergy').textContent = avgEnergy;
+            document.getElementById('totalWorkouts').textContent = appData.progress.totalWorkouts;
+            document.getElementById('weeklyMinutes').textContent = weeklyMinutes;
+        }
+
+        function calculateCurrentStreak() {
+            if (appData.energyLogs.length === 0) {
+                appData.progress.currentStreak = 0;
+                return;
+            }
+            
+            // Sort logs by date
+            const sortedLogs = appData.energyLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < sortedLogs.length; i++) {
+                const logDate = new Date(sortedLogs[i].date);
+                const daysDiff = Math.floor((today - logDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff === i) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            appData.progress.currentStreak = streak;
+            
+            // Update longest streak
+            if (streak > appData.progress.longestStreak) {
+                appData.progress.longestStreak = streak;
+            }
+        }
+
+        function getWeeklyWorkoutMinutes() {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            return appData.workouts
+                .filter(workout => new Date(workout.date) >= oneWeekAgo)
+                .reduce((sum, workout) => sum + workout.duration, 0);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'newEnergyPhrase') {
+                    addEnergyPhrase();
+                } else if (activeElement.id === 'newMotivationPhrase') {
+                    addMotivationPhrase();
+                } else if (activeElement.id === 'newSelfTalkPhrase') {
+                    addSelfTalkPhrase();
+                } else if (activeElement.id === 'newWellnessMantra') {
+                    addWellnessMantra();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9883148ab1e4fee5',t:'MTc1OTM5NjM2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
