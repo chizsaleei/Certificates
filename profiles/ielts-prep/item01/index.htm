@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS WriteFrame - Writing Practice App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .writing-frame {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .writing-frame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .outline-section {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .outline-section:hover {
+            border-color: var(--medium-gold);
+        }
+        
+        .connector-chip {
+            display: inline-block;
+            background: var(--pale-green);
+            color: var(--dark-green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .connector-chip:hover {
+            background: var(--medium-gold);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .connector-chip.selected {
+            background: var(--dark-gold);
+            color: white;
+            border-color: var(--medium-gold);
+        }
+        
+        .rubric-criterion {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .rubric-criterion:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+        }
+        
+        .band-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .band-4 { color: #dc2626; }
+        .band-5 { color: #ea580c; }
+        .band-6 { color: #d97706; }
+        .band-7 { color: #ca8a04; }
+        .band-8 { color: #65a30d; }
+        .band-9 { color: #16a34a; }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .writing-area {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 400px;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        .writing-area:focus {
+            outline: none;
+            border-color: var(--medium-gold);
+            box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.2);
+        }
+        
+        .timer-display {
+            background: var(--dark-green);
+            color: var(--light-gold);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .timer-display.warning {
+            background: #dc2626;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        
+        .progress-ring-bg {
+            stroke: var(--pale-green);
+        }
+        
+        .progress-ring-progress {
+            stroke: var(--medium-gold);
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .word-count {
+            background: var(--pale-gold);
+            border: 2px solid var(--medium-gold);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .word-count.target-reached {
+            background: var(--pale-green);
+            border-color: var(--accent-green);
+            color: var(--dark-green);
+        }
+        
+        .vocabulary-suggestion {
+            background: var(--pale-gold);
+            border: 1px solid var(--medium-gold);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocabulary-suggestion:hover {
+            background: var(--light-gold);
+            transform: translateY(-2px);
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .task-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .task-card {
+            background: white;
+            border: 3px solid var(--pale-green);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .task-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .task-card.selected {
+            border-color: var(--dark-gold);
+            background: var(--pale-gold);
+        }
+        
+        .voice-input-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-input-btn:hover {
+            background: #b91c1c;
+        }
+        
+        .voice-input-btn.recording {
+            background: #7f1d1d;
+            animation: recordingPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 768px) {
+            .writing-frame {
+                padding: 16px;
+            }
+            
+            .task-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .outline-section {
+                padding: 16px;
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            .writing-frame {
+                border-width: 3px;
+            }
+            
+            .action-button {
+                border: 2px solid white;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">✍️</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">IELTS WriteFrame</h1>
+                        <p class="text-accent-green text-sm">Writing Practice & Essay Scaffolding</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Target Band -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-light-gold" id="bandTarget">7.0</div>
+                        <div class="text-xs text-accent-green">Target Band</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="writeBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Write
+                        </button>
+                        <button id="vocabularyBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Vocabulary
+                        </button>
+                        <button id="progressBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Progress
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Quick Start -->
+            <div class="writing-frame">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Quick Start Practice</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-medium-green" id="todayDate"></span>
+                        <button id="refreshPromptsBtn" class="action-button text-sm px-3 py-1 focus-visible">
+                            🔄 New Prompts
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="task-selector">
+                    <!-- Task 1 -->
+                    <div class="task-card" onclick="startWriting('task1')">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-dark-green mb-2">Task 1</h3>
+                        <p class="text-sm text-medium-green mb-4">Academic Writing - Visual Description</p>
+                        <div class="text-xs bg-pale-gold p-3 rounded mb-4" id="task1Prompt">
+                            Loading prompt...
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            Target: 150+ words | Time: 20 minutes
+                        </div>
+                    </div>
+
+                    <!-- Task 2 -->
+                    <div class="task-card" onclick="startWriting('task2')">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-xl font-bold text-dark-green mb-2">Task 2</h3>
+                        <p class="text-sm text-medium-green mb-4">Essay Writing - Argumentative</p>
+                        <div class="text-xs bg-pale-gold p-3 rounded mb-4" id="task2Prompt">
+                            Loading prompt...
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            Target: 250+ words | Time: 40 minutes
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Essays -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-dark-green">Recent Essays</h3>
+                    <button id="viewAllEssaysBtn" class="text-medium-gold hover:text-dark-gold transition-colors focus-visible">
+                        View All →
+                    </button>
+                </div>
+                
+                <div id="recentEssays" class="space-y-4">
+                    <!-- Recent essays will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="totalEssays">0</div>
+                    <div class="text-sm text-medium-green">Total Essays</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="averageBand">0.0</div>
+                    <div class="text-sm text-medium-green">Average Band</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="thisWeekEssays">0</div>
+                    <div class="text-sm text-medium-green">This Week</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                    <div class="text-sm text-medium-green">Best Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Writing View -->
+        <div id="writeView" class="hidden space-y-6">
+            <!-- Writing Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green" id="writingTitle">IELTS Writing Practice</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="text-sm text-medium-green" id="writingType">Task 1</span>
+                            <div class="word-count" id="wordCount">0 words</div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="saveEssayBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Save Essay
+                        </button>
+                        <button id="exportEssayBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                        <button id="backToDashboardBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Writing Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Main Writing Area -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Prompt Display -->
+                    <div class="writing-frame">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Writing Prompt</h3>
+                            <button id="newPromptBtn" class="action-button text-sm px-3 py-1 focus-visible">
+                                New Prompt
+                            </button>
+                        </div>
+                        
+                        <div class="text-base text-dark-green mb-4" id="currentPrompt">
+                            Select a task to begin writing
+                        </div>
+                        
+                        <!-- Task 1 Visual Description -->
+                        <div id="visualDescription" class="hidden bg-white p-4 rounded-lg border-2 border-medium-gold">
+                            <h4 class="font-bold text-dark-green mb-2">Visual Analysis</h4>
+                            <div id="visualContent" class="text-sm text-medium-green">
+                                <!-- Visual description will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outline Builder -->
+                    <div class="writing-frame">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Essay Outline</h3>
+                        
+                        <div id="outlineBuilder" class="space-y-4">
+                            <!-- Outline sections will be populated here -->
+                        </div>
+                        
+                        <button id="generateOutlineBtn" class="action-button mt-4 focus-visible">
+                            Generate Outline Framework
+                        </button>
+                    </div>
+
+                    <!-- Writing Area -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Your Essay</h3>
+                            <div class="flex space-x-2">
+                                <button id="voiceInputBtn" class="voice-input-btn focus-visible">
+                                    🎤 Voice Input
+                                </button>
+                                <button id="clearEssayBtn" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm focus-visible">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <textarea 
+                            id="essayTextArea" 
+                            class="writing-area w-full" 
+                            placeholder="Start writing your essay here..."
+                            aria-label="Essay writing area"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Timer -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green text-center">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Timer</h3>
+                        
+                        <div class="timer-display" id="timerDisplay">00:00</div>
+                        
+                        <div class="relative inline-block mb-4">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg progress-ring-circle" cx="50" cy="50" r="45"></circle>
+                                <circle class="progress-ring-progress progress-ring-circle" cx="50" cy="50" r="45" id="timerProgress"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-sm font-bold text-dark-green" id="timeRemaining">20:00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button id="startTimerBtn" class="w-full action-button text-sm focus-visible">
+                                Start Timer
+                            </button>
+                            <button id="resetTimerBtn" class="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm focus-visible">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Connectors Bank -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Connectors & Transitions</h3>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <h4 class="text-sm font-semibold text-medium-green mb-2">Addition</h4>
+                                <div id="additionConnectors" class="flex flex-wrap">
+                                    <!-- Connectors will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-semibold text-medium-green mb-2">Contrast</h4>
+                                <div id="contrastConnectors" class="flex flex-wrap">
+                                    <!-- Connectors will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-semibold text-medium-green mb-2">Conclusion</h4>
+                                <div id="conclusionConnectors" class="flex flex-wrap">
+                                    <!-- Connectors will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="refreshConnectorsBtn" class="w-full action-button mt-4 text-sm focus-visible">
+                            🔄 More Connectors
+                        </button>
+                    </div>
+
+                    <!-- Vocabulary Suggestions -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Vocabulary Bank</h3>
+                        
+                        <div id="vocabularySuggestions" class="space-y-2">
+                            <!-- Vocabulary suggestions will be populated here -->
+                        </div>
+                        
+                        <button id="refreshVocabBtn" class="w-full action-button mt-4 text-sm focus-visible">
+                            🔄 New Words
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Self-Check Rubric -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h3 class="text-xl font-bold text-dark-green mb-6">Self-Assessment Rubric</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="rubricCriteria">
+                    <!-- Rubric criteria will be populated here -->
+                </div>
+                
+                <div class="text-center mt-6">
+                    <div class="text-3xl font-bold text-dark-green mb-2" id="overallBandScore">0.0</div>
+                    <div class="text-sm text-medium-green mb-4">Estimated Band Score</div>
+                    <button id="assessEssayBtn" class="action-button focus-visible">
+                        Assess My Essay
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary View -->
+        <div id="vocabularyView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Writing Vocabulary Bank</h2>
+                    <div class="flex space-x-2">
+                        <button id="addVocabBtn" class="action-button focus-visible">
+                            + Add Word
+                        </button>
+                        <button id="randomVocabBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            🎲 Random
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Vocabulary Categories -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="vocab-category active px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible" data-category="all">
+                        All
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="academic">
+                        Academic
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="connectors">
+                        Connectors
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="descriptive">
+                        Descriptive
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="expressions">
+                        Expressions
+                    </button>
+                </div>
+                
+                <!-- Vocabulary Grid -->
+                <div id="vocabularyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Vocabulary cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress View -->
+        <div id="progressView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Writing Progress Analytics</h2>
+                
+                <!-- Band Target Tracker -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Band Target Progress</h3>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm text-medium-green">Current Average:</span>
+                            <span class="text-xl font-bold text-dark-green" id="currentAverage">6.5</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm text-medium-green">Target Band:</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl font-bold text-dark-green" id="targetDisplay">7.0</span>
+                                <button id="editTargetBtn" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                    ✏️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                            <div class="bg-medium-gold h-4 rounded-full transition-all duration-500" id="targetProgress" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="text-xs text-gray-600 text-center" id="progressText">
+                            Keep writing to reach your target!
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Weekly Goal</h3>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green mb-2" id="weeklyProgress">3/7</div>
+                            <div class="text-sm text-medium-green mb-4">Essays This Week</div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-accent-green h-3 rounded-full transition-all duration-500" id="weeklyProgressBar" style="width: 43%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalWords">0</div>
+                        <div class="text-sm text-medium-green">Total Words</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averageWords">0</div>
+                        <div class="text-sm text-medium-green">Avg Words/Essay</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="improvementRate">+0.0</div>
+                        <div class="text-sm text-medium-green">Improvement Rate</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="consistencyScore">0%</div>
+                        <div class="text-sm text-medium-green">Consistency</div>
+                    </div>
+                </div>
+
+                <!-- Essay History -->
+                <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Recent Essay History</h3>
+                    
+                    <div id="essayHistory" class="space-y-3">
+                        <!-- Essay history will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Writing Settings -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Writing Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Band Target</label>
+                                <select id="bandTargetSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="5.5">5.5</option>
+                                    <option value="6.0">6.0</option>
+                                    <option value="6.5">6.5</option>
+                                    <option value="7.0" selected>7.0</option>
+                                    <option value="7.5">7.5</option>
+                                    <option value="8.0">8.0</option>
+                                    <option value="8.5">8.5</option>
+                                    <option value="9.0">9.0</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Writing Goal</label>
+                                <select id="dailyGoalSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="1" selected>1 essay</option>
+                                    <option value="2">2 essays</option>
+                                    <option value="3">3 essays</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-save Essays</label>
+                                <input type="checkbox" id="autoSaveToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Voice Input</label>
+                                <input type="checkbox" id="voiceInputToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Notifications</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Reminders</label>
+                                <input type="checkbox" id="dailyRemindersToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Reminder Time</label>
+                                <input type="time" id="reminderTimeInput" value="09:00" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add New Vocabulary</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Word/Expression</label>
+                    <input type="text" id="vocabWordInput" placeholder="e.g., Furthermore" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Definition</label>
+                    <textarea id="vocabDefinitionInput" placeholder="Meaning and usage..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Example</label>
+                    <textarea id="vocabExampleInput" placeholder="Example sentence..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="2"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="vocabCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="academic">Academic</option>
+                        <option value="connectors">Connectors</option>
+                        <option value="descriptive">Descriptive</option>
+                        <option value="expressions">Expressions</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveVocabBtn" class="flex-1 action-button focus-visible">
+                    Add Vocabulary
+                </button>
+                <button id="cancelVocabBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentEssay: null,
+            timer: {
+                startTime: null,
+                elapsed: 0,
+                interval: null,
+                duration: 1200000 // 20 minutes default
+            },
+            speechRecognition: null,
+            isVoiceRecording: false,
+            userData: {
+                essays: [],
+                vocabulary: [],
+                streak: 0,
+                longestStreak: 0,
+                lastActiveDate: null,
+                bandTarget: 7.0,
+                totalEssays: 0,
+                totalWords: 0,
+                averageBand: 0,
+                settings: {
+                    dailyGoal: 1,
+                    autoSave: true,
+                    voiceInput: true,
+                    dailyReminders: true,
+                    reminderTime: '09:00'
+                }
+            }
+        };
+
+        // IELTS Writing Prompts Database
+        const promptsDatabase = {
+            task1: {
+                types: ['Line Graph', 'Bar Chart', 'Pie Chart', 'Table', 'Process Diagram', 'Map'],
+                prompts: [
+                    {
+                        type: 'Line Graph',
+                        prompt: 'The line graph shows the percentage of people using public transport in five different cities from 2000 to 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',
+                        visual: 'Line graph showing public transport usage trends across London (65% to 78%), Tokyo (72% to 85%), New York (45% to 52%), Paris (58% to 71%), and Berlin (51% to 63%) from 2000-2020.'
+                    },
+                    {
+                        type: 'Bar Chart',
+                        prompt: 'The bar chart compares the amount of money spent on different types of entertainment by people in four age groups. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',
+                        visual: 'Bar chart showing entertainment spending across age groups: 18-25 (Cinema $120, Gaming $180, Music $90), 26-35 (Cinema $95, Gaming $140, Music $110), 36-50 (Cinema $85, Gaming $75, Music $125), 51+ (Cinema $70, Gaming $30, Music $95).'
+                    },
+                    {
+                        type: 'Pie Chart',
+                        prompt: 'The pie charts show the main sources of energy used in a country in 1985 and 2005. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',
+                        visual: '1985: Coal 45%, Oil 25%, Natural Gas 15%, Nuclear 10%, Renewables 5%. 2005: Coal 35%, Oil 20%, Natural Gas 25%, Nuclear 12%, Renewables 8%.'
+                    }
+                ]
+            },
+            task2: {
+                types: ['Opinion', 'Discussion', 'Problem-Solution', 'Advantages-Disadvantages'],
+                prompts: [
+                    {
+                        type: 'Opinion',
+                        prompt: 'Some people believe that technology has made our lives more complicated, while others think it has made life easier. Discuss both views and give your own opinion.',
+                        keywords: ['technology', 'complicated', 'easier', 'modern life', 'convenience']
+                    },
+                    {
+                        type: 'Discussion',
+                        prompt: 'Some people think that universities should provide graduates with the knowledge and skills needed in the workplace. Others think that the true function of a university should be to give access to knowledge for its own sake. Discuss both sides and give your opinion.',
+                        keywords: ['universities', 'workplace skills', 'knowledge', 'education', 'practical vs theoretical']
+                    },
+                    {
+                        type: 'Problem-Solution',
+                        prompt: 'Many cities around the world are facing serious air pollution problems. What are the causes of this problem and what measures can be taken to solve it?',
+                        keywords: ['air pollution', 'cities', 'causes', 'solutions', 'environment']
+                    },
+                    {
+                        type: 'Advantages-Disadvantages',
+                        prompt: 'More and more people are working from home. What are the advantages and disadvantages of this trend?',
+                        keywords: ['working from home', 'remote work', 'advantages', 'disadvantages', 'modern workplace']
+                    }
+                ]
+            }
+        };
+
+        // Writing Vocabulary Database
+        const writingVocabulary = [
+            {
+                id: 1,
+                word: "Furthermore",
+                definition: "In addition; moreover (used to introduce a fresh consideration)",
+                example: "The policy will reduce costs. Furthermore, it will improve efficiency.",
+                category: "connectors"
+            },
+            {
+                id: 2,
+                word: "Substantial",
+                definition: "Of considerable importance, size, or worth",
+                example: "There has been a substantial increase in online shopping.",
+                category: "academic"
+            },
+            {
+                id: 3,
+                word: "Nevertheless",
+                definition: "In spite of that; however",
+                example: "The weather was poor. Nevertheless, the event was successful.",
+                category: "connectors"
+            },
+            {
+                id: 4,
+                word: "Compelling",
+                definition: "Evoking interest or attention in a powerful way",
+                example: "She presented a compelling argument for renewable energy.",
+                category: "academic"
+            },
+            {
+                id: 5,
+                word: "It is worth noting that",
+                definition: "Used to draw attention to an important point",
+                example: "It is worth noting that the results varied significantly by region.",
+                category: "expressions"
+            }
+        ];
+
+        // Connectors Database
+        const connectorsDatabase = {
+            addition: ["Furthermore", "Moreover", "Additionally", "In addition", "What's more", "Besides"],
+            contrast: ["However", "Nevertheless", "On the other hand", "In contrast", "Conversely", "Despite this"],
+            conclusion: ["In conclusion", "To summarize", "Overall", "In summary", "To conclude", "All things considered"],
+            sequence: ["Firstly", "Secondly", "Subsequently", "Finally", "Initially", "Then"],
+            emphasis: ["Indeed", "Certainly", "Undoubtedly", "Clearly", "Obviously", "Without doubt"],
+            example: ["For instance", "For example", "Such as", "Namely", "In particular", "To illustrate"]
+        };
+
+        // Essay Outline Templates
+        const outlineTemplates = {
+            task1: {
+                sections: [
+                    {
+                        title: "Introduction",
+                        placeholder: "Paraphrase the question and provide an overview",
+                        tips: "• Paraphrase the task\n• Mention the type of visual\n• Give a general overview"
+                    },
+                    {
+                        title: "Overview",
+                        placeholder: "Describe the main trends or key features",
+                        tips: "• Identify the most significant trends\n• Mention highest/lowest points\n• Note any patterns"
+                    },
+                    {
+                        title: "Body Paragraph 1",
+                        placeholder: "Describe specific details and data",
+                        tips: "• Focus on specific data points\n• Use precise figures\n• Make comparisons"
+                    },
+                    {
+                        title: "Body Paragraph 2",
+                        placeholder: "Continue with remaining details",
+                        tips: "• Cover remaining important data\n• Highlight contrasts\n• Conclude with final observations"
+                    }
+                ]
+            },
+            task2: {
+                opinion: [
+                    {
+                        title: "Introduction",
+                        placeholder: "Introduce the topic and state your opinion",
+                        tips: "• Paraphrase the question\n• State your clear position\n• Preview your main points"
+                    },
+                    {
+                        title: "Body Paragraph 1",
+                        placeholder: "First main argument supporting your opinion",
+                        tips: "• Topic sentence\n• Explanation\n• Example or evidence\n• Link to next paragraph"
+                    },
+                    {
+                        title: "Body Paragraph 2",
+                        placeholder: "Second main argument supporting your opinion",
+                        tips: "• Topic sentence\n• Explanation\n• Example or evidence\n• Strengthen your position"
+                    },
+                    {
+                        title: "Conclusion",
+                        placeholder: "Summarize your arguments and restate your opinion",
+                        tips: "• Restate your opinion\n• Summarize main points\n• Final thought or recommendation"
+                    }
+                ],
+                discussion: [
+                    {
+                        title: "Introduction",
+                        placeholder: "Introduce the topic and outline both views",
+                        tips: "• Paraphrase the question\n• Acknowledge both sides\n• State your approach"
+                    },
+                    {
+                        title: "Body Paragraph 1",
+                        placeholder: "Discuss the first viewpoint",
+                        tips: "• Present first view clearly\n• Provide reasons and examples\n• Show understanding of this perspective"
+                    },
+                    {
+                        title: "Body Paragraph 2",
+                        placeholder: "Discuss the opposing viewpoint",
+                        tips: "• Present opposing view\n• Provide counter-arguments\n• Give examples and evidence"
+                    },
+                    {
+                        title: "Conclusion",
+                        placeholder: "Give your opinion and conclude",
+                        tips: "• State your personal view\n• Justify your position\n• Provide final thoughts"
+                    }
+                ]
+            }
+        };
+
+        // Rubric Criteria
+        const rubricCriteria = {
+            task1: [
+                {
+                    name: "Task Achievement",
+                    description: "Addresses all requirements, presents clear overview",
+                    score: 6.0
+                },
+                {
+                    name: "Coherence & Cohesion",
+                    description: "Logical organization, effective use of cohesive devices",
+                    score: 6.0
+                },
+                {
+                    name: "Lexical Resource",
+                    description: "Range of vocabulary, accuracy in word choice",
+                    score: 6.0
+                },
+                {
+                    name: "Grammar Range",
+                    description: "Variety of structures, grammatical accuracy",
+                    score: 6.0
+                }
+            ],
+            task2: [
+                {
+                    name: "Task Response",
+                    description: "Addresses all parts, clear position, developed ideas",
+                    score: 6.0
+                },
+                {
+                    name: "Coherence & Cohesion",
+                    description: "Logical organization, clear progression, cohesive devices",
+                    score: 6.0
+                },
+                {
+                    name: "Lexical Resource",
+                    description: "Range and accuracy of vocabulary",
+                    score: 6.0
+                },
+                {
+                    name: "Grammar Range",
+                    description: "Range of structures and grammatical accuracy",
+                    score: 6.0
+                }
+            ]
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeSpeechRecognition();
+            loadUserData();
+            updateUI();
+            generateDailyPrompts();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize default vocabulary if empty
+            if (appState.userData.vocabulary.length === 0) {
+                appState.userData.vocabulary = [...writingVocabulary];
+                saveUserData();
+            }
+            
+            // Set today's date
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('writeBtn').addEventListener('click', () => showView('write'));
+            document.getElementById('vocabularyBtn').addEventListener('click', () => showView('vocabulary'));
+            document.getElementById('progressBtn').addEventListener('click', () => showView('progress'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+            document.getElementById('backToDashboardBtn').addEventListener('click', () => showView('dashboard'));
+
+            // Dashboard actions
+            document.getElementById('refreshPromptsBtn').addEventListener('click', generateDailyPrompts);
+            document.getElementById('viewAllEssaysBtn').addEventListener('click', () => showView('progress'));
+
+            // Writing controls
+            document.getElementById('newPromptBtn').addEventListener('click', generateNewPrompt);
+            document.getElementById('generateOutlineBtn').addEventListener('click', generateOutline);
+            document.getElementById('voiceInputBtn').addEventListener('click', toggleVoiceInput);
+            document.getElementById('clearEssayBtn').addEventListener('click', clearEssay);
+            document.getElementById('saveEssayBtn').addEventListener('click', saveEssay);
+            document.getElementById('exportEssayBtn').addEventListener('click', exportEssay);
+            document.getElementById('assessEssayBtn').addEventListener('click', assessEssay);
+
+            // Timer controls
+            document.getElementById('startTimerBtn').addEventListener('click', toggleTimer);
+            document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+            // Vocabulary controls
+            document.getElementById('addVocabBtn').addEventListener('click', showAddVocabModal);
+            document.getElementById('randomVocabBtn').addEventListener('click', showRandomVocabulary);
+            document.getElementById('refreshVocabBtn').addEventListener('click', refreshVocabularySuggestions);
+            document.getElementById('refreshConnectorsBtn').addEventListener('click', refreshConnectors);
+            document.getElementById('saveVocabBtn').addEventListener('click', saveNewVocabulary);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideAddVocabModal);
+
+            // Vocabulary categories
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.addEventListener('click', (e) => filterVocabulary(e.target.dataset.category));
+            });
+
+            // Progress controls
+            document.getElementById('editTargetBtn').addEventListener('click', editBandTarget);
+
+            // Settings
+            document.getElementById('bandTargetSelect').addEventListener('change', updateBandTarget);
+            document.getElementById('dailyGoalSelect').addEventListener('change', updateDailyGoal);
+            document.getElementById('autoSaveToggle').addEventListener('change', updateAutoSave);
+            document.getElementById('voiceInputToggle').addEventListener('change', updateVoiceInput);
+            document.getElementById('dailyRemindersToggle').addEventListener('change', updateDailyReminders);
+            document.getElementById('reminderTimeInput').addEventListener('change', updateReminderTime);
+
+            // Data management
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+
+            // Essay text area
+            document.getElementById('essayTextArea').addEventListener('input', updateWordCount);
+            document.getElementById('essayTextArea').addEventListener('input', autoSaveEssay);
+        }
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.speechRecognition = new SpeechRecognition();
+                
+                appState.speechRecognition.continuous = true;
+                appState.speechRecognition.interimResults = true;
+                appState.speechRecognition.lang = 'en-US';
+                
+                appState.speechRecognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const textArea = document.getElementById('essayTextArea');
+                        const cursorPos = textArea.selectionStart;
+                        const textBefore = textArea.value.substring(0, cursorPos);
+                        const textAfter = textArea.value.substring(cursorPos);
+                        
+                        textArea.value = textBefore + finalTranscript + textAfter;
+                        textArea.selectionStart = textArea.selectionEnd = cursorPos + finalTranscript.length;
+                        
+                        updateWordCount();
+                        autoSaveEssay();
+                    }
+                };
+                
+                appState.speechRecognition.onend = function() {
+                    appState.isVoiceRecording = false;
+                    updateVoiceInputButton();
+                };
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('ieltsWriteFrameData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('ieltsWriteFrameData', JSON.stringify(appState.userData));
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('writeView').classList.add('hidden');
+            document.getElementById('vocabularyView').classList.add('hidden');
+            document.getElementById('progressView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'vocabulary') {
+                updateVocabularyView();
+            } else if (viewName === 'progress') {
+                updateProgressView();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            } else if (viewName === 'write') {
+                refreshConnectors();
+                refreshVocabularySuggestions();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updateBandTargetDisplay();
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalEssays').textContent = appState.userData.totalEssays;
+            document.getElementById('averageBand').textContent = appState.userData.averageBand.toFixed(1);
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Calculate this week's essays
+            const thisWeek = getThisWeekEssays();
+            document.getElementById('thisWeekEssays').textContent = thisWeek;
+            
+            // Update recent essays
+            updateRecentEssays();
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function updateBandTargetDisplay() {
+            document.getElementById('bandTarget').textContent = appState.userData.bandTarget.toFixed(1);
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            saveUserData();
+        }
+
+        function generateDailyPrompts() {
+            // Generate Task 1 prompt
+            const task1Prompts = promptsDatabase.task1.prompts;
+            const randomTask1 = task1Prompts[Math.floor(Math.random() * task1Prompts.length)];
+            document.getElementById('task1Prompt').textContent = `${randomTask1.type}: ${randomTask1.prompt.substring(0, 100)}...`;
+
+            // Generate Task 2 prompt
+            const task2Prompts = promptsDatabase.task2.prompts;
+            const randomTask2 = task2Prompts[Math.floor(Math.random() * task2Prompts.length)];
+            document.getElementById('task2Prompt').textContent = `${randomTask2.type}: ${randomTask2.prompt.substring(0, 100)}...`;
+
+            showNotification('New daily prompts generated!', 'success');
+        }
+
+        function startWriting(taskType) {
+            appState.currentEssay = {
+                id: generateId(),
+                task: taskType,
+                startTime: new Date().toISOString(),
+                prompt: '',
+                content: '',
+                outline: {},
+                wordCount: 0,
+                bandScores: {
+                    taskResponse: 6.0,
+                    coherence: 6.0,
+                    lexical: 6.0,
+                    grammar: 6.0,
+                    overall: 6.0
+                },
+                duration: 0
+            };
+
+            // Set the prompt based on task
+            if (taskType === 'task1') {
+                const task1Prompts = promptsDatabase.task1.prompts;
+                const randomPrompt = task1Prompts[Math.floor(Math.random() * task1Prompts.length)];
+                appState.currentEssay.prompt = randomPrompt.prompt;
+                appState.currentEssay.visual = randomPrompt.visual;
+                appState.timer.duration = 1200000; // 20 minutes
+            } else {
+                const task2Prompts = promptsDatabase.task2.prompts;
+                const randomPrompt = task2Prompts[Math.floor(Math.random() * task2Prompts.length)];
+                appState.currentEssay.prompt = randomPrompt.prompt;
+                appState.currentEssay.keywords = randomPrompt.keywords;
+                appState.timer.duration = 2400000; // 40 minutes
+            }
+
+            showView('write');
+            loadWritingContent();
+        }
+
+        function loadWritingContent() {
+            if (!appState.currentEssay) return;
+
+            const essay = appState.currentEssay;
+            document.getElementById('writingTitle').textContent = `IELTS Writing ${essay.task.toUpperCase()}`;
+            document.getElementById('writingType').textContent = essay.task.toUpperCase();
+            document.getElementById('currentPrompt').textContent = essay.prompt;
+
+            // Show/hide visual description for Task 1
+            if (essay.task === 'task1') {
+                const visualDesc = document.getElementById('visualDescription');
+                visualDesc.classList.remove('hidden');
+                document.getElementById('visualContent').textContent = essay.visual || 'Visual description will appear here';
+            } else {
+                document.getElementById('visualDescription').classList.add('hidden');
+            }
+
+            // Update timer display
+            const minutes = Math.floor(appState.timer.duration / 60000);
+            document.getElementById('timeRemaining').textContent = `${minutes}:00`;
+
+            // Clear essay area
+            document.getElementById('essayTextArea').value = essay.content || '';
+            updateWordCount();
+        }
+
+        function generateNewPrompt() {
+            if (!appState.currentEssay) return;
+
+            const taskType = appState.currentEssay.task;
+            
+            if (taskType === 'task1') {
+                const task1Prompts = promptsDatabase.task1.prompts;
+                const randomPrompt = task1Prompts[Math.floor(Math.random() * task1Prompts.length)];
+                appState.currentEssay.prompt = randomPrompt.prompt;
+                appState.currentEssay.visual = randomPrompt.visual;
+            } else {
+                const task2Prompts = promptsDatabase.task2.prompts;
+                const randomPrompt = task2Prompts[Math.floor(Math.random() * task2Prompts.length)];
+                appState.currentEssay.prompt = randomPrompt.prompt;
+                appState.currentEssay.keywords = randomPrompt.keywords;
+            }
+
+            loadWritingContent();
+            showNotification('New prompt generated!', 'success');
+        }
+
+        function generateOutline() {
+            if (!appState.currentEssay) return;
+
+            const taskType = appState.currentEssay.task;
+            const outlineContainer = document.getElementById('outlineBuilder');
+            
+            let template;
+            if (taskType === 'task1') {
+                template = outlineTemplates.task1.sections;
+            } else {
+                // For Task 2, use opinion template as default
+                template = outlineTemplates.task2.opinion;
+            }
+
+            outlineContainer.innerHTML = template.map((section, index) => `
+                <div class="outline-section">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-dark-green">${section.title}</h4>
+                        <button onclick="insertOutlineText(${index})" class="text-sm px-3 py-1 bg-medium-gold text-white rounded hover:bg-dark-gold transition-colors">
+                            Insert
+                        </button>
+                    </div>
+                    <textarea 
+                        id="outline-${index}" 
+                        placeholder="${section.placeholder}" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" 
+                        rows="3"
+                    ></textarea>
+                    <div class="text-xs text-gray-600 mt-2 whitespace-pre-line">${section.tips}</div>
+                </div>
+            `).join('');
+
+            showNotification('Outline framework generated!', 'success');
+        }
+
+        function insertOutlineText(sectionIndex) {
+            const outlineText = document.getElementById(`outline-${sectionIndex}`).value;
+            if (!outlineText.trim()) {
+                showNotification('Please write something in the outline section first', 'warning');
+                return;
+            }
+
+            const textArea = document.getElementById('essayTextArea');
+            const cursorPos = textArea.selectionStart;
+            const textBefore = textArea.value.substring(0, cursorPos);
+            const textAfter = textArea.value.substring(cursorPos);
+            
+            const insertText = outlineText + '\n\n';
+            textArea.value = textBefore + insertText + textAfter;
+            textArea.selectionStart = textArea.selectionEnd = cursorPos + insertText.length;
+            
+            updateWordCount();
+            autoSaveEssay();
+            showNotification('Outline text inserted!', 'success');
+        }
+
+        function refreshConnectors() {
+            const categories = ['addition', 'contrast', 'conclusion'];
+            
+            categories.forEach(category => {
+                const container = document.getElementById(category + 'Connectors');
+                const connectors = connectorsDatabase[category];
+                const randomConnectors = connectors.sort(() => 0.5 - Math.random()).slice(0, 4);
+                
+                container.innerHTML = randomConnectors.map(connector => `
+                    <span class="connector-chip" onclick="insertConnector('${connector}')">
+                        ${connector}
+                    </span>
+                `).join('');
+            });
+        }
+
+        function insertConnector(connector) {
+            const textArea = document.getElementById('essayTextArea');
+            const cursorPos = textArea.selectionStart;
+            const textBefore = textArea.value.substring(0, cursorPos);
+            const textAfter = textArea.value.substring(cursorPos);
+            
+            const insertText = connector + ', ';
+            textArea.value = textBefore + insertText + textAfter;
+            textArea.selectionStart = textArea.selectionEnd = cursorPos + insertText.length;
+            
+            updateWordCount();
+            autoSaveEssay();
+            
+            // Visual feedback
+            event.target.classList.add('selected');
+            setTimeout(() => {
+                event.target.classList.remove('selected');
+            }, 1000);
+        }
+
+        function refreshVocabularySuggestions() {
+            const container = document.getElementById('vocabularySuggestions');
+            const randomVocab = appState.userData.vocabulary
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 4);
+            
+            container.innerHTML = randomVocab.map(vocab => `
+                <div class="vocabulary-suggestion" onclick="insertVocabulary('${vocab.word}')">
+                    <div class="font-semibold text-dark-green">${vocab.word}</div>
+                    <div class="text-xs text-medium-green">${vocab.definition.substring(0, 60)}...</div>
+                </div>
+            `).join('');
+        }
+
+        function insertVocabulary(word) {
+            const textArea = document.getElementById('essayTextArea');
+            const cursorPos = textArea.selectionStart;
+            const textBefore = textArea.value.substring(0, cursorPos);
+            const textAfter = textArea.value.substring(cursorPos);
+            
+            textArea.value = textBefore + word + textAfter;
+            textArea.selectionStart = textArea.selectionEnd = cursorPos + word.length;
+            
+            updateWordCount();
+            autoSaveEssay();
+            showNotification(`"${word}" inserted!`, 'success');
+        }
+
+        function toggleVoiceInput() {
+            if (!appState.speechRecognition) {
+                showNotification('Voice input not supported in this browser', 'warning');
+                return;
+            }
+
+            if (appState.isVoiceRecording) {
+                appState.speechRecognition.stop();
+                appState.isVoiceRecording = false;
+            } else {
+                try {
+                    appState.speechRecognition.start();
+                    appState.isVoiceRecording = true;
+                    showNotification('Voice input started', 'success');
+                } catch (e) {
+                    showNotification('Error starting voice input', 'error');
+                }
+            }
+            
+            updateVoiceInputButton();
+        }
+
+        function updateVoiceInputButton() {
+            const btn = document.getElementById('voiceInputBtn');
+            if (appState.isVoiceRecording) {
+                btn.classList.add('recording');
+                btn.innerHTML = '⏹️ Stop Voice';
+            } else {
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤 Voice Input';
+            }
+        }
+
+        function updateWordCount() {
+            const textArea = document.getElementById('essayTextArea');
+            const text = textArea.value.trim();
+            const wordCount = text ? text.split(/\s+/).length : 0;
+            
+            const wordCountElement = document.getElementById('wordCount');
+            wordCountElement.textContent = `${wordCount} words`;
+            
+            // Update styling based on target
+            const target = appState.currentEssay?.task === 'task1' ? 150 : 250;
+            if (wordCount >= target) {
+                wordCountElement.classList.add('target-reached');
+            } else {
+                wordCountElement.classList.remove('target-reached');
+            }
+            
+            // Update current essay
+            if (appState.currentEssay) {
+                appState.currentEssay.content = text;
+                appState.currentEssay.wordCount = wordCount;
+            }
+        }
+
+        function autoSaveEssay() {
+            if (appState.userData.settings.autoSave && appState.currentEssay) {
+                // Auto-save logic would go here
+                // For now, just update the current essay content
+                appState.currentEssay.content = document.getElementById('essayTextArea').value;
+            }
+        }
+
+        function clearEssay() {
+            if (confirm('Are you sure you want to clear the essay? This action cannot be undone.')) {
+                document.getElementById('essayTextArea').value = '';
+                updateWordCount();
+                if (appState.currentEssay) {
+                    appState.currentEssay.content = '';
+                }
+                showNotification('Essay cleared', 'success');
+            }
+        }
+
+        // Timer Functions
+        function toggleTimer() {
+            if (appState.timer.interval) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (appState.timer.interval) return;
+
+            appState.timer.startTime = Date.now() - appState.timer.elapsed;
+            
+            appState.timer.interval = setInterval(() => {
+                appState.timer.elapsed = Date.now() - appState.timer.startTime;
+                updateTimerDisplay();
+                
+                // Check if time is up
+                if (appState.timer.elapsed >= appState.timer.duration) {
+                    pauseTimer();
+                    showNotification('Time is up!', 'warning');
+                }
+            }, 1000);
+            
+            document.getElementById('startTimerBtn').textContent = 'Pause Timer';
+        }
+
+        function pauseTimer() {
+            if (appState.timer.interval) {
+                clearInterval(appState.timer.interval);
+                appState.timer.interval = null;
+            }
+            
+            document.getElementById('startTimerBtn').textContent = 'Start Timer';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            appState.timer.elapsed = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const elapsed = appState.timer.elapsed;
+            const remaining = Math.max(0, appState.timer.duration - elapsed);
+            
+            // Update elapsed time
+            const elapsedMinutes = Math.floor(elapsed / 60000);
+            const elapsedSeconds = Math.floor((elapsed % 60000) / 1000);
+            const elapsedString = `${elapsedMinutes}:${elapsedSeconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = elapsedString;
+            
+            // Update remaining time
+            const remainingMinutes = Math.floor(remaining / 60000);
+            const remainingSeconds = Math.floor((remaining % 60000) / 1000);
+            const remainingString = `${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            document.getElementById('timeRemaining').textContent = remainingString;
+            
+            // Update progress ring
+            const progress = elapsed / appState.timer.duration;
+            const circumference = 2 * Math.PI * 45;
+            const offset = circumference - (progress * circumference);
+            document.getElementById('timerProgress').style.strokeDashoffset = offset;
+            
+            // Warning styling when time is running low
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (remaining < 300000) { // Less than 5 minutes
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        function saveEssay() {
+            if (!appState.currentEssay) {
+                showNotification('No essay to save', 'warning');
+                return;
+            }
+
+            // Calculate duration
+            appState.currentEssay.duration = Math.floor(appState.timer.elapsed / 1000);
+            appState.currentEssay.endTime = new Date().toISOString();
+            
+            // Add to essays array
+            appState.userData.essays.push({ ...appState.currentEssay });
+            
+            // Update statistics
+            appState.userData.totalEssays++;
+            appState.userData.totalWords += appState.currentEssay.wordCount;
+            
+            // Update average band score
+            const totalScore = appState.userData.essays.reduce((sum, e) => sum + (e.bandScores?.overall || 0), 0);
+            appState.userData.averageBand = totalScore / appState.userData.essays.length;
+            
+            // Update streak
+            updateEssayStreak();
+            
+            saveUserData();
+            showNotification('Essay saved successfully', 'success');
+        }
+
+        function updateEssayStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive !== today) {
+                if (lastActive) {
+                    const lastActiveDate = new Date(lastActive);
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (lastActiveDate.toDateString() === yesterday.toDateString()) {
+                        appState.userData.streak++;
+                    } else {
+                        appState.userData.streak = 1;
+                    }
+                } else {
+                    appState.userData.streak = 1;
+                }
+                
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+            }
+        }
+
+        function exportEssay() {
+            if (!appState.currentEssay) {
+                showNotification('No essay to export', 'warning');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('IELTS Writing Practice Report', 20, 30);
+                
+                // Essay details
+                doc.setFontSize(12);
+                doc.text(`Task: ${appState.currentEssay.task.toUpperCase()}`, 20, 50);
+                doc.text(`Date: ${new Date(appState.currentEssay.startTime).toLocaleDateString()}`, 20, 60);
+                doc.text(`Word Count: ${appState.currentEssay.wordCount}`, 20, 70);
+                doc.text(`Duration: ${Math.floor(appState.currentEssay.duration / 60)}:${(appState.currentEssay.duration % 60).toString().padStart(2, '0')}`, 20, 80);
+                
+                // Prompt
+                doc.text('Prompt:', 20, 100);
+                const promptLines = doc.splitTextToSize(appState.currentEssay.prompt, 170);
+                doc.text(promptLines, 20, 110);
+                
+                // Essay content
+                let yPos = 130 + (promptLines.length * 5);
+                doc.text('Essay:', 20, yPos);
+                yPos += 10;
+                
+                if (appState.currentEssay.content) {
+                    const contentLines = doc.splitTextToSize(appState.currentEssay.content, 170);
+                    doc.text(contentLines, 20, yPos);
+                    yPos += contentLines.length * 5;
+                }
+                
+                // Band scores
+                yPos += 20;
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                
+                doc.text('Band Scores:', 20, yPos);
+                yPos += 10;
+                
+                const scores = appState.currentEssay.bandScores;
+                doc.text(`Task Response: ${scores.taskResponse}`, 20, yPos);
+                doc.text(`Coherence & Cohesion: ${scores.coherence}`, 20, yPos + 10);
+                doc.text(`Lexical Resource: ${scores.lexical}`, 20, yPos + 20);
+                doc.text(`Grammatical Range: ${scores.grammar}`, 20, yPos + 30);
+                doc.text(`Overall Band Score: ${scores.overall}`, 20, yPos + 45);
+                
+                // Save
+                doc.save(`ielts-essay-${appState.currentEssay.task}-${new Date().toISOString().split('T')[0]}.pdf`);
+                showNotification('Essay exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        function assessEssay() {
+            if (!appState.currentEssay || !appState.currentEssay.content.trim()) {
+                showNotification('Please write an essay first', 'warning');
+                return;
+            }
+
+            // Simple assessment algorithm (in a real app, this would use AI/ML)
+            const content = appState.currentEssay.content;
+            const wordCount = appState.currentEssay.wordCount;
+            const task = appState.currentEssay.task;
+            
+            // Basic scoring based on word count and content analysis
+            const targetWords = task === 'task1' ? 150 : 250;
+            const wordCountScore = Math.min(9, Math.max(4, 5 + (wordCount / targetWords) * 2));
+            
+            // Simulate other criteria scores
+            const taskResponseScore = Math.min(9, Math.max(4, 5.5 + Math.random() * 1.5));
+            const coherenceScore = Math.min(9, Math.max(4, 6 + Math.random()));
+            const lexicalScore = Math.min(9, Math.max(4, 5.5 + (content.split(' ').filter(word => word.length > 6).length / 20)));
+            const grammarScore = Math.min(9, Math.max(4, 6 + Math.random() * 0.5));
+            
+            const overallScore = (taskResponseScore + coherenceScore + lexicalScore + grammarScore) / 4;
+            
+            // Update band scores
+            appState.currentEssay.bandScores = {
+                taskResponse: Math.round(taskResponseScore * 2) / 2,
+                coherence: Math.round(coherenceScore * 2) / 2,
+                lexical: Math.round(lexicalScore * 2) / 2,
+                grammar: Math.round(grammarScore * 2) / 2,
+                overall: Math.round(overallScore * 2) / 2
+            };
+            
+            updateRubricDisplay();
+            showNotification('Essay assessment completed', 'success');
+        }
+
+        function updateRubricDisplay() {
+            if (!appState.currentEssay) return;
+
+            const criteria = rubricCriteria[appState.currentEssay.task];
+            const scores = appState.currentEssay.bandScores;
+            const container = document.getElementById('rubricCriteria');
+            
+            container.innerHTML = criteria.map((criterion, index) => {
+                const scoreKey = Object.keys(scores)[index];
+                const score = scores[scoreKey] || 6.0;
+                
+                return `
+                    <div class="rubric-criterion">
+                        <div class="band-score ${getBandClass(score)}">${score.toFixed(1)}</div>
+                        <div class="font-semibold text-dark-green text-sm">${criterion.name}</div>
+                        <div class="text-xs text-medium-green">${criterion.description}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('overallBandScore').textContent = scores.overall.toFixed(1);
+        }
+
+        function getBandClass(score) {
+            if (score >= 8.5) return 'band-9';
+            if (score >= 7.5) return 'band-8';
+            if (score >= 6.5) return 'band-7';
+            if (score >= 5.5) return 'band-6';
+            if (score >= 4.5) return 'band-5';
+            return 'band-4';
+        }
+
+        // Vocabulary Functions
+        function updateVocabularyView() {
+            filterVocabulary('all');
+        }
+
+        function filterVocabulary(category) {
+            // Update active category button
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.classList.remove('active', 'bg-medium-gold', 'text-white');
+                btn.classList.add('bg-pale-green', 'text-dark-green');
+            });
+            
+            const activeBtn = document.querySelector(`[data-category="${category}"]`);
+            activeBtn.classList.add('active', 'bg-medium-gold', 'text-white');
+            activeBtn.classList.remove('bg-pale-green', 'text-dark-green');
+            
+            // Filter vocabulary
+            const filteredVocab = category === 'all' 
+                ? appState.userData.vocabulary 
+                : appState.userData.vocabulary.filter(v => v.category === category);
+            
+            const vocabularyGrid = document.getElementById('vocabularyGrid');
+            
+            if (filteredVocab.length === 0) {
+                vocabularyGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📚</div>
+                        <p>No vocabulary in this category yet</p>
+                    </div>
+                `;
+            } else {
+                vocabularyGrid.innerHTML = filteredVocab.map(vocab => `
+                    <div class="vocabulary-card" onclick="showVocabularyDetails('${vocab.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-dark-green">${vocab.word}</h4>
+                            <button onclick="event.stopPropagation(); deleteVocabulary('${vocab.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                ✕
+                            </button>
+                        </div>
+                        <p class="text-sm text-medium-green mb-2">${vocab.definition}</p>
+                        <p class="text-xs text-gray-600 italic">"${vocab.example}"</p>
+                        <div class="mt-2">
+                            <span class="text-xs px-2 py-1 bg-pale-gold text-dark-green rounded">${vocab.category}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showRandomVocabulary() {
+            const randomVocab = appState.userData.vocabulary[Math.floor(Math.random() * appState.userData.vocabulary.length)];
+            if (randomVocab) {
+                showVocabularyDetails(randomVocab.id);
+            }
+        }
+
+        function showVocabularyDetails(vocabId) {
+            const vocab = appState.userData.vocabulary.find(v => v.id == vocabId);
+            if (vocab) {
+                alert(`${vocab.word}\n\n${vocab.definition}\n\nExample: ${vocab.example}`);
+            }
+        }
+
+        function showAddVocabModal() {
+            document.getElementById('addVocabModal').classList.remove('hidden');
+            document.getElementById('addVocabModal').classList.add('flex');
+        }
+
+        function hideAddVocabModal() {
+            document.getElementById('addVocabModal').classList.add('hidden');
+            document.getElementById('addVocabModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('vocabWordInput').value = '';
+            document.getElementById('vocabDefinitionInput').value = '';
+            document.getElementById('vocabExampleInput').value = '';
+            document.getElementById('vocabCategorySelect').value = 'academic';
+        }
+
+        function saveNewVocabulary() {
+            const word = document.getElementById('vocabWordInput').value.trim();
+            const definition = document.getElementById('vocabDefinitionInput').value.trim();
+            const example = document.getElementById('vocabExampleInput').value.trim();
+            const category = document.getElementById('vocabCategorySelect').value;
+            
+            if (!word || !definition || !example) {
+                showNotification('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            const newVocab = {
+                id: generateId(),
+                word: word,
+                definition: definition,
+                example: example,
+                category: category,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.vocabulary.push(newVocab);
+            saveUserData();
+            updateVocabularyView();
+            hideAddVocabModal();
+            
+            showNotification('Vocabulary added successfully', 'success');
+        }
+
+        function deleteVocabulary(vocabId) {
+            if (confirm('Are you sure you want to delete this vocabulary item?')) {
+                appState.userData.vocabulary = appState.userData.vocabulary.filter(v => v.id != vocabId);
+                saveUserData();
+                updateVocabularyView();
+                showNotification('Vocabulary deleted', 'success');
+            }
+        }
+
+        // Progress Functions
+        function updateProgressView() {
+            // Update band target progress
+            const currentAvg = appState.userData.averageBand;
+            const target = appState.userData.bandTarget;
+            
+            document.getElementById('currentAverage').textContent = currentAvg.toFixed(1);
+            document.getElementById('targetDisplay').textContent = target.toFixed(1);
+            
+            const progress = Math.min((currentAvg / target) * 100, 100);
+            document.getElementById('targetProgress').style.width = `${progress}%`;
+            
+            if (currentAvg >= target) {
+                document.getElementById('progressText').textContent = 'Congratulations! You\'ve reached your target!';
+            } else {
+                const remaining = target - currentAvg;
+                document.getElementById('progressText').textContent = `${remaining.toFixed(1)} points to reach your target`;
+            }
+            
+            // Update weekly progress
+            const thisWeek = getThisWeekEssays();
+            const weeklyGoal = appState.userData.settings.dailyGoal * 7;
+            document.getElementById('weeklyProgress').textContent = `${thisWeek}/${weeklyGoal}`;
+            document.getElementById('weeklyProgressBar').style.width = `${(thisWeek / weeklyGoal) * 100}%`;
+            
+            // Update detailed analytics
+            document.getElementById('totalWords').textContent = appState.userData.totalWords;
+            
+            const avgWords = appState.userData.totalEssays > 0 
+                ? Math.round(appState.userData.totalWords / appState.userData.totalEssays)
+                : 0;
+            document.getElementById('averageWords').textContent = avgWords;
+            
+            // Calculate improvement rate
+            const recentEssays = appState.userData.essays.slice(-10);
+            const oldEssays = appState.userData.essays.slice(-20, -10);
+            
+            let improvementRate = 0;
+            if (recentEssays.length > 0 && oldEssays.length > 0) {
+                const recentAvg = recentEssays.reduce((sum, e) => sum + (e.bandScores?.overall || 0), 0) / recentEssays.length;
+                const oldAvg = oldEssays.reduce((sum, e) => sum + (e.bandScores?.overall || 0), 0) / oldEssays.length;
+                improvementRate = recentAvg - oldAvg;
+            }
+            
+            document.getElementById('improvementRate').textContent = improvementRate >= 0 ? `+${improvementRate.toFixed(1)}` : improvementRate.toFixed(1);
+            
+            // Calculate consistency score
+            const last7Days = getLast7DaysEssays();
+            const consistencyScore = (last7Days / 7) * 100;
+            document.getElementById('consistencyScore').textContent = `${Math.round(consistencyScore)}%`;
+            
+            // Update essay history
+            updateEssayHistory();
+        }
+
+        function updateEssayHistory() {
+            const historyContainer = document.getElementById('essayHistory');
+            const recentEssays = appState.userData.essays.slice(-10).reverse();
+            
+            if (recentEssays.length === 0) {
+                historyContainer.innerHTML = '<p class="text-gray-500 text-center">No essay history yet</p>';
+            } else {
+                historyContainer.innerHTML = recentEssays.map(essay => `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-pale-green">
+                        <div>
+                            <div class="font-semibold text-dark-green">${essay.task.toUpperCase()}</div>
+                            <div class="text-sm text-medium-green">${new Date(essay.startTime).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-600">${essay.wordCount} words</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-dark-green">${essay.bandScores?.overall?.toFixed(1) || 'N/A'}</div>
+                            <div class="text-sm text-medium-green">${Math.floor(essay.duration / 60)}:${(essay.duration % 60).toString().padStart(2, '0')}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateRecentEssays() {
+            const recentContainer = document.getElementById('recentEssays');
+            const recentEssays = appState.userData.essays.slice(-5).reverse();
+            
+            if (recentEssays.length === 0) {
+                recentContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">✍️</div>
+                        <p>No essays yet. Start your first writing practice!</p>
+                    </div>
+                `;
+            } else {
+                recentContainer.innerHTML = recentEssays.map(essay => `
+                    <div class="flex justify-between items-center p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${essay.task.toUpperCase()} Essay</div>
+                            <div class="text-sm text-medium-green">${new Date(essay.startTime).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-600">${essay.wordCount} words • ${Math.floor(essay.duration / 60)}:${(essay.duration % 60).toString().padStart(2, '0')}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-dark-green">${essay.bandScores?.overall?.toFixed(1) || 'N/A'}</div>
+                            <div class="text-xs text-medium-green">Band Score</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getThisWeekEssays() {
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            return appState.userData.essays.filter(essay => {
+                const essayDate = new Date(essay.startTime);
+                return essayDate >= startOfWeek;
+            }).length;
+        }
+
+        function getLast7DaysEssays() {
+            const now = new Date();
+            const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+            
+            return appState.userData.essays.filter(essay => {
+                const essayDate = new Date(essay.startTime);
+                return essayDate >= sevenDaysAgo;
+            }).length;
+        }
+
+        function editBandTarget() {
+            const newTarget = prompt('Enter your new band target (5.5 - 9.0):', appState.userData.bandTarget);
+            if (newTarget && !isNaN(newTarget)) {
+                const target = parseFloat(newTarget);
+                if (target >= 5.5 && target <= 9.0) {
+                    appState.userData.bandTarget = target;
+                    saveUserData();
+                    updateBandTargetDisplay();
+                    updateProgressView();
+                    showNotification('Band target updated', 'success');
+                } else {
+                    showNotification('Please enter a valid band score (5.5 - 9.0)', 'warning');
+                }
+            }
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('bandTargetSelect').value = appState.userData.bandTarget;
+            document.getElementById('dailyGoalSelect').value = appState.userData.settings.dailyGoal;
+            document.getElementById('autoSaveToggle').checked = appState.userData.settings.autoSave;
+            document.getElementById('voiceInputToggle').checked = appState.userData.settings.voiceInput;
+            document.getElementById('dailyRemindersToggle').checked = appState.userData.settings.dailyReminders;
+            document.getElementById('reminderTimeInput').value = appState.userData.settings.reminderTime;
+        }
+
+        function updateBandTarget() {
+            appState.userData.bandTarget = parseFloat(document.getElementById('bandTargetSelect').value);
+            saveUserData();
+            updateBandTargetDisplay();
+        }
+
+        function updateDailyGoal() {
+            appState.userData.settings.dailyGoal = parseInt(document.getElementById('dailyGoalSelect').value);
+            saveUserData();
+        }
+
+        function updateAutoSave() {
+            appState.userData.settings.autoSave = document.getElementById('autoSaveToggle').checked;
+            saveUserData();
+        }
+
+        function updateVoiceInput() {
+            appState.userData.settings.voiceInput = document.getElementById('voiceInputToggle').checked;
+            saveUserData();
+        }
+
+        function updateDailyReminders() {
+            appState.userData.settings.dailyReminders = document.getElementById('dailyRemindersToggle').checked;
+            saveUserData();
+        }
+
+        function updateReminderTime() {
+            appState.userData.settings.reminderTime = document.getElementById('reminderTimeInput').value;
+            saveUserData();
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `ielts-writeframe-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('ieltsWriteFrameData');
+                    
+                    appState.userData = {
+                        essays: [],
+                        vocabulary: [...writingVocabulary],
+                        streak: 0,
+                        longestStreak: 0,
+                        lastActiveDate: null,
+                        bandTarget: 7.0,
+                        totalEssays: 0,
+                        totalWords: 0,
+                        averageBand: 0,
+                        settings: {
+                            dailyGoal: 1,
+                            autoSave: true,
+                            voiceInput: true,
+                            dailyReminders: true,
+                            reminderTime: '09:00'
+                        }
+                    };
+                    
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9873ea3eb0a21072',t:'MTc1OTIzNzM1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
