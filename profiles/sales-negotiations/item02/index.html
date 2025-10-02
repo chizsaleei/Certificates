@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesSpeak Pro - English Role-Play Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--medium-gold) 0deg, var(--pale-gold) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background 0.1s ease;
+        }
+        
+        .timer-inner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .script-area {
+            min-height: 300px;
+            border: 2px solid var(--pale-gold);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            font-size: 16px;
+            background: white;
+            resize: none;
+        }
+        
+        .script-area:focus {
+            outline: none;
+            border-color: var(--medium-gold);
+            box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+        }
+        
+        .scenario-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .dialogue-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin: 8px 0;
+            max-width: 80%;
+            position: relative;
+        }
+        
+        .dialogue-customer {
+            background: var(--pale-green);
+            border: 1px solid var(--accent-green);
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .dialogue-salesperson {
+            background: var(--pale-gold);
+            border: 1px solid var(--medium-gold);
+            margin-right: auto;
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .difficulty-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .difficulty-beginner { background: #e8f5e8; color: #388e3c; }
+        .difficulty-intermediate { background: #fff3e0; color: #f57c00; }
+        .difficulty-advanced { background: #ffebee; color: #d32f2f; }
+        .difficulty-expert { background: #f3e5f5; color: #7b1fa2; }
+        
+        .skill-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--accent-green);
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            margin: 2px;
+        }
+        
+        .recording-pulse {
+            animation: recordingPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); 
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); 
+            }
+        }
+        
+        .voice-wave {
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 2px;
+            border-radius: 2px;
+            animation: voiceWave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        .voice-wave:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .vocabulary-card {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .vocabulary-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--pale-gold);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--medium-gold), var(--dark-gold));
+            transition: width 0.3s ease;
+        }
+        
+        .motivational-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .motivational-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .timer-circle {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .timer-inner {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .script-area {
+                min-height: 250px;
+                padding: 15px;
+                font-size: 14px;
+            }
+            
+            .dialogue-bubble {
+                max-width: 90%;
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            .vocabulary-card {
+                border-width: 3px;
+            }
+            
+            .action-button {
+                border: 2px solid white;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">SalesSpeak Pro</h1>
+                        <p class="text-accent-green text-sm">English Role-Play Training for Sales Reps</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="roleplayBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Role-Play
+                        </button>
+                        <button id="vocabularyBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Vocabulary
+                        </button>
+                        <button id="analyticsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Analytics
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Motivational Message -->
+            <div class="motivational-card fade-in">
+                <h2 class="text-xl font-bold text-dark-green mb-2">Daily Sales Motivation</h2>
+                <p id="motivationalMessage" class="text-medium-green text-lg italic">
+                    "Every conversation is an opportunity to create value."
+                </p>
+                <button id="newMotivationBtn" class="mt-4 px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                    New Message
+                </button>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Focus Timer -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">⏰</span>
+                        Focus Timer
+                    </h3>
+                    
+                    <div class="flex justify-center mb-4">
+                        <div class="timer-circle" id="timerCircle">
+                            <div class="timer-inner">
+                                <div class="text-2xl font-bold text-dark-green" id="timerDisplay">25:00</div>
+                                <div class="text-xs text-medium-green">minutes</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button id="startTimerBtn" class="flex-1 action-button focus-visible">
+                            Start
+                        </button>
+                        <button id="resetTimerBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Practice -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">🎭</span>
+                        Quick Practice
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button id="quickDiscoveryBtn" class="w-full action-button focus-visible">
+                            Discovery Questions
+                        </button>
+                        <button id="quickValueBtn" class="w-full action-button focus-visible">
+                            Value Framing
+                        </button>
+                        <button id="quickObjectionBtn" class="w-full action-button focus-visible">
+                            Objection Handling
+                        </button>
+                        <button id="randomScenarioBtn" class="w-full action-button focus-visible">
+                            Random Scenario
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Daily Goals -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4 flex items-center">
+                        <span class="mr-2">✅</span>
+                        Daily Goals
+                    </h3>
+                    
+                    <div id="dailyActions" class="space-y-2">
+                        <!-- Daily actions will be populated here -->
+                    </div>
+                    
+                    <div class="flex space-x-2 mt-4">
+                        <button id="addActionBtn" class="flex-1 px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            + Add Goal
+                        </button>
+                        <button id="doItNowBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Do It Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Sessions -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-dark-green">Recent Role-Play Sessions</h3>
+                    <button id="newRoleplayBtn" class="action-button focus-visible">
+                        + New Role-Play
+                    </button>
+                </div>
+                
+                <div id="recentSessions" class="space-y-3">
+                    <!-- Recent sessions will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Role-Play View -->
+        <div id="roleplayView" class="hidden space-y-6">
+            <!-- Role-Play Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green" id="roleplayTitle">Sales Role-Play Practice</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="difficulty-badge" id="difficultyBadge">Intermediate</span>
+                            <span class="skill-tag" id="skillTag">Discovery</span>
+                            <span class="text-sm text-gray-600" id="sessionTimer">00:00</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="saveSessionBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Save
+                        </button>
+                        <button id="exportSessionBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                        <button id="backToDashboardBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Back
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-medium-green mb-2">
+                        <span>Session Progress</span>
+                        <span id="progressText">0% Complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Role-Play Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Scenario & Dialogue Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Scenario Description -->
+                    <div class="scenario-card">
+                        <h3 class="text-lg font-bold text-dark-green mb-3">Scenario</h3>
+                        <div id="scenarioDescription" class="text-medium-green mb-4">
+                            <!-- Scenario will be loaded here -->
+                        </div>
+                        
+                        <!-- Customer Profile -->
+                        <div class="bg-white p-4 rounded-lg border border-medium-gold">
+                            <h4 class="font-bold text-dark-green mb-2">Customer Profile</h4>
+                            <div id="customerProfile" class="text-sm text-medium-green">
+                                <!-- Customer profile will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dialogue Area -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Dialogue Practice</h3>
+                            <div class="flex items-center space-x-4">
+                                <button id="voiceInputBtn" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                    🎤 Voice
+                                </button>
+                                <button id="playbackBtn" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus-visible">
+                                    ▶️ Playback
+                                </button>
+                                <button id="clearDialogueBtn" class="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Voice Status -->
+                        <div id="voiceStatus" class="hidden text-center mb-4">
+                            <div class="flex justify-center items-center space-x-1 mb-2">
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                                <div class="voice-wave"></div>
+                            </div>
+                            <p class="text-sm text-red-600 font-semibold">Recording in progress...</p>
+                        </div>
+                        
+                        <!-- Dialogue History -->
+                        <div id="dialogueHistory" class="mb-4 max-h-60 overflow-y-auto">
+                            <!-- Dialogue bubbles will appear here -->
+                        </div>
+                        
+                        <!-- Input Area -->
+                        <div class="flex space-x-2">
+                            <textarea 
+                                id="dialogueInput" 
+                                class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" 
+                                placeholder="Type your response here..."
+                                rows="2"
+                                aria-label="Dialogue input area"
+                            ></textarea>
+                            <button id="sendDialogueBtn" class="px-6 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools & Resources -->
+                <div class="space-y-6">
+                    <!-- Suggested Phrases -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Suggested Phrases</h3>
+                        
+                        <div id="suggestedPhrases" class="space-y-2">
+                            <!-- Phrases will be populated based on scenario type -->
+                        </div>
+                    </div>
+
+                    <!-- Key Vocabulary -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Key Vocabulary</h3>
+                        
+                        <div id="keyVocabulary" class="space-y-2">
+                            <!-- Vocabulary will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Actions</h3>
+                        
+                        <div class="space-y-3">
+                            <button id="getHintBtn" class="w-full action-button focus-visible">
+                                💡 Get Hint
+                            </button>
+                            <button id="skipTurnBtn" class="w-full px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                ⏭️ Skip Turn
+                            </button>
+                            <button id="newScenarioBtn" class="w-full px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                🔄 New Scenario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary View -->
+        <div id="vocabularyView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Sales Vocabulary Drills</h2>
+                    <div class="flex space-x-2">
+                        <button id="addVocabBtn" class="action-button focus-visible">
+                            + Add Word
+                        </button>
+                        <button id="startDrillBtn" class="action-button focus-visible">
+                            Start Drill
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Vocabulary Categories -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalVocab">0</div>
+                        <div class="text-sm text-medium-green">Total Words</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="masteredVocab">0</div>
+                        <div class="text-sm text-medium-green">Mastered</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="vocabAccuracy">0%</div>
+                        <div class="text-sm text-medium-green">Accuracy</div>
+                    </div>
+                </div>
+
+                <!-- Vocabulary List -->
+                <div id="vocabularyList" class="space-y-4">
+                    <!-- Vocabulary cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analyticsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Performance Analytics</h2>
+                
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalSessions">0</div>
+                        <div class="text-sm text-medium-green">Total Sessions</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalMinutes">0</div>
+                        <div class="text-sm text-medium-green">Minutes Practiced</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averageScore">0%</div>
+                        <div class="text-sm text-medium-green">Average Score</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                        <div class="text-sm text-medium-green">Longest Streak</div>
+                    </div>
+                </div>
+
+                <!-- Skill Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Discovery Questions</h3>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green" id="discoveryScore">0%</div>
+                            <div class="text-sm text-medium-green">Average Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Value Framing</h3>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green" id="valueScore">0%</div>
+                            <div class="text-sm text-medium-green">Average Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Objection Handling</h3>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green" id="objectionScore">0%</div>
+                            <div class="text-sm text-medium-green">Average Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Preferences</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Timer Duration (minutes)</label>
+                                <select id="timerDurationSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25" selected>25</option>
+                                    <option value="30">30</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Default Difficulty</label>
+                                <select id="defaultDifficultySelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                    <option value="expert">Expert</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-sync</label>
+                                <input type="checkbox" id="autoSyncToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Sound Notifications</label>
+                                <input type="checkbox" id="soundToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Messages -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Custom Motivational Messages</h3>
+                        <div class="space-y-3">
+                            <textarea id="customMessageInput" placeholder="Add your own motivational message..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                            <button id="addMessageBtn" class="action-button focus-visible">
+                                Add Message
+                            </button>
+                        </div>
+                        
+                        <div id="customMessages" class="mt-4 space-y-2">
+                            <!-- Custom messages will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- New Role-Play Modal -->
+    <div id="newRoleplayModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Start New Role-Play</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Skill Focus</label>
+                    <select id="skillFocusSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="discovery">Discovery Questions</option>
+                        <option value="value">Value Framing</option>
+                        <option value="objection">Objection Handling</option>
+                        <option value="closing">Closing Techniques</option>
+                        <option value="rapport">Rapport Building</option>
+                        <option value="presentation">Product Presentation</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Difficulty Level</label>
+                    <select id="difficultySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Industry</label>
+                    <select id="industrySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="technology">Technology</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="finance">Finance</option>
+                        <option value="manufacturing">Manufacturing</option>
+                        <option value="retail">Retail</option>
+                        <option value="consulting">Consulting</option>
+                        <option value="real-estate">Real Estate</option>
+                        <option value="insurance">Insurance</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="startRoleplayBtn" class="flex-1 action-button focus-visible">
+                    Start Role-Play
+                </button>
+                <button id="cancelRoleplayBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Action Modal -->
+    <div id="addActionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Daily Goal</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Goal Description</label>
+                    <input type="text" id="actionDescInput" placeholder="e.g., Practice 3 discovery question scenarios" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Priority</label>
+                    <select id="actionPrioritySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveActionBtn" class="flex-1 action-button focus-visible">
+                    Add Goal
+                </button>
+                <button id="cancelActionBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Vocabulary Word</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Word/Phrase</label>
+                    <input type="text" id="vocabWordInput" placeholder="e.g., value proposition" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Definition</label>
+                    <textarea id="vocabDefinitionInput" placeholder="Enter definition..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Example Usage</label>
+                    <textarea id="vocabExampleInput" placeholder="Enter example sentence..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="2"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="vocabCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="discovery">Discovery</option>
+                        <option value="value">Value Framing</option>
+                        <option value="objection">Objection Handling</option>
+                        <option value="closing">Closing</option>
+                        <option value="general">General Sales</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveVocabBtn" class="flex-1 action-button focus-visible">
+                    Add Word
+                </button>
+                <button id="cancelVocabBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <!-- Audio element for timer alert -->
+    <audio id="timerAlert" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentSession: null,
+            isRecording: false,
+            sessionTimer: {
+                isRunning: false,
+                startTime: null,
+                interval: null
+            },
+            focusTimer: {
+                isRunning: false,
+                timeLeft: 25 * 60, // 25 minutes in seconds
+                interval: null,
+                duration: 25 * 60
+            },
+            voiceRecognition: {
+                recognition: null,
+                isSupported: false
+            },
+            userData: {
+                sessions: [],
+                vocabulary: [],
+                dailyActions: [],
+                customMessages: [],
+                streak: 0,
+                lastActiveDate: null,
+                totalSessions: 0,
+                totalMinutes: 0,
+                averageScore: 0,
+                longestStreak: 0,
+                skillScores: {
+                    discovery: 0,
+                    value: 0,
+                    objection: 0
+                },
+                settings: {
+                    timerDuration: 25,
+                    defaultDifficulty: 'intermediate',
+                    autoSync: true,
+                    soundNotifications: true
+                }
+            }
+        };
+
+        // Role-play scenarios with random topic integration
+        const roleplayScenarios = {
+            discovery: {
+                beginner: [
+                    {
+                        title: "Basic Needs Assessment",
+                        scenario: "You're meeting with a small business owner who is interested in your software solution. They've expressed some interest but haven't shared much about their current challenges.",
+                        customer: {
+                            name: "Sarah Johnson",
+                            company: "Local Marketing Agency",
+                            personality: "Friendly but cautious",
+                            pain_points: ["Manual processes", "Time management", "Client reporting"],
+                            budget: "Limited but flexible"
+                        },
+                        objective: "Discover their main business challenges and current processes",
+                        phrases: [
+                            "Can you tell me about your current workflow?",
+                            "What challenges are you facing with your current system?",
+                            "How much time do you spend on [specific task]?",
+                            "What would an ideal solution look like for you?"
+                        ]
+                    }
+                ],
+                intermediate: [
+                    {
+                        title: "Complex Enterprise Discovery",
+                        scenario: "You're in a discovery call with a mid-size company's IT director. They have multiple stakeholders and complex requirements. The decision-making process involves several departments.",
+                        customer: {
+                            name: "Michael Chen",
+                            company: "TechCorp Solutions",
+                            personality: "Analytical and detail-oriented",
+                            pain_points: ["Integration challenges", "Scalability issues", "Security concerns"],
+                            budget: "Substantial but requires ROI justification"
+                        },
+                        objective: "Uncover technical requirements and decision-making process",
+                        phrases: [
+                            "Who else would be involved in evaluating this solution?",
+                            "What's your current technology stack?",
+                            "How do you measure success in this area?",
+                            "What's your timeline for implementation?"
+                        ]
+                    }
+                ],
+                advanced: [
+                    {
+                        title: "Strategic Partnership Discovery",
+                        scenario: "You're speaking with a C-level executive about a potential strategic partnership. The conversation involves high-level business strategy and long-term vision.",
+                        customer: {
+                            name: "Jennifer Williams",
+                            company: "Global Enterprises Inc.",
+                            personality: "Strategic thinker, time-conscious",
+                            pain_points: ["Market expansion", "Competitive advantage", "Innovation gaps"],
+                            budget: "Significant investment capability"
+                        },
+                        objective: "Understand strategic priorities and partnership potential",
+                        phrases: [
+                            "What are your key strategic initiatives for the next 3 years?",
+                            "How does this align with your competitive positioning?",
+                            "What would success look like from a partnership perspective?",
+                            "How do you typically evaluate strategic investments?"
+                        ]
+                    }
+                ]
+            },
+            value: {
+                beginner: [
+                    {
+                        title: "Basic Value Presentation",
+                        scenario: "You need to present the value of your solution to a cost-conscious small business owner who is comparing multiple options.",
+                        customer: {
+                            name: "David Rodriguez",
+                            company: "Rodriguez Construction",
+                            personality: "Practical and budget-focused",
+                            pain_points: ["Cost control", "Efficiency", "Simple solutions"],
+                            budget: "Very price-sensitive"
+                        },
+                        objective: "Frame value in terms of cost savings and efficiency",
+                        phrases: [
+                            "This solution will save you X hours per week",
+                            "The ROI typically pays for itself within 6 months",
+                            "Compared to your current costs, this represents a 30% savings",
+                            "Think of this as an investment in your business growth"
+                        ]
+                    }
+                ],
+                intermediate: [
+                    {
+                        title: "ROI-Focused Value Framing",
+                        scenario: "You're presenting to a finance-focused buyer who needs clear ROI justification and detailed cost-benefit analysis.",
+                        customer: {
+                            name: "Lisa Thompson",
+                            company: "Financial Services Corp",
+                            personality: "Numbers-driven and skeptical",
+                            pain_points: ["ROI requirements", "Risk management", "Compliance costs"],
+                            budget: "Adequate but requires strong justification"
+                        },
+                        objective: "Present quantifiable value and ROI calculations",
+                        phrases: [
+                            "Based on your current costs, here's the projected ROI",
+                            "This addresses your compliance requirements while reducing risk",
+                            "The total cost of ownership over 3 years shows significant savings",
+                            "Let me show you how this impacts your bottom line"
+                        ]
+                    }
+                ],
+                advanced: [
+                    {
+                        title: "Strategic Value Positioning",
+                        scenario: "You're positioning your solution as a strategic enabler for digital transformation to a board of directors.",
+                        customer: {
+                            name: "Robert Kim",
+                            company: "Innovation Industries",
+                            personality: "Visionary but cautious about large investments",
+                            pain_points: ["Digital transformation", "Competitive advantage", "Future-proofing"],
+                            budget: "Large budget for strategic initiatives"
+                        },
+                        objective: "Position solution as strategic competitive advantage",
+                        phrases: [
+                            "This positions you as a market leader in digital innovation",
+                            "The strategic value extends beyond immediate cost savings",
+                            "This creates a sustainable competitive advantage",
+                            "Consider the opportunity cost of not moving forward"
+                        ]
+                    }
+                ]
+            },
+            objection: {
+                beginner: [
+                    {
+                        title: "Price Objection Handling",
+                        scenario: "The customer likes your solution but says it's too expensive compared to competitors.",
+                        customer: {
+                            name: "Amanda Foster",
+                            company: "Foster Consulting",
+                            personality: "Interested but price-sensitive",
+                            pain_points: ["Budget constraints", "Value justification"],
+                            objection: "Your solution costs more than the competition"
+                        },
+                        objective: "Address price concerns and reinforce value",
+                        phrases: [
+                            "I understand price is important. Let's look at the total value",
+                            "What specific features are most important to you?",
+                            "How are you currently handling this challenge?",
+                            "Let me show you the cost of not solving this problem"
+                        ]
+                    }
+                ],
+                intermediate: [
+                    {
+                        title: "Authority Objection",
+                        scenario: "The contact says they need to discuss with their boss/committee before making any decisions.",
+                        customer: {
+                            name: "Mark Stevens",
+                            company: "Stevens & Associates",
+                            personality: "Interested but not the final decision maker",
+                            pain_points: ["Decision-making process", "Getting buy-in"],
+                            objection: "I need to run this by my manager first"
+                        },
+                        objective: "Navigate the decision-making process effectively",
+                        phrases: [
+                            "That makes perfect sense. What information would be helpful for that conversation?",
+                            "What questions do you think they might have?",
+                            "Would it be helpful if I joined that conversation?",
+                            "What's the typical process for decisions like this?"
+                        ]
+                    }
+                ],
+                advanced: [
+                    {
+                        title: "Complex Multi-Stakeholder Objections",
+                        scenario: "Multiple stakeholders have different concerns: IT worries about integration, Finance questions ROI, and Operations fears disruption.",
+                        customer: {
+                            name: "Executive Committee",
+                            company: "Multi-National Corp",
+                            personality: "Multiple perspectives and concerns",
+                            pain_points: ["Risk management", "Stakeholder alignment", "Change management"],
+                            objection: "We have concerns from multiple departments"
+                        },
+                        objective: "Address multiple stakeholder concerns systematically",
+                        phrases: [
+                            "Let's address each concern systematically",
+                            "I understand the IT team's integration concerns...",
+                            "From a financial perspective, here's how we justify the investment...",
+                            "For operations, we have a proven implementation methodology..."
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Sales vocabulary database
+        const salesVocabulary = [
+            {
+                word: "Value Proposition",
+                definition: "A clear statement of the tangible results a customer gets from using your product or service",
+                example: "Our value proposition is reducing your operational costs by 30% while improving efficiency.",
+                category: "value"
+            },
+            {
+                word: "Pain Point",
+                definition: "A specific problem that prospective customers are experiencing",
+                example: "What's your biggest pain point with your current system?",
+                category: "discovery"
+            },
+            {
+                word: "ROI (Return on Investment)",
+                definition: "A measure of the efficiency of an investment",
+                example: "Based on your current costs, you'll see a positive ROI within 8 months.",
+                category: "value"
+            },
+            {
+                word: "Stakeholder",
+                definition: "Anyone who has an interest in or is affected by the purchasing decision",
+                example: "Who are the key stakeholders involved in this decision?",
+                category: "discovery"
+            },
+            {
+                word: "Objection",
+                definition: "A reason or concern expressed by a prospect for not moving forward",
+                example: "I understand your concern about the implementation timeline.",
+                category: "objection"
+            },
+            {
+                word: "Qualifying Questions",
+                definition: "Questions used to determine if a prospect is a good fit for your solution",
+                example: "What's your budget range for this type of solution?",
+                category: "discovery"
+            },
+            {
+                word: "Feature vs Benefit",
+                definition: "Features are what your product does; benefits are what customers gain",
+                example: "The feature is automated reporting; the benefit is saving 5 hours per week.",
+                category: "value"
+            },
+            {
+                word: "Decision Criteria",
+                definition: "The factors a customer uses to evaluate and choose between options",
+                example: "What are your main decision criteria for selecting a vendor?",
+                category: "discovery"
+            },
+            {
+                word: "Competitive Advantage",
+                definition: "What makes your solution superior to alternatives",
+                example: "Our competitive advantage is our 24/7 customer support and faster implementation.",
+                category: "value"
+            },
+            {
+                word: "Closing Technique",
+                definition: "A method used to encourage a prospect to make a purchasing decision",
+                example: "Based on everything we've discussed, shall we move forward with the proposal?",
+                category: "closing"
+            }
+        ];
+
+        // Default motivational messages
+        const defaultMotivationalMessages = [
+            "Every conversation is an opportunity to create value.",
+            "Great salespeople are made through practice, not born.",
+            "Listen more than you speak, and you'll close more deals.",
+            "Objections are opportunities to provide more value.",
+            "Your next breakthrough is just one conversation away.",
+            "Confidence comes from preparation and practice.",
+            "The best salespeople solve problems, not just sell products.",
+            "Every 'no' brings you closer to a 'yes'.",
+            "Success in sales is about building relationships, not just closing deals.",
+            "Practice makes permanent - make sure you're practicing the right way."
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeVoiceRecognition();
+            loadUserData();
+            updateUI();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize daily actions if empty
+            if (appState.userData.dailyActions.length === 0) {
+                generateDailyActions();
+            }
+            
+            // Initialize vocabulary if empty
+            if (appState.userData.vocabulary.length === 0) {
+                appState.userData.vocabulary = [...salesVocabulary];
+                saveUserData();
+            }
+            
+            // Set random motivational message
+            updateMotivationalMessage();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('roleplayBtn').addEventListener('click', () => showView('roleplay'));
+            document.getElementById('vocabularyBtn').addEventListener('click', () => showView('vocabulary'));
+            document.getElementById('analyticsBtn').addEventListener('click', () => showView('analytics'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+            document.getElementById('backToDashboardBtn').addEventListener('click', () => showView('dashboard'));
+
+            // Dashboard actions
+            document.getElementById('newMotivationBtn').addEventListener('click', updateMotivationalMessage);
+            document.getElementById('quickDiscoveryBtn').addEventListener('click', () => startQuickRoleplay('discovery'));
+            document.getElementById('quickValueBtn').addEventListener('click', () => startQuickRoleplay('value'));
+            document.getElementById('quickObjectionBtn').addEventListener('click', () => startQuickRoleplay('objection'));
+            document.getElementById('randomScenarioBtn').addEventListener('click', () => startQuickRoleplay('random'));
+            document.getElementById('newRoleplayBtn').addEventListener('click', showNewRoleplayModal);
+            document.getElementById('addActionBtn').addEventListener('click', showAddActionModal);
+            document.getElementById('doItNowBtn').addEventListener('click', executeDoItNow);
+
+            // Timer controls
+            document.getElementById('startTimerBtn').addEventListener('click', toggleFocusTimer);
+            document.getElementById('resetTimerBtn').addEventListener('click', resetFocusTimer);
+
+            // Role-play controls
+            document.getElementById('voiceInputBtn').addEventListener('click', toggleVoiceInput);
+            document.getElementById('playbackBtn').addEventListener('click', playbackDialogue);
+            document.getElementById('clearDialogueBtn').addEventListener('click', clearDialogue);
+            document.getElementById('sendDialogueBtn').addEventListener('click', sendDialogue);
+            document.getElementById('saveSessionBtn').addEventListener('click', saveCurrentSession);
+            document.getElementById('exportSessionBtn').addEventListener('click', exportSessionToPdf);
+            document.getElementById('getHintBtn').addEventListener('click', getHint);
+            document.getElementById('skipTurnBtn').addEventListener('click', skipTurn);
+            document.getElementById('newScenarioBtn').addEventListener('click', generateNewScenario);
+
+            // Vocabulary controls
+            document.getElementById('addVocabBtn').addEventListener('click', showAddVocabModal);
+            document.getElementById('startDrillBtn').addEventListener('click', startVocabularyDrill);
+
+            // Modal controls
+            document.getElementById('startRoleplayBtn').addEventListener('click', startNewRoleplay);
+            document.getElementById('cancelRoleplayBtn').addEventListener('click', hideNewRoleplayModal);
+            document.getElementById('saveActionBtn').addEventListener('click', saveNewAction);
+            document.getElementById('cancelActionBtn').addEventListener('click', hideAddActionModal);
+            document.getElementById('saveVocabBtn').addEventListener('click', saveNewVocab);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideAddVocabModal);
+
+            // Settings
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+            document.getElementById('timerDurationSelect').addEventListener('change', updateTimerDuration);
+            document.getElementById('defaultDifficultySelect').addEventListener('change', updateDefaultDifficulty);
+            document.getElementById('autoSyncToggle').addEventListener('change', updateAutoSync);
+            document.getElementById('soundToggle').addEventListener('change', updateSoundSettings);
+            document.getElementById('addMessageBtn').addEventListener('click', addCustomMessage);
+
+            // Dialogue input
+            document.getElementById('dialogueInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendDialogue();
+                }
+            });
+        }
+
+        function initializeVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.voiceRecognition.recognition = new SpeechRecognition();
+                appState.voiceRecognition.isSupported = true;
+
+                const recognition = appState.voiceRecognition.recognition;
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    console.log('Voice recognition started');
+                };
+
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        const dialogueInput = document.getElementById('dialogueInput');
+                        dialogueInput.value += finalTranscript;
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showNotification('Voice recognition error: ' + event.error, 'error');
+                    stopVoiceInput();
+                };
+
+                recognition.onend = function() {
+                    if (appState.isRecording) {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.log('Recognition restart failed:', e);
+                            stopVoiceInput();
+                        }
+                    }
+                };
+            } else {
+                appState.voiceRecognition.isSupported = false;
+                console.log('Speech recognition not supported');
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('salesSpeakData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('salesSpeakData', JSON.stringify(appState.userData));
+                if (appState.userData.settings.autoSync && appState.isOnline) {
+                    console.log('Auto-sync triggered');
+                }
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('roleplayView').classList.add('hidden');
+            document.getElementById('vocabularyView').classList.add('hidden');
+            document.getElementById('analyticsView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'vocabulary') {
+                updateVocabularyView();
+            } else if (viewName === 'analytics') {
+                updateAnalytics();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updateFocusTimerDisplay();
+        }
+
+        function updateDashboard() {
+            // Update recent sessions
+            const recentSessionsContainer = document.getElementById('recentSessions');
+            const recentSessions = appState.userData.sessions.slice(-5).reverse();
+
+            if (recentSessions.length === 0) {
+                recentSessionsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🎭</div>
+                        <p>No role-play sessions yet. Start your first practice!</p>
+                    </div>
+                `;
+            } else {
+                recentSessionsContainer.innerHTML = recentSessions.map(session => `
+                    <div class="flex items-center justify-between p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${session.title || session.skill}</div>
+                            <div class="text-sm text-medium-green">
+                                ${new Date(session.date).toLocaleDateString()} • 
+                                ${Math.floor(session.duration / 60)} min • 
+                                <span class="difficulty-badge difficulty-${session.difficulty}">${session.difficulty}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="reviewSession('${session.id}')" class="px-3 py-1 bg-accent-green text-white rounded text-sm hover:bg-medium-green transition-colors">
+                                Review
+                            </button>
+                            <button onclick="deleteSession('${session.id}')" class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update daily actions
+            updateDailyActions();
+        }
+
+        function updateDailyActions() {
+            const dailyActionsContainer = document.getElementById('dailyActions');
+            const actions = appState.userData.dailyActions;
+
+            if (actions.length === 0) {
+                dailyActionsContainer.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <p class="text-sm">No goals for today</p>
+                    </div>
+                `;
+            } else {
+                dailyActionsContainer.innerHTML = actions.map(action => `
+                    <div class="flex items-center justify-between p-3 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" ${action.completed ? 'checked' : ''} 
+                                   onchange="toggleAction('${action.id}')"
+                                   class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            <span class="text-sm ${action.completed ? 'line-through text-gray-500' : 'text-dark-green'}">${action.description}</span>
+                            <span class="text-xs px-2 py-1 rounded ${getPriorityClass(action.priority)}">${action.priority}</span>
+                        </div>
+                        <button onclick="deleteAction('${action.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getPriorityClass(priority) {
+            switch (priority) {
+                case 'high': return 'bg-red-100 text-red-800';
+                case 'medium': return 'bg-yellow-100 text-yellow-800';
+                case 'low': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            appState.userData.lastActiveDate = today;
+            saveUserData();
+        }
+
+        function updateMotivationalMessage() {
+            const allMessages = [...defaultMotivationalMessages, ...appState.userData.customMessages];
+            const randomMessage = allMessages[Math.floor(Math.random() * allMessages.length)];
+            document.getElementById('motivationalMessage').textContent = randomMessage;
+        }
+
+        function generateDailyActions() {
+            const defaultActions = [
+                { description: "Practice 3 discovery question scenarios", priority: "high" },
+                { description: "Review objection handling techniques", priority: "medium" },
+                { description: "Learn 5 new sales vocabulary words", priority: "medium" },
+                { description: "Practice value framing with a colleague", priority: "high" },
+                { description: "Record and review a sales pitch", priority: "low" }
+            ];
+
+            const todayActions = defaultActions.slice(0, 3).map(action => ({
+                id: generateId(),
+                ...action,
+                completed: false,
+                date: new Date().toDateString()
+            }));
+
+            appState.userData.dailyActions = todayActions;
+            saveUserData();
+        }
+
+        // Focus Timer Functions
+        function toggleFocusTimer() {
+            if (appState.focusTimer.isRunning) {
+                pauseFocusTimer();
+            } else {
+                startFocusTimer();
+            }
+        }
+
+        function startFocusTimer() {
+            appState.focusTimer.isRunning = true;
+            document.getElementById('startTimerBtn').textContent = 'Pause';
+            
+            appState.focusTimer.interval = setInterval(() => {
+                appState.focusTimer.timeLeft--;
+                updateFocusTimerDisplay();
+                
+                if (appState.focusTimer.timeLeft <= 0) {
+                    completeFocusTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseFocusTimer() {
+            appState.focusTimer.isRunning = false;
+            document.getElementById('startTimerBtn').textContent = 'Start';
+            clearInterval(appState.focusTimer.interval);
+        }
+
+        function resetFocusTimer() {
+            pauseFocusTimer();
+            appState.focusTimer.timeLeft = appState.focusTimer.duration;
+            updateFocusTimerDisplay();
+        }
+
+        function completeFocusTimer() {
+            pauseFocusTimer();
+            
+            if (appState.userData.settings.soundNotifications) {
+                playTimerAlert();
+            }
+            
+            showNotification('Focus session completed! Great work!', 'success');
+            
+            appState.focusTimer.timeLeft = appState.focusTimer.duration;
+            updateFocusTimerDisplay();
+        }
+
+        function updateFocusTimerDisplay() {
+            const minutes = Math.floor(appState.focusTimer.timeLeft / 60);
+            const seconds = appState.focusTimer.timeLeft % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timerDisplay').textContent = display;
+            
+            const progress = (appState.focusTimer.duration - appState.focusTimer.timeLeft) / appState.focusTimer.duration;
+            const degrees = progress * 360;
+            const timerCircle = document.getElementById('timerCircle');
+            timerCircle.style.background = `conic-gradient(var(--medium-gold) ${degrees}deg, var(--pale-gold) ${degrees}deg)`;
+        }
+
+        function playTimerAlert() {
+            const audio = document.getElementById('timerAlert');
+            audio.play().catch(e => console.log('Could not play alert sound:', e));
+        }
+
+        // Role-play Management
+        function startQuickRoleplay(skill) {
+            let skillType = skill;
+            if (skill === 'random') {
+                const skills = ['discovery', 'value', 'objection'];
+                skillType = skills[Math.floor(Math.random() * skills.length)];
+            }
+            
+            const roleplayData = {
+                skill: skillType,
+                difficulty: appState.userData.settings.defaultDifficulty,
+                industry: 'technology'
+            };
+            
+            createNewRoleplay(roleplayData);
+        }
+
+        function showNewRoleplayModal() {
+            document.getElementById('newRoleplayModal').classList.remove('hidden');
+            document.getElementById('newRoleplayModal').classList.add('flex');
+        }
+
+        function hideNewRoleplayModal() {
+            document.getElementById('newRoleplayModal').classList.add('hidden');
+            document.getElementById('newRoleplayModal').classList.remove('flex');
+        }
+
+        function startNewRoleplay() {
+            const skill = document.getElementById('skillFocusSelect').value;
+            const difficulty = document.getElementById('difficultySelect').value;
+            const industry = document.getElementById('industrySelect').value;
+            
+            const roleplayData = {
+                skill: skill,
+                difficulty: difficulty,
+                industry: industry
+            };
+            
+            createNewRoleplay(roleplayData);
+            hideNewRoleplayModal();
+        }
+
+        function createNewRoleplay(roleplayData) {
+            const scenario = getRandomScenario(roleplayData.skill, roleplayData.difficulty);
+            
+            appState.currentSession = {
+                id: generateId(),
+                ...roleplayData,
+                scenario: scenario,
+                startTime: new Date(),
+                dialogue: [],
+                currentTurn: 'customer',
+                turnCount: 0
+            };
+            
+            showView('roleplay');
+            loadRoleplayData();
+            startSessionTimer();
+            
+            // Add initial customer message
+            addCustomerMessage(getInitialCustomerMessage(scenario));
+        }
+
+        function getRandomScenario(skill, difficulty) {
+            const scenarios = roleplayScenarios[skill]?.[difficulty] || [];
+            
+            if (scenarios.length === 0) {
+                return generateRandomScenario(skill, difficulty);
+            }
+            
+            return scenarios[Math.floor(Math.random() * scenarios.length)];
+        }
+
+        function generateRandomScenario(skill, difficulty) {
+            const industries = ['technology', 'healthcare', 'finance', 'manufacturing', 'retail'];
+            const challenges = ['digital transformation', 'cost reduction', 'process automation', 'customer experience'];
+            const solutions = ['cloud-based platform', 'AI-powered analytics', 'mobile application', 'integration software'];
+            
+            const industry = industries[Math.floor(Math.random() * industries.length)];
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            const solution = solutions[Math.floor(Math.random() * solutions.length)];
+            
+            return {
+                title: `${skill.charAt(0).toUpperCase() + skill.slice(1)} Practice - ${industry}`,
+                scenario: `You're speaking with a decision-maker in the ${industry} industry. They're facing challenges with ${challenge} and you're presenting a ${solution} as a potential solution.`,
+                customer: {
+                    name: "Alex Johnson",
+                    company: `${industry.charAt(0).toUpperCase() + industry.slice(1)} Corp`,
+                    personality: difficulty === 'beginner' ? 'Friendly and open' : difficulty === 'intermediate' ? 'Professional but cautious' : 'Skeptical and demanding',
+                    pain_points: [challenge, "budget constraints", "time pressure"],
+                    budget: difficulty === 'beginner' ? 'Flexible' : difficulty === 'intermediate' ? 'Moderate' : 'Strict approval process'
+                },
+                objective: `Practice ${skill} techniques in a ${industry} context`,
+                phrases: getSkillPhrases(skill, difficulty)
+            };
+        }
+
+        function getSkillPhrases(skill, difficulty) {
+            const phrases = {
+                discovery: [
+                    "Can you tell me more about your current process?",
+                    "What challenges are you facing with that?",
+                    "How is this impacting your business?",
+                    "What would an ideal solution look like?"
+                ],
+                value: [
+                    "This solution will help you achieve...",
+                    "The ROI on this investment is...",
+                    "Compared to your current situation...",
+                    "The value this brings to your organization..."
+                ],
+                objection: [
+                    "I understand your concern about...",
+                    "That's a great question. Let me address that...",
+                    "Many of our clients had similar concerns...",
+                    "What if we could solve that issue by..."
+                ]
+            };
+            
+            return phrases[skill] || phrases.discovery;
+        }
+
+        function loadRoleplayData() {
+            const session = appState.currentSession;
+            const scenario = session.scenario;
+            
+            // Update session header
+            document.getElementById('roleplayTitle').textContent = scenario.title;
+            document.getElementById('difficultyBadge').textContent = session.difficulty.charAt(0).toUpperCase() + session.difficulty.slice(1);
+            document.getElementById('difficultyBadge').className = `difficulty-badge difficulty-${session.difficulty}`;
+            document.getElementById('skillTag').textContent = session.skill.charAt(0).toUpperCase() + session.skill.slice(1);
+            
+            // Load scenario
+            document.getElementById('scenarioDescription').innerHTML = `<p class="mb-4">${scenario.scenario}</p>`;
+            
+            // Load customer profile
+            const customer = scenario.customer;
+            document.getElementById('customerProfile').innerHTML = `
+                <p><strong>Name:</strong> ${customer.name}</p>
+                <p><strong>Company:</strong> ${customer.company}</p>
+                <p><strong>Personality:</strong> ${customer.personality}</p>
+                <p><strong>Budget:</strong> ${customer.budget}</p>
+                <p><strong>Main Concerns:</strong> ${customer.pain_points.join(', ')}</p>
+            `;
+            
+            // Load suggested phrases
+            loadSuggestedPhrases(scenario.phrases);
+            
+            // Load key vocabulary
+            loadKeyVocabulary(session.skill);
+            
+            // Clear dialogue
+            document.getElementById('dialogueHistory').innerHTML = '';
+            document.getElementById('dialogueInput').value = '';
+        }
+
+        function loadSuggestedPhrases(phrases) {
+            const container = document.getElementById('suggestedPhrases');
+            container.innerHTML = phrases.map(phrase => `
+                <div class="p-2 bg-pale-gold rounded border border-medium-gold text-sm cursor-pointer hover:bg-light-gold transition-colors" onclick="usePhrase('${phrase}')">
+                    "${phrase}"
+                </div>
+            `).join('');
+        }
+
+        function loadKeyVocabulary(skill) {
+            const container = document.getElementById('keyVocabulary');
+            const relevantVocab = appState.userData.vocabulary.filter(v => v.category === skill).slice(0, 5);
+            
+            container.innerHTML = relevantVocab.map(vocab => `
+                <div class="p-2 bg-white rounded border border-pale-green text-sm">
+                    <div class="font-semibold text-dark-green">${vocab.word}</div>
+                    <div class="text-xs text-medium-green">${vocab.definition}</div>
+                </div>
+            `).join('');
+        }
+
+        function usePhrase(phrase) {
+            document.getElementById('dialogueInput').value = phrase;
+        }
+
+        function startSessionTimer() {
+            appState.sessionTimer.startTime = new Date();
+            appState.sessionTimer.isRunning = true;
+            
+            const updateTimer = () => {
+                const elapsed = Math.floor((new Date() - appState.sessionTimer.startTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                document.getElementById('sessionTimer').textContent = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            };
+            
+            updateTimer();
+            appState.sessionTimer.interval = setInterval(updateTimer, 1000);
+        }
+
+        function getInitialCustomerMessage(scenario) {
+            const messages = [
+                "Hi, thanks for taking the time to meet with me today.",
+                "I'm interested in learning more about your solution.",
+                "We've been looking at different options to address our challenges.",
+                "I have some questions about how this might work for our company."
+            ];
+            
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function addCustomerMessage(message) {
+            const dialogueHistory = document.getElementById('dialogueHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'dialogue-bubble dialogue-customer';
+            messageDiv.innerHTML = `
+                <div class="text-xs text-gray-600 mb-1">Customer</div>
+                <div>${message}</div>
+            `;
+            dialogueHistory.appendChild(messageDiv);
+            dialogueHistory.scrollTop = dialogueHistory.scrollHeight;
+            
+            // Add to session dialogue
+            if (appState.currentSession) {
+                appState.currentSession.dialogue.push({
+                    speaker: 'customer',
+                    message: message,
+                    timestamp: new Date()
+                });
+            }
+        }
+
+        function addSalespersonMessage(message) {
+            const dialogueHistory = document.getElementById('dialogueHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'dialogue-bubble dialogue-salesperson';
+            messageDiv.innerHTML = `
+                <div class="text-xs text-gray-600 mb-1">You</div>
+                <div>${message}</div>
+            `;
+            dialogueHistory.appendChild(messageDiv);
+            dialogueHistory.scrollTop = dialogueHistory.scrollHeight;
+            
+            // Add to session dialogue
+            if (appState.currentSession) {
+                appState.currentSession.dialogue.push({
+                    speaker: 'salesperson',
+                    message: message,
+                    timestamp: new Date()
+                });
+                
+                appState.currentSession.turnCount++;
+                updateProgress();
+            }
+        }
+
+        function sendDialogue() {
+            const input = document.getElementById('dialogueInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addSalespersonMessage(message);
+            input.value = '';
+            
+            // Generate customer response after a delay
+            setTimeout(() => {
+                generateCustomerResponse();
+            }, 1500);
+        }
+
+        function generateCustomerResponse() {
+            if (!appState.currentSession) return;
+            
+            const session = appState.currentSession;
+            const responses = getCustomerResponses(session.skill, session.difficulty, session.turnCount);
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            
+            addCustomerMessage(response);
+        }
+
+        function getCustomerResponses(skill, difficulty, turnCount) {
+            const responses = {
+                discovery: [
+                    "Well, our current process is quite manual and time-consuming.",
+                    "We're spending too much time on administrative tasks.",
+                    "The main challenge is getting accurate data quickly.",
+                    "We need something that can scale with our growth."
+                ],
+                value: [
+                    "That sounds interesting, but what's the cost?",
+                    "How does this compare to other solutions?",
+                    "Can you show me some concrete examples?",
+                    "What kind of ROI are we talking about?"
+                ],
+                objection: [
+                    "I'm not sure this fits our budget.",
+                    "We've tried similar solutions before without success.",
+                    "I need to discuss this with my team first.",
+                    "The implementation seems too complex for us."
+                ]
+            };
+            
+            return responses[skill] || responses.discovery;
+        }
+
+        function updateProgress() {
+            if (!appState.currentSession) return;
+            
+            const targetTurns = 8;
+            const progress = Math.min((appState.currentSession.turnCount / targetTurns) * 100, 100);
+            
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${Math.round(progress)}% Complete`;
+        }
+
+        // Voice Functions
+        function toggleVoiceInput() {
+            if (!appState.voiceRecognition.isSupported) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+            
+            if (appState.isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            appState.isRecording = true;
+            
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            voiceBtn.classList.add('recording-pulse');
+            voiceBtn.innerHTML = '⏹️ Stop';
+            
+            document.getElementById('voiceStatus').classList.remove('hidden');
+            
+            try {
+                appState.voiceRecognition.recognition.start();
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                stopVoiceInput();
+                showNotification('Could not start voice recognition', 'error');
+                return;
+            }
+            
+            showNotification('Voice input started', 'success');
+        }
+
+        function stopVoiceInput() {
+            appState.isRecording = false;
+            
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            voiceBtn.classList.remove('recording-pulse');
+            voiceBtn.innerHTML = '🎤 Voice';
+            
+            document.getElementById('voiceStatus').classList.add('hidden');
+            
+            if (appState.voiceRecognition.recognition) {
+                appState.voiceRecognition.recognition.stop();
+            }
+            
+            showNotification('Voice input stopped', 'success');
+        }
+
+        function playbackDialogue() {
+            if (!appState.currentSession || appState.currentSession.dialogue.length === 0) {
+                showNotification('No dialogue to playback', 'warning');
+                return;
+            }
+            
+            const dialogue = appState.currentSession.dialogue;
+            let currentIndex = 0;
+            
+            function playNext() {
+                if (currentIndex >= dialogue.length) return;
+                
+                const entry = dialogue[currentIndex];
+                const utterance = new SpeechSynthesisUtterance(entry.message);
+                utterance.rate = 0.9;
+                utterance.pitch = entry.speaker === 'customer' ? 1.2 : 0.8;
+                
+                utterance.onend = () => {
+                    currentIndex++;
+                    setTimeout(playNext, 500);
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+            
+            playNext();
+            showNotification('Playing back dialogue...', 'info');
+        }
+
+        function clearDialogue() {
+            if (confirm('Are you sure you want to clear the dialogue?')) {
+                document.getElementById('dialogueHistory').innerHTML = '';
+                if (appState.currentSession) {
+                    appState.currentSession.dialogue = [];
+                    appState.currentSession.turnCount = 0;
+                    updateProgress();
+                }
+            }
+        }
+
+        function getHint() {
+            if (!appState.currentSession) return;
+            
+            const skill = appState.currentSession.skill;
+            const hints = {
+                discovery: [
+                    "Try asking an open-ended question about their current process",
+                    "Ask about the impact of their current challenges",
+                    "Explore who else is involved in the decision",
+                    "Find out about their timeline and budget"
+                ],
+                value: [
+                    "Connect your features to their specific pain points",
+                    "Use concrete numbers and examples",
+                    "Compare to their current situation",
+                    "Focus on business outcomes, not just features"
+                ],
+                objection: [
+                    "Acknowledge their concern first",
+                    "Ask clarifying questions to understand the real issue",
+                    "Provide evidence or examples to address the concern",
+                    "Reframe the objection as an opportunity"
+                ]
+            };
+            
+            const skillHints = hints[skill] || hints.discovery;
+            const hint = skillHints[Math.floor(Math.random() * skillHints.length)];
+            
+            showNotification(`Hint: ${hint}`, 'info');
+        }
+
+        function skipTurn() {
+            generateCustomerResponse();
+        }
+
+        function generateNewScenario() {
+            if (appState.currentSession) {
+                const newScenario = getRandomScenario(appState.currentSession.skill, appState.currentSession.difficulty);
+                appState.currentSession.scenario = newScenario;
+                loadRoleplayData();
+                addCustomerMessage(getInitialCustomerMessage(newScenario));
+                showNotification('New scenario generated!', 'success');
+            }
+        }
+
+        function saveCurrentSession() {
+            if (!appState.currentSession) return;
+            
+            const session = appState.currentSession;
+            session.endTime = new Date();
+            session.duration = Math.floor((session.endTime - session.startTime) / 1000);
+            session.date = session.startTime.toISOString();
+            session.title = session.scenario.title;
+            
+            // Stop session timer
+            if (appState.sessionTimer.interval) {
+                clearInterval(appState.sessionTimer.interval);
+                appState.sessionTimer.isRunning = false;
+            }
+            
+            // Calculate score based on progress and engagement
+            const progressText = document.getElementById('progressText').textContent;
+            const score = parseInt(progressText.replace('% Complete', ''));
+            session.score = score;
+            
+            // Add to user data
+            appState.userData.sessions.push(session);
+            appState.userData.totalSessions++;
+            appState.userData.totalMinutes += Math.floor(session.duration / 60);
+            
+            // Update skill-specific scores
+            const skillScores = appState.userData.skillScores;
+            skillScores[session.skill] = score;
+            
+            // Update average score
+            const totalScore = appState.userData.sessions.reduce((sum, s) => sum + (s.score || 0), 0);
+            appState.userData.averageScore = Math.round(totalScore / appState.userData.sessions.length);
+            
+            // Update streak
+            updateSessionStreak();
+            
+            saveUserData();
+            showNotification('Session saved successfully', 'success');
+        }
+
+        function updateSessionStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+            
+            if (lastActive !== today) {
+                appState.userData.streak++;
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+                saveUserData();
+            }
+        }
+
+        function exportSessionToPdf() {
+            if (!appState.currentSession) return;
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('SalesSpeak Pro - Role-Play Session Report', 20, 30);
+                
+                // Session details
+                doc.setFontSize(12);
+                doc.text(`Skill Focus: ${appState.currentSession.skill}`, 20, 50);
+                doc.text(`Difficulty: ${appState.currentSession.difficulty}`, 20, 60);
+                doc.text(`Date: ${new Date(appState.currentSession.startTime).toLocaleDateString()}`, 20, 70);
+                doc.text(`Duration: ${Math.floor(appState.currentSession.duration / 60)} minutes`, 20, 80);
+                
+                // Scenario
+                doc.text('Scenario:', 20, 100);
+                const scenarioText = doc.splitTextToSize(appState.currentSession.scenario.scenario, 170);
+                doc.text(scenarioText, 20, 110);
+                
+                // Dialogue
+                let yPosition = 110 + (scenarioText.length * 5) + 20;
+                doc.text('Dialogue:', 20, yPosition);
+                yPosition += 10;
+                
+                appState.currentSession.dialogue.forEach(entry => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 30;
+                    }
+                    
+                    doc.setFontSize(10);
+                    doc.text(`${entry.speaker.toUpperCase()}:`, 20, yPosition);
+                    yPosition += 5;
+                    
+                    const messageText = doc.splitTextToSize(entry.message, 170);
+                    doc.text(messageText, 25, yPosition);
+                    yPosition += (messageText.length * 4) + 5;
+                });
+                
+                // Save
+                doc.save(`salesspeak-session-${appState.currentSession.id}.pdf`);
+                showNotification('PDF exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        // Vocabulary Management
+        function updateVocabularyView() {
+            const totalVocab = appState.userData.vocabulary.length;
+            const masteredVocab = appState.userData.vocabulary.filter(v => v.mastered).length;
+            const accuracy = totalVocab > 0 ? Math.round((masteredVocab / totalVocab) * 100) : 0;
+            
+            document.getElementById('totalVocab').textContent = totalVocab;
+            document.getElementById('masteredVocab').textContent = masteredVocab;
+            document.getElementById('vocabAccuracy').textContent = accuracy + '%';
+            
+            // Load vocabulary list
+            const vocabularyList = document.getElementById('vocabularyList');
+            vocabularyList.innerHTML = appState.userData.vocabulary.map(vocab => `
+                <div class="vocabulary-card">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="font-bold text-dark-green">${vocab.word}</div>
+                        <div class="flex space-x-2">
+                            <span class="skill-tag">${vocab.category}</span>
+                            <button onclick="toggleMastered('${vocab.word}')" class="px-2 py-1 text-xs rounded ${vocab.mastered ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'}">
+                                ${vocab.mastered ? 'Mastered' : 'Learning'}
+                            </button>
+                            <button onclick="deleteVocab('${vocab.word}')" class="text-red-500 hover:text-red-700 text-sm">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-medium-green mb-2">${vocab.definition}</div>
+                    <div class="text-xs text-gray-600 italic">"${vocab.example}"</div>
+                </div>
+            `).join('');
+        }
+
+        function showAddVocabModal() {
+            document.getElementById('addVocabModal').classList.remove('hidden');
+            document.getElementById('addVocabModal').classList.add('flex');
+        }
+
+        function hideAddVocabModal() {
+            document.getElementById('addVocabModal').classList.add('hidden');
+            document.getElementById('addVocabModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('vocabWordInput').value = '';
+            document.getElementById('vocabDefinitionInput').value = '';
+            document.getElementById('vocabExampleInput').value = '';
+            document.getElementById('vocabCategorySelect').value = 'discovery';
+        }
+
+        function saveNewVocab() {
+            const word = document.getElementById('vocabWordInput').value.trim();
+            const definition = document.getElementById('vocabDefinitionInput').value.trim();
+            const example = document.getElementById('vocabExampleInput').value.trim();
+            const category = document.getElementById('vocabCategorySelect').value;
+            
+            if (!word || !definition) {
+                showNotification('Please enter both word and definition', 'warning');
+                return;
+            }
+            
+            const newVocab = {
+                word: word,
+                definition: definition,
+                example: example || `Example usage of ${word}`,
+                category: category,
+                mastered: false,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.vocabulary.push(newVocab);
+            saveUserData();
+            updateVocabularyView();
+            hideAddVocabModal();
+            
+            showNotification('Vocabulary word added successfully', 'success');
+        }
+
+        function toggleMastered(word) {
+            const vocab = appState.userData.vocabulary.find(v => v.word === word);
+            if (vocab) {
+                vocab.mastered = !vocab.mastered;
+                saveUserData();
+                updateVocabularyView();
+            }
+        }
+
+        function deleteVocab(word) {
+            if (confirm('Are you sure you want to delete this vocabulary word?')) {
+                appState.userData.vocabulary = appState.userData.vocabulary.filter(v => v.word !== word);
+                saveUserData();
+                updateVocabularyView();
+                showNotification('Vocabulary word deleted', 'success');
+            }
+        }
+
+        function startVocabularyDrill() {
+            const unmastered = appState.userData.vocabulary.filter(v => !v.mastered);
+            
+            if (unmastered.length === 0) {
+                showNotification('All vocabulary words are mastered! Add more words to continue drilling.', 'success');
+                return;
+            }
+            
+            const vocab = unmastered[Math.floor(Math.random() * unmastered.length)];
+            
+            const drill = confirm(`Define this term:\n\n"${vocab.word}"\n\nClick OK when you're ready to see the answer.`);
+            
+            if (drill) {
+                alert(`Definition: ${vocab.definition}\n\nExample: "${vocab.example}"\n\nDid you get it right?`);
+                
+                const correct = confirm('Did you answer correctly?');
+                if (correct) {
+                    vocab.mastered = true;
+                    saveUserData();
+                    updateVocabularyView();
+                    showNotification('Great job! Word marked as mastered.', 'success');
+                }
+            }
+        }
+
+        // Daily Actions Management
+        function showAddActionModal() {
+            document.getElementById('addActionModal').classList.remove('hidden');
+            document.getElementById('addActionModal').classList.add('flex');
+        }
+
+        function hideAddActionModal() {
+            document.getElementById('addActionModal').classList.add('hidden');
+            document.getElementById('addActionModal').classList.remove('flex');
+            
+            document.getElementById('actionDescInput').value = '';
+            document.getElementById('actionPrioritySelect').value = 'medium';
+        }
+
+        function saveNewAction() {
+            const description = document.getElementById('actionDescInput').value.trim();
+            const priority = document.getElementById('actionPrioritySelect').value;
+            
+            if (!description) {
+                showNotification('Please enter a goal description', 'warning');
+                return;
+            }
+            
+            const newAction = {
+                id: generateId(),
+                description: description,
+                priority: priority,
+                completed: false,
+                date: new Date().toDateString()
+            };
+            
+            appState.userData.dailyActions.push(newAction);
+            saveUserData();
+            updateDailyActions();
+            hideAddActionModal();
+            
+            showNotification('Goal added successfully', 'success');
+        }
+
+        function toggleAction(actionId) {
+            const action = appState.userData.dailyActions.find(a => a.id === actionId);
+            if (action) {
+                action.completed = !action.completed;
+                saveUserData();
+                updateDailyActions();
+            }
+        }
+
+        function deleteAction(actionId) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                appState.userData.dailyActions = appState.userData.dailyActions.filter(a => a.id !== actionId);
+                saveUserData();
+                updateDailyActions();
+                showNotification('Goal deleted', 'success');
+            }
+        }
+
+        function executeDoItNow() {
+            const actions = appState.userData.dailyActions.filter(action => !action.completed);
+            
+            if (actions.length === 0) {
+                showNotification('All goals completed! Great work!', 'success');
+                return;
+            }
+            
+            const nextAction = actions[0];
+            const confirmed = confirm(`Execute this goal now?\n\n"${nextAction.description}"`);
+            
+            if (confirmed) {
+                toggleAction(nextAction.id);
+                showNotification('Goal marked as completed!', 'success');
+            }
+        }
+
+        // Session Management Functions
+        function reviewSession(sessionId) {
+            const session = appState.userData.sessions.find(s => s.id === sessionId);
+            if (session) {
+                appState.currentSession = session;
+                showView('roleplay');
+                loadRoleplayData();
+                
+                // Load dialogue history
+                const dialogueHistory = document.getElementById('dialogueHistory');
+                dialogueHistory.innerHTML = '';
+                
+                session.dialogue.forEach(entry => {
+                    if (entry.speaker === 'customer') {
+                        addCustomerMessage(entry.message);
+                    } else {
+                        addSalespersonMessage(entry.message);
+                    }
+                });
+            }
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm('Are you sure you want to delete this session?')) {
+                appState.userData.sessions = appState.userData.sessions.filter(s => s.id !== sessionId);
+                appState.userData.totalSessions = appState.userData.sessions.length;
+                
+                appState.userData.totalMinutes = appState.userData.sessions.reduce((total, session) => {
+                    return total + Math.floor((session.duration || 0) / 60);
+                }, 0);
+                
+                const totalScore = appState.userData.sessions.reduce((sum, s) => sum + (s.score || 0), 0);
+                appState.userData.averageScore = appState.userData.sessions.length > 0 ? 
+                    Math.round(totalScore / appState.userData.sessions.length) : 0;
+                
+                saveUserData();
+                updateDashboard();
+                showNotification('Session deleted', 'success');
+            }
+        }
+
+        // Analytics Functions
+        function updateAnalytics() {
+            document.getElementById('totalSessions').textContent = appState.userData.totalSessions;
+            document.getElementById('totalMinutes').textContent = appState.userData.totalMinutes;
+            document.getElementById('averageScore').textContent = Math.round(appState.userData.averageScore) + '%';
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Update skill-specific scores
+            document.getElementById('discoveryScore').textContent = Math.round(appState.userData.skillScores.discovery || 0) + '%';
+            document.getElementById('valueScore').textContent = Math.round(appState.userData.skillScores.value || 0) + '%';
+            document.getElementById('objectionScore').textContent = Math.round(appState.userData.skillScores.objection || 0) + '%';
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('timerDurationSelect').value = appState.userData.settings.timerDuration;
+            document.getElementById('defaultDifficultySelect').value = appState.userData.settings.defaultDifficulty;
+            document.getElementById('autoSyncToggle').checked = appState.userData.settings.autoSync;
+            document.getElementById('soundToggle').checked = appState.userData.settings.soundNotifications;
+            
+            loadCustomMessages();
+        }
+
+        function updateTimerDuration() {
+            const duration = parseInt(document.getElementById('timerDurationSelect').value);
+            appState.userData.settings.timerDuration = duration;
+            appState.focusTimer.duration = duration * 60;
+            appState.focusTimer.timeLeft = duration * 60;
+            updateFocusTimerDisplay();
+            saveUserData();
+        }
+
+        function updateDefaultDifficulty() {
+            appState.userData.settings.defaultDifficulty = document.getElementById('defaultDifficultySelect').value;
+            saveUserData();
+        }
+
+        function updateAutoSync() {
+            appState.userData.settings.autoSync = document.getElementById('autoSyncToggle').checked;
+            saveUserData();
+        }
+
+        function updateSoundSettings() {
+            appState.userData.settings.soundNotifications = document.getElementById('soundToggle').checked;
+            saveUserData();
+        }
+
+        function addCustomMessage() {
+            const messageInput = document.getElementById('customMessageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                showNotification('Please enter a message', 'warning');
+                return;
+            }
+            
+            appState.userData.customMessages.push(message);
+            messageInput.value = '';
+            saveUserData();
+            loadCustomMessages();
+            
+            showNotification('Custom message added', 'success');
+        }
+
+        function loadCustomMessages() {
+            const container = document.getElementById('customMessages');
+            const messages = appState.userData.customMessages;
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No custom messages yet</p>';
+            } else {
+                container.innerHTML = messages.map((message, index) => `
+                    <div class="flex items-center justify-between p-3 bg-pale-gold rounded-lg border border-medium-gold">
+                        <span class="text-sm text-dark-green">${message}</span>
+                        <button onclick="deleteCustomMessage(${index})" class="text-red-500 hover:text-red-700 text-sm">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function deleteCustomMessage(index) {
+            if (confirm('Are you sure you want to delete this message?')) {
+                appState.userData.customMessages.splice(index, 1);
+                saveUserData();
+                loadCustomMessages();
+                showNotification('Message deleted', 'success');
+            }
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `salesspeak-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('salesSpeakData');
+                    
+                    appState.userData = {
+                        sessions: [],
+                        vocabulary: [...salesVocabulary],
+                        dailyActions: [],
+                        customMessages: [],
+                        streak: 0,
+                        lastActiveDate: null,
+                        totalSessions: 0,
+                        totalMinutes: 0,
+                        averageScore: 0,
+                        longestStreak: 0,
+                        skillScores: {
+                            discovery: 0,
+                            value: 0,
+                            objection: 0
+                        },
+                        settings: {
+                            timerDuration: 25,
+                            defaultDifficulty: 'intermediate',
+                            autoSync: true,
+                            soundNotifications: true
+                        }
+                    };
+                    
+                    generateDailyActions();
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9873b519c67d1072',t:'MTc1OTIzNTE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
