@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boundary Guardian - Caregiver Boundary Management</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 25%, #0f3d1f 50%, #2d5a3d 75%, #0d2818 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(29, 77, 46, 0.5) 50%, rgba(45, 90, 61, 0.3) 100%);
+            border-radius: 20px;
+            border: 2px solid #c9a96e;
+            box-shadow: 0 15px 30px rgba(201, 169, 110, 0.2);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 50%, #b8941f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #a8d4a8;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(29, 77, 46, 0.4) 0%, rgba(15, 61, 31, 0.6) 100%);
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);
+        }
+
+        .card-title {
+            color: #c9a96e;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .daily-checkin {
+            grid-column: 1 / -1;
+        }
+
+        .checkin-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .question-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #c9a96e;
+        }
+
+        .question-title {
+            color: #e6c068;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .mood-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 8px;
+        }
+
+        .mood-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #2d5a3d;
+            border-radius: 50%;
+            background: rgba(45, 90, 61, 0.4);
+            color: #ffffff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mood-btn:hover {
+            border-color: #c9a96e;
+            background: rgba(201, 169, 110, 0.2);
+            transform: scale(1.05);
+        }
+
+        .mood-btn.selected {
+            border-color: #c9a96e;
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);
+            color: #0d2818;
+        }
+
+        .battery-btn {
+            width: 60px;
+            height: 60px;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px;
+        }
+
+        .battery-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+        }
+
+        .battery-body {
+            width: 20px;
+            height: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 2px;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .battery-fill {
+            height: 100%;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .battery-tip {
+            width: 2px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .battery-btn.selected .battery-body {
+            border-color: #0d2818;
+        }
+
+        .battery-btn.selected .battery-tip {
+            background: #0d2818;
+        }
+
+        .battery-btn.selected .battery-label {
+            color: #0d2818;
+        }
+
+        .journal-area {
+            margin-top: 15px;
+        }
+
+        .journal-textarea {
+            width: 100%;
+            background: rgba(45, 90, 61, 0.3);
+            border: 2px solid #2d5a3d;
+            border-radius: 10px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .journal-textarea:focus {
+            border-color: #c9a96e;
+            background: rgba(201, 169, 110, 0.1);
+        }
+
+        .journal-textarea::placeholder {
+            color: #a8d4a8;
+            opacity: 0.7;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);
+            color: #0d2818;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(201, 169, 110, 0.4);
+        }
+
+        .voice-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: rgba(201, 169, 110, 0.2);
+            border: 2px solid #c9a96e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .voice-btn:hover {
+            background: rgba(201, 169, 110, 0.3);
+            transform: scale(1.05);
+        }
+
+        .voice-btn.recording {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border-color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        .voice-status {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .listening-indicator {
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .refusal-scripts {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .script-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #c9a96e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .script-item:hover {
+            background: rgba(201, 169, 110, 0.1);
+            transform: translateX(5px);
+        }
+
+        .script-title {
+            color: #e6c068;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .script-content {
+            color: #e8f5e8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .empathy-tips {
+            display: grid;
+            gap: 15px;
+        }
+
+        .tip-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid #c9a96e;
+        }
+
+        .tip-title {
+            color: #e6c068;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tip-content {
+            color: #e8f5e8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .progress-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(15, 61, 31, 0.6);
+            border: 2px solid #1d4d2e;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            color: #c9a96e;
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a8d4a8;
+            font-size: 0.9rem;
+        }
+
+        .journal-history {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .journal-entry {
+            border-bottom: 1px solid rgba(45, 90, 61, 0.3);
+            padding: 15px 0;
+        }
+
+        .journal-entry:last-child {
+            border-bottom: none;
+        }
+
+        .journal-date {
+            color: #c9a96e;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .journal-text {
+            color: #e8f5e8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .boundary-tracker {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .day-cell.good {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1d4d2e 100%);
+            color: #a8d4a8;
+        }
+
+        .day-cell.challenging {
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);
+            color: #0d2818;
+        }
+
+        .day-cell.difficult {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            color: #ffffff;
+        }
+
+        .day-cell.today {
+            border-color: #c9a96e;
+            box-shadow: 0 0 10px rgba(201, 169, 110, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);
+            color: #0d2818;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: rgba(45, 90, 61, 0.6);
+            border: 1px solid #2d5a3d;
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quick-btn:hover {
+            border-color: #c9a96e;
+            background: rgba(201, 169, 110, 0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkin-questions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .progress-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .boundary-tracker {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Boundary Guardian</h1>
+            <p>Protect your emotional well-being while maintaining your caring heart</p>
+        </div>
+
+        <!-- Daily Check-in -->
+        <div class="card daily-checkin">
+            <h2 class="card-title">📝 Today's Boundary Check-In</h2>
+            
+            <div class="checkin-questions">
+                <div class="question-card">
+                    <div class="question-title">How are your emotional boundaries today?</div>
+                    <div class="mood-scale">
+                        <button class="mood-btn" data-boundary="1" onclick="setBoundaryMood(1)" title="Overwhelmed">😰</button>
+                        <button class="mood-btn" data-boundary="2" onclick="setBoundaryMood(2)" title="Struggling">😔</button>
+                        <button class="mood-btn" data-boundary="3" onclick="setBoundaryMood(3)" title="Managing">😐</button>
+                        <button class="mood-btn" data-boundary="4" onclick="setBoundaryMood(4)" title="Strong">🙂</button>
+                        <button class="mood-btn" data-boundary="5" onclick="setBoundaryMood(5)" title="Confident">😊</button>
+                    </div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="question-title">How is your empathy energy level?</div>
+                    <div class="mood-scale">
+                        <button class="mood-btn battery-btn" data-empathy="1" onclick="setEmpathyLevel(1)" title="Depleted (20%)">
+                            <div class="battery-icon">
+                                <div class="battery-body">
+                                    <div class="battery-fill" style="width: 20%; background: #dc3545;"></div>
+                                </div>
+                                <div class="battery-tip"></div>
+                            </div>
+                            <span class="battery-label">20%</span>
+                        </button>
+                        <button class="mood-btn battery-btn" data-empathy="2" onclick="setEmpathyLevel(2)" title="Low (40%)">
+                            <div class="battery-icon">
+                                <div class="battery-body">
+                                    <div class="battery-fill" style="width: 40%; background: #fd7e14;"></div>
+                                </div>
+                                <div class="battery-tip"></div>
+                            </div>
+                            <span class="battery-label">40%</span>
+                        </button>
+                        <button class="mood-btn battery-btn" data-empathy="3" onclick="setEmpathyLevel(3)" title="Moderate (60%)">
+                            <div class="battery-icon">
+                                <div class="battery-body">
+                                    <div class="battery-fill" style="width: 60%; background: #ffc107;"></div>
+                                </div>
+                                <div class="battery-tip"></div>
+                            </div>
+                            <span class="battery-label">60%</span>
+                        </button>
+                        <button class="mood-btn battery-btn" data-empathy="4" onclick="setEmpathyLevel(4)" title="Good (80%)">
+                            <div class="battery-icon">
+                                <div class="battery-body">
+                                    <div class="battery-fill" style="width: 80%; background: #20c997;"></div>
+                                </div>
+                                <div class="battery-tip"></div>
+                            </div>
+                            <span class="battery-label">80%</span>
+                        </button>
+                        <button class="mood-btn battery-btn" data-empathy="5" onclick="setEmpathyLevel(5)" title="Full (100%)">
+                            <div class="battery-icon">
+                                <div class="battery-body">
+                                    <div class="battery-fill" style="width: 100%; background: #28a745;"></div>
+                                </div>
+                                <div class="battery-tip"></div>
+                            </div>
+                            <span class="battery-label">100%</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="journal-area">
+                <div class="question-title">Today's boundary reflection:</div>
+                <div style="position: relative;">
+                    <textarea class="journal-textarea" id="dailyJournal" 
+                              placeholder="What boundary challenges did you face today? How did you handle them? What would you do differently? Click the microphone to speak your thoughts..."></textarea>
+                    <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="Voice to text">
+                        🎤
+                    </button>
+                </div>
+                <div class="voice-status" id="voiceStatus" style="display: none;">
+                    <span class="listening-indicator">🔴 Listening... Speak now</span>
+                </div>
+                <button class="save-btn" onclick="saveDailyEntry()">
+                    💾 Save Today's Entry
+                </button>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Refusal Scripts -->
+            <div class="card">
+                <h2 class="card-title">💬 Polite Refusal Scripts</h2>
+                <div class="refusal-scripts" id="refusalScripts">
+                    <!-- Scripts will be populated here -->
+                </div>
+            </div>
+
+            <!-- Empathy Maintenance Tips -->
+            <div class="card">
+                <h2 class="card-title">💚 Empathy Maintenance</h2>
+                <div class="empathy-tips" id="empathyTips">
+                    <!-- Tips will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="card progress-section">
+            <h2 class="card-title">📊 Your Boundary Journey</h2>
+            
+            <div class="progress-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="streakDays">0</span>
+                    <span class="stat-label">Day Streak</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="avgBoundary">--</span>
+                    <span class="stat-label">Avg Boundary Strength</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="avgEmpathy">--</span>
+                    <span class="stat-label">Avg Empathy Level</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalEntries">0</span>
+                    <span class="stat-label">Journal Entries</span>
+                </div>
+            </div>
+
+            <h3 style="color: #c9a96e; margin-bottom: 15px;">📅 Boundary Strength Calendar</h3>
+            <div class="boundary-tracker" id="boundaryTracker">
+                <!-- Calendar will be populated here -->
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #2d5a3d 0%, #1d4d2e 100%);"></div>
+                    <span>Strong Boundaries</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #c9a96e 0%, #e6c068 100%);"></div>
+                    <span>Some Challenges</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);"></div>
+                    <span>Difficult Day</span>
+                </div>
+            </div>
+
+            <h3 style="color: #c9a96e; margin: 25px 0 15px 0;">📖 Recent Journal Entries</h3>
+            <div class="journal-history" id="journalHistory">
+                <!-- Journal entries will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentBoundaryMood = null;
+        let currentEmpathyLevel = null;
+        let journalEntries = JSON.parse(localStorage.getItem('boundaryGuardian_entries') || '[]');
+        let recognition = null;
+        let isRecording = false;
+
+        const refusalScripts = [
+            {
+                title: "Need Personal Time",
+                content: "I appreciate you thinking of me, but I need some personal time right now to recharge. This helps me be more present when I'm available. Can we reconnect tomorrow?"
+            },
+            {
+                title: "Cannot Take on More Tasks",
+                content: "I understand this is important, but I'm at capacity right now. Taking on more would compromise the quality of care I can provide. Perhaps we could find another solution together?"
+            },
+            {
+                title: "Setting Visit Boundaries",
+                content: "I love that you want to visit, but I need to limit visits to help maintain a calm environment. Would [specific time/day] work better for everyone?"
+            },
+            {
+                title: "Declining Additional Responsibilities",
+                content: "I care deeply about this situation, but I need to focus my energy on my current responsibilities. I'm not able to take this on right now, but I appreciate you understanding."
+            },
+            {
+                title: "Protecting Sleep Schedule",
+                content: "I understand this feels urgent, but I need to protect my sleep schedule to be effective tomorrow. Unless it's a true emergency, can we address this in the morning?"
+            },
+            {
+                title: "Saying No to Guilt Trips",
+                content: "I can hear that you're frustrated, and I care about your feelings. At the same time, I need to maintain my boundaries to continue being helpful in the long run."
+            },
+            {
+                title: "Declining Social Obligations",
+                content: "Thank you for the invitation. I'm focusing on essential activities right now to manage my energy. I hope you understand and have a wonderful time."
+            },
+            {
+                title: "Setting Communication Limits",
+                content: "I want to stay connected, but I need to set some limits on when I'm available for calls/texts. I'll be most responsive during [specific hours]. Thank you for understanding."
+            }
+        ];
+
+        const empathyTips = [
+            {
+                title: "💝 Compassionate Boundaries",
+                content: "Remember: Setting boundaries IS an act of love. You're protecting your ability to care for others long-term."
+            },
+            {
+                title: "🔄 Energy Conservation",
+                content: "Your empathy is finite. Like a phone battery, it needs regular charging. Boundaries help preserve your emotional energy."
+            },
+            {
+                title: "🎭 Separate Feelings",
+                content: "You can care about someone's disappointment without taking responsibility for fixing their emotions. Their feelings are valid, and so are your limits."
+            },
+            {
+                title: "🌱 Growth Mindset",
+                content: "Every boundary you set teaches others how to treat you with respect. You're modeling healthy behavior for everyone around you."
+            },
+            {
+                title: "🤝 Mutual Respect",
+                content: "Healthy relationships require boundaries from both sides. You're not being selfish—you're being responsible."
+            },
+            {
+                title: "⚖️ Balance Check",
+                content: "Ask yourself: 'Am I giving from abundance or depletion?' Boundaries help you give from a place of strength, not emptiness."
+            },
+            {
+                title: "🛡️ Self-Compassion",
+                content: "Treat yourself with the same kindness you show others. You deserve the care and consideration you freely give."
+            },
+            {
+                title: "🎯 Quality Over Quantity",
+                content: "Better to be fully present for fewer people than partially present for many. Boundaries improve the quality of your relationships."
+            }
+        ];
+
+        function initializeApp() {
+            loadTodaysEntry();
+            renderRefusalScripts();
+            renderEmpathyTips();
+            updateStats();
+            renderBoundaryTracker();
+            renderJournalHistory();
+            initializeVoiceRecognition();
+        }
+
+        function initializeVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    isRecording = true;
+                    document.getElementById('voiceBtn').classList.add('recording');
+                    document.getElementById('voiceStatus').style.display = 'block';
+                };
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    const journalTextarea = document.getElementById('dailyJournal');
+                    const currentText = journalTextarea.value;
+                    
+                    if (finalTranscript) {
+                        // Add final transcript to the textarea
+                        const newText = currentText + (currentText ? ' ' : '') + finalTranscript;
+                        journalTextarea.value = newText;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceRecording();
+                    
+                    let errorMessage = 'Voice recognition error occurred.';
+                    if (event.error === 'not-allowed') {
+                        errorMessage = 'Microphone access denied. Please allow microphone permissions.';
+                    } else if (event.error === 'no-speech') {
+                        errorMessage = 'No speech detected. Try speaking closer to the microphone.';
+                    }
+                    
+                    showToast('🎤 ' + errorMessage);
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceRecording();
+                };
+            } else {
+                // Hide voice button if not supported
+                document.getElementById('voiceBtn').style.display = 'none';
+            }
+        }
+
+        function toggleVoiceRecording() {
+            if (!recognition) {
+                showToast('🎤 Voice recognition not supported in this browser');
+                return;
+            }
+            
+            if (isRecording) {
+                stopVoiceRecording();
+            } else {
+                startVoiceRecording();
+            }
+        }
+
+        function startVoiceRecording() {
+            try {
+                recognition.start();
+                showToast('🎤 Voice recording started. Speak your thoughts...');
+            } catch (error) {
+                console.error('Error starting voice recognition:', error);
+                showToast('🎤 Could not start voice recording. Please try again.');
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+            
+            isRecording = false;
+            document.getElementById('voiceBtn').classList.remove('recording');
+            document.getElementById('voiceStatus').style.display = 'none';
+            
+            if (isRecording === false) {
+                showToast('🎤 Voice recording stopped');
+            }
+        }
+
+        function setBoundaryMood(mood) {
+            currentBoundaryMood = mood;
+            
+            // Update UI
+            document.querySelectorAll('[data-boundary]').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-boundary="${mood}"]`).classList.add('selected');
+        }
+
+        function setEmpathyLevel(level) {
+            currentEmpathyLevel = level;
+            
+            // Update UI
+            document.querySelectorAll('[data-empathy]').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-empathy="${level}"]`).classList.add('selected');
+        }
+
+        function saveDailyEntry() {
+            const journalText = document.getElementById('dailyJournal').value.trim();
+            
+            if (!currentBoundaryMood || !currentEmpathyLevel) {
+                showToast('⚠️ Please rate your boundary strength and empathy level first');
+                return;
+            }
+
+            if (!journalText) {
+                showToast('⚠️ Please add some reflection notes');
+                return;
+            }
+
+            const today = new Date().toDateString();
+            const existingEntryIndex = journalEntries.findIndex(entry => entry.date === today);
+            
+            const entry = {
+                date: today,
+                boundaryMood: currentBoundaryMood,
+                empathyLevel: currentEmpathyLevel,
+                journalText: journalText,
+                timestamp: new Date().toISOString()
+            };
+
+            if (existingEntryIndex >= 0) {
+                journalEntries[existingEntryIndex] = entry;
+                showToast('📝 Today\'s entry updated successfully!');
+            } else {
+                journalEntries.unshift(entry);
+                showToast('✅ Daily boundary check-in saved!');
+            }
+
+            localStorage.setItem('boundaryGuardian_entries', JSON.stringify(journalEntries));
+            updateStats();
+            renderBoundaryTracker();
+            renderJournalHistory();
+        }
+
+        function loadTodaysEntry() {
+            const today = new Date().toDateString();
+            const todayEntry = journalEntries.find(entry => entry.date === today);
+            
+            if (todayEntry) {
+                currentBoundaryMood = todayEntry.boundaryMood;
+                currentEmpathyLevel = todayEntry.empathyLevel;
+                
+                // Update UI
+                if (currentBoundaryMood) {
+                    document.querySelector(`[data-boundary="${currentBoundaryMood}"]`).classList.add('selected');
+                }
+                if (currentEmpathyLevel) {
+                    document.querySelector(`[data-empathy="${currentEmpathyLevel}"]`).classList.add('selected');
+                }
+                
+                document.getElementById('dailyJournal').value = todayEntry.journalText;
+            }
+        }
+
+        function renderRefusalScripts() {
+            const container = document.getElementById('refusalScripts');
+            
+            container.innerHTML = refusalScripts.map(script => `
+                <div class="script-item" onclick="copyScript('${script.content}')">
+                    <div class="script-title">${script.title}</div>
+                    <div class="script-content">"${script.content}"</div>
+                </div>
+            `).join('');
+        }
+
+        function renderEmpathyTips() {
+            const container = document.getElementById('empathyTips');
+            
+            container.innerHTML = empathyTips.map(tip => `
+                <div class="tip-item">
+                    <div class="tip-title">${tip.title}</div>
+                    <div class="tip-content">${tip.content}</div>
+                </div>
+            `).join('');
+        }
+
+        function copyScript(content) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(content);
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = content;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+            
+            showToast('📋 Script copied! Use it with confidence and kindness.');
+        }
+
+        function updateStats() {
+            // Calculate streak
+            let streak = 0;
+            const sortedEntries = [...journalEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            for (let i = 0; i < sortedEntries.length; i++) {
+                const entryDate = new Date(sortedEntries[i].date);
+                const expectedDate = new Date();
+                expectedDate.setDate(expectedDate.getDate() - i);
+                
+                if (entryDate.toDateString() === expectedDate.toDateString()) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+
+            // Calculate averages
+            const avgBoundary = journalEntries.length > 0 ? 
+                (journalEntries.reduce((sum, entry) => sum + entry.boundaryMood, 0) / journalEntries.length).toFixed(1) : '--';
+            
+            const avgEmpathy = journalEntries.length > 0 ? 
+                (journalEntries.reduce((sum, entry) => sum + entry.empathyLevel, 0) / journalEntries.length).toFixed(1) : '--';
+
+            // Update UI
+            document.getElementById('streakDays').textContent = streak;
+            document.getElementById('avgBoundary').textContent = avgBoundary;
+            document.getElementById('avgEmpathy').textContent = avgEmpathy;
+            document.getElementById('totalEntries').textContent = journalEntries.length;
+        }
+
+        function renderBoundaryTracker() {
+            const container = document.getElementById('boundaryTracker');
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(today.getDate() - 29);
+            
+            let html = '';
+            
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(thirtyDaysAgo);
+                date.setDate(date.getDate() + i);
+                
+                const entry = journalEntries.find(e => e.date === date.toDateString());
+                const isToday = date.toDateString() === today.toDateString();
+                
+                let className = 'day-cell';
+                let content = date.getDate();
+                
+                if (entry) {
+                    if (entry.boundaryMood >= 4) {
+                        className += ' good';
+                    } else if (entry.boundaryMood >= 2) {
+                        className += ' challenging';
+                    } else {
+                        className += ' difficult';
+                    }
+                }
+                
+                if (isToday) {
+                    className += ' today';
+                }
+                
+                html += `<div class="${className}">${content}</div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function renderJournalHistory() {
+            const container = document.getElementById('journalHistory');
+            
+            if (journalEntries.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #a8d4a8; padding: 20px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📖</div>
+                        <p>No journal entries yet. Start your boundary journey today!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const recentEntries = journalEntries.slice(0, 5);
+            
+            container.innerHTML = recentEntries.map(entry => {
+                const date = new Date(entry.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                const boundaryEmoji = ['😰', '😔', '😐', '🙂', '😊'][entry.boundaryMood - 1];
+                const empathyPercentage = [20, 40, 60, 80, 100][entry.empathyLevel - 1];
+                const empathyColor = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#28a745'][entry.empathyLevel - 1];
+                
+                return `
+                    <div class="journal-entry">
+                        <div class="journal-date">
+                            ${formattedDate} • Boundaries: ${boundaryEmoji} • Empathy: 
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <div style="width: 16px; height: 8px; border: 1px solid #ffffff; border-radius: 1px; background: rgba(0,0,0,0.3); position: relative; overflow: hidden;">
+                                    <div style="width: ${empathyPercentage}%; height: 100%; background: ${empathyColor}; border-radius: 1px;"></div>
+                                </div>
+                                <div style="width: 1px; height: 4px; background: #ffffff; border-radius: 0 1px 1px 0;"></div>
+                                ${empathyPercentage}%
+                            </span>
+                        </div>
+                        <div class="journal-text">${entry.journalText}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Initialize app
+        initializeApp();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986c933167dabc3d',t:'MTc1OTE2MDM4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
