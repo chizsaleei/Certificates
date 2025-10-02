@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client English Pro - Founder's Copy & Outreach Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d, #1f4a35); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .template-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .copy-output {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            min-height: 200px;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+        
+        .nav-btn {
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background-color: #d4af37;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .vocab-flashcard {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocab-flashcard:hover {
+            transform: scale(1.02);
+            border-color: #d4af37;
+        }
+        
+        .phrase-chip {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .phrase-chip:hover {
+            background: rgba(212, 175, 55, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            font-size: 12px;
+        }
+        
+        .voice-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(212, 175, 55, 0.95);
+            color: #000;
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .copy-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .copy-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+        }
+        
+        .stats-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Sync Indicator -->
+    <div id="syncIndicator" class="sync-indicator hidden">
+        <div class="bg-green-600 text-white px-3 py-1 rounded-full flex items-center">
+            <span class="mr-1">✓</span> Synced
+        </div>
+    </div>
+
+    <!-- Voice Recording Indicator -->
+    <div id="voiceIndicator" class="voice-indicator hidden">
+        <div class="text-4xl mb-4">🎤</div>
+        <div class="text-lg font-bold mb-2">Listening...</div>
+        <div class="text-sm mb-4">Speak your content clearly</div>
+        <button onclick="stopVoiceInput()" class="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold">
+            Stop Recording
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="p-4 text-center border-b border-gray-700">
+        <h1 class="text-3xl font-bold text-accent">🚀 Client English Pro</h1>
+        <p class="text-sm text-gray-300 mt-1">Founder's Copy & Outreach Mastery Tool</p>
+        <div class="mt-3 flex justify-center gap-6 text-xs">
+            <span>Streak: <span id="currentStreak" class="text-accent font-bold">0</span></span>
+            <span>Copies Created: <span id="totalCopies" class="text-accent font-bold">0</span></span>
+            <span>Words Written: <span id="totalWords" class="text-accent font-bold">0</span></span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-2 flex-wrap">
+        <button onclick="showScreen('home')" id="homeBtn" class="nav-btn active">Home</button>
+        <button onclick="showScreen('landing')" id="landingBtn" class="nav-btn">Landing Copy</button>
+        <button onclick="showScreen('outreach')" id="outreachBtn" class="nav-btn">Outreach</button>
+        <button onclick="showScreen('library')" id="libraryBtn" class="nav-btn">Library</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">Vocabulary</button>
+        <button onclick="showScreen('phrases')" id="phrasesBtn" class="nav-btn">Phrases</button>
+        <button onclick="showScreen('focus')" id="focusBtn" class="nav-btn">Focus</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">Analytics</button>
+    </nav>
+
+    <!-- Floating Quick Add -->
+    <div onclick="quickAdd()" class="floating-btn">⚡</div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="template-card cursor-pointer" onclick="showScreen('landing')">
+                    <div class="text-accent font-bold text-xl mb-3">📄 Landing Page Copy</div>
+                    <div class="text-gray-300 mb-4">Create compelling landing pages using proven templates</div>
+                    <div class="text-sm text-gray-400">Problem • Promise • Proof • Price</div>
+                </div>
+                <div class="template-card cursor-pointer" onclick="showScreen('outreach')">
+                    <div class="text-accent font-bold text-xl mb-3">📧 Outreach Emails</div>
+                    <div class="text-gray-300 mb-4">Write persuasive outreach emails that get responses</div>
+                    <div class="text-sm text-gray-400">Cold Email • Follow-up • Partnership</div>
+                </div>
+            </div>
+
+            <!-- Today's Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Today's Progress</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayLanding">0</div>
+                        <div class="text-sm text-gray-400">Landing Copies</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayOutreach">0</div>
+                        <div class="text-sm text-gray-400">Outreach Emails</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayVocab">0</div>
+                        <div class="text-sm text-gray-400">Vocab Reviews</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="todayFocus">0</div>
+                        <div class="text-sm text-gray-400">Focus Sessions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Work -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-accent">Recent Work</h2>
+                    <button onclick="showScreen('library')" class="text-accent text-sm hover:underline">View All</button>
+                </div>
+                <div id="recentWork" class="space-y-3">
+                    <!-- Recent work will be populated here -->
+                </div>
+            </div>
+
+            <!-- Daily Vocabulary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-accent mb-4">Business Vocabulary Spotlight</h2>
+                <div id="spotlightVocab" class="vocab-flashcard" onclick="flipSpotlightCard()">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent mb-4">Click to reveal</div>
+                        <div class="text-lg text-gray-300">Daily vocabulary practice</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Landing Copy Screen -->
+    <div id="landingScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Landing Page Copy Generator</h2>
+                <button onclick="startVoiceInput('landing')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    🎤 Voice Input
+                </button>
+            </div>
+
+            <!-- Template Selection -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Choose Template</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="selectTemplate('problem-promise')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">Problem → Promise</div>
+                        <div class="text-sm text-gray-300">Identify pain point and offer solution</div>
+                    </button>
+                    <button onclick="selectTemplate('proof-price')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">Proof → Price</div>
+                        <div class="text-sm text-gray-300">Show credibility and clear pricing</div>
+                    </button>
+                    <button onclick="selectTemplate('full-pppp')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">Full 4P Framework</div>
+                        <div class="text-sm text-gray-300">Problem • Promise • Proof • Price</div>
+                    </button>
+                    <button onclick="selectTemplate('custom')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">Custom Template</div>
+                        <div class="text-sm text-gray-300">Build your own structure</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6" id="landingForm">
+                <h3 class="text-xl font-bold text-accent mb-4">Tell Me About Your Offer</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What problem do you solve?</label>
+                        <textarea id="landingProblem" rows="3" placeholder="e.g., Founders struggle to write compelling copy that converts visitors into customers..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's your promise/solution?</label>
+                        <textarea id="landingPromise" rows="3" placeholder="e.g., Get professional copywriting skills in 30 days with our proven framework..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What proof do you have?</label>
+                        <textarea id="landingProof" rows="3" placeholder="e.g., 500+ founders increased conversions by 40% using our method..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's your price/offer?</label>
+                        <textarea id="landingPrice" rows="2" placeholder="e.g., Only $97/month - Cancel anytime. 30-day money-back guarantee..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="generateLandingCopy()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                            Generate Copy
+                        </button>
+                        <button onclick="clearLandingForm()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Copy Output -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6" id="landingOutput" style="display: none;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">Your Landing Page Copy</h3>
+                    <div class="flex gap-2">
+                        <button onclick="editCopy('landing')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="saveCopy('landing')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            💾 Save
+                        </button>
+                        <button onclick="exportToPDF('landing')" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            📄 PDF
+                        </button>
+                    </div>
+                </div>
+                <div id="landingCopyOutput" class="copy-output" contenteditable="false">
+                    <!-- Generated copy will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outreach Screen -->
+    <div id="outreachScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Outreach Email Generator</h2>
+                <button onclick="startVoiceInput('outreach')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    🎤 Voice Input
+                </button>
+            </div>
+
+            <!-- Email Type Selection -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Email Type</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="selectEmailType('cold')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">❄️ Cold Outreach</div>
+                        <div class="text-sm text-gray-300">First contact email</div>
+                    </button>
+                    <button onclick="selectEmailType('followup')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">🔄 Follow-up</div>
+                        <div class="text-sm text-gray-300">Second or third touch</div>
+                    </button>
+                    <button onclick="selectEmailType('partnership')" class="template-card text-left">
+                        <div class="font-bold text-accent mb-2">🤝 Partnership</div>
+                        <div class="text-sm text-gray-300">Collaboration proposal</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Outreach Form -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6" id="outreachForm">
+                <h3 class="text-xl font-bold text-accent mb-4">Email Details</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">Who are you reaching out to?</label>
+                        <input type="text" id="outreachTarget" placeholder="e.g., SaaS founders, marketing directors, startup CEOs..." 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's the main problem they face?</label>
+                        <textarea id="outreachProblem" rows="2" placeholder="e.g., Struggling to write copy that converts..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's your solution/offer?</label>
+                        <textarea id="outreachSolution" rows="2" placeholder="e.g., I help founders write better copy in 30 days..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's your credibility/proof?</label>
+                        <textarea id="outreachProof" rows="2" placeholder="e.g., Helped 100+ founders increase conversions by 40%..." 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-accent font-semibold mb-2">What's your call-to-action?</label>
+                        <input type="text" id="outreachCTA" placeholder="e.g., 15-minute call, free audit, demo..." 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="generateOutreachEmail()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                            Generate Email
+                        </button>
+                        <button onclick="clearOutreachForm()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Email Output -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6" id="outreachOutput" style="display: none;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">Your Outreach Email</h3>
+                    <div class="flex gap-2">
+                        <button onclick="editCopy('outreach')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="saveCopy('outreach')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            💾 Save
+                        </button>
+                        <button onclick="exportToPDF('outreach')" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            📄 PDF
+                        </button>
+                    </div>
+                </div>
+                <div id="outreachEmailOutput" class="copy-output" contenteditable="false">
+                    <!-- Generated email will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Library Screen -->
+    <div id="libraryScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-accent">Copy Library</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportAllCopies()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📤 Export All
+                    </button>
+                    <button onclick="importCopies()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        📥 Import
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex gap-4 items-center">
+                    <label class="text-accent font-semibold">Filter:</label>
+                    <select id="libraryFilter" onchange="filterLibrary()" class="p-2 rounded bg-gray-800 border border-accent text-white">
+                        <option value="all">All Copies</option>
+                        <option value="landing">Landing Pages</option>
+                        <option value="outreach">Outreach Emails</option>
+                        <option value="recent">Recent (7 days)</option>
+                    </select>
+                    <input type="text" id="librarySearch" placeholder="Search copies..." onkeyup="searchLibrary()"
+                           class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white">
+                </div>
+            </div>
+
+            <!-- Copy List -->
+            <div id="copyLibrary" class="space-y-4">
+                <!-- Saved copies will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Business Vocabulary Mastery</h2>
+            
+            <!-- Daily Progress -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-accent">Today's Progress</h3>
+                    <span id="vocabProgress" class="text-accent font-bold">0/10</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="vocabProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Vocabulary Card -->
+            <div id="vocabCard" class="vocab-flashcard" onclick="flipVocabCard()">
+                <div id="vocabFront" class="block">
+                    <div class="text-4xl font-bold text-accent mb-6">leverage</div>
+                    <div class="text-lg text-gray-300 mb-4">Click to see definition</div>
+                    <div class="text-sm text-gray-400">Business Vocabulary</div>
+                </div>
+                <div id="vocabBack" class="hidden">
+                    <div class="text-2xl font-bold text-accent mb-4">leverage</div>
+                    <div class="text-lg text-white mb-4">
+                        To use something to maximum advantage; to use borrowed capital for investment
+                    </div>
+                    <div class="text-sm text-gray-300 italic mb-6">
+                        "We can leverage our existing customer base to launch the new product."
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        Common in business communication
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Buttons -->
+            <div class="flex justify-center gap-3" id="vocabRating">
+                <button onclick="rateVocab('again')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Again
+                </button>
+                <button onclick="rateVocab('hard')" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Hard
+                </button>
+                <button onclick="rateVocab('good')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Good
+                </button>
+                <button onclick="rateVocab('easy')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                    Easy
+                </button>
+            </div>
+
+            <!-- Add Custom Vocabulary -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Add Custom Term</h3>
+                <div class="space-y-3">
+                    <input type="text" id="newVocabTerm" placeholder="Business term..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <textarea id="newVocabDefinition" rows="2" placeholder="Definition..." 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                    <input type="text" id="newVocabExample" placeholder="Example sentence..." 
+                           class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addCustomVocab()" class="w-full bg-accent text-black p-3 rounded-lg font-semibold">
+                        Add Term
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Power Phrases & Transitions</h2>
+            
+            <!-- Phrase Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Persuasive Phrases -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💪 Persuasive Phrases</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('proven track record')">
+                            proven track record
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('industry-leading solution')">
+                            industry-leading solution
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('immediate results')">
+                            immediate results
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('exclusive opportunity')">
+                            exclusive opportunity
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('limited-time offer')">
+                            limited-time offer
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Communication -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">💼 Business Communication</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('I wanted to reach out')">
+                            I wanted to reach out
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('following up on our conversation')">
+                            following up on our conversation
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('I believe this could be valuable')">
+                            I believe this could be valuable
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('would love to discuss further')">
+                            would love to discuss further
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('looking forward to hearing from you')">
+                            looking forward to hearing from you
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transitions & Connectors -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🔗 Smooth Transitions</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('what this means for you')">
+                            what this means for you
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('here is the bottom line')">
+                            here is the bottom line
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('the key takeaway')">
+                            the key takeaway
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('in other words')">
+                            in other words
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('to put it simply')">
+                            to put it simply
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call-to-Action Phrases -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">🎯 Call-to-Action</h3>
+                    <div class="space-y-2">
+                        <div class="phrase-chip" onclick="copyPhrase('get started today')">
+                            get started today
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('claim your spot now')">
+                            claim your spot now
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('schedule a quick call')">
+                            schedule a quick call
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('take the next step')">
+                            take the next step
+                        </div>
+                        <div class="phrase-chip" onclick="copyPhrase('don\'t miss out')">
+                            don't miss out
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Phrases -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Custom Phrases</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newPhrase" placeholder="Add your custom phrase..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <select id="phraseCategory" class="p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                        <option value="persuasive">Persuasive</option>
+                        <option value="business">Business</option>
+                        <option value="transitions">Transitions</option>
+                        <option value="cta">Call-to-Action</option>
+                    </select>
+                    <button onclick="addCustomPhrase()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add
+                    </button>
+                </div>
+                <div id="customPhrases" class="space-y-2">
+                    <!-- Custom phrases will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Screen -->
+    <div id="focusScreen" class="screen hidden p-4">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-2xl font-bold text-accent">Focus Reset Session</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Breathe</div>
+            </div>
+            
+            <div class="text-accent text-4xl font-bold" id="breathingTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center">
+                "Great copy comes from clear thinking and focused execution."
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startBreathing()" id="startBreathingBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Session
+                </button>
+                <button onclick="pauseBreathing()" id="pauseBreathingBtn" 
+                        class="bg-yellow-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏸️ Pause
+                </button>
+                <button onclick="stopBreathing()" id="stopBreathingBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="font-bold text-accent mb-4">Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                        Add Message
+                    </button>
+                </div>
+                <div id="customMessages" class="space-y-2">
+                    <!-- Custom messages will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-4">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-accent text-center">Performance Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stats-card">
+                    <div class="text-3xl font-bold text-accent" id="totalCopiesAnalytics">0</div>
+                    <div class="text-sm text-gray-400">Total Copies</div>
+                </div>
+                <div class="stats-card">
+                    <div class="text-3xl font-bold text-accent" id="totalWordsAnalytics">0</div>
+                    <div class="text-sm text-gray-400">Words Written</div>
+                </div>
+                <div class="stats-card">
+                    <div class="text-3xl font-bold text-accent" id="streakAnalytics">0</div>
+                    <div class="text-sm text-gray-400">Current Streak</div>
+                </div>
+                <div class="stats-card">
+                    <div class="text-3xl font-bold text-accent" id="vocabMastered">0</div>
+                    <div class="text-sm text-gray-400">Vocab Mastered</div>
+                </div>
+            </div>
+
+            <!-- Progress Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">Weekly Activity</h3>
+                    <div id="weeklyChart" class="space-y-3">
+                        <!-- Weekly progress chart will be here -->
+                    </div>
+                </div>
+                
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-4">Copy Types</h3>
+                    <div id="copyTypeChart" class="space-y-3">
+                        <!-- Copy type breakdown chart will be here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-accent mb-4">Data Management</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="exportAllData()" class="bg-blue-600 text-white p-3 rounded-lg font-semibold">
+                        📤 Export Data
+                    </button>
+                    <button onclick="importData()" class="bg-green-600 text-white p-3 rounded-lg font-semibold">
+                        📥 Import Data
+                    </button>
+                    <button onclick="backupData()" class="bg-purple-600 text-white p-3 rounded-lg font-semibold">
+                        💾 Backup
+                    </button>
+                    <button onclick="syncData()" class="bg-accent text-black p-3 rounded-lg font-semibold">
+                        🔄 Sync
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-accent mb-6">Quick Add</h3>
+            <div class="space-y-4">
+                <button onclick="quickAddLanding()" class="w-full bg-accent text-black p-4 rounded-lg font-semibold text-left">
+                    📄 Landing Page Copy
+                </button>
+                <button onclick="quickAddOutreach()" class="w-full bg-blue-600 text-white p-4 rounded-lg font-semibold text-left">
+                    📧 Outreach Email
+                </button>
+                <button onclick="quickAddVocab()" class="w-full bg-green-600 text-white p-4 rounded-lg font-semibold text-left">
+                    📚 Vocabulary Review
+                </button>
+                <button onclick="closeQuickAdd()" class="w-full bg-gray-600 text-white p-4 rounded-lg font-semibold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let savedCopies = [];
+        let vocabulary = [];
+        let phrases = [];
+        let motivationalMessages = [];
+        let analytics = {
+            totalCopies: 0,
+            totalWords: 0,
+            currentStreak: 0,
+            lastActiveDate: null,
+            focusSessions: 0,
+            vocabReviews: 0
+        };
+        let currentVocabIndex = 0;
+        let isVocabFlipped = false;
+        let breathingTimer = null;
+        let breathingInterval = null;
+        let breathingTimeLeft = 25 * 60;
+        let breathingPhase = 'inhale';
+        let recognition = null;
+        let isRecording = false;
+        let currentVoiceContext = '';
+        let isOnline = navigator.onLine;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadHomeScreen();
+            updateStats();
+            setupSpeechRecognition();
+            setupOfflineHandling();
+            loadSpotlightVocab();
+        });
+
+        // Data management
+        function initializeData() {
+            const savedData = localStorage.getItem('clientEnglishProData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                savedCopies = data.copies || [];
+                vocabulary = data.vocabulary || getDefaultVocabulary();
+                phrases = data.phrases || getDefaultPhrases();
+                motivationalMessages = data.messages || getDefaultMessages();
+                analytics = { ...analytics, ...data.analytics };
+            } else {
+                vocabulary = getDefaultVocabulary();
+                phrases = getDefaultPhrases();
+                motivationalMessages = getDefaultMessages();
+                saveData();
+            }
+        }
+
+        function saveData() {
+            const data = {
+                copies: savedCopies,
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                analytics,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('clientEnglishProData', JSON.stringify(data));
+            if (isOnline) {
+                showSyncIndicator();
+            }
+        }
+
+        function getDefaultVocabulary() {
+            return [
+                {
+                    id: '1',
+                    term: 'leverage',
+                    definition: 'To use something to maximum advantage; to use borrowed capital for investment',
+                    example: 'We can leverage our existing customer base to launch the new product.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '2',
+                    term: 'scalable',
+                    definition: 'Able to be changed in size or scale; capable of growth',
+                    example: 'Our business model is highly scalable and can handle rapid expansion.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '3',
+                    term: 'conversion',
+                    definition: 'The process of changing or causing something to change from one form to another',
+                    example: 'Our new landing page increased conversion rates by 40%.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '4',
+                    term: 'value proposition',
+                    definition: 'A promise of value to be delivered and acknowledged and a belief from the customer',
+                    example: 'Our value proposition clearly explains why customers should choose us.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                },
+                {
+                    id: '5',
+                    term: 'ROI',
+                    definition: 'Return on Investment - a measure of the efficiency of an investment',
+                    example: 'The marketing campaign delivered a 300% ROI within six months.',
+                    due: Date.now(),
+                    ease: 2.5,
+                    interval: 1
+                }
+            ];
+        }
+
+        function getDefaultPhrases() {
+            return [
+                { id: '1', category: 'persuasive', text: 'proven track record', custom: false },
+                { id: '2', category: 'business', text: 'I wanted to reach out', custom: false },
+                { id: '3', category: 'transitions', text: 'what this means for you', custom: false },
+                { id: '4', category: 'cta', text: 'get started today', custom: false }
+            ];
+        }
+
+        function getDefaultMessages() {
+            return [
+                "Great copy comes from clear thinking and focused execution.",
+                "Every word matters when you're building your business.",
+                "Clarity beats cleverness in business communication.",
+                "Your message is your competitive advantage.",
+                "Simple words, powerful results."
+            ];
+        }
+
+        // Screen management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'home': loadHomeScreen(); break;
+                case 'library': loadLibraryScreen(); break;
+                case 'vocabulary': loadVocabularyScreen(); break;
+                case 'phrases': loadPhrasesScreen(); break;
+                case 'focus': loadFocusScreen(); break;
+                case 'analytics': loadAnalyticsScreen(); break;
+            }
+        }
+
+        // Home screen
+        function loadHomeScreen() {
+            updateTodayProgress();
+            loadRecentWork();
+            loadSpotlightVocab();
+        }
+
+        function updateTodayProgress() {
+            const today = new Date().toDateString();
+            const todayCopies = savedCopies.filter(copy => new Date(copy.date).toDateString() === today);
+            
+            const landingCount = todayCopies.filter(c => c.type === 'landing').length;
+            const outreachCount = todayCopies.filter(c => c.type === 'outreach').length;
+            const vocabCount = vocabulary.filter(v => {
+                const lastReview = v.lastReview ? new Date(v.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            document.getElementById('todayLanding').textContent = landingCount;
+            document.getElementById('todayOutreach').textContent = outreachCount;
+            document.getElementById('todayVocab').textContent = vocabCount;
+            document.getElementById('todayFocus').textContent = analytics.focusSessions || 0;
+        }
+
+        function loadRecentWork() {
+            const recentCopies = savedCopies.slice(-5).reverse();
+            const container = document.getElementById('recentWork');
+            
+            if (recentCopies.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No copies created yet</div>';
+                return;
+            }
+            
+            container.innerHTML = recentCopies.map(copy => `
+                <div class="copy-item cursor-pointer" onclick="viewCopy('${copy.id}')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-semibold text-accent">${copy.type.toUpperCase()}</span>
+                            <span class="text-sm text-gray-400 ml-2">${new Date(copy.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-400">${copy.wordCount} words</div>
+                        </div>
+                    </div>
+                    <div class="text-white mt-2 truncate">${copy.title}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadSpotlightVocab() {
+            if (vocabulary.length === 0) return;
+            
+            const randomVocab = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+            const container = document.getElementById('spotlightVocab');
+            
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-4">${randomVocab.term}</div>
+                    <div class="text-lg text-gray-300 mb-4">${randomVocab.definition}</div>
+                    <div class="text-sm text-gray-400 italic">"${randomVocab.example}"</div>
+                </div>
+            `;
+        }
+
+        function flipSpotlightCard() {
+            loadSpotlightVocab();
+        }
+
+        // Landing copy generation
+        function selectTemplate(template) {
+            // Visual feedback for template selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+            });
+            event.target.closest('.template-card').style.borderColor = '#d4af37';
+        }
+
+        function generateLandingCopy() {
+            const problem = document.getElementById('landingProblem').value.trim();
+            const promise = document.getElementById('landingPromise').value.trim();
+            const proof = document.getElementById('landingProof').value.trim();
+            const price = document.getElementById('landingPrice').value.trim();
+            
+            if (!problem || !promise) {
+                showNotification('Please fill in at least the problem and promise fields');
+                return;
+            }
+            
+            const copy = generateLandingPageCopy(problem, promise, proof, price);
+            document.getElementById('landingCopyOutput').innerHTML = copy;
+            document.getElementById('landingOutput').style.display = 'block';
+            
+            // Scroll to output
+            document.getElementById('landingOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateLandingPageCopy(problem, promise, proof, price) {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <h1 class="text-4xl font-bold text-accent mb-4">Stop Struggling With Copy That Doesn't Convert</h1>
+                        <p class="text-xl text-gray-300">${promise}</p>
+                    </div>
+                    
+                    <div class="bg-red-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-red-500">
+                        <h2 class="text-2xl font-bold text-red-300 mb-3">The Problem:</h2>
+                        <p class="text-gray-300">${problem}</p>
+                    </div>
+                    
+                    <div class="bg-green-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-green-500">
+                        <h2 class="text-2xl font-bold text-green-300 mb-3">The Solution:</h2>
+                        <p class="text-gray-300">${promise}</p>
+                    </div>
+                    
+                    ${proof ? `
+                    <div class="bg-blue-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-blue-500">
+                        <h2 class="text-2xl font-bold text-blue-300 mb-3">Proof It Works:</h2>
+                        <p class="text-gray-300">${proof}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${price ? `
+                    <div class="bg-yellow-900 bg-opacity-30 p-6 rounded-lg border-l-4 border-yellow-500 text-center">
+                        <h2 class="text-2xl font-bold text-yellow-300 mb-3">Special Offer:</h2>
+                        <p class="text-gray-300 mb-4">${price}</p>
+                        <button class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                            Get Started Now
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function clearLandingForm() {
+            document.getElementById('landingProblem').value = '';
+            document.getElementById('landingPromise').value = '';
+            document.getElementById('landingProof').value = '';
+            document.getElementById('landingPrice').value = '';
+            document.getElementById('landingOutput').style.display = 'none';
+        }
+
+        // Outreach email generation
+        function selectEmailType(type) {
+            // Visual feedback for email type selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+            });
+            event.target.closest('.template-card').style.borderColor = '#d4af37';
+        }
+
+        function generateOutreachEmail() {
+            const target = document.getElementById('outreachTarget').value.trim();
+            const problem = document.getElementById('outreachProblem').value.trim();
+            const solution = document.getElementById('outreachSolution').value.trim();
+            const proof = document.getElementById('outreachProof').value.trim();
+            const cta = document.getElementById('outreachCTA').value.trim();
+            
+            if (!target || !problem || !solution) {
+                showNotification('Please fill in target audience, problem, and solution fields');
+                return;
+            }
+            
+            const email = generateOutreachEmailCopy(target, problem, solution, proof, cta);
+            document.getElementById('outreachEmailOutput').innerHTML = email;
+            document.getElementById('outreachOutput').style.display = 'block';
+            
+            // Scroll to output
+            document.getElementById('outreachOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateOutreachEmailCopy(target, problem, solution, proof, cta) {
+            return `
+                <div class="space-y-4">
+                    <div class="border-b border-gray-600 pb-4">
+                        <p><strong>Subject:</strong> Quick question about [specific challenge]</p>
+                    </div>
+                    
+                    <div>
+                        <p>Hi [Name],</p>
+                    </div>
+                    
+                    <div>
+                        <p>I noticed you're working with ${target}, and I wanted to reach out because I see a lot of founders in your space struggling with something specific.</p>
+                    </div>
+                    
+                    <div>
+                        <p><strong>The challenge:</strong> ${problem}</p>
+                    </div>
+                    
+                    <div>
+                        <p>I've been helping founders solve exactly this problem. ${solution}</p>
+                    </div>
+                    
+                    ${proof ? `
+                    <div>
+                        <p><strong>Quick proof:</strong> ${proof}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div>
+                        <p>I'm not sure if this is relevant to your current situation, but if it is, ${cta || 'I\'d love to share some insights that might help'}.</p>
+                    </div>
+                    
+                    <div>
+                        <p>Worth a quick conversation?</p>
+                    </div>
+                    
+                    <div>
+                        <p>Best regards,<br>[Your name]</p>
+                    </div>
+                    
+                    <div class="text-sm text-gray-400 mt-6">
+                        <p><em>P.S. If this isn't relevant, just let me know and I won't follow up.</em></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function clearOutreachForm() {
+            document.getElementById('outreachTarget').value = '';
+            document.getElementById('outreachProblem').value = '';
+            document.getElementById('outreachSolution').value = '';
+            document.getElementById('outreachProof').value = '';
+            document.getElementById('outreachCTA').value = '';
+            document.getElementById('outreachOutput').style.display = 'none';
+        }
+
+        // Copy management
+        function editCopy(type) {
+            const outputElement = document.getElementById(type === 'landing' ? 'landingCopyOutput' : 'outreachEmailOutput');
+            outputElement.contentEditable = true;
+            outputElement.focus();
+            outputElement.style.border = '2px solid #d4af37';
+            
+            showNotification('Edit mode enabled - click outside to finish');
+            
+            outputElement.addEventListener('blur', function() {
+                outputElement.contentEditable = false;
+                outputElement.style.border = '2px solid rgba(212, 175, 55, 0.4)';
+            }, { once: true });
+        }
+
+        function saveCopy(type) {
+            const outputElement = document.getElementById(type === 'landing' ? 'landingCopyOutput' : 'outreachEmailOutput');
+            const content = outputElement.innerHTML;
+            const wordCount = outputElement.textContent.split(/\s+/).length;
+            
+            const copy = {
+                id: Date.now().toString(),
+                type: type,
+                title: type === 'landing' ? 'Landing Page Copy' : 'Outreach Email',
+                content: content,
+                wordCount: wordCount,
+                date: new Date().toISOString()
+            };
+            
+            savedCopies.push(copy);
+            analytics.totalCopies++;
+            analytics.totalWords += wordCount;
+            updateStreak();
+            saveData();
+            
+            showNotification('Copy saved successfully!');
+            updateStats();
+        }
+
+        function exportToPDF(type) {
+            const outputElement = document.getElementById(type === 'landing' ? 'landingCopyOutput' : 'outreachEmailOutput');
+            const content = outputElement.textContent;
+            
+            if (!content.trim()) {
+                showNotification('No content to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text(type === 'landing' ? 'Landing Page Copy' : 'Outreach Email', 20, 30);
+            
+            // Add date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            // Add content
+            doc.setFontSize(11);
+            const splitText = doc.splitTextToSize(content, 170);
+            doc.text(splitText, 20, 60);
+            
+            // Save PDF
+            doc.save(`${type}-copy-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('PDF exported successfully!');
+        }
+
+        // Library screen
+        function loadLibraryScreen() {
+            filterLibrary();
+        }
+
+        function filterLibrary() {
+            const filter = document.getElementById('libraryFilter').value;
+            const searchTerm = document.getElementById('librarySearch').value.toLowerCase();
+            
+            let filteredCopies = savedCopies;
+            
+            // Apply filter
+            if (filter !== 'all') {
+                if (filter === 'recent') {
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    filteredCopies = filteredCopies.filter(copy => new Date(copy.date) > weekAgo);
+                } else {
+                    filteredCopies = filteredCopies.filter(copy => copy.type === filter);
+                }
+            }
+            
+            // Apply search
+            if (searchTerm) {
+                filteredCopies = filteredCopies.filter(copy => 
+                    copy.title.toLowerCase().includes(searchTerm) ||
+                    copy.content.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayCopies(filteredCopies);
+        }
+
+        function searchLibrary() {
+            filterLibrary();
+        }
+
+        function displayCopies(copies) {
+            const container = document.getElementById('copyLibrary');
+            
+            if (copies.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-8">No copies found</div>';
+                return;
+            }
+            
+            container.innerHTML = copies.reverse().map(copy => `
+                <div class="copy-item">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-accent">${copy.title}</h3>
+                            <div class="text-sm text-gray-400">
+                                ${copy.type.toUpperCase()} • ${new Date(copy.date).toLocaleDateString()} • ${copy.wordCount} words
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="viewCopy('${copy.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                View
+                            </button>
+                            <button onclick="duplicateCopy('${copy.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                Duplicate
+                            </button>
+                            <button onclick="deleteCopy('${copy.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-gray-300 text-sm line-clamp-3">
+                        ${copy.content.replace(/<[^>]*>/g, '').substring(0, 200)}...
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewCopy(copyId) {
+            const copy = savedCopies.find(c => c.id === copyId);
+            if (!copy) return;
+            
+            // Create modal to view copy
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-accent">${copy.title}</h3>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white">
+                                ✕
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-400 mb-4">
+                            ${copy.type.toUpperCase()} • ${new Date(copy.date).toLocaleDateString()} • ${copy.wordCount} words
+                        </div>
+                        <div class="copy-output">
+                            ${copy.content}
+                        </div>
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="exportCopyToPDF('${copy.id}')" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                                📄 Export PDF
+                            </button>
+                            <button onclick="duplicateCopy('${copy.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                                📋 Duplicate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function duplicateCopy(copyId) {
+            const copy = savedCopies.find(c => c.id === copyId);
+            if (!copy) return;
+            
+            const newCopy = {
+                ...copy,
+                id: Date.now().toString(),
+                title: copy.title + ' (Copy)',
+                date: new Date().toISOString()
+            };
+            
+            savedCopies.push(newCopy);
+            analytics.totalCopies++;
+            saveData();
+            
+            showNotification('Copy duplicated successfully!');
+            filterLibrary();
+            updateStats();
+        }
+
+        function deleteCopy(copyId) {
+            if (confirm('Are you sure you want to delete this copy?')) {
+                savedCopies = savedCopies.filter(c => c.id !== copyId);
+                analytics.totalCopies = Math.max(0, analytics.totalCopies - 1);
+                saveData();
+                
+                showNotification('Copy deleted');
+                filterLibrary();
+                updateStats();
+            }
+        }
+
+        function exportCopyToPDF(copyId) {
+            const copy = savedCopies.find(c => c.id === copyId);
+            if (!copy) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text(copy.title, 20, 30);
+            
+            // Add metadata
+            doc.setFontSize(12);
+            doc.text(`Type: ${copy.type.toUpperCase()}`, 20, 45);
+            doc.text(`Created: ${new Date(copy.date).toLocaleDateString()}`, 20, 55);
+            doc.text(`Words: ${copy.wordCount}`, 20, 65);
+            
+            // Add content
+            doc.setFontSize(11);
+            const content = copy.content.replace(/<[^>]*>/g, '').replace(/\n\s*\n/g, '\n');
+            const splitText = doc.splitTextToSize(content, 170);
+            doc.text(splitText, 20, 80);
+            
+            // Save PDF
+            doc.save(`${copy.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+            showNotification('PDF exported successfully!');
+        }
+
+        function exportAllCopies() {
+            if (savedCopies.length === 0) {
+                showNotification('No copies to export');
+                return;
+            }
+            
+            const data = {
+                copies: savedCopies,
+                exportDate: new Date().toISOString(),
+                totalCopies: savedCopies.length,
+                totalWords: savedCopies.reduce((sum, copy) => sum + copy.wordCount, 0)
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `client-english-pro-copies-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('All copies exported successfully!');
+        }
+
+        function importCopies() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.copies && Array.isArray(importedData.copies)) {
+                            if (confirm(`Import ${importedData.copies.length} copies? This will add to your existing library.`)) {
+                                importedData.copies.forEach(copy => {
+                                    copy.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                                    savedCopies.push(copy);
+                                });
+                                
+                                analytics.totalCopies += importedData.copies.length;
+                                saveData();
+                                showNotification(`${importedData.copies.length} copies imported successfully!`);
+                                filterLibrary();
+                                updateStats();
+                            }
+                        } else {
+                            showNotification('Invalid file format');
+                        }
+                    } catch (error) {
+                        showNotification('Error reading file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Vocabulary screen
+        function loadVocabularyScreen() {
+            loadVocabularyReview();
+            updateVocabularyProgress();
+        }
+
+        function loadVocabularyReview() {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            
+            if (dueWords.length === 0) {
+                document.getElementById('vocabCard').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl text-accent mb-4">🎉</div>
+                        <div class="text-2xl font-bold text-accent mb-2">All Caught Up!</div>
+                        <div class="text-gray-400">No vocabulary due for review</div>
+                        <button onclick="addRandomVocab()" class="mt-4 bg-accent text-black px-6 py-3 rounded-lg font-semibold">
+                            Review Random Term
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currentWord = dueWords[currentVocabIndex % dueWords.length];
+            loadVocabCard(currentWord);
+        }
+
+        function loadVocabCard(word) {
+            document.getElementById('vocabFront').innerHTML = `
+                <div class="text-4xl font-bold text-accent mb-6">${word.term}</div>
+                <div class="text-lg text-gray-300 mb-4">Click to see definition</div>
+                <div class="text-sm text-gray-400">Business Vocabulary</div>
+            `;
+            
+            document.getElementById('vocabBack').innerHTML = `
+                <div class="text-2xl font-bold text-accent mb-4">${word.term}</div>
+                <div class="text-lg text-white mb-4">${word.definition}</div>
+                <div class="text-sm text-gray-300 italic mb-6">"${word.example}"</div>
+                <div class="text-xs text-gray-400">Common in business communication</div>
+            `;
+            
+            document.getElementById('vocabFront').classList.remove('hidden');
+            document.getElementById('vocabBack').classList.add('hidden');
+            isVocabFlipped = false;
+        }
+
+        function flipVocabCard() {
+            if (isVocabFlipped) {
+                document.getElementById('vocabFront').classList.remove('hidden');
+                document.getElementById('vocabBack').classList.add('hidden');
+            } else {
+                document.getElementById('vocabFront').classList.add('hidden');
+                document.getElementById('vocabBack').classList.remove('hidden');
+            }
+            isVocabFlipped = !isVocabFlipped;
+        }
+
+        function updateVocabularyProgress() {
+            const today = new Date().toDateString();
+            const reviewedToday = vocabulary.filter(word => {
+                const lastReview = word.lastReview ? new Date(word.lastReview).toDateString() : null;
+                return lastReview === today;
+            }).length;
+            
+            const dailyGoal = 10;
+            const progress = Math.min((reviewedToday / dailyGoal) * 100, 100);
+            
+            document.getElementById('vocabProgress').textContent = `${reviewedToday}/${dailyGoal}`;
+            document.getElementById('vocabProgressBar').style.width = `${progress}%`;
+        }
+
+        function rateVocab(rating) {
+            const dueWords = vocabulary.filter(word => word.due <= Date.now());
+            if (dueWords.length === 0) return;
+            
+            const currentWord = dueWords[currentVocabIndex % dueWords.length];
+            const wordIndex = vocabulary.findIndex(w => w.id === currentWord.id);
+            
+            if (wordIndex === -1) return;
+            
+            // Spaced repetition algorithm
+            let newEase = currentWord.ease;
+            let newInterval = currentWord.interval;
+            
+            switch (rating) {
+                case 'again':
+                    newEase = Math.max(1.3, newEase - 0.2);
+                    newInterval = 1;
+                    break;
+                case 'hard':
+                    newEase = Math.max(1.3, newEase - 0.15);
+                    newInterval = Math.max(1, Math.round(newInterval * 1.2));
+                    break;
+                case 'good':
+                    newInterval = Math.round(newInterval * newEase);
+                    break;
+                case 'easy':
+                    newEase = newEase + 0.15;
+                    newInterval = Math.round(newInterval * newEase * 1.3);
+                    break;
+            }
+            
+            vocabulary[wordIndex] = {
+                ...currentWord,
+                ease: newEase,
+                interval: newInterval,
+                due: Date.now() + (newInterval * 24 * 60 * 60 * 1000),
+                lastReview: Date.now()
+            };
+            
+            analytics.vocabReviews++;
+            saveData();
+            
+            currentVocabIndex++;
+            loadVocabularyReview();
+            updateVocabularyProgress();
+            updateStats();
+        }
+
+        function addCustomVocab() {
+            const term = document.getElementById('newVocabTerm').value.trim();
+            const definition = document.getElementById('newVocabDefinition').value.trim();
+            const example = document.getElementById('newVocabExample').value.trim();
+            
+            if (!term || !definition) {
+                showNotification('Please enter both term and definition');
+                return;
+            }
+            
+            vocabulary.push({
+                id: Date.now().toString(),
+                term: term,
+                definition: definition,
+                example: example || `Example usage of ${term} in business context.`,
+                due: Date.now(),
+                ease: 2.5,
+                interval: 1,
+                lastReview: null
+            });
+            
+            saveData();
+            
+            document.getElementById('newVocabTerm').value = '';
+            document.getElementById('newVocabDefinition').value = '';
+            document.getElementById('newVocabExample').value = '';
+            
+            showNotification('Vocabulary term added!');
+            loadVocabularyReview();
+        }
+
+        function addRandomVocab() {
+            if (vocabulary.length > 0) {
+                const randomWord = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+                randomWord.due = Date.now();
+                loadVocabularyReview();
+            }
+        }
+
+        // Phrases screen
+        function loadPhrasesScreen() {
+            loadCustomPhrases();
+        }
+
+        function copyPhrase(phrase) {
+            navigator.clipboard.writeText(phrase).then(() => {
+                showNotification('Phrase copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = phrase;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Phrase copied to clipboard!');
+            });
+        }
+
+        function addCustomPhrase() {
+            const phrase = document.getElementById('newPhrase').value.trim();
+            const category = document.getElementById('phraseCategory').value;
+            
+            if (!phrase) {
+                showNotification('Please enter a phrase');
+                return;
+            }
+            
+            phrases.push({
+                id: Date.now().toString(),
+                category: category,
+                text: phrase,
+                custom: true
+            });
+            
+            saveData();
+            
+            document.getElementById('newPhrase').value = '';
+            loadCustomPhrases();
+            showNotification('Custom phrase added!');
+        }
+
+        function loadCustomPhrases() {
+            const customPhrases = phrases.filter(p => p.custom);
+            const container = document.getElementById('customPhrases');
+            
+            if (customPhrases.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No custom phrases yet</div>';
+                return;
+            }
+            
+            const groupedPhrases = customPhrases.reduce((acc, phrase) => {
+                if (!acc[phrase.category]) acc[phrase.category] = [];
+                acc[phrase.category].push(phrase);
+                return acc;
+            }, {});
+            
+            container.innerHTML = Object.entries(groupedPhrases).map(([category, categoryPhrases]) => `
+                <div class="mb-4">
+                    <h4 class="font-bold text-accent mb-2">${category.toUpperCase()}</h4>
+                    <div class="space-y-1">
+                        ${categoryPhrases.map(phrase => `
+                            <div class="flex justify-between items-center bg-gray-800 p-2 rounded">
+                                <span class="phrase-chip" onclick="copyPhrase('${phrase.text}')">${phrase.text}</span>
+                                <button onclick="deletePhrase('${phrase.id}')" class="text-red-400 text-xs">Delete</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePhrase(phraseId) {
+            phrases = phrases.filter(p => p.id !== phraseId);
+            saveData();
+            loadCustomPhrases();
+            showNotification('Phrase deleted');
+        }
+
+        // Focus screen
+        function loadFocusScreen() {
+            loadCustomMessages();
+        }
+
+        function startBreathing() {
+            breathingTimeLeft = 25 * 60;
+            breathingPhase = 'inhale';
+            
+            document.getElementById('startBreathingBtn').disabled = true;
+            document.getElementById('pauseBreathingBtn').disabled = false;
+            document.getElementById('stopBreathingBtn').disabled = false;
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                updateBreathingTimer();
+                
+                if (breathingTimeLeft <= 0) {
+                    stopBreathing();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateBreathingTimer() {
+            const minutes = Math.floor(breathingTimeLeft / 60);
+            const seconds = breathingTimeLeft % 60;
+            document.getElementById('breathingTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (motivationalMessages.length > 0) {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function pauseBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+                
+                document.getElementById('pauseBreathingBtn').textContent = '▶️ Resume';
+                document.getElementById('pauseBreathingBtn').onclick = resumeBreathing;
+            }
+        }
+
+        function resumeBreathing() {
+            startBreathing();
+            document.getElementById('pauseBreathingBtn').textContent = '⏸️ Pause';
+            document.getElementById('pauseBreathingBtn').onclick = pauseBreathing;
+        }
+
+        function stopBreathing() {
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                clearInterval(breathingInterval);
+                breathingTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startBreathingBtn').disabled = false;
+            document.getElementById('pauseBreathingBtn').disabled = true;
+            document.getElementById('stopBreathingBtn').disabled = true;
+            
+            analytics.focusSessions++;
+            saveData();
+            updateStats();
+            
+            showNotification('Focus session completed! 🧘');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) return;
+            
+            motivationalMessages.push(message);
+            saveData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMessages();
+            showNotification('Motivational message added!');
+        }
+
+        function loadCustomMessages() {
+            const customMessages = motivationalMessages.slice(5); // Skip default messages
+            const container = document.getElementById('customMessages');
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            motivationalMessages.splice(index, 1);
+            saveData();
+            loadCustomMessages();
+            showNotification('Message removed');
+        }
+
+        // Analytics screen
+        function loadAnalyticsScreen() {
+            updateAnalyticsDisplay();
+            loadWeeklyChart();
+            loadCopyTypeChart();
+        }
+
+        function updateAnalyticsDisplay() {
+            document.getElementById('totalCopiesAnalytics').textContent = analytics.totalCopies;
+            document.getElementById('totalWordsAnalytics').textContent = analytics.totalWords;
+            document.getElementById('streakAnalytics').textContent = analytics.currentStreak;
+            document.getElementById('vocabMastered').textContent = vocabulary.filter(v => v.ease > 3.0).length;
+        }
+
+        function loadWeeklyChart() {
+            const container = document.getElementById('weeklyChart');
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            // Get activity for each day of the week
+            const weeklyData = days.map(day => {
+                // Simulate activity data - in real app, calculate from actual data
+                const activity = Math.floor(Math.random() * 5);
+                return { day, activity };
+            });
+            
+            container.innerHTML = weeklyData.map(({ day, activity }) => {
+                const percentage = (activity / 5) * 100;
+                return `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-accent font-semibold">${day}</span>
+                        <span class="text-gray-400">${activity} activities</span>
+                    </div>
+                    <div class="progress-bar mb-3">
+                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadCopyTypeChart() {
+            const container = document.getElementById('copyTypeChart');
+            
+            const landingCount = savedCopies.filter(c => c.type === 'landing').length;
+            const outreachCount = savedCopies.filter(c => c.type === 'outreach').length;
+            const total = landingCount + outreachCount;
+            
+            if (total === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">No copies created yet</div>';
+                return;
+            }
+            
+            const landingPercentage = (landingCount / total) * 100;
+            const outreachPercentage = (outreachCount / total) * 100;
+            
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-accent font-semibold">Landing Pages</span>
+                    <span class="text-gray-400">${landingCount} copies</span>
+                </div>
+                <div class="progress-bar mb-3">
+                    <div class="progress-fill" style="width: ${landingPercentage}%"></div>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-accent font-semibold">Outreach Emails</span>
+                    <span class="text-gray-400">${outreachCount} copies</span>
+                </div>
+                <div class="progress-bar mb-3">
+                    <div class="progress-fill" style="width: ${outreachPercentage}%"></div>
+                </div>
+            `;
+        }
+
+        // Voice input functionality
+        function setupSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    handleVoiceInput(transcript);
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceInput();
+                };
+            }
+        }
+
+        function startVoiceInput(context) {
+            if (!recognition) {
+                showNotification('Speech recognition not supported in this browser');
+                return;
+            }
+            
+            currentVoiceContext = context;
+            isRecording = true;
+            document.getElementById('voiceIndicator').classList.remove('hidden');
+            recognition.start();
+        }
+
+        function stopVoiceInput() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById('voiceIndicator').classList.add('hidden');
+            }
+        }
+
+        function handleVoiceInput(transcript) {
+            if (currentVoiceContext === 'landing') {
+                // Fill in landing form fields based on transcript
+                if (transcript.toLowerCase().includes('problem')) {
+                    document.getElementById('landingProblem').value = transcript;
+                } else if (transcript.toLowerCase().includes('solution') || transcript.toLowerCase().includes('promise')) {
+                    document.getElementById('landingPromise').value = transcript;
+                } else {
+                    // Default to problem field
+                    document.getElementById('landingProblem').value = transcript;
+                }
+            } else if (currentVoiceContext === 'outreach') {
+                // Fill in outreach form fields based on transcript
+                if (transcript.toLowerCase().includes('target') || transcript.toLowerCase().includes('audience')) {
+                    document.getElementById('outreachTarget').value = transcript;
+                } else if (transcript.toLowerCase().includes('problem')) {
+                    document.getElementById('outreachProblem').value = transcript;
+                } else {
+                    // Default to solution field
+                    document.getElementById('outreachSolution').value = transcript;
+                }
+            }
+            
+            showNotification(`Voice input captured: "${transcript}"`);
+            stopVoiceInput();
+        }
+
+        // Quick add functionality
+        function quickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function quickAddLanding() {
+            closeQuickAdd();
+            showScreen('landing');
+        }
+
+        function quickAddOutreach() {
+            closeQuickAdd();
+            showScreen('outreach');
+        }
+
+        function quickAddVocab() {
+            closeQuickAdd();
+            showScreen('vocabulary');
+        }
+
+        // Data management functions
+        function exportAllData() {
+            const data = {
+                copies: savedCopies,
+                vocabulary,
+                phrases,
+                messages: motivationalMessages,
+                analytics,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `client-english-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported successfully!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('This will replace all current data. Are you sure?')) {
+                            savedCopies = importedData.copies || [];
+                            vocabulary = importedData.vocabulary || [];
+                            phrases = importedData.phrases || [];
+                            motivationalMessages = importedData.messages || [];
+                            analytics = { ...analytics, ...importedData.analytics };
+                            
+                            saveData();
+                            showNotification('Data imported successfully!');
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    } catch (error) {
+                        showNotification('Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function backupData() {
+            exportAllData();
+        }
+
+        function syncData() {
+            showSyncIndicator();
+            showNotification('Data synced (offline mode)');
+        }
+
+        // Utility functions
+        function updateStats() {
+            document.getElementById('currentStreak').textContent = analytics.currentStreak;
+            document.getElementById('totalCopies').textContent = analytics.totalCopies;
+            document.getElementById('totalWords').textContent = analytics.totalWords;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = analytics.lastActiveDate ? new Date(analytics.lastActiveDate).toDateString() : null;
+            
+            if (lastActive === today) {
+                return;
+            }
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (lastActive === yesterday.toDateString()) {
+                analytics.currentStreak++;
+            } else if (lastActive !== today) {
+                analytics.currentStreak = 1;
+            }
+            
+            analytics.lastActiveDate = new Date().toISOString();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-6 py-3 rounded-lg font-semibold z-50 shadow-lg';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        function showSyncIndicator() {
+            document.getElementById('syncIndicator').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('syncIndicator').classList.add('hidden');
+            }, 2000);
+        }
+
+        function setupOfflineHandling() {
+            window.addEventListener('online', () => {
+                isOnline = true;
+                showSyncIndicator();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                showNotification('Working offline');
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988263d937310890',t:'MTc1OTM4OTEzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
