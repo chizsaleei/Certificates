@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotus Builder - Task Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .lotus-gradient {
+            background: linear-gradient(135deg, #f7f3e9 0%, #e8f5e8 100%);
+        }
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        
+        .green-gradient {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+        }
+        
+        .drag-over {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 2px dashed #d4af37;
+        }
+        
+        .task-card {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .task-card:active {
+            cursor: grabbing;
+            transform: rotate(5deg);
+        }
+        
+        .priority-high { border-left: 4px solid #dc2626; }
+        .priority-medium { border-left: 4px solid #d4af37; }
+        .priority-low { border-left: 4px solid #16a34a; }
+        
+        .lotus-shadow {
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.1);
+        }
+        
+        @keyframes pulse-gold {
+            0%, 100% { background-color: rgba(212, 175, 55, 0.1); }
+            50% { background-color: rgba(212, 175, 55, 0.2); }
+        }
+        
+        .reminder-pulse {
+            animation: pulse-gold 2s infinite;
+        }
+    </style>
+</head>
+<body class="lotus-gradient min-h-screen">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-12 h-12 mr-3 flex items-center justify-center rounded-full gold-gradient">
+                    <span class="text-white text-2xl">🪷</span>
+                </div>
+                <h1 class="text-4xl font-bold text-green-900">Lotus Builder</h1>
+            </div>
+            <p class="text-green-700 text-lg">Focus. Prioritize. Build with Purpose.</p>
+        </header>
+
+        <!-- Quick Add Task -->
+        <div class="bg-white rounded-xl lotus-shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold text-green-900 mb-4">Add New Task</h2>
+            <form id="taskForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="taskTitle" placeholder="Task title" required 
+                       class="px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                <select id="taskUrgency" class="px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <option value="low">Low Urgency</option>
+                    <option value="medium">Medium Urgency</option>
+                    <option value="high">High Urgency</option>
+                </select>
+                <select id="taskImpact" class="px-4 py-2 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <option value="low">Low Impact</option>
+                    <option value="medium">Medium Impact</option>
+                    <option value="high">High Impact</option>
+                </select>
+                <button type="submit" class="gold-gradient text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    Add Task
+                </button>
+            </form>
+        </div>
+
+        <!-- Daily Reminder -->
+        <div id="dailyReminder" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 reminder-pulse">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">⏰</span>
+                <div>
+                    <h3 class="font-semibold text-yellow-800">Daily Focus Reminder</h3>
+                    <p class="text-yellow-700">Remember to review your high-impact tasks and avoid scope creep!</p>
+                </div>
+                <button onclick="dismissReminder()" class="ml-auto text-yellow-600 hover:text-yellow-800">✕</button>
+            </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl lotus-shadow p-6">
+                <h3 class="text-lg font-semibold text-green-900 mb-2">Today's Progress</h3>
+                <div class="flex items-center">
+                    <div class="w-full bg-green-100 rounded-full h-3 mr-3">
+                        <div id="todayProgress" class="green-gradient h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <span id="todayPercent" class="text-green-700 font-medium">0%</span>
+                </div>
+                <p class="text-sm text-green-600 mt-2"><span id="completedToday">0</span> of <span id="totalToday">0</span> tasks completed</p>
+            </div>
+            
+            <div class="bg-white rounded-xl lotus-shadow p-6">
+                <h3 class="text-lg font-semibold text-green-900 mb-2">High Priority</h3>
+                <div class="text-3xl font-bold text-red-600" id="highPriorityCount">0</div>
+                <p class="text-sm text-green-600">Critical tasks requiring attention</p>
+            </div>
+            
+            <div class="bg-white rounded-xl lotus-shadow p-6">
+                <h3 class="text-lg font-semibold text-green-900 mb-2">Focus Score</h3>
+                <div class="text-3xl font-bold text-yellow-600" id="focusScore">100</div>
+                <p class="text-sm text-green-600">Scope creep prevention metric</p>
+            </div>
+        </div>
+
+        <!-- Task Matrix -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- High Impact -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold text-green-900 text-center">High Impact</h2>
+                
+                <!-- High Impact, High Urgency -->
+                <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4 min-h-48" 
+                     ondrop="drop(event)" ondragover="allowDrop(event)" data-category="high-high">
+                    <h3 class="font-semibold text-red-800 mb-3 flex items-center">
+                        🔥 Do First (High Urgency)
+                    </h3>
+                    <div id="high-high" class="space-y-2"></div>
+                </div>
+                
+                <!-- High Impact, Low Urgency -->
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 min-h-48" 
+                     ondrop="drop(event)" ondragover="allowDrop(event)" data-category="high-low">
+                    <h3 class="font-semibold text-yellow-800 mb-3 flex items-center">
+                        📅 Schedule (Low Urgency)
+                    </h3>
+                    <div id="high-low" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Low Impact -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold text-green-900 text-center">Low Impact</h2>
+                
+                <!-- Low Impact, High Urgency -->
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 min-h-48" 
+                     ondrop="drop(event)" ondragover="allowDrop(event)" data-category="low-high">
+                    <h3 class="font-semibold text-orange-800 mb-3 flex items-center">
+                        ⚡ Delegate (High Urgency)
+                    </h3>
+                    <div id="low-high" class="space-y-2"></div>
+                </div>
+                
+                <!-- Low Impact, Low Urgency -->
+                <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 min-h-48" 
+                     ondrop="drop(event)" ondragover="allowDrop(event)" data-category="low-low">
+                    <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                        🗑️ Eliminate (Low Urgency)
+                    </h3>
+                    <div id="low-low" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let taskIdCounter = 1;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleTasks();
+            updateProgress();
+            showDailyReminder();
+        });
+
+        // Task form submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('taskTitle').value;
+            const urgency = document.getElementById('taskUrgency').value;
+            const impact = document.getElementById('taskImpact').value;
+            
+            addTask(title, urgency, impact);
+            
+            // Reset form
+            this.reset();
+        });
+
+        function addTask(title, urgency, impact) {
+            const task = {
+                id: taskIdCounter++,
+                title: title,
+                urgency: urgency,
+                impact: impact,
+                completed: false,
+                createdDate: new Date().toDateString()
+            };
+            
+            tasks.push(task);
+            renderTask(task);
+            updateProgress();
+        }
+
+        function renderTask(task) {
+            const category = `${task.impact}-${task.urgency}`;
+            const container = document.getElementById(category);
+            
+            const taskElement = document.createElement('div');
+            taskElement.className = `task-card bg-white rounded-lg p-3 lotus-shadow priority-${getPriority(task.urgency, task.impact)}`;
+            taskElement.draggable = true;
+            taskElement.dataset.taskId = task.id;
+            
+            taskElement.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-green-900 ${task.completed ? 'line-through opacity-60' : ''}">${task.title}</h4>
+                        <div class="flex items-center mt-1 text-xs text-green-600">
+                            <span class="mr-2">Impact: ${task.impact}</span>
+                            <span>Urgency: ${task.urgency}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleTask(${task.id})" 
+                                class="w-6 h-6 rounded-full border-2 ${task.completed ? 'bg-green-500 border-green-500' : 'border-green-300'} 
+                                       flex items-center justify-center hover:border-green-500 transition-colors">
+                            ${task.completed ? '<span class="text-white text-xs">✓</span>' : ''}
+                        </button>
+                        <button onclick="deleteTask(${task.id})" 
+                                class="text-red-400 hover:text-red-600 transition-colors">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add drag event listeners
+            taskElement.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', task.id);
+                this.style.opacity = '0.5';
+            });
+            
+            taskElement.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+            });
+            
+            container.appendChild(taskElement);
+        }
+
+        function getPriority(urgency, impact) {
+            if (urgency === 'high' && impact === 'high') return 'high';
+            if (urgency === 'medium' || impact === 'medium') return 'medium';
+            return 'low';
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const taskId = parseInt(e.dataTransfer.getData('text/plain'));
+            const newCategory = e.currentTarget.dataset.category;
+            const [impact, urgency] = newCategory.split('-');
+            
+            // Update task
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.impact = impact;
+                task.urgency = urgency;
+                
+                // Remove old element
+                const oldElement = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (oldElement) {
+                    oldElement.remove();
+                }
+                
+                // Re-render in new location
+                renderTask(task);
+                updateProgress();
+            }
+        }
+
+        // Remove drag-over class when leaving
+        document.querySelectorAll('[data-category]').forEach(container => {
+            container.addEventListener('dragleave', function(e) {
+                if (!this.contains(e.relatedTarget)) {
+                    this.classList.remove('drag-over');
+                }
+            });
+        });
+
+        function toggleTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                
+                // Re-render task
+                const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (taskElement) {
+                    taskElement.remove();
+                    renderTask(task);
+                }
+                
+                updateProgress();
+            }
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(t => t.id !== taskId);
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskElement) {
+                taskElement.remove();
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const today = new Date().toDateString();
+            const todayTasks = tasks.filter(t => t.createdDate === today);
+            const completedToday = todayTasks.filter(t => t.completed).length;
+            const totalToday = todayTasks.length;
+            
+            // Update progress bar
+            const percentage = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
+            document.getElementById('todayProgress').style.width = percentage + '%';
+            document.getElementById('todayPercent').textContent = percentage + '%';
+            document.getElementById('completedToday').textContent = completedToday;
+            document.getElementById('totalToday').textContent = totalToday;
+            
+            // Update high priority count
+            const highPriority = tasks.filter(t => !t.completed && (t.urgency === 'high' && t.impact === 'high')).length;
+            document.getElementById('highPriorityCount').textContent = highPriority;
+            
+            // Calculate focus score (lower score means more scope creep)
+            const lowImpactTasks = tasks.filter(t => t.impact === 'low').length;
+            const totalTasks = tasks.length;
+            const focusScore = totalTasks > 0 ? Math.max(0, Math.round(100 - (lowImpactTasks / totalTasks) * 50)) : 100;
+            document.getElementById('focusScore').textContent = focusScore;
+        }
+
+        function showDailyReminder() {
+            const lastReminder = localStorage.getItem('lastReminder');
+            const today = new Date().toDateString();
+            
+            if (lastReminder !== today) {
+                document.getElementById('dailyReminder').style.display = 'block';
+            } else {
+                document.getElementById('dailyReminder').style.display = 'none';
+            }
+        }
+
+        function dismissReminder() {
+            const today = new Date().toDateString();
+            localStorage.setItem('lastReminder', today);
+            document.getElementById('dailyReminder').style.display = 'none';
+        }
+
+        function loadSampleTasks() {
+            const sampleTasks = [
+                { title: "Review foundation blueprints", urgency: "high", impact: "high" },
+                { title: "Order materials for next phase", urgency: "medium", impact: "high" },
+                { title: "Schedule client walkthrough", urgency: "high", impact: "medium" },
+                { title: "Update project timeline", urgency: "low", impact: "medium" },
+                { title: "Organize tool inventory", urgency: "low", impact: "low" }
+            ];
+            
+            sampleTasks.forEach(task => {
+                addTask(task.title, task.urgency, task.impact);
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986b4cc5d7dbbc33',t:'MTc1OTE0NzAxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
