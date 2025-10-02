@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achievement Logger - Celebrate Every Finish</title>
+    <title>Finisher Pro - Complete What You Start</title>
     <style>
         body {
             box-sizing: border-box;
@@ -24,7 +24,7 @@
 
         .header {
             text-align: center;
-            padding: 30px;
+            padding: 25px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             margin-bottom: 25px;
@@ -40,57 +40,51 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
-            animation: celebrate-glow 3s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: finish-glow 4s ease-in-out infinite;
         }
 
-        @keyframes celebrate-glow {
-            0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
-            50% { opacity: 0.6; transform: scale(1.1) rotate(180deg); }
+        @keyframes finish-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
         }
 
         .header h1 {
             margin: 0;
-            font-size: 2.6rem;
-            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff, #daa520);
+            font-size: 2.4rem;
+            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             position: relative;
             z-index: 1;
-            animation: title-shine 4s ease-in-out infinite;
         }
 
-        @keyframes title-shine {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .trophy-icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
+        .finish-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
             display: block;
-            animation: trophy-bounce 2s ease-in-out infinite;
+            animation: finish-bounce 3s ease-in-out infinite;
         }
 
-        @keyframes trophy-bounce {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-10px) scale(1.1); }
+        @keyframes finish-bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
         }
 
-        .achievement-stats {
+        .quick-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
             background: rgba(45, 90, 61, 0.6);
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
             text-align: center;
-            border: 2px solid rgba(218, 165, 32, 0.3);
+            border: 1px solid rgba(218, 165, 32, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -103,8 +97,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-            transition: left 0.6s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
         }
 
         .stat-card:hover::before {
@@ -112,34 +106,34 @@
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.2);
             border-color: #daa520;
         }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: bold;
             color: #ffd700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .stat-label {
             color: #e0e0e0;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .main-layout {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 320px;
             gap: 25px;
             margin-bottom: 25px;
         }
 
-        .achievements-section {
+        .tasks-section {
             background: rgba(45, 90, 61, 0.4);
             border-radius: 20px;
             padding: 25px;
@@ -162,7 +156,7 @@
         }
 
         .section-title {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #ffd700;
             margin-bottom: 20px;
@@ -171,20 +165,19 @@
             gap: 10px;
         }
 
-        .quick-log-section {
+        .quick-add-section {
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(218, 165, 32, 0.3);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             margin-bottom: 25px;
         }
 
-        .quick-log-form {
+        .quick-add-form {
             display: flex;
             gap: 12px;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 15px;
         }
 
         .form-input, .form-select, .form-textarea {
@@ -209,7 +202,7 @@
             min-width: 200px;
         }
 
-        .voice-btn, .add-btn, .action-btn, .celebrate-btn {
+        .voice-btn, .add-btn, .action-btn {
             padding: 14px 18px;
             background: linear-gradient(45deg, #daa520, #ffd700);
             color: #0d2818;
@@ -222,23 +215,10 @@
             white-space: nowrap;
         }
 
-        .voice-btn:hover, .add-btn:hover, .action-btn:hover, .celebrate-btn:hover {
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
             background: linear-gradient(45deg, #b8941c, #e6c200);
-        }
-
-        .celebrate-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
-            color: white;
-            animation: celebrate-pulse 2s infinite;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        @keyframes celebrate-pulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(255, 107, 107, 0.8); }
         }
 
         .voice-btn.recording {
@@ -253,95 +233,87 @@
             100% { transform: scale(1); }
         }
 
-        .photo-upload-area {
-            border: 2px dashed rgba(218, 165, 32, 0.5);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 25px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(45, 90, 61, 0.3);
+            animation: urgent-glow 2s infinite;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .photo-upload-area:hover {
-            border-color: #daa520;
-            background: rgba(45, 90, 61, 0.5);
+        @keyframes urgent-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.8); }
         }
 
-        .photo-upload-area.dragover {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .photo-preview {
-            max-width: 100%;
-            max-height: 200px;
+        .search-bar {
+            width: 100%;
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
             border-radius: 10px;
-            margin-top: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
         }
 
-        .achievement-card {
+        .task-card {
             background: rgba(45, 90, 61, 0.4);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(218, 165, 32, 0.2);
+            margin-bottom: 15px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
             transition: all 0.3s ease;
             position: relative;
             backdrop-filter: blur(10px);
-            overflow: hidden;
         }
 
-        .achievement-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #daa520, #ffd700, #daa520);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .achievement-card:hover::before {
-            opacity: 1;
-        }
-
-        .achievement-card:hover {
+        .task-card:hover {
             background: rgba(45, 90, 61, 0.6);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             border-color: rgba(218, 165, 32, 0.4);
         }
 
-        .achievement-card.celebrating {
-            animation: celebration-bounce 0.6s ease-in-out;
-            border-color: #ffd700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        .task-card.completed {
+            opacity: 0.7;
+            background: rgba(102, 187, 106, 0.2);
+            border-left: 4px solid #66bb6a;
         }
 
-        @keyframes celebration-bounce {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.05) rotate(1deg); }
-            75% { transform: scale(1.05) rotate(-1deg); }
+        .task-card.high-priority {
+            border-left: 4px solid #ff6b6b;
         }
 
-        .achievement-header {
+        .task-card.medium-priority {
+            border-left: 4px solid #ffa726;
+        }
+
+        .task-card.low-priority {
+            border-left: 4px solid #66bb6a;
+        }
+
+        .task-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        .achievement-title {
+        .task-title {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #ffd700;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
-        .achievement-meta {
+        .task-meta {
             color: #e0e0e0;
             font-size: 0.9rem;
             display: flex;
@@ -349,73 +321,76 @@
             flex-wrap: wrap;
         }
 
-        .achievement-photo {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .achievement-photo:hover {
-            transform: scale(1.02);
-        }
-
-        .achievement-description {
-            color: #e0e0e0;
-            line-height: 1.5;
-            margin: 15px 0;
-        }
-
-        .reward-section {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(218, 165, 32, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .reward-title {
-            color: #ffd700;
-            font-weight: bold;
-            margin-bottom: 8px;
+        .task-actions {
             display: flex;
-            align-items: center;
             gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
 
-        .closure-habits {
-            background: rgba(45, 90, 61, 0.6);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(218, 165, 32, 0.3);
-        }
-
-        .habit-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(13, 40, 24, 0.4);
+        .task-btn {
+            padding: 8px 12px;
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            border: 1px solid rgba(218, 165, 32, 0.3);
             border-radius: 8px;
-            margin-bottom: 10px;
             cursor: pointer;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
         }
 
-        .habit-item:hover {
-            background: rgba(13, 40, 24, 0.6);
-            transform: translateX(5px);
+        .task-btn:hover {
+            background: rgba(218, 165, 32, 0.4);
+            border-color: #daa520;
         }
 
-        .habit-checkbox {
-            width: 24px;
-            height: 24px;
+        .task-btn.complete-btn {
+            background: rgba(102, 187, 106, 0.2);
+            color: #66bb6a;
+            border-color: rgba(102, 187, 106, 0.3);
+        }
+
+        .task-btn.delete-btn {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .subtask-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .subtask-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding-left: 10px;
+        }
+
+        .subtask-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .subtask-item.swiping {
+            transform: translateX(-80px);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
             border: 2px solid #daa520;
-            border-radius: 6px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -423,9 +398,176 @@
             transition: all 0.3s ease;
         }
 
-        .habit-checkbox.checked {
+        .checkbox.checked {
             background: #daa520;
             color: #0d2818;
+        }
+
+        .swipe-complete {
+            position: absolute;
+            right: -80px;
+            top: 0;
+            height: 100%;
+            width: 80px;
+            background: #66bb6a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .subtask-item.swiping .swipe-complete {
+            right: 0;
+        }
+
+        .pomodoro-timer {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pomodoro-timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+        }
+
+        .timer-btn.active {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .motivational-message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #daa520;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motivational-message:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .daily-prompts {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .prompt-item {
+            background: rgba(13, 40, 24, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #daa520;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prompt-text {
+            color: #e0e0e0;
+            flex: 1;
+        }
+
+        .prompt-action {
+            padding: 6px 12px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            min-height: 45px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            color: #ff6b6b;
         }
 
         .modal {
@@ -442,13 +584,13 @@
 
         .modal-content {
             background: rgba(45, 90, 61, 0.95);
-            margin: 2% auto;
+            margin: 3% auto;
             padding: 30px;
             border-radius: 20px;
             width: 90%;
-            max-width: 700px;
+            max-width: 600px;
             border: 2px solid #daa520;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
             backdrop-filter: blur(10px);
         }
@@ -457,12 +599,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .modal-title {
             color: #ffd700;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin: 0;
         }
 
@@ -498,35 +640,6 @@
             to { transform: translateX(0); }
         }
 
-        .celebration-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2000;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #ffd700;
-            animation: confetti-fall 3s linear infinite;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
         .offline-indicator {
             position: fixed;
             top: 15px;
@@ -544,107 +657,40 @@
             background: rgba(102, 187, 106, 0.9);
         }
 
-        .focus-timer {
-            background: rgba(45, 90, 61, 0.6);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            border: 2px solid rgba(218, 165, 32, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .timer-display {
-            font-size: 2.8rem;
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .timer-controls {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .timer-btn {
-            padding: 10px 16px;
-            background: linear-gradient(45deg, #daa520, #ffd700);
-            color: #0d2818;
-            border: none;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .timer-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
-        }
-
-        .timer-btn.active {
-            background: #ff6b6b;
-            color: white;
-            animation: pulse 2s infinite;
-        }
-
-        .reward-suggestions {
-            background: rgba(255, 215, 0, 0.1);
+        .streak-display {
+            background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(218, 165, 32, 0.3);
             border-radius: 15px;
             padding: 20px;
+            text-align: center;
             margin-bottom: 20px;
         }
 
-        .reward-item {
-            background: rgba(13, 40, 24, 0.4);
-            padding: 12px;
-            border-radius: 8px;
+        .streak-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .reward-item:hover {
-            background: rgba(13, 40, 24, 0.6);
-            transform: translateX(5px);
+        .streak-label {
+            color: #e0e0e0;
+            font-size: 1rem;
         }
 
-        .progress-ring {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
         }
 
-        .progress-ring-circle {
-            stroke: rgba(218, 165, 32, 0.3);
-            stroke-width: 8;
-            fill: transparent;
-            r: 52;
-            cx: 60;
-            cy: 60;
-        }
-
-        .progress-ring-progress {
-            stroke: #ffd700;
-            stroke-width: 8;
-            fill: transparent;
-            r: 52;
-            cx: 60;
-            cy: 60;
-            stroke-dasharray: 327;
-            stroke-dashoffset: 327;
-            transition: stroke-dashoffset 0.5s ease;
-            transform: rotate(-90deg);
-            transform-origin: 60px 60px;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            transition: width 0.3s ease;
         }
 
         @media (max-width: 768px) {
@@ -656,7 +702,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .quick-log-form {
+            .quick-add-form {
                 flex-direction: column;
             }
             
@@ -665,10 +711,10 @@
             }
             
             .timer-display {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
             }
             
-            .achievement-stats {
+            .quick-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -690,6 +736,17 @@
             white-space: nowrap;
             border: 0;
         }
+
+        /* Animation for completed tasks */
+        .task-complete-animation {
+            animation: completeTask 0.6s ease-in-out;
+        }
+
+        @keyframes completeTask {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: rgba(102, 187, 106, 0.3); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -698,82 +755,71 @@
     </div>
 
     <div class="notification" id="notification"></div>
-    <div class="celebration-animation" id="celebrationAnimation"></div>
 
     <div class="app-container">
         <div class="header">
-            <span class="trophy-icon">🏆</span>
-            <h1>Achievement Logger</h1>
-            <p>Record • Celebrate • Build Closure Habits • Finish Strong</p>
-            <div style="margin-top: 15px;">
-                <button class="action-btn" onclick="exportToPDF()" style="margin: 0 5px;">📄 Export Report</button>
-                <button class="action-btn" onclick="backupData()" style="margin: 0 5px;">💾 Backup Data</button>
-                <button class="action-btn" onclick="importData()" style="margin: 0 5px;">📥 Import Data</button>
-            </div>
+            <span class="finish-icon">🎯</span>
+            <h1>Finisher Pro</h1>
+            <p>Break Final Stages into Micro-Steps • Beat Procrastination • Complete What You Start</p>
         </div>
 
-        <!-- Achievement Stats Dashboard -->
-        <div class="achievement-stats">
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
             <div class="stat-card">
-                <div class="stat-value" id="totalAchievements">0</div>
-                <div class="stat-label">Total Achievements</div>
+                <div class="stat-value" id="totalTasks">0</div>
+                <div class="stat-label">Active Tasks</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="thisWeekCount">0</div>
-                <div class="stat-label">This Week</div>
+                <div class="stat-value" id="completedToday">0</div>
+                <div class="stat-label">Completed Today</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="currentStreak">0</div>
                 <div class="stat-label">Day Streak</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="rewardsEarned">0</div>
-                <div class="stat-label">Rewards Earned</div>
+                <div class="stat-value" id="focusTime">0h</div>
+                <div class="stat-label">Focus Time</div>
             </div>
         </div>
 
-        <!-- Quick Achievement Log -->
-        <div class="quick-log-section">
+        <!-- Quick Add Section -->
+        <div class="quick-add-section">
             <div class="section-title">
-                <span>⚡</span> Quick Achievement Log
+                <span>⚡</span> Quick Add Task
             </div>
-            <div class="quick-log-form">
-                <input type="text" class="form-input" id="quickAchievementInput" placeholder="What did you finish today?" aria-label="Quick achievement input">
-                <button class="voice-btn" onclick="startVoiceInput('quickAchievementInput')" aria-label="Voice input">🎤</button>
-                <button class="add-btn" onclick="quickLogAchievement()">Log It!</button>
-                <button class="celebrate-btn" onclick="triggerCelebration()">🎉 CELEBRATE!</button>
-            </div>
-            
-            <div class="photo-upload-area" id="quickPhotoUpload" onclick="document.getElementById('quickPhotoInput').click()">
-                <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📸</span>
-                <p>Click or drag to add a victory photo!</p>
-                <input type="file" id="quickPhotoInput" accept="image/*" style="display: none;" onchange="handleQuickPhoto(event)">
-                <img id="quickPhotoPreview" class="photo-preview" style="display: none;">
+            <div class="quick-add-form">
+                <input type="text" class="form-input" id="quickTaskInput" placeholder="What needs to be finished?" aria-label="Quick task input">
+                <button class="voice-btn" onclick="startVoiceInput('quickTaskInput')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickAddTask()">Add Task</button>
+                <button class="do-it-now-btn" onclick="doItNow()">DO IT NOW</button>
             </div>
         </div>
 
         <!-- Main Layout -->
         <div class="main-layout">
-            <div class="achievements-section">
+            <div class="tasks-section">
                 <div class="section-title">
-                    <span>🏆</span> Achievement Gallery
+                    <span>📋</span> Active Tasks
                     <div style="margin-left: auto;">
-                        <button class="action-btn" onclick="openAchievementModal()">+ New Achievement</button>
+                        <button class="action-btn" onclick="openTaskModal()">+ New Task</button>
                     </div>
                 </div>
                 
-                <div id="achievementsList">
-                    <!-- Achievements will be populated here -->
+                <input type="text" class="search-bar" id="taskSearch" placeholder="Search tasks by title, tags, or priority..." oninput="filterTasks()">
+                
+                <div id="tasksList">
+                    <!-- Tasks will be populated here -->
                 </div>
             </div>
 
             <div class="sidebar">
-                <!-- Focus Timer -->
+                <!-- Pomodoro Timer -->
                 <div class="sidebar-card">
                     <div class="section-title">
                         <span>🍅</span> Focus Timer
                     </div>
-                    <div class="focus-timer">
+                    <div class="pomodoro-timer">
                         <div class="timer-display" id="timerDisplay">25:00</div>
                         <div class="timer-controls">
                             <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
@@ -783,137 +829,124 @@
                     </div>
                 </div>
 
-                <!-- Closure Habits -->
+                <!-- Accountability Streak -->
                 <div class="sidebar-card">
                     <div class="section-title">
-                        <span>✅</span> Closure Habits
+                        <span>🔥</span> Streak Tracker
                     </div>
-                    <div class="closure-habits" id="closureHabits">
-                        <!-- Habits will be populated here -->
+                    <div class="streak-display">
+                        <div class="streak-number" id="streakNumber">0</div>
+                        <div class="streak-label">Days of Finishing Strong</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="streakProgress" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Reward Suggestions -->
+                <!-- Motivational Message -->
                 <div class="sidebar-card">
                     <div class="section-title">
-                        <span>🎁</span> Reward Yourself
-                        <button class="action-btn" onclick="openRewardModal()" style="margin-left: auto; padding: 6px 10px; font-size: 0.8rem;">⚙️ Manage</button>
+                        <span>💪</span> Daily Motivation
                     </div>
-                    <div class="reward-suggestions" id="rewardSuggestions">
-                        <!-- Rewards will be populated here -->
+                    <div class="motivational-message" id="motivationalMessage" onclick="openMessageBuilder()">
+                        "The final 10% of any project requires 90% of your focus. You've got this!"
                     </div>
                 </div>
 
-                <!-- Progress Ring -->
+                <!-- Daily Action Prompts -->
                 <div class="sidebar-card">
                     <div class="section-title">
-                        <span>📊</span> Weekly Progress
+                        <span>🎯</span> Action Prompts
                     </div>
-                    <svg class="progress-ring">
-                        <circle class="progress-ring-circle"></circle>
-                        <circle class="progress-ring-progress" id="progressRing"></circle>
-                    </svg>
-                    <div style="text-align: center; color: #ffd700; font-weight: bold;" id="progressText">0% Complete</div>
+                    <div class="daily-prompts" id="dailyPrompts">
+                        <!-- Prompts will be populated here -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Achievement Modal -->
-    <div id="achievementModal" class="modal">
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="achievementModalTitle">Log New Achievement</h3>
-                <span class="close" onclick="closeAchievementModal()">&times;</span>
+                <h3 class="modal-title" id="taskModalTitle">Create New Task</h3>
+                <span class="close" onclick="closeTaskModal()">&times;</span>
             </div>
             
-            <div id="achievementModalContent">
-                <div style="margin-bottom: 20px;">
-                    <input type="text" class="form-input" id="achievementTitle" placeholder="What did you accomplish?" style="width: 100%;" required>
+            <div id="taskModalContent">
+                <div style="margin-bottom: 15px;">
+                    <input type="text" class="form-input" id="taskTitle" placeholder="Task title..." style="width: 100%;" required>
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <textarea class="form-textarea" id="achievementDescription" placeholder="Describe your achievement and how it feels to complete it..." rows="4" style="width: 100%;"></textarea>
-                </div>
-                
-                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                    <select class="form-select" id="achievementCategory" style="flex: 1;">
-                        <option value="work">Work Project</option>
-                        <option value="personal">Personal Goal</option>
-                        <option value="learning">Learning & Skills</option>
-                        <option value="health">Health & Fitness</option>
-                        <option value="creative">Creative Project</option>
-                        <option value="relationship">Relationships</option>
-                        <option value="other">Other</option>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <select class="form-select" id="taskPriority" style="flex: 1;">
+                        <option value="high">High Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="low">Low Priority</option>
                     </select>
-                    <select class="form-select" id="achievementImpact" style="flex: 1;">
-                        <option value="small">Small Win</option>
-                        <option value="medium">Significant Achievement</option>
-                        <option value="large">Major Milestone</option>
-                        <option value="huge">Life-Changing</option>
-                    </select>
+                    <input type="datetime-local" class="form-input" id="taskDeadline" style="flex: 1;">
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #ffd700; margin-bottom: 10px;">📸 Victory Photo</h4>
-                    <div class="photo-upload-area" id="achievementPhotoUpload" onclick="document.getElementById('achievementPhotoInput').click()">
-                        <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📸</span>
-                        <p>Add a photo to commemorate this achievement!</p>
-                        <input type="file" id="achievementPhotoInput" accept="image/*" style="display: none;" onchange="handleAchievementPhoto(event)">
-                        <img id="achievementPhotoPreview" class="photo-preview" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <textarea class="form-textarea" id="taskDescription" placeholder="Task description and notes..." rows="3" style="width: 100%;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <div class="tags-input" id="taskTags" onclick="focusTagInput()">
+                        <input type="text" id="taskTagInput" placeholder="Add tags (press Enter)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
                     </div>
                 </div>
                 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="color: #ffd700; margin-bottom: 10px;">🎁 Reward Yourself</h4>
-                    <input type="text" class="form-input" id="achievementReward" placeholder="How will you celebrate this win?" style="width: 100%;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">📋 Micro-Steps (Break it down!)</h4>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" class="form-input" id="subtaskInput" placeholder="Add a micro-step..." style="flex: 1;">
+                        <button class="add-btn" onclick="addSubtask()">Add</button>
+                    </div>
+                    <div id="subtaskPreview"></div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">⏰ Reminders</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="datetime-local" class="form-input" id="reminderTime" style="flex: 1;">
+                        <select class="form-select" id="reminderRecurring">
+                            <option value="none">No Repeat</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div style="display: flex; gap: 15px; margin-top: 25px;">
-                    <button class="action-btn" onclick="saveAchievement()" style="flex: 1;">🏆 Log Achievement</button>
-                    <button class="action-btn" onclick="closeAchievementModal()" style="background: rgba(45, 90, 61, 0.8); color: #ffd700;">Cancel</button>
+                    <button class="action-btn" onclick="saveTask()" style="flex: 1;">Save Task</button>
+                    <button class="action-btn" onclick="closeTaskModal()" style="background: rgba(45, 90, 61, 0.8); color: #ffd700;">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Photo Viewer Modal -->
-    <div id="photoModal" class="modal">
-        <div class="modal-content" style="max-width: 90%; text-align: center;">
-            <div class="modal-header">
-                <h3 class="modal-title">Achievement Photo</h3>
-                <span class="close" onclick="closePhotoModal()">&times;</span>
-            </div>
-            <img id="photoModalImage" style="max-width: 100%; max-height: 70vh; border-radius: 10px;">
-        </div>
-    </div>
-
-    <!-- Reward Management Modal -->
-    <div id="rewardModal" class="modal">
+    <!-- Message Builder Modal -->
+    <div id="messageModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Manage Rewards</h3>
-                <span class="close" onclick="closeRewardModal()">&times;</span>
-            </div>
-            
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #ffd700; margin-bottom: 15px;">Add New Reward</h4>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input type="text" class="form-input" id="newRewardText" placeholder="Enter reward description..." style="flex: 1;">
-                    <select class="form-select" id="newRewardCategory">
-                        <option value="small">Small Win</option>
-                        <option value="medium">Medium Achievement</option>
-                        <option value="large">Large Milestone</option>
-                        <option value="huge">Huge Success</option>
-                    </select>
-                    <button class="action-btn" onclick="addCustomReward()">+ Add</button>
-                </div>
+                <h3 class="modal-title">Motivational Message Builder</h3>
+                <span class="close" onclick="closeMessageModal()">&times;</span>
             </div>
             
             <div>
-                <h4 style="color: #ffd700; margin-bottom: 15px;">Your Custom Rewards</h4>
-                <div id="customRewardsList" style="max-height: 400px; overflow-y: auto;">
-                    <!-- Custom rewards will be populated here -->
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your personal motivation message..." rows="4" style="width: 100%; margin-bottom: 15px;"></textarea>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+                
+                <div style="background: rgba(13, 40, 24, 0.4); padding: 15px; border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">💡 Message Templates</h4>
+                    <div id="messageTemplates"></div>
                 </div>
             </div>
         </div>
@@ -923,67 +956,60 @@
 
     <script>
         // Global variables
-        let achievements = [];
-        let currentAchievement = null;
+        let tasks = [];
+        let currentTask = null;
+        let currentSubtasks = [];
         let timerInterval = null;
         let timerSeconds = 1500; // 25 minutes
         let isTimerRunning = false;
         let recognition = null;
+        let totalFocusTime = 0;
         let currentStreak = 0;
-        let rewardsEarned = 0;
-        let quickPhotoData = null;
-        let achievementPhotoData = null;
+        let completedToday = 0;
 
-        // Closure habits for finishers
-        const closureHabits = [
-            { id: 1, text: "Take a victory photo", icon: "📸" },
-            { id: 2, text: "Write 3 things you learned", icon: "📝" },
-            { id: 3, text: "Share your win with someone", icon: "📢" },
-            { id: 4, text: "Plan your reward/celebration", icon: "🎉" },
-            { id: 5, text: "Reflect on the journey", icon: "🤔" },
-            { id: 6, text: "Archive project materials", icon: "📁" },
-            { id: 7, text: "Update your portfolio/resume", icon: "📋" },
-            { id: 8, text: "Thank people who helped", icon: "🙏" }
+        // Sample motivational messages
+        const motivationalMessages = [
+            "The final 10% of any project requires 90% of your focus. You've got this!",
+            "Finishing is a skill. The more you practice it, the better you become.",
+            "Every completed task is proof that you can overcome procrastination.",
+            "The hardest part is often the last part. Push through - you're almost there!",
+            "Champions are made in the final moments. This is your moment.",
+            "Your future self will thank you for finishing what you start today.",
+            "Procrastination is the enemy of progress. Action is your superpower.",
+            "The satisfaction of completion is worth every moment of struggle.",
+            "You don't have to be perfect, you just have to be finished.",
+            "Every finish line is the starting line for something greater."
         ];
 
-        // Reward suggestions - now customizable
-        let customRewards = [
-            { id: 1, text: "Favorite coffee/tea", category: "small" },
-            { id: 2, text: "15-min break", category: "small" },
-            { id: 3, text: "Listen to favorite song", category: "small" },
-            { id: 4, text: "Quick walk outside", category: "small" },
-            { id: 5, text: "Healthy snack", category: "small" },
-            { id: 6, text: "Movie night", category: "medium" },
-            { id: 7, text: "Dinner at favorite restaurant", category: "medium" },
-            { id: 8, text: "Buy something you've wanted", category: "medium" },
-            { id: 9, text: "Spa/massage", category: "medium" },
-            { id: 10, text: "Day trip", category: "medium" },
-            { id: 11, text: "Weekend getaway", category: "large" },
-            { id: 12, text: "New gadget/tool", category: "large" },
-            { id: 13, text: "Professional course", category: "large" },
-            { id: 14, text: "Concert/event tickets", category: "large" },
-            { id: 15, text: "Home upgrade", category: "large" },
-            { id: 16, text: "Vacation", category: "huge" },
-            { id: 17, text: "Major purchase", category: "huge" },
-            { id: 18, text: "Career celebration", category: "huge" },
-            { id: 19, text: "Share with community", category: "huge" },
-            { id: 20, text: "Document the journey", category: "huge" }
+        // Daily action prompts
+        const actionPrompts = [
+            "Break your biggest task into 3 micro-steps",
+            "Set a 25-minute timer and tackle one difficult task",
+            "Complete the task you've been avoiding the longest",
+            "Finish something you started yesterday",
+            "Clear your smallest task to build momentum",
+            "Focus on the final 20% of an ongoing project",
+            "Review and update your task priorities",
+            "Celebrate a recent completion and plan the next step"
+        ];
+
+        // Message templates
+        const messageTemplates = [
+            "I am a finisher. I complete what I start.",
+            "Every task I finish makes me stronger and more confident.",
+            "I have the power to overcome procrastination and take action.",
+            "My focus and determination lead me to success.",
+            "I choose progress over perfection, action over delay."
         ];
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             updateStats();
-            renderAchievements();
-            renderClosureHabits();
-            renderRewardSuggestions();
+            generateDailyPrompts();
+            updateMotivationalMessage();
             checkOnlineStatus();
-            updateProgressRing();
-            
-            // Request notification permission
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
+            renderTasks();
             
             // Auto-save every 30 seconds
             setInterval(saveData, 30000);
@@ -991,565 +1017,508 @@
             // Update online status
             setInterval(checkOnlineStatus, 5000);
             
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
             // Initialize with sample data if empty
-            if (achievements.length === 0) {
+            if (tasks.length === 0) {
                 initializeSampleData();
             }
             
-            // Set up drag and drop for photo uploads
-            setupDragAndDrop();
+            // Update streak
+            updateStreak();
+            
+            // Set up tag input
+            setupTagInput();
         });
 
         function initializeSampleData() {
-            achievements = [
+            tasks = [
                 {
                     id: 1,
-                    title: 'Completed Website Redesign Project',
-                    description: 'After 3 months of hard work, finally launched the new company website. The client loved it and we got great feedback from users!',
-                    category: 'work',
-                    impact: 'large',
-                    photo: null,
-                    reward: 'Weekend getaway to celebrate',
-                    completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                    closureHabits: [1, 3, 4, 7]
+                    title: 'Finish Project Presentation',
+                    description: 'Complete the final slides and practice delivery for tomorrow\'s client meeting',
+                    priority: 'high',
+                    deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    tags: ['presentation', 'client', 'urgent'],
+                    subtasks: [
+                        { id: 1, text: 'Review all content for accuracy', completed: true },
+                        { id: 2, text: 'Add final design touches to slides', completed: false },
+                        { id: 3, text: 'Practice presentation timing', completed: false },
+                        { id: 4, text: 'Prepare for Q&A session', completed: false }
+                    ],
+                    completed: false,
+                    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    reminder: {
+                        time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                        recurring: 'none'
+                    }
                 },
                 {
                     id: 2,
-                    title: 'Finished Reading "Atomic Habits"',
-                    description: 'Completed this amazing book on building better habits. Already started implementing some of the strategies!',
-                    category: 'learning',
-                    impact: 'medium',
-                    photo: null,
-                    reward: 'Bought the next book on my reading list',
-                    completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-                    closureHabits: [2, 5]
+                    title: 'Complete Website Redesign',
+                    description: 'Finalize the last 3 pages and deploy to production',
+                    priority: 'medium',
+                    deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    tags: ['web-design', 'coding', 'client-work'],
+                    subtasks: [
+                        { id: 1, text: 'Design contact page layout', completed: true },
+                        { id: 2, text: 'Implement responsive navigation', completed: true },
+                        { id: 3, text: 'Add final content to about page', completed: false },
+                        { id: 4, text: 'Test all forms and functionality', completed: false },
+                        { id: 5, text: 'Deploy to production server', completed: false }
+                    ],
+                    completed: false,
+                    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                    reminder: {
+                        time: '',
+                        recurring: 'daily'
+                    }
                 }
             ];
             
             updateStats();
-            renderAchievements();
+            renderTasks();
         }
 
-        // Achievement management
-        function quickLogAchievement() {
-            const input = document.getElementById('quickAchievementInput');
+        // Task management
+        function quickAddTask() {
+            const input = document.getElementById('quickTaskInput');
             const title = input.value.trim();
             
             if (!title) {
-                showNotification('Please enter what you accomplished', 'error');
+                showNotification('Please enter a task title', 'error');
                 return;
             }
             
-            const achievement = {
+            const task = {
                 id: Date.now(),
                 title: title,
                 description: '',
-                category: 'other',
-                impact: 'small',
-                photo: quickPhotoData,
-                reward: '',
-                completedAt: new Date(),
-                closureHabits: []
+                priority: 'medium',
+                deadline: '',
+                tags: [],
+                subtasks: [],
+                completed: false,
+                createdAt: new Date(),
+                reminder: { time: '', recurring: 'none' }
             };
             
-            achievements.unshift(achievement);
+            tasks.unshift(task);
             input.value = '';
-            quickPhotoData = null;
-            document.getElementById('quickPhotoPreview').style.display = 'none';
             
             updateStats();
-            renderAchievements();
+            renderTasks();
             saveData();
-            showNotification('🏆 Achievement logged! You\'re building a great finish habit!');
-            triggerCelebration();
+            showNotification('Task added! Break it into micro-steps for better results. 🎯');
         }
 
-        function openAchievementModal(achievementId = null) {
-            currentAchievement = achievementId ? achievements.find(a => a.id === achievementId) : null;
-            
-            if (currentAchievement) {
-                document.getElementById('achievementModalTitle').textContent = 'Edit Achievement';
-                document.getElementById('achievementTitle').value = currentAchievement.title;
-                document.getElementById('achievementDescription').value = currentAchievement.description;
-                document.getElementById('achievementCategory').value = currentAchievement.category;
-                document.getElementById('achievementImpact').value = currentAchievement.impact;
-                document.getElementById('achievementReward').value = currentAchievement.reward;
-                
-                if (currentAchievement.photo) {
-                    document.getElementById('achievementPhotoPreview').src = currentAchievement.photo;
-                    document.getElementById('achievementPhotoPreview').style.display = 'block';
-                    achievementPhotoData = currentAchievement.photo;
-                }
-            } else {
-                document.getElementById('achievementModalTitle').textContent = 'Log New Achievement';
-                clearAchievementForm();
-            }
-            
-            document.getElementById('achievementModal').style.display = 'block';
-            document.getElementById('achievementTitle').focus();
-        }
-
-        function saveAchievement() {
-            const title = document.getElementById('achievementTitle').value.trim();
-            const description = document.getElementById('achievementDescription').value.trim();
-            const category = document.getElementById('achievementCategory').value;
-            const impact = document.getElementById('achievementImpact').value;
-            const reward = document.getElementById('achievementReward').value.trim();
-            
-            if (!title) {
-                showNotification('Please enter what you accomplished', 'error');
+        function doItNow() {
+            const incompleteTasks = tasks.filter(t => !t.completed);
+            if (incompleteTasks.length === 0) {
+                showNotification('No active tasks! Add a task to get started. 🎉');
                 return;
             }
             
-            const achievementData = {
-                title,
-                description,
-                category,
-                impact,
-                photo: achievementPhotoData,
-                reward,
-                closureHabits: []
-            };
+            // Find highest priority incomplete task
+            const highPriorityTasks = incompleteTasks.filter(t => t.priority === 'high');
+            const targetTask = highPriorityTasks.length > 0 ? highPriorityTasks[0] : incompleteTasks[0];
             
-            if (currentAchievement) {
-                // Update existing achievement
-                Object.assign(currentAchievement, achievementData);
-                showNotification('Achievement updated successfully! 📝');
+            showNotification(`🚀 DO IT NOW: "${targetTask.title}"! Starting 25-minute focus session...`, 'urgent');
+            
+            // Start timer automatically
+            startTimer();
+            
+            // Scroll to the task
+            const taskElement = document.querySelector(`[data-task-id="${targetTask.id}"]`);
+            if (taskElement) {
+                taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                taskElement.style.border = '3px solid #ff6b6b';
+                setTimeout(() => {
+                    taskElement.style.border = '1px solid rgba(218, 165, 32, 0.2)';
+                }, 3000);
+            }
+        }
+
+        function openTaskModal(taskId = null) {
+            currentTask = taskId ? tasks.find(t => t.id === taskId) : null;
+            currentSubtasks = currentTask ? [...currentTask.subtasks] : [];
+            
+            if (currentTask) {
+                document.getElementById('taskModalTitle').textContent = 'Edit Task';
+                document.getElementById('taskTitle').value = currentTask.title;
+                document.getElementById('taskDescription').value = currentTask.description;
+                document.getElementById('taskPriority').value = currentTask.priority;
+                document.getElementById('taskDeadline').value = currentTask.deadline;
+                document.getElementById('reminderTime').value = currentTask.reminder.time;
+                document.getElementById('reminderRecurring').value = currentTask.reminder.recurring;
+                
+                // Set tags
+                const tagsContainer = document.getElementById('taskTags');
+                tagsContainer.innerHTML = currentTask.tags.map(tag => 
+                    `<span class="tag">${tag} <span class="tag-remove" onclick="removeTag('${tag}')">×</span></span>`
+                ).join('') + '<input type="text" id="taskTagInput" placeholder="Add tags (press Enter)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+                
+                setupTagInput();
             } else {
-                // Create new achievement
-                const newAchievement = {
-                    id: Date.now(),
-                    ...achievementData,
-                    completedAt: new Date()
-                };
-                achievements.unshift(newAchievement);
-                showNotification('🏆 Achievement logged! Time to celebrate your finish!');
-                triggerCelebration();
+                document.getElementById('taskModalTitle').textContent = 'Create New Task';
+                clearTaskForm();
             }
             
-            closeAchievementModal();
+            renderSubtaskPreview();
+            document.getElementById('taskModal').style.display = 'block';
+            document.getElementById('taskTitle').focus();
+        }
+
+        function saveTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const priority = document.getElementById('taskPriority').value;
+            const deadline = document.getElementById('taskDeadline').value;
+            const reminderTime = document.getElementById('reminderTime').value;
+            const reminderRecurring = document.getElementById('reminderRecurring').value;
+            
+            if (!title) {
+                showNotification('Please enter a task title', 'error');
+                return;
+            }
+            
+            // Get tags
+            const tags = Array.from(document.querySelectorAll('#taskTags .tag')).map(tag => 
+                tag.textContent.replace('×', '').trim()
+            );
+            
+            const taskData = {
+                title,
+                description,
+                priority,
+                deadline,
+                tags,
+                subtasks: currentSubtasks,
+                reminder: { time: reminderTime, recurring: reminderRecurring }
+            };
+            
+            if (currentTask) {
+                // Update existing task
+                Object.assign(currentTask, taskData);
+                showNotification('Task updated successfully! 📝');
+            } else {
+                // Create new task
+                const newTask = {
+                    id: Date.now(),
+                    ...taskData,
+                    completed: false,
+                    createdAt: new Date()
+                };
+                tasks.unshift(newTask);
+                showNotification('Task created! Break it down into micro-steps for success. 🎯');
+            }
+            
+            closeTaskModal();
             updateStats();
-            renderAchievements();
+            renderTasks();
             saveData();
         }
 
-        function clearAchievementForm() {
-            document.getElementById('achievementTitle').value = '';
-            document.getElementById('achievementDescription').value = '';
-            document.getElementById('achievementCategory').value = 'work';
-            document.getElementById('achievementImpact').value = 'small';
-            document.getElementById('achievementReward').value = '';
-            document.getElementById('achievementPhotoPreview').style.display = 'none';
-            achievementPhotoData = null;
+        function clearTaskForm() {
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskPriority').value = 'medium';
+            document.getElementById('taskDeadline').value = '';
+            document.getElementById('reminderTime').value = '';
+            document.getElementById('reminderRecurring').value = 'none';
+            document.getElementById('taskTags').innerHTML = '<input type="text" id="taskTagInput" placeholder="Add tags (press Enter)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentSubtasks = [];
+            renderSubtaskPreview();
+            setupTagInput();
         }
 
-        function closeAchievementModal() {
-            document.getElementById('achievementModal').style.display = 'none';
-            currentAchievement = null;
-            achievementPhotoData = null;
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            currentTask = null;
+            currentSubtasks = [];
         }
 
-        function deleteAchievement(achievementId) {
-            const achievement = achievements.find(a => a.id === achievementId);
-            if (confirm(`Are you sure you want to delete "${achievement.title}"?`)) {
-                achievements = achievements.filter(a => a.id !== achievementId);
-                renderAchievements();
-                updateStats();
-                saveData();
-                showNotification('Achievement deleted 🗑️');
-            }
-        }
-
-        function renderAchievements() {
-            const container = document.getElementById('achievementsList');
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            const searchTerm = document.getElementById('taskSearch').value.toLowerCase();
             
-            if (achievements.length === 0) {
+            let filteredTasks = tasks.filter(task => 
+                task.title.toLowerCase().includes(searchTerm) ||
+                task.description.toLowerCase().includes(searchTerm) ||
+                task.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                task.priority.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredTasks.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: #e0e0e0;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">🏆</span>
-                        <h3>No achievements yet</h3>
-                        <p>Log your first completion to start building your success story!</p>
+                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">🎯</span>
+                        <h3>No tasks found</h3>
+                        <p>Add your first task to start finishing strong!</p>
                     </div>
                 `;
                 return;
             }
             
-            // Sort achievements by completion date (newest first)
-            const sortedAchievements = [...achievements].sort((a, b) => 
-                new Date(b.completedAt) - new Date(a.completedAt)
-            );
+            // Sort tasks: incomplete first, then by priority, then by deadline
+            filteredTasks.sort((a, b) => {
+                if (a.completed !== b.completed) return a.completed - b.completed;
+                
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                }
+                
+                if (a.deadline && b.deadline) {
+                    return new Date(a.deadline) - new Date(b.deadline);
+                }
+                
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
             
-            container.innerHTML = sortedAchievements.map(achievement => createAchievementCard(achievement)).join('');
+            container.innerHTML = filteredTasks.map(task => createTaskCard(task)).join('');
         }
 
-        function createAchievementCard(achievement) {
-            const impactIcons = {
-                small: '⭐',
-                medium: '🌟',
-                large: '✨',
-                huge: '💫'
-            };
+        function createTaskCard(task) {
+            const completedSubtasks = task.subtasks.filter(st => st.completed).length;
+            const totalSubtasks = task.subtasks.length;
+            const progress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
             
-            const categoryIcons = {
-                work: '💼',
-                personal: '🎯',
-                learning: '📚',
-                health: '💪',
-                creative: '🎨',
-                relationship: '❤️',
-                other: '🏆'
-            };
+            const isOverdue = task.deadline && new Date(task.deadline) < new Date() && !task.completed;
+            const isUrgent = task.deadline && (new Date(task.deadline) - new Date()) < (24 * 60 * 60 * 1000) && !task.completed;
             
             return `
-                <div class="achievement-card" data-achievement-id="${achievement.id}">
-                    <div class="achievement-header">
+                <div class="task-card ${task.priority}-priority ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
+                    <div class="task-header">
                         <div>
-                            <div class="achievement-title">${achievement.title}</div>
-                            <div class="achievement-meta">
-                                <span>${categoryIcons[achievement.category]} ${achievement.category.toUpperCase()}</span>
-                                <span>${impactIcons[achievement.impact]} ${achievement.impact.toUpperCase()}</span>
-                                <span>📅 ${new Date(achievement.completedAt).toLocaleDateString()}</span>
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-meta">
+                                <span>🏷️ ${task.priority.toUpperCase()}</span>
+                                ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                                ${isOverdue ? '<span style="color: #ff6b6b;">⚠️ OVERDUE</span>' : ''}
+                                ${isUrgent ? '<span style="color: #ffa726;">⏰ URGENT</span>' : ''}
+                                <span>📊 ${completedSubtasks}/${totalSubtasks} steps</span>
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <span style="color: #ffd700; font-size: 1.5rem;">🏆</span>
+                            ${task.completed ? '<span style="color: #66bb6a; font-size: 1.5rem;">✅</span>' : ''}
                         </div>
                     </div>
                     
-                    ${achievement.description ? `<div class="achievement-description">${achievement.description}</div>` : ''}
+                    ${task.description ? `<div style="color: #e0e0e0; margin: 10px 0; line-height: 1.4;">${task.description}</div>` : ''}
                     
-                    ${achievement.photo ? `
-                        <img src="${achievement.photo}" alt="Achievement photo" class="achievement-photo" onclick="openPhotoModal('${achievement.photo}')">
-                    ` : ''}
-                    
-                    ${achievement.reward ? `
-                        <div class="reward-section">
-                            <div class="reward-title">
-                                <span>🎁</span> Reward
-                            </div>
-                            <div style="color: #e0e0e0;">${achievement.reward}</div>
+                    ${task.tags.length > 0 ? `
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;">
+                            ${task.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     ` : ''}
                     
-                    ${achievement.closureHabits.length > 0 ? `
+                    ${totalSubtasks > 0 ? `
                         <div style="margin: 15px 0;">
-                            <div style="color: #ffd700; font-weight: bold; margin-bottom: 8px;">✅ Closure Habits Completed:</div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${achievement.closureHabits.map(habitId => {
-                                    const habit = closureHabits.find(h => h.id === habitId);
-                                    return habit ? `<span style="background: rgba(218, 165, 32, 0.2); color: #ffd700; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">${habit.icon} ${habit.text}</span>` : '';
-                                }).join('')}
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="color: #ffd700; font-weight: bold;">🔄 Micro-Steps Progress</span>
+                                <span style="color: #e0e0e0;">${progress}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <div class="subtask-list">
+                                ${task.subtasks.slice(0, 3).map(subtask => `
+                                    <div class="subtask-item ${subtask.completed ? 'completed' : ''}" onclick="toggleSubtask(${task.id}, ${subtask.id})">
+                                        <div class="checkbox ${subtask.completed ? 'checked' : ''}">
+                                            ${subtask.completed ? '✓' : ''}
+                                        </div>
+                                        <span>${subtask.text}</span>
+                                        <div class="swipe-complete">✓ Done</div>
+                                    </div>
+                                `).join('')}
+                                ${task.subtasks.length > 3 ? `<div style="color: #e0e0e0; font-size: 0.9rem; margin-top: 8px;">+${task.subtasks.length - 3} more steps</div>` : ''}
                             </div>
                         </div>
                     ` : ''}
                     
-                    <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                        <button class="action-btn" onclick="openAchievementModal(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem;">✏️ Edit</button>
-                        <button class="action-btn" onclick="celebrateAchievement(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem;">🎉 Celebrate</button>
-                        <button class="action-btn" onclick="deleteAchievement(${achievement.id})" style="padding: 8px 12px; font-size: 0.85rem; background: rgba(255, 107, 107, 0.2); color: #ff6b6b;">🗑️ Delete</button>
+                    <div class="task-actions">
+                        <button class="task-btn" onclick="openTaskModal(${task.id})">✏️ Edit</button>
+                        ${!task.completed ? `
+                            <button class="task-btn complete-btn" onclick="completeTask(${task.id})">✅ Complete</button>
+                            <button class="task-btn" onclick="startTaskFocus(${task.id})">🍅 Focus</button>
+                        ` : `
+                            <button class="task-btn" onclick="uncompleteTask(${task.id})">↩️ Reopen</button>
+                        `}
+                        <button class="task-btn delete-btn" onclick="deleteTask(${task.id})">🗑️ Delete</button>
                     </div>
                 </div>
             `;
         }
 
-        function celebrateAchievement(achievementId) {
-            const achievement = achievements.find(a => a.id === achievementId);
-            const card = document.querySelector(`[data-achievement-id="${achievementId}"]`);
+        function toggleSubtask(taskId, subtaskId) {
+            const task = tasks.find(t => t.id === taskId);
+            const subtask = task.subtasks.find(st => st.id === subtaskId);
             
-            if (card) {
-                card.classList.add('celebrating');
+            subtask.completed = !subtask.completed;
+            
+            // Add swipe animation
+            const subtaskElement = event.currentTarget;
+            if (subtask.completed) {
+                subtaskElement.classList.add('swiping');
                 setTimeout(() => {
-                    card.classList.remove('celebrating');
-                }, 600);
+                    subtaskElement.classList.remove('swiping');
+                    renderTasks();
+                    updateStats();
+                    saveData();
+                    showNotification('Micro-step completed! 🎯');
+                }, 300);
+            } else {
+                renderTasks();
+                updateStats();
+                saveData();
+            }
+        }
+
+        function completeTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            task.completed = true;
+            
+            // Mark all subtasks as completed
+            task.subtasks.forEach(subtask => subtask.completed = true);
+            
+            // Add completion animation
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskElement) {
+                taskElement.classList.add('task-complete-animation');
             }
             
-            triggerCelebration();
-            showNotification(`🎉 Celebrating: "${achievement.title}"! You're a finisher!`);
+            completedToday++;
+            updateStreak();
+            updateStats();
+            renderTasks();
+            saveData();
+            showNotification('🎉 Task completed! You\'re a finisher! Keep the momentum going!');
         }
 
-        // Photo handling
-        function handleQuickPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    quickPhotoData = e.target.result;
-                    document.getElementById('quickPhotoPreview').src = quickPhotoData;
-                    document.getElementById('quickPhotoPreview').style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleAchievementPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    achievementPhotoData = e.target.result;
-                    document.getElementById('achievementPhotoPreview').src = achievementPhotoData;
-                    document.getElementById('achievementPhotoPreview').style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function openPhotoModal(photoSrc) {
-            document.getElementById('photoModalImage').src = photoSrc;
-            document.getElementById('photoModal').style.display = 'block';
-        }
-
-        function closePhotoModal() {
-            document.getElementById('photoModal').style.display = 'none';
-        }
-
-        function setupDragAndDrop() {
-            const uploadAreas = [
-                document.getElementById('quickPhotoUpload'),
-                document.getElementById('achievementPhotoUpload')
-            ];
+        function uncompleteTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            task.completed = false;
             
-            uploadAreas.forEach(area => {
-                if (area) {
-                    area.addEventListener('dragover', function(e) {
+            renderTasks();
+            updateStats();
+            saveData();
+            showNotification('Task reopened for further work 📝');
+        }
+
+        function deleteTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (confirm(`Are you sure you want to delete "${task.title}"?`)) {
+                tasks = tasks.filter(t => t.id !== taskId);
+                renderTasks();
+                updateStats();
+                saveData();
+                showNotification('Task deleted 🗑️');
+            }
+        }
+
+        function startTaskFocus(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            showNotification(`🍅 Starting 25-minute focus session for: "${task.title}"`);
+            startTimer();
+        }
+
+        function filterTasks() {
+            renderTasks();
+        }
+
+        // Subtask management
+        function addSubtask() {
+            const input = document.getElementById('subtaskInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                showNotification('Please enter a micro-step', 'error');
+                return;
+            }
+            
+            const subtask = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+            
+            currentSubtasks.push(subtask);
+            input.value = '';
+            renderSubtaskPreview();
+            showNotification('Micro-step added! 📋');
+        }
+
+        function renderSubtaskPreview() {
+            const container = document.getElementById('subtaskPreview');
+            container.innerHTML = currentSubtasks.map((subtask, index) => `
+                <div class="subtask-item">
+                    <div class="checkbox">✓</div>
+                    <span>${subtask.text}</span>
+                    <button class="task-btn delete-btn" onclick="removeSubtask(${index})" style="padding: 4px 8px; margin-left: auto;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeSubtask(index) {
+            currentSubtasks.splice(index, 1);
+            renderSubtaskPreview();
+        }
+
+        // Tag management
+        function setupTagInput() {
+            const tagInput = document.getElementById('taskTagInput');
+            if (tagInput) {
+                tagInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
                         e.preventDefault();
-                        area.classList.add('dragover');
-                    });
-                    
-                    area.addEventListener('dragleave', function(e) {
-                        e.preventDefault();
-                        area.classList.remove('dragover');
-                    });
-                    
-                    area.addEventListener('drop', function(e) {
-                        e.preventDefault();
-                        area.classList.remove('dragover');
-                        
-                        const files = e.dataTransfer.files;
-                        if (files.length > 0 && files[0].type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            reader.onload = function(event) {
-                                if (area.id === 'quickPhotoUpload') {
-                                    quickPhotoData = event.target.result;
-                                    document.getElementById('quickPhotoPreview').src = quickPhotoData;
-                                    document.getElementById('quickPhotoPreview').style.display = 'block';
-                                } else {
-                                    achievementPhotoData = event.target.result;
-                                    document.getElementById('achievementPhotoPreview').src = achievementPhotoData;
-                                    document.getElementById('achievementPhotoPreview').style.display = 'block';
-                                }
-                            };
-                            reader.readAsDataURL(files[0]);
-                        }
-                    });
+                        addTag();
+                    }
+                });
+            }
+        }
+
+        function focusTagInput() {
+            document.getElementById('taskTagInput').focus();
+        }
+
+        function addTag() {
+            const input = document.getElementById('taskTagInput');
+            const tag = input.value.trim();
+            
+            if (!tag) return;
+            
+            // Check if tag already exists
+            const existingTags = Array.from(document.querySelectorAll('#taskTags .tag')).map(t => 
+                t.textContent.replace('×', '').trim()
+            );
+            
+            if (existingTags.includes(tag)) {
+                showNotification('Tag already exists', 'error');
+                return;
+            }
+            
+            // Add tag to container
+            const tagsContainer = document.getElementById('taskTags');
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag';
+            tagElement.innerHTML = `${tag} <span class="tag-remove" onclick="removeTag('${tag}')">×</span>`;
+            
+            tagsContainer.insertBefore(tagElement, input);
+            input.value = '';
+        }
+
+        function removeTag(tagText) {
+            const tagElements = document.querySelectorAll('#taskTags .tag');
+            tagElements.forEach(tag => {
+                if (tag.textContent.replace('×', '').trim() === tagText) {
+                    tag.remove();
                 }
             });
         }
 
-        // Closure habits
-        function renderClosureHabits() {
-            const container = document.getElementById('closureHabits');
-            container.innerHTML = closureHabits.map(habit => `
-                <div class="habit-item" onclick="toggleClosureHabit(${habit.id})">
-                    <div class="habit-checkbox" id="habit-${habit.id}">
-                        <span style="display: none;">✓</span>
-                    </div>
-                    <span>${habit.icon} ${habit.text}</span>
-                </div>
-            `).join('');
-        }
-
-        function toggleClosureHabit(habitId) {
-            const checkbox = document.getElementById(`habit-${habitId}`);
-            const checkmark = checkbox.querySelector('span');
-            
-            if (checkbox.classList.contains('checked')) {
-                checkbox.classList.remove('checked');
-                checkmark.style.display = 'none';
-            } else {
-                checkbox.classList.add('checked');
-                checkmark.style.display = 'block';
-                showNotification('Great closure habit! Building the finisher mindset! 🎯');
-            }
-        }
-
-        // Reward suggestions
-        function renderRewardSuggestions() {
-            const container = document.getElementById('rewardSuggestions');
-            const randomRewards = getRandomRewards();
-            
-            container.innerHTML = randomRewards.map(reward => `
-                <div class="reward-item" onclick="claimReward('${reward.text}')">
-                    <span>${reward.text}</span>
-                    <span style="color: #ffd700;">🎁</span>
-                </div>
-            `).join('');
-        }
-
-        function getRandomRewards() {
-            return customRewards.sort(() => 0.5 - Math.random()).slice(0, 4);
-        }
-
-        function claimReward(rewardText) {
-            rewardsEarned++;
-            showNotification(`🎁 Reward claimed: ${rewardText}! You've earned it!`);
-            updateStats();
-            saveData();
-        }
-
-        // Reward management functions
-        function openRewardModal() {
-            renderCustomRewardsList();
-            document.getElementById('rewardModal').style.display = 'block';
-            document.getElementById('newRewardText').focus();
-        }
-
-        function closeRewardModal() {
-            document.getElementById('rewardModal').style.display = 'none';
-            document.getElementById('newRewardText').value = '';
-        }
-
-        function addCustomReward() {
-            const text = document.getElementById('newRewardText').value.trim();
-            const category = document.getElementById('newRewardCategory').value;
-            
-            if (!text) {
-                showNotification('Please enter a reward description', 'error');
-                return;
-            }
-            
-            const newReward = {
-                id: Date.now(),
-                text: text,
-                category: category
-            };
-            
-            customRewards.push(newReward);
-            document.getElementById('newRewardText').value = '';
-            
-            renderCustomRewardsList();
-            renderRewardSuggestions();
-            saveData();
-            showNotification('🎁 New reward added!');
-        }
-
-        function editCustomReward(rewardId) {
-            const reward = customRewards.find(r => r.id === rewardId);
-            if (!reward) return;
-            
-            const newText = prompt('Edit reward:', reward.text);
-            if (newText && newText.trim()) {
-                reward.text = newText.trim();
-                renderCustomRewardsList();
-                renderRewardSuggestions();
-                saveData();
-                showNotification('Reward updated! ✏️');
-            }
-        }
-
-        function deleteCustomReward(rewardId) {
-            const reward = customRewards.find(r => r.id === rewardId);
-            if (!reward) return;
-            
-            if (confirm(`Delete reward: "${reward.text}"?`)) {
-                customRewards = customRewards.filter(r => r.id !== rewardId);
-                renderCustomRewardsList();
-                renderRewardSuggestions();
-                saveData();
-                showNotification('Reward deleted 🗑️');
-            }
-        }
-
-        function renderCustomRewardsList() {
-            const container = document.getElementById('customRewardsList');
-            
-            if (customRewards.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #e0e0e0; padding: 20px;">No custom rewards yet. Add some above!</p>';
-                return;
-            }
-            
-            // Group rewards by category
-            const groupedRewards = customRewards.reduce((acc, reward) => {
-                if (!acc[reward.category]) acc[reward.category] = [];
-                acc[reward.category].push(reward);
-                return acc;
-            }, {});
-            
-            const categoryLabels = {
-                small: 'Small Wins',
-                medium: 'Medium Achievements', 
-                large: 'Large Milestones',
-                huge: 'Huge Successes'
-            };
-            
-            container.innerHTML = Object.entries(groupedRewards).map(([category, rewards]) => `
-                <div style="margin-bottom: 20px;">
-                    <h5 style="color: #ffd700; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;">${categoryLabels[category]}</h5>
-                    ${rewards.map(reward => `
-                        <div class="reward-item" style="justify-content: space-between;">
-                            <span style="flex: 1;">${reward.text}</span>
-                            <div style="display: flex; gap: 8px;">
-                                <button onclick="editCustomReward(${reward.id})" style="background: none; border: none; color: #ffd700; cursor: pointer; padding: 4px;">✏️</button>
-                                <button onclick="deleteCustomReward(${reward.id})" style="background: none; border: none; color: #ff6b6b; cursor: pointer; padding: 4px;">🗑️</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-        }
-
-        // Celebration effects
-        function triggerCelebration() {
-            createConfetti();
-            playSuccessSound();
-        }
-
-        function createConfetti() {
-            const container = document.getElementById('celebrationAnimation');
-            const colors = ['#ffd700', '#daa520', '#ff6b6b', '#66bb6a', '#42a5f5'];
-            
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDelay = Math.random() * 3 + 's';
-                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                
-                container.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-
-        function playSuccessSound() {
-            // Create a simple success sound using Web Audio API
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            } catch (error) {
-                // Fallback: no sound if Web Audio API is not supported
-                console.log('Audio not supported');
-            }
-        }
-
-        // Focus Timer
+        // Pomodoro Timer
         function startTimer() {
             if (!isTimerRunning) {
                 isTimerRunning = true;
@@ -1565,7 +1534,7 @@
                     }
                 }, 1000);
                 
-                showNotification('🍅 Focus session started! Time to create something worth celebrating!');
+                showNotification('🍅 Focus session started! Time to finish strong!');
             }
         }
 
@@ -1599,54 +1568,12 @@
         function completeTimer() {
             isTimerRunning = false;
             clearInterval(timerInterval);
-            
-            // Play timer completion sound
-            playTimerSound();
+            totalFocusTime += 25;
             
             resetTimer();
-            showNotification('🎉 Focus session complete! Ready to log an achievement? 🏆');
-            triggerCelebration();
-        }
-
-        function playTimerSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Create a more prominent timer sound - bell-like chimes
-                const frequencies = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-                
-                frequencies.forEach((freq, index) => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                    oscillator.type = 'sine';
-                    
-                    const startTime = audioContext.currentTime + (index * 0.3);
-                    gainNode.gain.setValueAtTime(0, startTime);
-                    gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.1);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 1);
-                    
-                    oscillator.start(startTime);
-                    oscillator.stop(startTime + 1);
-                });
-                
-                // Add a notification sound after the chimes
-                setTimeout(() => {
-                    if (Notification.permission === 'granted') {
-                        new Notification('🍅 Focus Timer Complete!', {
-                            body: 'Great job! Time to celebrate your focused work session.',
-                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏆</text></svg>'
-                        });
-                    }
-                }, 1200);
-                
-            } catch (error) {
-                console.log('Audio not supported');
-            }
+            showNotification('🎉 Focus session complete! You\'re building the habit of finishing! 🔥');
+            updateStats();
+            saveData();
         }
 
         // Voice input
@@ -1688,158 +1615,262 @@
             recognition.start();
         }
 
-        // Statistics and progress
-        function updateStats() {
-            const totalAchievements = achievements.length;
-            const thisWeekCount = calculateThisWeekCount();
-            const currentStreakValue = calculateStreak();
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyPromptsDate');
             
-            document.getElementById('totalAchievements').textContent = totalAchievements;
-            document.getElementById('thisWeekCount').textContent = thisWeekCount;
-            document.getElementById('currentStreak').textContent = currentStreakValue;
-            document.getElementById('rewardsEarned').textContent = rewardsEarned;
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...actionPrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyPromptsDate', today);
+            }
             
-            currentStreak = currentStreakValue;
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="prompt-item">
+                    <span class="prompt-text">${prompt}</span>
+                    <button class="prompt-action" onclick="completePrompt(${index})">Done</button>
+                </div>
+            `).join('');
         }
 
-        function calculateThisWeekCount() {
-            const now = new Date();
-            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-            weekStart.setHours(0, 0, 0, 0);
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyPrompts', JSON.stringify(prompts));
             
-            return achievements.filter(achievement => 
-                new Date(achievement.completedAt) >= weekStart
+            generateDailyPrompts();
+            showNotification('Action prompt completed! 🎯');
+            updateStreak();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customMotivationalMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+        }
+
+        function openMessageBuilder() {
+            const currentMessage = document.getElementById('motivationalMessage').textContent;
+            document.getElementById('customMessage').value = currentMessage;
+            
+            // Populate templates
+            const templatesContainer = document.getElementById('messageTemplates');
+            templatesContainer.innerHTML = messageTemplates.map(template => `
+                <div style="padding: 8px; background: rgba(45, 90, 61, 0.4); border-radius: 8px; margin-bottom: 8px; cursor: pointer;" onclick="useTemplate('${template}')">
+                    "${template}"
+                </div>
+            `).join('');
+            
+            document.getElementById('messageModal').style.display = 'block';
+        }
+
+        function useTemplate(template) {
+            document.getElementById('customMessage').value = template;
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customMotivationalMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💪');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Statistics and streaks
+        function updateStats() {
+            const activeTasks = tasks.filter(t => !t.completed).length;
+            const todayCompleted = calculateTodayCompleted();
+            const focusHours = Math.round(totalFocusTime / 60);
+            
+            document.getElementById('totalTasks').textContent = activeTasks;
+            document.getElementById('completedToday').textContent = todayCompleted;
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('focusTime').textContent = focusHours + 'h';
+            
+            // Update streak display
+            document.getElementById('streakNumber').textContent = currentStreak;
+            const streakProgress = Math.min((currentStreak % 7) / 7 * 100, 100);
+            document.getElementById('streakProgress').style.width = streakProgress + '%';
+        }
+
+        function calculateTodayCompleted() {
+            const today = new Date().toDateString();
+            return tasks.filter(task => 
+                task.completed && new Date(task.createdAt).toDateString() === today
             ).length;
         }
 
-        function calculateStreak() {
-            if (achievements.length === 0) return 0;
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastActiveDate');
             
-            const sortedAchievements = [...achievements].sort((a, b) => 
-                new Date(b.completedAt) - new Date(a.completedAt)
-            );
-            
-            let streak = 0;
-            let currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
-            
-            for (let achievement of sortedAchievements) {
-                const achievementDate = new Date(achievement.completedAt);
-                achievementDate.setHours(0, 0, 0, 0);
-                
-                const diffTime = currentDate - achievementDate;
-                const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                
-                if (diffDays <= streak + 1) {
-                    if (diffDays === streak) {
-                        streak++;
-                        currentDate.setDate(currentDate.getDate() - 1);
-                    }
-                } else {
-                    break;
-                }
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
             }
             
-            return streak;
+            const todayCompleted = calculateTodayCompleted();
+            const todayPrompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            const hasActivity = todayCompleted > 0 || todayPrompts.length < 3;
+            
+            if (hasActivity) {
+                if (lastActive) {
+                    const lastDate = new Date(lastActive);
+                    const todayDate = new Date(today);
+                    const diffTime = todayDate - lastDate;
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                    
+                    if (diffDays === 1) {
+                        // Consecutive day
+                        currentStreak++;
+                    } else if (diffDays > 1) {
+                        // Streak broken
+                        currentStreak = 1;
+                    }
+                } else {
+                    // First time
+                    currentStreak = 1;
+                }
+                
+                localStorage.setItem('lastActiveDate', today);
+                localStorage.setItem('currentStreak', currentStreak.toString());
+                updateStats();
+            }
         }
 
-        function updateProgressRing() {
-            const thisWeekCount = calculateThisWeekCount();
-            const weeklyGoal = 7; // Goal: 1 achievement per day
-            const progress = Math.min((thisWeekCount / weeklyGoal) * 100, 100);
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
             
-            const circle = document.getElementById('progressRing');
-            const circumference = 2 * Math.PI * 52;
-            const offset = circumference - (progress / 100) * circumference;
-            
-            circle.style.strokeDashoffset = offset;
-            document.getElementById('progressText').textContent = `${Math.round(progress)}% Complete`;
+            tasks.forEach(task => {
+                if (task.completed || !task.reminder.time) return;
+                
+                const reminderTime = new Date(task.reminder.time);
+                const timeDiff = Math.abs(now - reminderTime);
+                
+                // Show reminder if within 1 minute
+                if (timeDiff < 60000) {
+                    showNotification(`⏰ Reminder: "${task.title}"`, 'reminder');
+                    
+                    // Set next reminder if recurring
+                    if (task.reminder.recurring !== 'none') {
+                        const nextReminder = new Date(reminderTime);
+                        switch (task.reminder.recurring) {
+                            case 'daily':
+                                nextReminder.setDate(nextReminder.getDate() + 1);
+                                break;
+                            case 'weekly':
+                                nextReminder.setDate(nextReminder.getDate() + 7);
+                                break;
+                            case 'monthly':
+                                nextReminder.setMonth(nextReminder.getMonth() + 1);
+                                break;
+                        }
+                        task.reminder.time = nextReminder.toISOString().slice(0, 16);
+                        saveData();
+                    }
+                }
+            });
         }
 
         // Data management
         function saveData() {
             const data = {
-                achievements: achievements,
+                tasks: tasks,
+                totalFocusTime: totalFocusTime,
                 currentStreak: currentStreak,
-                rewardsEarned: rewardsEarned,
-                customRewards: customRewards
+                completedToday: completedToday
             };
-            localStorage.setItem('achievementLogger_data', JSON.stringify(data));
+            localStorage.setItem('finisherPro_data', JSON.stringify(data));
         }
 
         function loadData() {
-            const savedData = localStorage.getItem('achievementLogger_data');
+            const savedData = localStorage.getItem('finisherPro_data');
             if (savedData) {
                 const data = JSON.parse(savedData);
-                achievements = data.achievements || [];
+                tasks = data.tasks || [];
+                totalFocusTime = data.totalFocusTime || 0;
                 currentStreak = data.currentStreak || 0;
-                rewardsEarned = data.rewardsEarned || 0;
-                customRewards = data.customRewards || customRewards; // Keep default if no custom rewards saved
+                completedToday = data.completedToday || 0;
             }
         }
 
         function exportToPDF() {
-            const totalAchievements = achievements.length;
-            const thisWeekCount = calculateThisWeekCount();
-            const currentStreakValue = calculateStreak();
+            const activeTasks = tasks.filter(t => !t.completed);
+            const completedTasks = tasks.filter(t => t.completed);
             
             const content = `
-ACHIEVEMENT LOGGER - SUCCESS REPORT
+FINISHER PRO - TASK COMPLETION REPORT
 Generated: ${new Date().toLocaleDateString()}
 
 SUMMARY
 =======
-Total Achievements: ${totalAchievements}
-This Week: ${thisWeekCount}
-Current Streak: ${currentStreakValue} days
-Rewards Earned: ${rewardsEarned}
+Active Tasks: ${activeTasks.length}
+Completed Today: ${completedToday}
+Current Streak: ${currentStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
 
-RECENT ACHIEVEMENTS
-==================
-${achievements.slice(0, 20).map(achievement => `
-🏆 ${achievement.title}
-   Category: ${achievement.category.toUpperCase()}
-   Impact: ${achievement.impact.toUpperCase()}
-   Completed: ${new Date(achievement.completedAt).toLocaleDateString()}
-   ${achievement.description ? `Description: ${achievement.description}` : ''}
-   ${achievement.reward ? `Reward: ${achievement.reward}` : ''}
+ACTIVE TASKS
+============
+${activeTasks.map(task => `
+📋 ${task.title}
+   Priority: ${task.priority.toUpperCase()}
+   ${task.deadline ? `Deadline: ${new Date(task.deadline).toLocaleDateString()}` : 'No deadline'}
+   ${task.description ? `Description: ${task.description}` : ''}
+   
+   Micro-Steps (${task.subtasks.filter(st => st.completed).length}/${task.subtasks.length} completed):
+   ${task.subtasks.map(st => `   ${st.completed ? '✅' : '☐'} ${st.text}`).join('\n   ')}
+   
+   Tags: ${task.tags.join(', ') || 'None'}
 `).join('\n')}
 
-ACHIEVEMENT BREAKDOWN BY CATEGORY
-=================================
-${Object.entries(
-    achievements.reduce((acc, achievement) => {
-        acc[achievement.category] = (acc[achievement.category] || 0) + 1;
-        return acc;
-    }, {})
-).map(([category, count]) => `${category.toUpperCase()}: ${count} achievements`).join('\n')}
-
-IMPACT ANALYSIS
+COMPLETED TASKS
 ===============
-${Object.entries(
-    achievements.reduce((acc, achievement) => {
-        acc[achievement.impact] = (acc[achievement.impact] || 0) + 1;
-        return acc;
-    }, {})
-).map(([impact, count]) => `${impact.toUpperCase()}: ${count} achievements`).join('\n')}
+${completedTasks.slice(0, 10).map(task => `✅ ${task.title} - Completed: ${new Date(task.createdAt).toLocaleDateString()}`).join('\n')}
+${completedTasks.length > 10 ? `\n... and ${completedTasks.length - 10} more completed tasks` : ''}
             `.trim();
             
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `achievement-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.download = `finisher-pro-report-${new Date().toISOString().split('T')[0]}.txt`;
             a.click();
             URL.revokeObjectURL(url);
-            showNotification('Achievement report exported! 📄');
+            showNotification('Report exported! 📄');
         }
 
         function backupData() {
             const data = {
-                achievements: achievements,
+                tasks: tasks,
+                totalFocusTime: totalFocusTime,
                 currentStreak: currentStreak,
-                rewardsEarned: rewardsEarned,
-                customRewards: customRewards,
+                completedToday: completedToday,
                 exportDate: new Date().toISOString()
             };
             
@@ -1847,7 +1878,7 @@ ${Object.entries(
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `achievement-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `finisher-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showNotification('Data backed up! 💾');
@@ -1867,15 +1898,13 @@ ${Object.entries(
                     const data = JSON.parse(e.target.result);
                     
                     if (confirm('This will replace all current data. Continue?')) {
-                        achievements = data.achievements || [];
+                        tasks = data.tasks || [];
+                        totalFocusTime = data.totalFocusTime || 0;
                         currentStreak = data.currentStreak || 0;
-                        rewardsEarned = data.rewardsEarned || 0;
-                        customRewards = data.customRewards || customRewards;
+                        completedToday = data.completedToday || 0;
                         
-                        renderAchievements();
-                        renderRewardSuggestions();
+                        renderTasks();
                         updateStats();
-                        updateProgressRing();
                         saveData();
                         showNotification('Data imported successfully! 📥');
                     }
@@ -1911,6 +1940,13 @@ ${Object.entries(
             
             if (type === 'error') {
                 notification.style.background = 'rgba(255, 107, 107, 0.95)';
+            } else if (type === 'urgent') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+                notification.style.color = 'white';
+                notification.style.fontWeight = 'bold';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 167, 38, 0.95)';
+                notification.style.color = 'white';
             } else {
                 notification.style.background = 'rgba(102, 187, 106, 0.95)';
                 notification.style.color = 'white';
@@ -1918,23 +1954,19 @@ ${Object.entries(
             
             setTimeout(() => {
                 notification.style.display = 'none';
-            }, 4000);
+            }, type === 'urgent' ? 6000 : 4000);
         }
 
         // Modal close functionality
         window.onclick = function(event) {
-            const achievementModal = document.getElementById('achievementModal');
-            const photoModal = document.getElementById('photoModal');
-            const rewardModal = document.getElementById('rewardModal');
+            const taskModal = document.getElementById('taskModal');
+            const messageModal = document.getElementById('messageModal');
             
-            if (event.target === achievementModal) {
-                closeAchievementModal();
+            if (event.target === taskModal) {
+                closeTaskModal();
             }
-            if (event.target === photoModal) {
-                closePhotoModal();
-            }
-            if (event.target === rewardModal) {
-                closeRewardModal();
+            if (event.target === messageModal) {
+                closeMessageModal();
             }
         }
 
@@ -1944,7 +1976,7 @@ ${Object.entries(
                 switch(e.key) {
                     case 'n':
                         e.preventDefault();
-                        openAchievementModal();
+                        openTaskModal();
                         break;
                     case 's':
                         e.preventDefault();
@@ -1963,19 +1995,23 @@ ${Object.entries(
             }
             
             if (e.key === 'Escape') {
-                closeAchievementModal();
-                closePhotoModal();
-                closeRewardModal();
-            }
-            
-            if (e.key === 'Enter' && document.getElementById('newRewardText') === document.activeElement) {
-                e.preventDefault();
-                addCustomReward();
+                closeTaskModal();
+                closeMessageModal();
             }
         });
 
-        // Update progress ring periodically
-        setInterval(updateProgressRing, 60000);
+        // Add export and backup buttons to the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.header');
+            const exportButtons = document.createElement('div');
+            exportButtons.style.marginTop = '15px';
+            exportButtons.innerHTML = `
+                <button class="action-btn" onclick="exportToPDF()" style="margin: 0 5px;">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()" style="margin: 0 5px;">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()" style="margin: 0 5px;">📥 Import Data</button>
+            `;
+            header.appendChild(exportButtons);
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871ce235403bc4b',t:'MTc1OTIxNTIyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871b4634666bc4b',t:'MTc1OTIxNDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
