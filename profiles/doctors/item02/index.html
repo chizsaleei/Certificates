@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OET Medicine Speaking Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-dark: #1a4d3a;
+            --primary: #2d6b4f;
+            --primary-light: #4a8066;
+            --gold-dark: #b8941f;
+            --gold: #d4af37;
+            --gold-light: #f4d03f;
+        }
+        
+        .bg-primary { background-color: var(--primary); }
+        .bg-primary-dark { background-color: var(--primary-dark); }
+        .bg-primary-light { background-color: var(--primary-light); }
+        .bg-gold { background-color: var(--gold); }
+        .bg-gold-dark { background-color: var(--gold-dark); }
+        .bg-gold-light { background-color: var(--gold-light); }
+        
+        .text-primary { color: var(--primary); }
+        .text-primary-dark { color: var(--primary-dark); }
+        .text-gold { color: var(--gold); }
+        .text-gold-dark { color: var(--gold-dark); }
+        
+        .border-primary { border-color: var(--primary); }
+        .border-gold { border-color: var(--gold); }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pulse-record { animation: pulse-record 1.5s infinite; }
+        @keyframes pulse-record {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .recording-indicator {
+            background: radial-gradient(circle, #dc2626, #b91c1c);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+        
+        .cue-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid var(--gold);
+        }
+        
+        .scenario-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .voice-input-active {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            animation: pulse 1s infinite;
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            background: #f59e0b;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .sync-indicator {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+        
+        .modal {
+            backdrop-filter: blur(4px);
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .accessibility-focus:focus {
+            outline: 3px solid var(--gold);
+            outline-offset: 2px;
+        }
+        
+        .high-contrast {
+            filter: contrast(1.2);
+        }
+        
+        .large-text {
+            font-size: 1.125rem;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Offline Indicator -->
+    <div id="offlineIndicator" class="offline-indicator">
+        📡 Offline Mode - Changes will sync when online
+    </div>
+
+    <!-- Header -->
+    <header class="bg-primary-dark text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center">
+                        <span class="text-primary-dark font-bold text-xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">OET Medicine Speaking</h1>
+                        <p class="text-gold text-sm">Professional Training Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Sync Status -->
+                    <div id="syncStatus" class="text-gold text-sm hidden">
+                        <span id="syncIcon" class="inline-block">☁️</span>
+                        <span id="syncText">Synced</span>
+                    </div>
+                    <!-- Stats -->
+                    <div class="text-right">
+                        <div class="text-gold font-semibold flex items-center">
+                            <span id="streakCount" class="streak-flame mr-1">🔥</span>
+                            <span id="streakDays">0</span> day streak
+                        </div>
+                        <div class="text-sm text-gray-300">
+                            <span id="totalSessions">0</span> sessions • <span id="totalMinutes">0</span>m
+                        </div>
+                    </div>
+                    <!-- Settings -->
+                    <button id="settingsBtn" class="bg-gold text-primary-dark p-2 rounded-lg hover:bg-gold-light transition-colors accessibility-focus" aria-label="Settings">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-primary text-white" role="navigation">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-1">
+                <button class="nav-btn active px-6 py-3 hover:bg-primary-dark transition-colors accessibility-focus" data-tab="scenarios" role="tab" aria-selected="true">
+                    📋 Scenarios
+                </button>
+                <button class="nav-btn px-6 py-3 hover:bg-primary-dark transition-colors accessibility-focus" data-tab="practice" role="tab" aria-selected="false">
+                    🎤 Practice
+                </button>
+                <button class="nav-btn px-6 py-3 hover:bg-primary-dark transition-colors accessibility-focus" data-tab="recordings" role="tab" aria-selected="false">
+                    🎵 Recordings
+                </button>
+                <button class="nav-btn px-6 py-3 hover:bg-primary-dark transition-colors accessibility-focus" data-tab="criteria" role="tab" aria-selected="false">
+                    📊 Criteria
+                </button>
+                <button class="nav-btn px-6 py-3 hover:bg-primary-dark transition-colors accessibility-focus" data-tab="analytics" role="tab" aria-selected="false">
+                    📈 Analytics
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6" role="main">
+        <!-- Scenarios Tab -->
+        <div id="scenarios" class="tab-content" role="tabpanel">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-primary-dark">Role-Play Scenarios</h2>
+                <div class="flex flex-wrap gap-3">
+                    <button id="quickAddBtn" class="bg-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-gold-light transition-colors accessibility-focus">
+                        ⚡ Quick Add
+                    </button>
+                    <button id="addScenarioBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors accessibility-focus">
+                        ➕ Add Scenario
+                    </button>
+                    <button id="randomScenario" class="bg-gold-dark text-white px-4 py-2 rounded-lg hover:bg-gold transition-colors accessibility-focus">
+                        🎲 Random Practice
+                    </button>
+                    <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" aria-label="Filter by category">
+                        <option value="all">All Categories</option>
+                        <option value="history">History Taking</option>
+                        <option value="explanation">Explanations</option>
+                        <option value="safety">Safety-Netting</option>
+                    </select>
+                    <select id="difficultyFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" aria-label="Filter by difficulty">
+                        <option value="all">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="scenariosList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list"></div>
+        </div>
+
+        <!-- Practice Tab -->
+        <div id="practice" class="tab-content hidden" role="tabpanel">
+            <div class="max-w-4xl mx-auto">
+                <!-- Scenario Header -->
+                <div id="practiceHeader" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 id="scenarioTitle" class="text-2xl font-bold text-primary-dark mb-2">Select a Scenario</h2>
+                            <div class="flex flex-wrap gap-2 text-sm">
+                                <span id="scenarioCategory" class="px-3 py-1 bg-primary text-white rounded-full"></span>
+                                <span id="scenarioDifficulty" class="px-3 py-1 bg-gold text-primary-dark rounded-full"></span>
+                                <span id="scenarioDuration" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full"></span>
+                            </div>
+                        </div>
+                        <button id="backToScenarios" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors accessibility-focus">
+                            ← Back to Scenarios
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timer and Recording Controls -->
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center space-x-6">
+                            <!-- Timer Display -->
+                            <div class="text-center">
+                                <div id="timerDisplay" class="text-4xl font-bold text-primary-dark font-mono">00:00</div>
+                                <div class="text-sm text-gray-600">Time Elapsed</div>
+                            </div>
+                            
+                            <!-- Progress Ring -->
+                            <div class="relative w-20 h-20">
+                                <svg class="w-20 h-20 progress-ring">
+                                    <circle cx="40" cy="40" r="36" stroke="#e5e7eb" stroke-width="8" fill="none"></circle>
+                                    <circle id="progressCircle" cx="40" cy="40" r="36" stroke="var(--gold)" stroke-width="8" fill="none" class="progress-ring-circle"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span id="progressPercent" class="text-sm font-bold text-primary-dark">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recording Controls -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button id="startRecording" class="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors flex items-center space-x-2 accessibility-focus">
+                                <span class="text-xl">🎤</span>
+                                <span>Start Recording</span>
+                            </button>
+                            <button id="pauseRecording" class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors hidden accessibility-focus">
+                                ⏸️ Pause
+                            </button>
+                            <button id="resumeRecording" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors hidden accessibility-focus">
+                                ▶️ Resume
+                            </button>
+                            <button id="stopRecording" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors hidden accessibility-focus">
+                                ⏹️ Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recording Indicator -->
+                    <div id="recordingIndicator" class="hidden mt-4">
+                        <div class="flex items-center justify-center space-x-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                            <div class="w-4 h-4 bg-red-500 rounded-full pulse-record"></div>
+                            <span class="text-red-700 font-semibold">Recording in progress...</span>
+                        </div>
+                    </div>
+
+                    <!-- Paused Indicator -->
+                    <div id="pausedIndicator" class="hidden mt-4">
+                        <div class="flex items-center justify-center space-x-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                            <span class="text-yellow-700 font-semibold">Recording paused - Click Resume to continue</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cue Cards and Content -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Cue Card -->
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="bg-primary-dark text-white p-4 rounded-t-lg">
+                            <h3 class="text-lg font-bold">📋 Cue Card</h3>
+                        </div>
+                        <div id="cueCardContent" class="p-6">
+                            <p class="text-gray-600">Select a scenario to view the cue card</p>
+                        </div>
+                    </div>
+
+                    <!-- Sample Lines -->
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="bg-gold text-primary-dark p-4 rounded-t-lg">
+                            <h3 class="text-lg font-bold">💬 Sample Lines</h3>
+                        </div>
+                        <div id="sampleLinesContent" class="p-6">
+                            <p class="text-gray-600">Sample phrases will appear here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Points -->
+                <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                    <h3 class="text-lg font-bold text-primary-dark mb-4">🎯 Key Points to Cover</h3>
+                    <div id="keyPointsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p class="text-gray-600">Key points will appear here when you select a scenario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recordings Tab -->
+        <div id="recordings" class="tab-content hidden" role="tabpanel">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-primary-dark">My Recordings</h2>
+                <div class="flex flex-wrap gap-3">
+                    <button id="exportPDFBtn" class="bg-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-gold-light transition-colors accessibility-focus">
+                        📄 Export PDF Report
+                    </button>
+                    <button id="exportAllBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors accessibility-focus">
+                        📁 Export All
+                    </button>
+                    <button id="clearAllBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors accessibility-focus">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <div id="recordingsList" class="space-y-4">
+                <div class="text-center py-12 text-gray-500">
+                    <div class="text-6xl mb-4">🎤</div>
+                    <p class="text-lg">No recordings yet</p>
+                    <p class="text-sm">Start practicing to create your first recording</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criteria Tab -->
+        <div id="criteria" class="tab-content hidden" role="tabpanel">
+            <h2 class="text-2xl font-bold text-primary-dark mb-6">OET Speaking Assessment Criteria</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Linguistic Criteria -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-primary-dark mb-4 flex items-center">
+                        <span class="mr-2">📝</span>
+                        Linguistic Criteria
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Overall Linguistic Effectiveness</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Clear and effective communication</li>
+                                <li>• Appropriate language for medical context</li>
+                                <li>• Natural flow and coherence</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Grammar and Cohesion</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Accurate grammatical structures</li>
+                                <li>• Appropriate linking words</li>
+                                <li>• Logical sequence of ideas</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Vocabulary</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Medical terminology usage</li>
+                                <li>• Appropriate word choice</li>
+                                <li>• Paraphrasing ability</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Communication -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-primary-dark mb-4 flex items-center">
+                        <span class="mr-2">🏥</span>
+                        Clinical Communication
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Relationship Building</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Establishes rapport with patient</li>
+                                <li>• Shows empathy and understanding</li>
+                                <li>• Maintains professional boundaries</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Understanding Patient Perspective</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Acknowledges patient concerns</li>
+                                <li>• Responds to emotional cues</li>
+                                <li>• Adapts communication style</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <h4 class="font-semibold text-primary-dark mb-2">Providing Structure</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Clear introduction and purpose</li>
+                                <li>• Logical information gathering</li>
+                                <li>• Appropriate closure</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoring Guide -->
+            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                <h3 class="text-xl font-bold text-primary-dark mb-4">📊 Scoring Guide</h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                        <div class="text-2xl font-bold text-red-600 mb-2">E</div>
+                        <div class="text-sm font-semibold text-red-700">0-99</div>
+                        <div class="text-xs text-red-600 mt-1">Needs significant improvement</div>
+                    </div>
+                    <div class="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <div class="text-2xl font-bold text-orange-600 mb-2">D</div>
+                        <div class="text-sm font-semibold text-orange-700">100-199</div>
+                        <div class="text-xs text-orange-600 mt-1">Below required standard</div>
+                    </div>
+                    <div class="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="text-2xl font-bold text-yellow-600 mb-2">C+</div>
+                        <div class="text-sm font-semibold text-yellow-700">200-249</div>
+                        <div class="text-xs text-yellow-600 mt-1">Borderline pass</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div class="text-2xl font-bold text-green-600 mb-2">B</div>
+                        <div class="text-sm font-semibold text-green-700">250-349</div>
+                        <div class="text-xs text-green-600 mt-1">Proficient</div>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">A</div>
+                        <div class="text-sm font-semibold text-blue-700">350-500</div>
+                        <div class="text-xs text-blue-600 mt-1">Very high level</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content hidden" role="tabpanel">
+            <h2 class="text-2xl font-bold text-primary-dark mb-6">Progress Analytics</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-primary-dark" id="totalSessionsAnalytics">0</div>
+                    <div class="text-gray-600 text-sm">Total Sessions</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-gold" id="totalMinutesAnalytics">0</div>
+                    <div class="text-gray-600 text-sm">Minutes Practiced</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-green-500 flex items-center justify-center">
+                        <span id="streakDaysAnalytics" class="streak-flame">🔥</span>
+                        <span id="streakNumber">0</span>
+                    </div>
+                    <div class="text-gray-600 text-sm">Day Streak</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-blue-500" id="averageSession">0</div>
+                    <div class="text-gray-600 text-sm">Avg Session (min)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Category Progress -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-primary-dark mb-4">Progress by Category</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>History Taking</span>
+                                <span id="historyProgress">0 sessions</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div id="historyBar" class="bg-primary h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Explanations</span>
+                                <span id="explanationProgress">0 sessions</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div id="explanationBar" class="bg-gold h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Safety-Netting</span>
+                                <span id="safetyProgress">0 sessions</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div id="safetyBar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-primary-dark mb-4">Recent Activity</h3>
+                    <div id="recentActivity" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-2">📈</div>
+                            <p>No activity yet</p>
+                            <p class="text-sm">Start practicing to see your progress</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                <h3 class="text-lg font-bold text-primary-dark mb-4">Data Management</h3>
+                <div class="flex flex-wrap gap-4">
+                    <button id="backupDataBtn" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors accessibility-focus">
+                        💾 Backup Data
+                    </button>
+                    <button id="restoreDataBtn" class="bg-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-gold-light transition-colors accessibility-focus">
+                        📥 Restore Data
+                    </button>
+                    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+                    <button id="exportAnalyticsBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors accessibility-focus">
+                        📊 Export Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Scenario Modal -->
+    <div id="scenarioModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modalTitle" class="text-xl font-bold text-primary-dark">Add New Scenario</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-2xl accessibility-focus">&times;</button>
+            </div>
+            
+            <form id="scenarioForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+                    <input type="text" id="scenarioTitleInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                        <select id="scenarioCategoryInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                            <option value="">Select Category</option>
+                            <option value="history">History Taking</option>
+                            <option value="explanation">Explanations</option>
+                            <option value="safety">Safety-Netting</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulty *</label>
+                        <select id="scenarioDifficultyInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                            <option value="">Select Difficulty</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Duration (min) *</label>
+                        <input type="number" id="scenarioDurationInput" min="1" max="15" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Setting *</label>
+                    <input type="text" id="scenarioSettingInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="e.g., Emergency Department" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Patient *</label>
+                    <input type="text" id="scenarioPatientInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="e.g., John Smith, 45-year-old male" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Complaint/Situation *</label>
+                    <textarea id="scenarioComplaintInput" rows="2" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="e.g., Chest pain for 2 hours" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Task *</label>
+                    <textarea id="scenarioTaskInput" rows="2" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="e.g., Take a focused history to determine the cause of chest pain" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Sample Lines</label>
+                    <div class="flex items-center gap-2 mb-2">
+                        <button type="button" id="voiceInputBtn" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors accessibility-focus">
+                            🎤 Voice Input
+                        </button>
+                        <span class="text-sm text-gray-600">Click to add lines using voice</span>
+                    </div>
+                    <textarea id="scenarioSampleLinesInput" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="Enter each sample line on a new line"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Key Points</label>
+                    <textarea id="scenarioKeyPointsInput" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" placeholder="Enter each key point on a new line"></textarea>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary-light transition-colors accessibility-focus">
+                        Save Scenario
+                    </button>
+                    <button type="button" id="cancelModal" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors accessibility-focus">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-primary-dark mb-6">Quick Add Scenario</h3>
+            
+            <form id="quickAddForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+                    <input type="text" id="quickTitleInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                    <select id="quickCategoryInput" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus" required>
+                        <option value="">Select Category</option>
+                        <option value="history">History Taking</option>
+                        <option value="explanation">Explanations</option>
+                        <option value="safety">Safety-Netting</option>
+                    </select>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-gold text-primary-dark py-3 rounded-lg hover:bg-gold-light transition-colors accessibility-focus">
+                        Quick Add
+                    </button>
+                    <button type="button" id="cancelQuickAdd" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors accessibility-focus">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-primary-dark mb-6">Settings</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Recording Quality</label>
+                    <select id="recordingQuality" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus">
+                        <option value="high">High Quality (44.1kHz)</option>
+                        <option value="medium" selected>Medium Quality (22kHz)</option>
+                        <option value="low">Low Quality (11kHz)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Practice Timer</label>
+                    <select id="practiceTimer" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary focus:outline-none accessibility-focus">
+                        <option value="3">3 minutes</option>
+                        <option value="5" selected>5 minutes</option>
+                        <option value="7">7 minutes</option>
+                        <option value="10">10 minutes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Accessibility</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="highContrast" class="mr-2 accessibility-focus">
+                            <span class="text-sm">High contrast mode</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="largeText" class="mr-2 accessibility-focus">
+                            <span class="text-sm">Large text</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="autoSave" checked class="mr-2 accessibility-focus">
+                            <span class="text-sm">Auto-save recordings</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-4 mt-6">
+                <button id="saveSettings" class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary-light transition-colors accessibility-focus">
+                    Save Settings
+                </button>
+                <button id="closeSettings" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors accessibility-focus">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let appState = {
+            currentScenario: null,
+            isRecording: false,
+            isPaused: false,
+            mediaRecorder: null,
+            audioChunks: [],
+            recordingStartTime: null,
+            pausedTime: 0,
+            timerInterval: null,
+            isOnline: navigator.onLine,
+            pendingSync: [],
+            recognition: null,
+            isVoiceInputActive: false,
+            editingScenarioId: null,
+            
+            // Data storage
+            scenarios: JSON.parse(localStorage.getItem('oet_scenarios') || '[]'),
+            recordings: JSON.parse(localStorage.getItem('oet_recordings') || '[]'),
+            progress: JSON.parse(localStorage.getItem('oet_progress') || '{"sessions": 0, "totalMinutes": 0, "categoryProgress": {"history": 0, "explanation": 0, "safety": 0}, "streak": 0, "lastPracticeDate": null, "streakHistory": []}'),
+            settings: JSON.parse(localStorage.getItem('oet_settings') || '{"recordingQuality": "medium", "autoSave": true, "practiceTimer": 5, "highContrast": false, "largeText": false}')
+        };
+
+        // Default scenarios if none exist
+        const defaultScenarios = [
+            {
+                id: 1,
+                title: "Chest Pain History Taking",
+                category: "history",
+                difficulty: "intermediate",
+                duration: 5,
+                cueCard: {
+                    setting: "Emergency Department",
+                    patient: "John Smith, 45-year-old male",
+                    complaint: "Chest pain for 2 hours",
+                    task: "Take a focused history to determine the cause of chest pain and assess cardiac risk factors."
+                },
+                sampleLines: [
+                    "Good morning, Mr. Smith. I'm Dr. [Name]. I understand you're experiencing chest pain. Can you tell me more about it?",
+                    "When did the pain start exactly?",
+                    "Can you describe the pain for me? Is it sharp, dull, crushing, or burning?",
+                    "Does the pain radiate anywhere else?",
+                    "Have you experienced anything like this before?",
+                    "Are you taking any medications currently?"
+                ],
+                keyPoints: [
+                    "Onset, character, radiation of pain",
+                    "Associated symptoms (SOB, nausea, sweating)",
+                    "Past medical history (MI, angina, diabetes)",
+                    "Medications and allergies",
+                    "Family history of cardiac disease",
+                    "Risk factors (smoking, hypertension, cholesterol)"
+                ],
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 2,
+                title: "Diabetes Management Explanation",
+                category: "explanation",
+                difficulty: "beginner",
+                duration: 5,
+                cueCard: {
+                    setting: "General Practice",
+                    patient: "Mary Johnson, 58-year-old female",
+                    complaint: "Type 2 Diabetes Mellitus diagnosis",
+                    task: "Explain the diagnosis and management plan to the patient who has just been diagnosed with diabetes."
+                },
+                sampleLines: [
+                    "Mrs. Johnson, I'd like to discuss your test results with you.",
+                    "Your blood sugar levels indicate that you have Type 2 diabetes.",
+                    "This means your body isn't using insulin effectively.",
+                    "The good news is that this condition is very manageable.",
+                    "We'll work together to create a plan that works for you.",
+                    "Do you have any questions about what I've explained so far?"
+                ],
+                keyPoints: [
+                    "Explain diagnosis in simple terms",
+                    "Discuss lifestyle modifications (diet, exercise)",
+                    "Explain medication if prescribed",
+                    "Importance of blood sugar monitoring",
+                    "Potential complications if untreated",
+                    "Follow-up appointments and support"
+                ],
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 3,
+                title: "Post-Surgical Safety Instructions",
+                category: "safety",
+                difficulty: "intermediate",
+                duration: 5,
+                cueCard: {
+                    setting: "Surgical Ward",
+                    patient: "Robert Brown, 62-year-old male",
+                    complaint: "Laparoscopic cholecystectomy (gallbladder removal)",
+                    task: "Provide safety-netting advice for post-operative care and when to seek medical attention."
+                },
+                sampleLines: [
+                    "Mr. Brown, before you go home, I want to make sure you know what to expect.",
+                    "Some discomfort is normal, but I'll tell you what signs to watch for.",
+                    "If you experience severe pain that isn't controlled by your medication...",
+                    "Any signs of infection like fever, redness, or unusual discharge...",
+                    "If you're concerned about anything, don't hesitate to contact us.",
+                    "Do you feel confident about managing your recovery at home?"
+                ],
+                keyPoints: [
+                    "Normal vs. concerning symptoms",
+                    "Wound care instructions",
+                    "Activity restrictions and gradual return",
+                    "When to seek immediate medical attention",
+                    "Follow-up appointment scheduling",
+                    "Emergency contact information"
+                ],
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            setupOfflineHandling();
+            setupVoiceRecognition();
+            renderScenarios();
+            updateAllDisplays();
+        });
+
+        function initializeApp() {
+            // Load default scenarios if none exist
+            if (appState.scenarios.length === 0) {
+                appState.scenarios = [...defaultScenarios];
+                saveScenarios();
+            }
+            
+            // Apply saved settings
+            applySettings();
+            
+            // Update displays
+            updateStats();
+            updateStreakDisplay();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => switchTab(e.target.dataset.tab));
+            });
+
+            // Scenario management
+            document.getElementById('addScenarioBtn').addEventListener('click', openAddScenarioModal);
+            document.getElementById('quickAddBtn').addEventListener('click', openQuickAddModal);
+            document.getElementById('randomScenario').addEventListener('click', selectRandomScenario);
+            document.getElementById('categoryFilter').addEventListener('change', renderScenarios);
+            document.getElementById('difficultyFilter').addEventListener('change', renderScenarios);
+
+            // Modal controls
+            document.getElementById('closeModal').addEventListener('click', closeScenarioModal);
+            document.getElementById('cancelModal').addEventListener('click', closeScenarioModal);
+            document.getElementById('cancelQuickAdd').addEventListener('click', closeQuickAddModal);
+            document.getElementById('scenarioForm').addEventListener('submit', saveScenario);
+            document.getElementById('quickAddForm').addEventListener('submit', saveQuickScenario);
+
+            // Recording controls
+            document.getElementById('startRecording').addEventListener('click', startRecording);
+            document.getElementById('pauseRecording').addEventListener('click', pauseRecording);
+            document.getElementById('resumeRecording').addEventListener('click', resumeRecording);
+            document.getElementById('stopRecording').addEventListener('click', stopRecording);
+
+            // Voice input
+            document.getElementById('voiceInputBtn').addEventListener('click', toggleVoiceInput);
+
+            // Navigation
+            document.getElementById('backToScenarios').addEventListener('click', () => switchTab('scenarios'));
+
+            // Settings
+            document.getElementById('settingsBtn').addEventListener('click', openSettings);
+            document.getElementById('closeSettings').addEventListener('click', closeSettings);
+            document.getElementById('saveSettings').addEventListener('click', saveSettings);
+
+            // Export/Import
+            document.getElementById('exportPDFBtn').addEventListener('click', exportPDFReport);
+            document.getElementById('exportAllBtn').addEventListener('click', exportAllRecordings);
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllRecordings);
+            document.getElementById('backupDataBtn').addEventListener('click', backupData);
+            document.getElementById('restoreDataBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('exportAnalyticsBtn').addEventListener('click', exportAnalytics);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
+        function setupOfflineHandling() {
+            window.addEventListener('online', () => {
+                appState.isOnline = true;
+                document.getElementById('offlineIndicator').style.display = 'none';
+                syncPendingChanges();
+            });
+
+            window.addEventListener('offline', () => {
+                appState.isOnline = false;
+                document.getElementById('offlineIndicator').style.display = 'block';
+            });
+
+            // Initial check
+            if (!appState.isOnline) {
+                document.getElementById('offlineIndicator').style.display = 'block';
+            }
+        }
+
+        function setupVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.recognition = new SpeechRecognition();
+                appState.recognition.continuous = true;
+                appState.recognition.interimResults = true;
+                appState.recognition.lang = 'en-US';
+
+                appState.recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript + '\n';
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const textarea = document.getElementById('scenarioSampleLinesInput');
+                        textarea.value += finalTranscript;
+                    }
+                };
+
+                appState.recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceInput();
+                };
+
+                appState.recognition.onend = function() {
+                    if (appState.isVoiceInputActive) {
+                        stopVoiceInput();
+                    }
+                };
+            }
+        }
+
+        function handleKeyboardShortcuts(e) {
+            // Ctrl/Cmd + R for random scenario
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                selectRandomScenario();
+            }
+            
+            // Space for start/stop recording (when in practice tab)
+            if (e.code === 'Space' && document.getElementById('practice').classList.contains('tab-content') && !document.getElementById('practice').classList.contains('hidden')) {
+                e.preventDefault();
+                if (!appState.isRecording) {
+                    startRecording();
+                } else {
+                    stopRecording();
+                }
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                closeScenarioModal();
+                closeQuickAddModal();
+                closeSettings();
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).setAttribute('aria-selected', 'true');
+
+            // Show/hide content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(tabName).classList.remove('hidden');
+
+            // Update content based on tab
+            switch(tabName) {
+                case 'recordings':
+                    renderRecordings();
+                    break;
+                case 'analytics':
+                    updateAnalyticsDisplay();
+                    break;
+                case 'scenarios':
+                    renderScenarios();
+                    break;
+            }
+        }
+
+        // Scenario management
+        function renderScenarios() {
+            const container = document.getElementById('scenariosList');
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+
+            let filteredScenarios = appState.scenarios.filter(scenario => {
+                const categoryMatch = categoryFilter === 'all' || scenario.category === categoryFilter;
+                const difficultyMatch = difficultyFilter === 'all' || scenario.difficulty === difficultyFilter;
+                return categoryMatch && difficultyMatch;
+            });
+
+            container.innerHTML = '';
+
+            if (filteredScenarios.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">📋</div>
+                        <p class="text-lg">No scenarios found</p>
+                        <p class="text-sm">Try adjusting your filters or add a new scenario</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredScenarios.forEach(scenario => {
+                const scenarioCard = document.createElement('div');
+                scenarioCard.className = 'scenario-card p-6 rounded-lg shadow-md cursor-pointer fade-in';
+                scenarioCard.setAttribute('role', 'listitem');
+                scenarioCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold text-primary-dark">${scenario.title}</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500">${scenario.duration}min</span>
+                            ${!scenario.isDefault ? `
+                                <button class="edit-scenario-btn text-gold hover:text-gold-dark p-1 accessibility-focus" data-id="${scenario.id}" title="Edit scenario" aria-label="Edit scenario">
+                                    ✏️
+                                </button>
+                                <button class="delete-scenario-btn text-red-500 hover:text-red-700 p-1 accessibility-focus" data-id="${scenario.id}" title="Delete scenario" aria-label="Delete scenario">
+                                    🗑️
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full ${getCategoryColor(scenario.category)}">${getCategoryLabel(scenario.category)}</span>
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full ${getDifficultyColor(scenario.difficulty)}">${scenario.difficulty.charAt(0).toUpperCase() + scenario.difficulty.slice(1)}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">${scenario.cueCard.task}</p>
+                    <div class="flex justify-between items-center">
+                        <div class="text-xs text-gray-500">
+                            <span class="mr-3">👤 ${scenario.cueCard.patient}</span>
+                        </div>
+                        <button class="start-practice-btn bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors text-sm accessibility-focus" data-id="${scenario.id}">
+                            Start Practice
+                        </button>
+                    </div>
+                `;
+
+                // Add event listeners
+                scenarioCard.querySelector('.start-practice-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    startPractice(scenario);
+                });
+
+                if (!scenario.isDefault) {
+                    scenarioCard.querySelector('.edit-scenario-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        editScenario(scenario.id);
+                    });
+
+                    scenarioCard.querySelector('.delete-scenario-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteScenario(scenario.id);
+                    });
+                }
+
+                container.appendChild(scenarioCard);
+            });
+        }
+
+        function getCategoryColor(category) {
+            switch(category) {
+                case 'history': return 'bg-blue-100 text-blue-800';
+                case 'explanation': return 'bg-green-100 text-green-800';
+                case 'safety': return 'bg-orange-100 text-orange-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getCategoryLabel(category) {
+            switch(category) {
+                case 'history': return 'History Taking';
+                case 'explanation': return 'Explanation';
+                case 'safety': return 'Safety-Netting';
+                default: return category;
+            }
+        }
+
+        function getDifficultyColor(difficulty) {
+            switch(difficulty) {
+                case 'beginner': return 'bg-green-100 text-green-800';
+                case 'intermediate': return 'bg-yellow-100 text-yellow-800';
+                case 'advanced': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function selectRandomScenario() {
+            if (appState.scenarios.length === 0) {
+                alert('No scenarios available. Please add some scenarios first.');
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * appState.scenarios.length);
+            const randomScenario = appState.scenarios[randomIndex];
+            startPractice(randomScenario);
+        }
+
+        function startPractice(scenario) {
+            appState.currentScenario = scenario;
+            switchTab('practice');
+            loadScenarioContent(scenario);
+        }
+
+        function loadScenarioContent(scenario) {
+            // Update header
+            document.getElementById('scenarioTitle').textContent = scenario.title;
+            document.getElementById('scenarioCategory').textContent = getCategoryLabel(scenario.category);
+            document.getElementById('scenarioDifficulty').textContent = scenario.difficulty.charAt(0).toUpperCase() + scenario.difficulty.slice(1);
+            document.getElementById('scenarioDuration').textContent = `${scenario.duration} minutes`;
+
+            // Load cue card
+            const cueCardContent = document.getElementById('cueCardContent');
+            cueCardContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="cue-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-primary-dark mb-2">Setting</h4>
+                        <p class="text-gray-700">${scenario.cueCard.setting}</p>
+                    </div>
+                    <div class="cue-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-primary-dark mb-2">Patient</h4>
+                        <p class="text-gray-700">${scenario.cueCard.patient}</p>
+                    </div>
+                    <div class="cue-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-primary-dark mb-2">Situation</h4>
+                        <p class="text-gray-700">${scenario.cueCard.complaint}</p>
+                    </div>
+                    <div class="cue-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-primary-dark mb-2">Your Task</h4>
+                        <p class="text-gray-700">${scenario.cueCard.task}</p>
+                    </div>
+                </div>
+            `;
+
+            // Load sample lines
+            const sampleLinesContent = document.getElementById('sampleLinesContent');
+            sampleLinesContent.innerHTML = `
+                <div class="space-y-3">
+                    ${scenario.sampleLines.map(line => `
+                        <div class="p-3 bg-gray-50 rounded-lg border-l-4 border-gold">
+                            <p class="text-gray-700 text-sm">"${line}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Load key points
+            const keyPointsContent = document.getElementById('keyPointsContent');
+            keyPointsContent.innerHTML = `
+                ${scenario.keyPoints.map(point => `
+                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <span class="text-gold font-bold">•</span>
+                        <span class="text-gray-700 text-sm">${point}</span>
+                    </div>
+                `).join('')}
+            `;
+
+            // Reset timer
+            resetTimer();
+        }
+
+        // Modal management
+        function openAddScenarioModal() {
+            appState.editingScenarioId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Scenario';
+            document.getElementById('scenarioForm').reset();
+            document.getElementById('scenarioModal').classList.remove('hidden');
+            document.getElementById('scenarioModal').classList.add('flex');
+            document.getElementById('scenarioTitleInput').focus();
+        }
+
+        function openQuickAddModal() {
+            document.getElementById('quickAddForm').reset();
+            document.getElementById('quickAddModal').classList.remove('hidden');
+            document.getElementById('quickAddModal').classList.add('flex');
+            document.getElementById('quickTitleInput').focus();
+        }
+
+        function editScenario(scenarioId) {
+            const scenario = appState.scenarios.find(s => s.id === scenarioId);
+            if (!scenario) return;
+
+            appState.editingScenarioId = scenarioId;
+            document.getElementById('modalTitle').textContent = 'Edit Scenario';
+            
+            // Populate form
+            document.getElementById('scenarioTitleInput').value = scenario.title;
+            document.getElementById('scenarioCategoryInput').value = scenario.category;
+            document.getElementById('scenarioDifficultyInput').value = scenario.difficulty;
+            document.getElementById('scenarioDurationInput').value = scenario.duration;
+            document.getElementById('scenarioSettingInput').value = scenario.cueCard.setting;
+            document.getElementById('scenarioPatientInput').value = scenario.cueCard.patient;
+            document.getElementById('scenarioComplaintInput').value = scenario.cueCard.complaint;
+            document.getElementById('scenarioTaskInput').value = scenario.cueCard.task;
+            document.getElementById('scenarioSampleLinesInput').value = scenario.sampleLines.join('\n');
+            document.getElementById('scenarioKeyPointsInput').value = scenario.keyPoints.join('\n');
+
+            document.getElementById('scenarioModal').classList.remove('hidden');
+            document.getElementById('scenarioModal').classList.add('flex');
+            document.getElementById('scenarioTitleInput').focus();
+        }
+
+        function closeScenarioModal() {
+            document.getElementById('scenarioModal').classList.add('hidden');
+            document.getElementById('scenarioModal').classList.remove('flex');
+            appState.editingScenarioId = null;
+        }
+
+        function closeQuickAddModal() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+            document.getElementById('quickAddModal').classList.remove('flex');
+        }
+
+        function saveScenario(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const scenario = {
+                id: appState.editingScenarioId || Date.now(),
+                title: document.getElementById('scenarioTitleInput').value,
+                category: document.getElementById('scenarioCategoryInput').value,
+                difficulty: document.getElementById('scenarioDifficultyInput').value,
+                duration: parseInt(document.getElementById('scenarioDurationInput').value),
+                cueCard: {
+                    setting: document.getElementById('scenarioSettingInput').value,
+                    patient: document.getElementById('scenarioPatientInput').value,
+                    complaint: document.getElementById('scenarioComplaintInput').value,
+                    task: document.getElementById('scenarioTaskInput').value
+                },
+                sampleLines: document.getElementById('scenarioSampleLinesInput').value.split('\n').filter(line => line.trim()),
+                keyPoints: document.getElementById('scenarioKeyPointsInput').value.split('\n').filter(point => point.trim()),
+                createdAt: appState.editingScenarioId ? 
+                    appState.scenarios.find(s => s.id === appState.editingScenarioId).createdAt : 
+                    new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isDefault: false
+            };
+
+            if (appState.editingScenarioId) {
+                const index = appState.scenarios.findIndex(s => s.id === appState.editingScenarioId);
+                appState.scenarios[index] = scenario;
+            } else {
+                appState.scenarios.push(scenario);
+            }
+
+            saveScenarios();
+            renderScenarios();
+            closeScenarioModal();
+            
+            // Show success message
+            showNotification(appState.editingScenarioId ? 'Scenario updated successfully!' : 'Scenario added successfully!');
+        }
+
+        function saveQuickScenario(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('quickTitleInput').value;
+            const category = document.getElementById('quickCategoryInput').value;
+            
+            const scenario = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                difficulty: 'intermediate',
+                duration: 5,
+                cueCard: {
+                    setting: 'Medical Setting',
+                    patient: 'Patient',
+                    complaint: 'Medical situation',
+                    task: `Practice ${getCategoryLabel(category).toLowerCase()} scenario`
+                },
+                sampleLines: [
+                    'Good morning, I\'m Dr. [Name].',
+                    'I understand you have some concerns.',
+                    'Can you tell me more about that?',
+                    'How long has this been going on?',
+                    'Is there anything else you\'d like to discuss?'
+                ],
+                keyPoints: [
+                    'Establish rapport',
+                    'Listen actively',
+                    'Ask appropriate questions',
+                    'Provide clear information',
+                    'Check understanding'
+                ],
+                createdAt: new Date().toISOString(),
+                isDefault: false
+            };
+
+            appState.scenarios.push(scenario);
+            saveScenarios();
+            renderScenarios();
+            closeQuickAddModal();
+            
+            showNotification('Quick scenario added! You can edit it for more details.');
+        }
+
+        function deleteScenario(scenarioId) {
+            if (confirm('Are you sure you want to delete this scenario? This action cannot be undone.')) {
+                appState.scenarios = appState.scenarios.filter(s => s.id !== scenarioId);
+                saveScenarios();
+                renderScenarios();
+                showNotification('Scenario deleted successfully.');
+            }
+        }
+
+        // Voice input functionality
+        function toggleVoiceInput() {
+            if (!appState.recognition) {
+                alert('Speech recognition is not supported in your browser.');
+                return;
+            }
+
+            if (appState.isVoiceInputActive) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            const btn = document.getElementById('voiceInputBtn');
+            btn.classList.add('voice-input-active');
+            btn.textContent = '🛑 Stop Voice';
+            appState.isVoiceInputActive = true;
+            appState.recognition.start();
+        }
+
+        function stopVoiceInput() {
+            const btn = document.getElementById('voiceInputBtn');
+            btn.classList.remove('voice-input-active');
+            btn.innerHTML = '🎤 Voice Input';
+            appState.isVoiceInputActive = false;
+            if (appState.recognition) {
+                appState.recognition.stop();
+            }
+        }
+
+        // Recording functionality
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        sampleRate: getAudioSampleRate(),
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+
+                let mimeType = 'audio/webm;codecs=opus';
+                if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    mimeType = 'audio/mp4';
+                } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                    mimeType = 'audio/webm';
+                }
+
+                appState.mediaRecorder = new MediaRecorder(stream, { 
+                    mimeType: mimeType,
+                    audioBitsPerSecond: getAudioBitrate()
+                });
+
+                appState.audioChunks = [];
+                appState.recordingStartTime = Date.now();
+                appState.pausedTime = 0;
+                appState.isRecording = true;
+                appState.isPaused = false;
+
+                appState.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        appState.audioChunks.push(event.data);
+                    }
+                };
+
+                appState.mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(appState.audioChunks, { type: mimeType });
+                    if (appState.settings.autoSave) {
+                        saveRecording(audioBlob, mimeType);
+                    }
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                appState.mediaRecorder.start(100);
+                startTimer();
+                updateRecordingUI();
+
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                alert('Unable to access microphone. Please check your browser permissions and try again.');
+            }
+        }
+
+        function pauseRecording() {
+            if (appState.mediaRecorder && appState.isRecording && !appState.isPaused) {
+                appState.mediaRecorder.pause();
+                appState.isPaused = true;
+                appState.pausedTime += Date.now() - appState.recordingStartTime;
+                pauseTimer();
+                updateRecordingUI();
+            }
+        }
+
+        function resumeRecording() {
+            if (appState.mediaRecorder && appState.isRecording && appState.isPaused) {
+                appState.mediaRecorder.resume();
+                appState.isPaused = false;
+                appState.recordingStartTime = Date.now();
+                startTimer();
+                updateRecordingUI();
+            }
+        }
+
+        function stopRecording() {
+            if (appState.mediaRecorder && appState.isRecording) {
+                appState.mediaRecorder.stop();
+                appState.isRecording = false;
+                appState.isPaused = false;
+                stopTimer();
+                updateRecordingUI();
+
+                // Update progress
+                const totalTime = appState.pausedTime + (Date.now() - appState.recordingStartTime);
+                const duration = Math.floor(totalTime / 1000 / 60);
+                appState.progress.sessions++;
+                appState.progress.totalMinutes += Math.max(duration, 1);
+                appState.progress.categoryProgress[appState.currentScenario.category]++;
+                
+                // Update streak
+                updateStreak();
+                
+                saveProgress();
+                updateAllDisplays();
+                
+                showNotification('Recording completed! Great job practicing!');
+            }
+        }
+
+        function updateRecordingUI() {
+            const startBtn = document.getElementById('startRecording');
+            const pauseBtn = document.getElementById('pauseRecording');
+            const resumeBtn = document.getElementById('resumeRecording');
+            const stopBtn = document.getElementById('stopRecording');
+            const recordingIndicator = document.getElementById('recordingIndicator');
+            const pausedIndicator = document.getElementById('pausedIndicator');
+
+            if (appState.isRecording) {
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                
+                if (appState.isPaused) {
+                    pauseBtn.classList.add('hidden');
+                    resumeBtn.classList.remove('hidden');
+                    recordingIndicator.classList.add('hidden');
+                    pausedIndicator.classList.remove('hidden');
+                } else {
+                    pauseBtn.classList.remove('hidden');
+                    resumeBtn.classList.add('hidden');
+                    recordingIndicator.classList.remove('hidden');
+                    pausedIndicator.classList.add('hidden');
+                }
+            } else {
+                startBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                resumeBtn.classList.add('hidden');
+                stopBtn.classList.add('hidden');
+                recordingIndicator.classList.add('hidden');
+                pausedIndicator.classList.add('hidden');
+            }
+        }
+
+        function getAudioSampleRate() {
+            switch(appState.settings.recordingQuality) {
+                case 'high': return 44100;
+                case 'medium': return 22050;
+                case 'low': return 11025;
+                default: return 22050;
+            }
+        }
+
+        function getAudioBitrate() {
+            switch(appState.settings.recordingQuality) {
+                case 'high': return 128000;
+                case 'medium': return 64000;
+                case 'low': return 32000;
+                default: return 64000;
+            }
+        }
+
+        // Timer functionality
+        function startTimer() {
+            if (!appState.timerInterval) {
+                appState.timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (appState.timerInterval) {
+                clearInterval(appState.timerInterval);
+                appState.timerInterval = null;
+            }
+        }
+
+        function stopTimer() {
+            pauseTimer();
+        }
+
+        function resetTimer() {
+            stopTimer();
+            appState.recordingStartTime = null;
+            appState.pausedTime = 0;
+            document.getElementById('timerDisplay').textContent = '00:00';
+            document.getElementById('progressPercent').textContent = '0%';
+            document.getElementById('progressCircle').style.strokeDashoffset = '283';
+        }
+
+        function updateTimer() {
+            if (appState.recordingStartTime && !appState.isPaused) {
+                const currentTime = appState.pausedTime + (Date.now() - appState.recordingStartTime);
+                const elapsed = Math.floor(currentTime / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                document.getElementById('timerDisplay').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                // Update progress ring
+                const maxTime = appState.settings.practiceTimer * 60;
+                const progress = Math.min(elapsed / maxTime, 1);
+                const circumference = 283;
+                const offset = circumference - (progress * circumference);
+                
+                document.getElementById('progressCircle').style.strokeDashoffset = offset;
+                document.getElementById('progressPercent').textContent = Math.round(progress * 100) + '%';
+
+                // Auto-stop at time limit
+                if (elapsed >= maxTime && appState.isRecording) {
+                    stopRecording();
+                    showNotification('Practice time completed! Great job!');
+                }
+            }
+        }
+
+        // Recording management
+        function saveRecording(audioBlob, mimeType) {
+            const totalTime = appState.pausedTime + (Date.now() - appState.recordingStartTime);
+            const recording = {
+                id: Date.now(),
+                scenarioId: appState.currentScenario.id,
+                scenarioTitle: appState.currentScenario.title,
+                category: appState.currentScenario.category,
+                duration: Math.floor(totalTime / 1000),
+                date: new Date().toISOString(),
+                mimeType: mimeType,
+                audioData: null
+            };
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                recording.audioData = reader.result;
+                appState.recordings.push(recording);
+                saveRecordings();
+            };
+            reader.readAsDataURL(audioBlob);
+        }
+
+        function renderRecordings() {
+            const container = document.getElementById('recordingsList');
+            
+            if (appState.recordings.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">🎤</div>
+                        <p class="text-lg">No recordings yet</p>
+                        <p class="text-sm">Start practicing to create your first recording</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            // Sort recordings by date (newest first)
+            const sortedRecordings = [...appState.recordings].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedRecordings.forEach(recording => {
+                const recordingCard = document.createElement('div');
+                recordingCard.className = 'bg-white p-6 rounded-lg shadow-md fade-in';
+                recordingCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-primary-dark">${recording.scenarioTitle}</h3>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(recording.category)}">${getCategoryLabel(recording.category)}</span>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">${formatDuration(recording.duration)}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="export-recording-btn text-gold hover:text-gold-dark p-2 text-xl accessibility-focus" data-id="${recording.id}" title="Export Recording" aria-label="Export recording">
+                                📁
+                            </button>
+                            <button class="delete-recording-btn text-red-500 hover:text-red-700 p-2 text-xl accessibility-focus" data-id="${recording.id}" title="Delete Recording" aria-label="Delete recording">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-3">
+                        Recorded: ${new Date(recording.date).toLocaleString()}
+                    </div>
+                    <audio class="w-full" controls style="height: 40px;">
+                        <source src="${recording.audioData}" type="${recording.mimeType}">
+                        Your browser does not support the audio element.
+                    </audio>
+                `;
+                container.appendChild(recordingCard);
+            });
+
+            // Add event listeners
+            document.querySelectorAll('.export-recording-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    exportRecording(e.target.dataset.id);
+                });
+            });
+            document.querySelectorAll('.delete-recording-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteRecording(e.target.dataset.id);
+                });
+            });
+        }
+
+        function exportRecording(id) {
+            const recording = appState.recordings.find(r => r.id == id);
+            if (recording) {
+                fetch(recording.audioData)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const extension = recording.mimeType.includes('webm') ? 'webm' : 
+                                        recording.mimeType.includes('mp4') ? 'm4a' : 'audio';
+                        a.download = `${recording.scenarioTitle.replace(/\s+/g, '_')}_${new Date(recording.date).toISOString().split('T')[0]}.${extension}`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error('Error exporting recording:', error);
+                        alert('Error exporting recording. Please try again.');
+                    });
+            }
+        }
+
+        function deleteRecording(id) {
+            if (confirm('Are you sure you want to delete this recording? This action cannot be undone.')) {
+                appState.recordings = appState.recordings.filter(r => r.id != id);
+                saveRecordings();
+                renderRecordings();
+                showNotification('Recording deleted successfully.');
+            }
+        }
+
+        function exportAllRecordings() {
+            if (appState.recordings.length === 0) {
+                alert('No recordings to export.');
+                return;
+            }
+
+            const zip = new JSZip();
+            const promises = [];
+
+            appState.recordings.forEach(recording => {
+                const promise = fetch(recording.audioData)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const extension = recording.mimeType.includes('webm') ? 'webm' : 
+                                        recording.mimeType.includes('mp4') ? 'm4a' : 'audio';
+                        const filename = `${recording.scenarioTitle.replace(/\s+/g, '_')}_${new Date(recording.date).toISOString().split('T')[0]}.${extension}`;
+                        zip.file(filename, blob);
+                    });
+                promises.push(promise);
+            });
+
+            Promise.all(promises).then(() => {
+                zip.generateAsync({type: 'blob'}).then(content => {
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `OET_Recordings_${new Date().toISOString().split('T')[0]}.zip`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            }).catch(error => {
+                console.error('Error creating zip file:', error);
+                alert('Error exporting recordings. Please try again.');
+            });
+        }
+
+        function clearAllRecordings() {
+            if (confirm('Are you sure you want to delete all recordings? This action cannot be undone.')) {
+                appState.recordings = [];
+                saveRecordings();
+                renderRecordings();
+                showNotification('All recordings cleared.');
+            }
+        }
+
+        // Progress and analytics
+        function updateStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastPracticeDate = appState.progress.lastPracticeDate;
+            
+            if (lastPracticeDate === today) {
+                // Already practiced today, don't update streak
+                return;
+            }
+            
+            if (lastPracticeDate) {
+                const lastDate = new Date(lastPracticeDate);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    appState.progress.streak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    appState.progress.streak = 1;
+                }
+            } else {
+                // First practice
+                appState.progress.streak = 1;
+            }
+            
+            appState.progress.lastPracticeDate = today;
+            
+            // Add to streak history
+            if (!appState.progress.streakHistory) {
+                appState.progress.streakHistory = [];
+            }
+            appState.progress.streakHistory.push({
+                date: today,
+                streak: appState.progress.streak
+            });
+            
+            // Keep only last 30 days
+            appState.progress.streakHistory = appState.progress.streakHistory.slice(-30);
+        }
+
+        function updateStats() {
+            document.getElementById('totalSessions').textContent = appState.progress.sessions;
+            document.getElementById('totalMinutes').textContent = appState.progress.totalMinutes;
+            updateStreakDisplay();
+        }
+
+        function updateStreakDisplay() {
+            const streakDays = appState.progress.streak || 0;
+            document.getElementById('streakDays').textContent = streakDays;
+            
+            // Add flame animation for streaks > 0
+            const streakElement = document.getElementById('streakCount');
+            if (streakDays > 0) {
+                streakElement.classList.add('streak-flame');
+            } else {
+                streakElement.classList.remove('streak-flame');
+            }
+        }
+
+        function updateAnalyticsDisplay() {
+            // Update main stats
+            document.getElementById('totalSessionsAnalytics').textContent = appState.progress.sessions;
+            document.getElementById('totalMinutesAnalytics').textContent = appState.progress.totalMinutes;
+            document.getElementById('streakNumber').textContent = appState.progress.streak || 0;
+            
+            const avgSession = appState.progress.sessions > 0 ? 
+                Math.round(appState.progress.totalMinutes / appState.progress.sessions) : 0;
+            document.getElementById('averageSession').textContent = avgSession;
+
+            // Update category progress
+            const totalSessions = appState.progress.sessions || 1;
+            const historyCount = appState.progress.categoryProgress.history || 0;
+            const explanationCount = appState.progress.categoryProgress.explanation || 0;
+            const safetyCount = appState.progress.categoryProgress.safety || 0;
+
+            document.getElementById('historyProgress').textContent = `${historyCount} sessions`;
+            document.getElementById('explanationProgress').textContent = `${explanationCount} sessions`;
+            document.getElementById('safetyProgress').textContent = `${safetyCount} sessions`;
+
+            document.getElementById('historyBar').style.width = `${(historyCount / totalSessions) * 100}%`;
+            document.getElementById('explanationBar').style.width = `${(explanationCount / totalSessions) * 100}%`;
+            document.getElementById('safetyBar').style.width = `${(safetyCount / totalSessions) * 100}%`;
+
+            // Update recent activity
+            updateRecentActivity();
+        }
+
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            
+            if (appState.recordings.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📈</div>
+                        <p>No activity yet</p>
+                        <p class="text-sm">Start practicing to see your progress</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show last 5 recordings
+            const recentRecordings = [...appState.recordings]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            container.innerHTML = recentRecordings.map(recording => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <div class="font-semibold text-sm">${recording.scenarioTitle}</div>
+                        <div class="text-xs text-gray-500">${new Date(recording.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-semibold">${formatDuration(recording.duration)}</div>
+                        <div class="text-xs ${getCategoryColor(recording.category).split(' ')[1]}">${getCategoryLabel(recording.category)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateAllDisplays() {
+            updateStats();
+            updateAnalyticsDisplay();
+        }
+
+        // PDF Export
+        function exportPDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('OET Medicine Speaking Progress Report', 20, 30);
+            
+            // Date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            // Stats
+            doc.setFontSize(16);
+            doc.text('Progress Summary', 20, 65);
+            
+            doc.setFontSize(12);
+            doc.text(`Total Sessions: ${appState.progress.sessions}`, 20, 80);
+            doc.text(`Total Practice Time: ${appState.progress.totalMinutes} minutes`, 20, 90);
+            doc.text(`Current Streak: ${appState.progress.streak || 0} days`, 20, 100);
+            
+            // Category breakdown
+            doc.text('Category Breakdown:', 20, 120);
+            doc.text(`History Taking: ${appState.progress.categoryProgress.history || 0} sessions`, 30, 135);
+            doc.text(`Explanations: ${appState.progress.categoryProgress.explanation || 0} sessions`, 30, 145);
+            doc.text(`Safety-Netting: ${appState.progress.categoryProgress.safety || 0} sessions`, 30, 155);
+            
+            // Recent recordings
+            if (appState.recordings.length > 0) {
+                doc.text('Recent Recordings:', 20, 175);
+                const recentRecordings = [...appState.recordings]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 10);
+                
+                let yPos = 190;
+                recentRecordings.forEach(recording => {
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.text(`• ${recording.scenarioTitle} (${formatDuration(recording.duration)}) - ${new Date(recording.date).toLocaleDateString()}`, 30, yPos);
+                    yPos += 10;
+                });
+            }
+            
+            // Save the PDF
+            doc.save(`OET_Progress_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        // Data backup and restore
+        function backupData() {
+            const backup = {
+                scenarios: appState.scenarios,
+                recordings: appState.recordings.map(r => ({...r, audioData: null})), // Exclude audio data for size
+                progress: appState.progress,
+                settings: appState.settings,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `OET_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data backup created successfully!');
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all your current data. Are you sure you want to continue?')) {
+                        if (backup.scenarios) appState.scenarios = backup.scenarios;
+                        if (backup.progress) appState.progress = backup.progress;
+                        if (backup.settings) appState.settings = backup.settings;
+                        
+                        // Save to localStorage
+                        saveScenarios();
+                        saveProgress();
+                        saveSettings();
+                        
+                        // Update displays
+                        renderScenarios();
+                        updateAllDisplays();
+                        applySettings();
+                        
+                        showNotification('Data restored successfully!');
+                    }
+                } catch (error) {
+                    console.error('Error restoring data:', error);
+                    alert('Error reading backup file. Please make sure it\'s a valid backup file.');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        function exportAnalytics() {
+            const analytics = {
+                summary: {
+                    totalSessions: appState.progress.sessions,
+                    totalMinutes: appState.progress.totalMinutes,
+                    currentStreak: appState.progress.streak,
+                    averageSessionLength: appState.progress.sessions > 0 ? 
+                        Math.round(appState.progress.totalMinutes / appState.progress.sessions) : 0
+                },
+                categoryBreakdown: appState.progress.categoryProgress,
+                streakHistory: appState.progress.streakHistory || [],
+                recordings: appState.recordings.map(r => ({
+                    scenarioTitle: r.scenarioTitle,
+                    category: r.category,
+                    duration: r.duration,
+                    date: r.date
+                })),
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(analytics, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `OET_Analytics_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Analytics exported successfully!');
+        }
+
+        // Settings management
+        function openSettings() {
+            // Load current settings
+            document.getElementById('recordingQuality').value = appState.settings.recordingQuality;
+            document.getElementById('practiceTimer').value = appState.settings.practiceTimer;
+            document.getElementById('highContrast').checked = appState.settings.highContrast;
+            document.getElementById('largeText').checked = appState.settings.largeText;
+            document.getElementById('autoSave').checked = appState.settings.autoSave;
+            
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('flex');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('settingsModal').classList.remove('flex');
+        }
+
+        function saveSettings() {
+            appState.settings = {
+                recordingQuality: document.getElementById('recordingQuality').value,
+                practiceTimer: parseInt(document.getElementById('practiceTimer').value),
+                highContrast: document.getElementById('highContrast').checked,
+                largeText: document.getElementById('largeText').checked,
+                autoSave: document.getElementById('autoSave').checked
+            };
+            
+            localStorage.setItem('oet_settings', JSON.stringify(appState.settings));
+            applySettings();
+            closeSettings();
+            showNotification('Settings saved successfully!');
+        }
+
+        function applySettings() {
+            const body = document.body;
+            
+            // High contrast
+            if (appState.settings.highContrast) {
+                body.classList.add('high-contrast');
+            } else {
+                body.classList.remove('high-contrast');
+            }
+            
+            // Large text
+            if (appState.settings.largeText) {
+                body.classList.add('large-text');
+            } else {
+                body.classList.remove('large-text');
+            }
+        }
+
+        // Utility functions
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-primary text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function syncPendingChanges() {
+            // In a real app, this would sync with a server
+            // For now, just update the sync indicator
+            const syncIcon = document.getElementById('syncIcon');
+            const syncText = document.getElementById('syncText');
+            
+            syncIcon.classList.add('sync-indicator');
+            syncText.textContent = 'Syncing...';
+            
+            setTimeout(() => {
+                syncIcon.classList.remove('sync-indicator');
+                syncText.textContent = 'Synced';
+            }, 2000);
+        }
+
+        // Data persistence
+        function saveScenarios() {
+            localStorage.setItem('oet_scenarios', JSON.stringify(appState.scenarios));
+            if (!appState.isOnline) {
+                appState.pendingSync.push('scenarios');
+            }
+        }
+
+        function saveRecordings() {
+            localStorage.setItem('oet_recordings', JSON.stringify(appState.recordings));
+            if (!appState.isOnline) {
+                appState.pendingSync.push('recordings');
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('oet_progress', JSON.stringify(appState.progress));
+            if (!appState.isOnline) {
+                appState.pendingSync.push('progress');
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('oet_settings', JSON.stringify(appState.settings));
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'987276d7f3a3b9fb',t:'MTc1OTIyMjEzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
