@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization App</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f0f 0%, #1a3d2e 30%, #2d5a3d 70%, #1a3d2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(45, 90, 61, 0.4) 100%);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.2rem;
+            color: #e6f3e6;
+            opacity: 0.9;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(26, 61, 46, 0.4) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+            height: fit-content;
+        }
+
+        .section-title {
+            color: #d4af37;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #e6f3e6;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-group textarea, .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #2d5a3d;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .input-group textarea:focus, .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .chart-suggestions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chart-type {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            border: 2px solid #2d5a3d;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chart-type:hover, .chart-type.active {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border-color: #b8860b;
+            transform: translateY(-2px);
+        }
+
+        .chart-icon {
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border: 2px solid #b8860b;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            color: #ffffff;
+            border: 2px solid #2d5a3d;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #1a3d2e 0%, #0f2419 100%);
+            border-color: #d4af37;
+        }
+
+        .canvas-area {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(230, 243, 230, 0.95) 100%);
+            border-radius: 15px;
+            border: 3px solid #d4af37;
+            padding: 30px;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .canvas-placeholder {
+            text-align: center;
+            color: #2d5a3d;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 400px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 2px solid #2d5a3d;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            color: #1a3d2e;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .templates-section {
+            background: linear-gradient(135deg, rgba(26, 61, 46, 0.8) 0%, rgba(45, 90, 61, 0.6) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+            margin-bottom: 25px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .template-card {
+            background: linear-gradient(135deg, rgba(45, 90, 61, 0.6) 0%, rgba(26, 61, 46, 0.8) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #2d5a3d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .template-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .template-name {
+            color: #e6f3e6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .template-desc {
+            color: #b8d4b8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .sharing-panel {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 134, 11, 0.05) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            margin-top: 25px;
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid #2d5a3d;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border-color: #b8860b;
+        }
+
+        .data-preview {
+            background: rgba(45, 90, 61, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #2d5a3d;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #e6f3e6;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .template-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chart-suggestions {
+                grid-template-columns: 1fr;
+            }
+            
+            .share-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Chart Styles */
+        .bar-chart, .line-chart, .pie-chart, .area-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-bar {
+            fill: #2d5a3d;
+            transition: fill 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            fill: #d4af37;
+        }
+
+        .chart-line {
+            stroke: #d4af37;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .chart-area {
+            fill: url(#areaGradient);
+        }
+
+        .chart-axis {
+            stroke: #2d5a3d;
+            stroke-width: 1;
+        }
+
+        .chart-text {
+            fill: #1a3d2e;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Data Visualization App</h1>
+            <p>Transform complex insights into shareable visuals instantly</p>
+        </div>
+
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="section-title">
+                    🎯 Create Visualization
+                </div>
+
+                <div class="input-group">
+                    <label>Describe Your Data</label>
+                    <textarea id="dataDescription" placeholder="Example: Sales data showing Q1-Q4 revenue: Q1: $120k, Q2: $150k, Q3: $180k, Q4: $200k"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Chart Title</label>
+                    <input type="text" id="chartTitle" placeholder="Enter chart title...">
+                </div>
+
+                <div class="input-group">
+                    <label>Chart Type</label>
+                    <div class="chart-suggestions">
+                        <div class="chart-type" data-type="bar">
+                            <div class="chart-icon">📊</div>
+                            <div>Bar Chart</div>
+                        </div>
+                        <div class="chart-type" data-type="line">
+                            <div class="chart-icon">📈</div>
+                            <div>Line Chart</div>
+                        </div>
+                        <div class="chart-type" data-type="pie">
+                            <div class="chart-icon">🥧</div>
+                            <div>Pie Chart</div>
+                        </div>
+                        <div class="chart-type" data-type="area">
+                            <div class="chart-icon">📉</div>
+                            <div>Area Chart</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="generateChart()">Generate Chart</button>
+                <button class="btn btn-secondary" onclick="parseDataFromText()">Auto-Parse Data</button>
+                <button class="btn btn-secondary" onclick="clearCanvas()">Clear Canvas</button>
+
+                <div id="dataPreview" class="data-preview" style="display: none;">
+                    <strong>Parsed Data:</strong>
+                    <div id="parsedDataContent"></div>
+                </div>
+            </div>
+
+            <div class="canvas-area" id="canvasArea">
+                <div class="canvas-placeholder" id="placeholder">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">📊</div>
+                    <div>Your visualization will appear here</div>
+                    <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">
+                        Describe your data and select a chart type to get started
+                    </div>
+                </div>
+                <div class="chart-container" id="chartContainer">
+                    <div class="chart-title" id="displayTitle"></div>
+                    <svg class="chart-canvas" id="chartCanvas"></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="templates-section">
+            <div class="section-title">
+                🎨 Infographic Templates
+            </div>
+            <div class="template-grid">
+                <div class="template-card" onclick="loadTemplate('kpi')">
+                    <div class="template-icon">📈</div>
+                    <div class="template-name">KPI Dashboard</div>
+                    <div class="template-desc">Key performance indicators with trend arrows</div>
+                </div>
+                <div class="template-card" onclick="loadTemplate('comparison')">
+                    <div class="template-icon">⚖️</div>
+                    <div class="template-name">Comparison Chart</div>
+                    <div class="template-desc">Side-by-side option analysis</div>
+                </div>
+                <div class="template-card" onclick="loadTemplate('timeline')">
+                    <div class="template-icon">📅</div>
+                    <div class="template-name">Timeline View</div>
+                    <div class="template-desc">Project milestones and progress</div>
+                </div>
+                <div class="template-card" onclick="loadTemplate('funnel')">
+                    <div class="template-icon">🔽</div>
+                    <div class="template-name">Sales Funnel</div>
+                    <div class="template-desc">Conversion rates and drop-offs</div>
+                </div>
+                <div class="template-card" onclick="loadTemplate('heatmap')">
+                    <div class="template-icon">🔥</div>
+                    <div class="template-name">Heatmap</div>
+                    <div class="template-desc">Performance across categories</div>
+                </div>
+                <div class="template-card" onclick="loadTemplate('gauge')">
+                    <div class="template-icon">⏱️</div>
+                    <div class="template-name">Gauge Chart</div>
+                    <div class="template-desc">Progress towards goals</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sharing-panel">
+            <div class="section-title">
+                🚀 Share & Export
+            </div>
+            <div class="share-buttons">
+                <div class="share-btn" onclick="exportAsPNG()">
+                    <span>📷</span> Export PNG
+                </div>
+                <div class="share-btn" onclick="exportAsPDF()">
+                    <span>📄</span> Export PDF
+                </div>
+                <div class="share-btn" onclick="generateShareLink()">
+                    <span>🔗</span> Share Link
+                </div>
+                <div class="share-btn" onclick="copyToClipboard()">
+                    <span>📋</span> Copy Chart
+                </div>
+                <div class="share-btn" onclick="embedCode()">
+                    <span>💻</span> Embed Code
+                </div>
+                <div class="share-btn" onclick="downloadData()">
+                    <span>💾</span> Download Data
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentData = [];
+        let currentChartType = 'bar';
+        let currentChart = null;
+
+        // Initialize app
+        function initializeApp() {
+            setupEventListeners();
+            loadSampleData();
+        }
+
+        function setupEventListeners() {
+            // Chart type selection
+            document.querySelectorAll('.chart-type').forEach(type => {
+                type.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-type').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentChartType = this.dataset.type;
+                });
+            });
+
+            // Set default chart type
+            document.querySelector('.chart-type[data-type="bar"]').classList.add('active');
+        }
+
+        function loadSampleData() {
+            document.getElementById('dataDescription').value = 'Quarterly Revenue Growth: Q1: $120k, Q2: $150k, Q3: $180k, Q4: $200k';
+            document.getElementById('chartTitle').value = 'Quarterly Revenue Growth 2024';
+        }
+
+        function parseDataFromText() {
+            const description = document.getElementById('dataDescription').value;
+            if (!description.trim()) {
+                showToast('Please enter data description first');
+                return;
+            }
+
+            showLoading();
+
+            // Simple data parsing logic
+            const data = extractDataFromText(description);
+            
+            if (data.length > 0) {
+                currentData = data;
+                displayParsedData(data);
+                showToast('Data parsed successfully! 🎉');
+            } else {
+                showToast('Could not parse data. Try a different format.');
+            }
+
+            hideLoading();
+        }
+
+        function extractDataFromText(text) {
+            const data = [];
+            
+            // Pattern 1: "Label: Value" format
+            const pattern1 = /([A-Za-z0-9\s]+):\s*[\$]?([0-9,]+\.?[0-9]*)[k|K|m|M]?/g;
+            let match;
+            
+            while ((match = pattern1.exec(text)) !== null) {
+                let label = match[1].trim();
+                let value = parseFloat(match[2].replace(/,/g, ''));
+                
+                // Handle k/K (thousands) and m/M (millions)
+                if (text.toLowerCase().includes('k')) value *= 1000;
+                if (text.toLowerCase().includes('m')) value *= 1000000;
+                
+                data.push({ label, value });
+            }
+
+            // Pattern 2: Simple number sequences
+            if (data.length === 0) {
+                const numbers = text.match(/[\$]?([0-9,]+\.?[0-9]*)/g);
+                if (numbers && numbers.length > 1) {
+                    numbers.forEach((num, index) => {
+                        const value = parseFloat(num.replace(/[\$,]/g, ''));
+                        data.push({ 
+                            label: `Item ${index + 1}`, 
+                            value: value 
+                        });
+                    });
+                }
+            }
+
+            return data;
+        }
+
+        function displayParsedData(data) {
+            const preview = document.getElementById('dataPreview');
+            const content = document.getElementById('parsedDataContent');
+            
+            let dataText = data.map(item => `${item.label}: ${item.value}`).join('\n');
+            content.textContent = dataText;
+            preview.style.display = 'block';
+        }
+
+        function generateChart() {
+            const title = document.getElementById('chartTitle').value || 'Untitled Chart';
+            
+            if (currentData.length === 0) {
+                parseDataFromText();
+                if (currentData.length === 0) {
+                    showToast('Please provide valid data first');
+                    return;
+                }
+            }
+
+            showLoading();
+            
+            setTimeout(() => {
+                createChart(currentChartType, currentData, title);
+                hideLoading();
+                showToast('Chart generated! 📊');
+            }, 1000);
+        }
+
+        function createChart(type, data, title) {
+            const placeholder = document.getElementById('placeholder');
+            const container = document.getElementById('chartContainer');
+            const canvas = document.getElementById('chartCanvas');
+            const titleElement = document.getElementById('displayTitle');
+
+            placeholder.style.display = 'none';
+            container.style.display = 'block';
+            titleElement.textContent = title;
+
+            // Clear previous chart
+            canvas.innerHTML = '';
+
+            const width = 800;
+            const height = 400;
+            const margin = { top: 20, right: 30, bottom: 60, left: 60 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            canvas.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            // Create gradient definitions
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+            gradient.setAttribute('id', 'areaGradient');
+            gradient.setAttribute('x1', '0%');
+            gradient.setAttribute('y1', '0%');
+            gradient.setAttribute('x2', '0%');
+            gradient.setAttribute('y2', '100%');
+            
+            const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop1.setAttribute('offset', '0%');
+            stop1.setAttribute('stop-color', '#d4af37');
+            stop1.setAttribute('stop-opacity', '0.8');
+            
+            const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop2.setAttribute('offset', '100%');
+            stop2.setAttribute('stop-color', '#2d5a3d');
+            stop2.setAttribute('stop-opacity', '0.2');
+            
+            gradient.appendChild(stop1);
+            gradient.appendChild(stop2);
+            defs.appendChild(gradient);
+            canvas.appendChild(defs);
+
+            // Create chart group
+            const chartGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            chartGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
+
+            switch (type) {
+                case 'bar':
+                    createBarChart(chartGroup, data, chartWidth, chartHeight);
+                    break;
+                case 'line':
+                    createLineChart(chartGroup, data, chartWidth, chartHeight);
+                    break;
+                case 'pie':
+                    createPieChart(chartGroup, data, chartWidth, chartHeight);
+                    break;
+                case 'area':
+                    createAreaChart(chartGroup, data, chartWidth, chartHeight);
+                    break;
+            }
+
+            canvas.appendChild(chartGroup);
+        }
+
+        function createBarChart(group, data, width, height) {
+            const maxValue = Math.max(...data.map(d => d.value));
+            const barWidth = width / data.length * 0.8;
+            const barSpacing = width / data.length * 0.2;
+
+            // Y-axis
+            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            yAxis.setAttribute('x1', 0);
+            yAxis.setAttribute('y1', 0);
+            yAxis.setAttribute('x2', 0);
+            yAxis.setAttribute('y2', height);
+            yAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(yAxis);
+
+            // X-axis
+            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxis.setAttribute('x1', 0);
+            xAxis.setAttribute('y1', height);
+            xAxis.setAttribute('x2', width);
+            xAxis.setAttribute('y2', height);
+            xAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(xAxis);
+
+            // Bars
+            data.forEach((item, index) => {
+                const barHeight = (item.value / maxValue) * height;
+                const x = index * (barWidth + barSpacing) + barSpacing / 2;
+                const y = height - barHeight;
+
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', x);
+                rect.setAttribute('y', y);
+                rect.setAttribute('width', barWidth);
+                rect.setAttribute('height', barHeight);
+                rect.setAttribute('class', 'chart-bar');
+                group.appendChild(rect);
+
+                // Labels
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x + barWidth / 2);
+                label.setAttribute('y', height + 20);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'chart-text');
+                label.textContent = item.label;
+                group.appendChild(label);
+
+                // Values
+                const value = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                value.setAttribute('x', x + barWidth / 2);
+                value.setAttribute('y', y - 5);
+                value.setAttribute('text-anchor', 'middle');
+                value.setAttribute('class', 'chart-text');
+                value.textContent = formatValue(item.value);
+                group.appendChild(value);
+            });
+        }
+
+        function createLineChart(group, data, width, height) {
+            const maxValue = Math.max(...data.map(d => d.value));
+            const stepX = width / (data.length - 1);
+
+            // Axes
+            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            yAxis.setAttribute('x1', 0);
+            yAxis.setAttribute('y1', 0);
+            yAxis.setAttribute('x2', 0);
+            yAxis.setAttribute('y2', height);
+            yAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(yAxis);
+
+            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxis.setAttribute('x1', 0);
+            xAxis.setAttribute('y1', height);
+            xAxis.setAttribute('x2', width);
+            xAxis.setAttribute('y2', height);
+            xAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(xAxis);
+
+            // Line path
+            let pathData = '';
+            data.forEach((item, index) => {
+                const x = index * stepX;
+                const y = height - (item.value / maxValue) * height;
+                pathData += (index === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+            });
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('class', 'chart-line');
+            group.appendChild(path);
+
+            // Points and labels
+            data.forEach((item, index) => {
+                const x = index * stepX;
+                const y = height - (item.value / maxValue) * height;
+
+                // Point
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', 4);
+                circle.setAttribute('fill', '#d4af37');
+                group.appendChild(circle);
+
+                // Labels
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', height + 20);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'chart-text');
+                label.textContent = item.label;
+                group.appendChild(label);
+            });
+        }
+
+        function createPieChart(group, data, width, height) {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 20;
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+
+            let currentAngle = 0;
+            const colors = ['#d4af37', '#2d5a3d', '#1a3d2e', '#b8860b', '#f4d03f'];
+
+            data.forEach((item, index) => {
+                const sliceAngle = (item.value / total) * 2 * Math.PI;
+                const endAngle = currentAngle + sliceAngle;
+
+                const x1 = centerX + radius * Math.cos(currentAngle);
+                const y1 = centerY + radius * Math.sin(currentAngle);
+                const x2 = centerX + radius * Math.cos(endAngle);
+                const y2 = centerY + radius * Math.sin(endAngle);
+
+                const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+
+                const pathData = [
+                    'M', centerX, centerY,
+                    'L', x1, y1,
+                    'A', radius, radius, 0, largeArcFlag, 1, x2, y2,
+                    'Z'
+                ].join(' ');
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathData);
+                path.setAttribute('fill', colors[index % colors.length]);
+                path.setAttribute('stroke', '#ffffff');
+                path.setAttribute('stroke-width', '2');
+                group.appendChild(path);
+
+                // Label
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelX = centerX + (radius + 30) * Math.cos(labelAngle);
+                const labelY = centerY + (radius + 30) * Math.sin(labelAngle);
+
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', labelX);
+                label.setAttribute('y', labelY);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'chart-text');
+                label.textContent = `${item.label} (${((item.value / total) * 100).toFixed(1)}%)`;
+                group.appendChild(label);
+
+                currentAngle = endAngle;
+            });
+        }
+
+        function createAreaChart(group, data, width, height) {
+            const maxValue = Math.max(...data.map(d => d.value));
+            const stepX = width / (data.length - 1);
+
+            // Axes
+            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            yAxis.setAttribute('x1', 0);
+            yAxis.setAttribute('y1', 0);
+            yAxis.setAttribute('x2', 0);
+            yAxis.setAttribute('y2', height);
+            yAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(yAxis);
+
+            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxis.setAttribute('x1', 0);
+            xAxis.setAttribute('y1', height);
+            xAxis.setAttribute('x2', width);
+            xAxis.setAttribute('y2', height);
+            xAxis.setAttribute('class', 'chart-axis');
+            group.appendChild(xAxis);
+
+            // Area path
+            let pathData = `M 0 ${height}`;
+            data.forEach((item, index) => {
+                const x = index * stepX;
+                const y = height - (item.value / maxValue) * height;
+                pathData += ` L ${x} ${y}`;
+            });
+            pathData += ` L ${width} ${height} Z`;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('class', 'chart-area');
+            group.appendChild(path);
+
+            // Line on top
+            let lineData = '';
+            data.forEach((item, index) => {
+                const x = index * stepX;
+                const y = height - (item.value / maxValue) * height;
+                lineData += (index === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+            });
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line.setAttribute('d', lineData);
+            line.setAttribute('class', 'chart-line');
+            group.appendChild(line);
+
+            // Labels
+            data.forEach((item, index) => {
+                const x = index * stepX;
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', x);
+                label.setAttribute('y', height + 20);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'chart-text');
+                label.textContent = item.label;
+                group.appendChild(label);
+            });
+        }
+
+        function loadTemplate(templateType) {
+            const templates = {
+                kpi: {
+                    title: 'Key Performance Indicators',
+                    data: 'Revenue: $2.5M, Growth: 15%, Customers: 1,200, Retention: 92%',
+                    type: 'bar'
+                },
+                comparison: {
+                    title: 'Product Comparison Analysis',
+                    data: 'Product A: 85, Product B: 92, Product C: 78, Product D: 88',
+                    type: 'bar'
+                },
+                timeline: {
+                    title: 'Project Timeline Progress',
+                    data: 'Jan: 25%, Feb: 45%, Mar: 70%, Apr: 85%, May: 100%',
+                    type: 'line'
+                },
+                funnel: {
+                    title: 'Sales Conversion Funnel',
+                    data: 'Leads: 1000, Qualified: 400, Proposals: 150, Closed: 50',
+                    type: 'bar'
+                },
+                heatmap: {
+                    title: 'Performance Heatmap',
+                    data: 'Q1: 78, Q2: 85, Q3: 92, Q4: 88',
+                    type: 'area'
+                },
+                gauge: {
+                    title: 'Goal Achievement',
+                    data: 'Target: 100%, Current: 85%, Previous: 72%',
+                    type: 'pie'
+                }
+            };
+
+            const template = templates[templateType];
+            if (template) {
+                document.getElementById('dataDescription').value = template.data;
+                document.getElementById('chartTitle').value = template.title;
+                
+                // Set chart type
+                document.querySelectorAll('.chart-type').forEach(t => t.classList.remove('active'));
+                document.querySelector(`[data-type="${template.type}"]`).classList.add('active');
+                currentChartType = template.type;
+                
+                parseDataFromText();
+                showToast(`${templateType.toUpperCase()} template loaded! 🎨`);
+            }
+        }
+
+        function clearCanvas() {
+            document.getElementById('placeholder').style.display = 'block';
+            document.getElementById('chartContainer').style.display = 'none';
+            document.getElementById('dataPreview').style.display = 'none';
+            currentData = [];
+            showToast('Canvas cleared! 🧹');
+        }
+
+        function exportAsPNG() {
+            const canvas = document.getElementById('chartCanvas');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(canvas);
+            
+            const canvas2d = document.createElement('canvas');
+            const ctx = canvas2d.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas2d.width = img.width;
+                canvas2d.height = img.height;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
+                ctx.drawImage(img, 0, 0);
+                
+                const link = document.createElement('a');
+                link.download = 'chart.png';
+                link.href = canvas2d.toDataURL();
+                link.click();
+            };
+            
+            img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+            showToast('Chart exported as PNG! 📷');
+        }
+
+        function exportAsPDF() {
+            showToast('PDF export feature coming soon! 📄');
+        }
+
+        function generateShareLink() {
+            const data = {
+                title: document.getElementById('chartTitle').value,
+                description: document.getElementById('dataDescription').value,
+                type: currentChartType,
+                data: currentData
+            };
+            
+            const encodedData = btoa(JSON.stringify(data));
+            const shareUrl = `${window.location.origin}${window.location.pathname}?chart=${encodedData}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast('Share link copied to clipboard! 🔗');
+            });
+        }
+
+        function copyToClipboard() {
+            const canvas = document.getElementById('chartCanvas');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(canvas);
+            
+            navigator.clipboard.writeText(svgString).then(() => {
+                showToast('Chart SVG copied to clipboard! 📋');
+            });
+        }
+
+        function embedCode() {
+            const canvas = document.getElementById('chartCanvas');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(canvas);
+            const embedCode = `<div style="text-align: center;">${svgString}</div>`;
+            
+            navigator.clipboard.writeText(embedCode).then(() => {
+                showToast('Embed code copied to clipboard! 💻');
+            });
+        }
+
+        function downloadData() {
+            if (currentData.length === 0) {
+                showToast('No data to download');
+                return;
+            }
+            
+            const csvContent = 'Label,Value\n' + currentData.map(item => `${item.label},${item.value}`).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'chart-data.csv';
+            link.click();
+            window.URL.revokeObjectURL(url);
+            
+            showToast('Data downloaded as CSV! 💾');
+        }
+
+        function formatValue(value) {
+            if (value >= 1000000) {
+                return (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'K';
+            }
+            return value.toString();
+        }
+
+        function showLoading() {
+            const placeholder = document.getElementById('placeholder');
+            placeholder.innerHTML = '<div class="loading-spinner"></div><div>Generating visualization...</div>';
+        }
+
+        function hideLoading() {
+            const placeholder = document.getElementById('placeholder');
+            placeholder.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 20px;">📊</div>
+                <div>Your visualization will appear here</div>
+                <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">
+                    Describe your data and select a chart type to get started
+                </div>
+            `;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load shared chart from URL
+        function loadSharedChart() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const chartData = urlParams.get('chart');
+            
+            if (chartData) {
+                try {
+                    const data = JSON.parse(atob(chartData));
+                    document.getElementById('chartTitle').value = data.title;
+                    document.getElementById('dataDescription').value = data.description;
+                    currentChartType = data.type;
+                    currentData = data.data;
+                    
+                    // Set chart type
+                    document.querySelectorAll('.chart-type').forEach(t => t.classList.remove('active'));
+                    document.querySelector(`[data-type="${data.type}"]`).classList.add('active');
+                    
+                    generateChart();
+                    showToast('Shared chart loaded! 🔗');
+                } catch (e) {
+                    console.error('Error loading shared chart:', e);
+                }
+            }
+        }
+
+        // Initialize app when page loads
+        initializeApp();
+        loadSharedChart();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986bbca6c7190719',t:'MTc1OTE1MTU5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
