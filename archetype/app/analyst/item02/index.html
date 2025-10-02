@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Support App</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1f15 0%, #1a3d2e 30%, #2d5a3d 70%, #1a3d2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(45, 90, 61, 0.3) 100%);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.1rem;
+            color: #e6f3e6;
+            opacity: 0.9;
+        }
+
+        .timer-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 134, 11, 0.05) 100%);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .timer-preset {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            border: 2px solid #2d5a3d;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .timer-preset:hover, .timer-preset.active {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border-color: #b8860b;
+        }
+
+        .session-status {
+            font-size: 1.2rem;
+            color: #e6f3e6;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(26, 61, 46, 0.3) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+        }
+
+        .section-title {
+            color: #d4af37;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .analysis-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            color: #e6f3e6;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            padding: 12px;
+            border: 2px solid #2d5a3d;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .bullet-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bullet-input input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .add-bullet {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            border: 2px solid #2d5a3d;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-bullet:hover {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border-color: #b8860b;
+        }
+
+        .bullet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(45, 90, 61, 0.3);
+            border-radius: 8px;
+            border: 1px solid #2d5a3d;
+        }
+
+        .bullet-text {
+            flex: 1;
+            color: #e6f3e6;
+        }
+
+        .remove-bullet {
+            background: rgba(139, 69, 19, 0.6);
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+
+        .remove-bullet:hover {
+            background: rgba(139, 69, 19, 0.8);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            border: 2px solid #b8860b;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            color: #ffffff;
+            border: 2px solid #2d5a3d;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #1a3d2e 0%, #0f2419 100%);
+            border-color: #d4af37;
+        }
+
+        .ai-prompts {
+            background: linear-gradient(135deg, rgba(26, 61, 46, 0.8) 0%, rgba(45, 90, 61, 0.6) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+            margin-bottom: 20px;
+        }
+
+        .prompt-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .prompt-btn {
+            background: rgba(45, 90, 61, 0.6);
+            color: #e6f3e6;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #2d5a3d;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .prompt-btn:hover {
+            background: #d4af37;
+            color: #1a3d2e;
+            transform: scale(1.02);
+        }
+
+        .summary-display {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 134, 11, 0.05) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            margin-top: 20px;
+        }
+
+        .summary-section {
+            margin-bottom: 20px;
+        }
+
+        .summary-section h4 {
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-section ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .summary-section li {
+            color: #e6f3e6;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .session-history {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            background: linear-gradient(135deg, rgba(45, 90, 61, 0.4) 0%, rgba(26, 61, 46, 0.6) 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #2d5a3d;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            border-color: #d4af37;
+            transform: translateX(3px);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: #e6f3e6;
+        }
+
+        .history-time {
+            color: #b8d4b8;
+            font-size: 0.8rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(45, 90, 61, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a3d2e;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .prompt-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        .timer-warning {
+            color: #ff6b6b !important;
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Decision Support App</h1>
+            <p>Combat over-analysis with timed sessions and clear summaries</p>
+        </div>
+
+        <!-- Timer Section -->
+        <div class="timer-section">
+            <div class="session-status" id="sessionStatus">Ready to start analysis session</div>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-preset active" onclick="setTimer(15)">15 min</button>
+                <button class="timer-preset" onclick="setTimer(25)">25 min</button>
+                <button class="timer-preset" onclick="setTimer(45)">45 min</button>
+                <button class="btn btn-primary" onclick="toggleTimer()" id="timerBtn">Start Session</button>
+                <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Analysis Input -->
+            <div class="section">
+                <div class="section-title">
+                    📊 Analysis Input
+                </div>
+                
+                <div class="analysis-form">
+                    <div class="input-group">
+                        <label>Decision Topic</label>
+                        <input type="text" id="decisionTopic" placeholder="What decision are you analyzing?">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Context & Background</label>
+                        <textarea id="contextInput" placeholder="Provide key context and background information..."></textarea>
+                    </div>
+                    
+                    <div class="ai-prompts">
+                        <div class="section-title" style="margin-bottom: 15px; font-size: 1.1rem;">
+                            🤖 AI Clarity Prompts
+                        </div>
+                        <div class="prompt-buttons">
+                            <div class="prompt-btn" onclick="applyPrompt('simple')">Explain Simply</div>
+                            <div class="prompt-btn" onclick="applyPrompt('pros-cons')">List Pros & Cons</div>
+                            <div class="prompt-btn" onclick="applyPrompt('risks')">Identify Risks</div>
+                            <div class="prompt-btn" onclick="applyPrompt('alternatives')">Find Alternatives</div>
+                            <div class="prompt-btn" onclick="applyPrompt('stakeholders')">Consider Stakeholders</div>
+                            <div class="prompt-btn" onclick="applyPrompt('timeline')">Timeline Impact</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Key Findings</label>
+                        <div class="bullet-list" id="findingsList">
+                            <div class="bullet-input">
+                                <input type="text" id="findingInput" placeholder="Add a key finding...">
+                                <button class="add-bullet" onclick="addBullet('findings')">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Options Considered</label>
+                        <div class="bullet-list" id="optionsList">
+                            <div class="bullet-input">
+                                <input type="text" id="optionInput" placeholder="Add an option...">
+                                <button class="add-bullet" onclick="addBullet('options')">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Recommendations</label>
+                        <div class="bullet-list" id="recommendationsList">
+                            <div class="bullet-input">
+                                <input type="text" id="recommendationInput" placeholder="Add a recommendation...">
+                                <button class="add-bullet" onclick="addBullet('recommendations')">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="generateSummary()">Generate Summary</button>
+                </div>
+            </div>
+
+            <!-- Summary & History -->
+            <div class="section">
+                <div class="section-title">
+                    📋 Summary & History
+                </div>
+                
+                <div id="currentSummary" class="summary-display" style="display: none;">
+                    <h3 style="color: #d4af37; margin-top: 0;">Decision Summary</h3>
+                    <div id="summaryContent"></div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="saveSummary()">Save Summary</button>
+                        <button class="btn btn-secondary" onclick="exportSummary()">Export</button>
+                    </div>
+                </div>
+                
+                <div class="session-history" id="sessionHistory">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let timerInterval = null;
+        let currentTime = 25 * 60; // 25 minutes in seconds
+        let totalTime = 25 * 60;
+        let isRunning = false;
+        let sessions = [];
+        
+        let currentFindings = [];
+        let currentOptions = [];
+        let currentRecommendations = [];
+
+        const aiPrompts = {
+            simple: "Break this down into simple, clear language that anyone can understand.",
+            'pros-cons': "What are the main advantages and disadvantages of each option?",
+            risks: "What are the potential risks and how can they be mitigated?",
+            alternatives: "What other options haven't been considered yet?",
+            stakeholders: "Who will be affected by this decision and how?",
+            timeline: "What are the time-sensitive aspects of this decision?"
+        };
+
+        // Initialize app
+        function initializeApp() {
+            loadData();
+            renderHistory();
+            updateTimerDisplay();
+            setupEnterKeyListeners();
+        }
+
+        function setupEnterKeyListeners() {
+            document.getElementById('findingInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addBullet('findings');
+            });
+            document.getElementById('optionInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addBullet('options');
+            });
+            document.getElementById('recommendationInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addBullet('recommendations');
+            });
+        }
+
+        function setTimer(minutes) {
+            if (isRunning) return;
+            
+            currentTime = minutes * 60;
+            totalTime = minutes * 60;
+            updateTimerDisplay();
+            updateProgress();
+            
+            // Update active preset
+            document.querySelectorAll('.timer-preset').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (currentTime <= 0) return;
+            
+            isRunning = true;
+            document.getElementById('timerBtn').textContent = 'Pause';
+            document.getElementById('sessionStatus').textContent = 'Analysis session in progress...';
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                updateProgress();
+                
+                if (currentTime <= 0) {
+                    completeSession();
+                } else if (currentTime <= 300) { // Last 5 minutes
+                    document.getElementById('timerDisplay').classList.add('timer-warning');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerBtn').textContent = 'Resume';
+            document.getElementById('sessionStatus').textContent = 'Session paused';
+        }
+
+        function resetTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            currentTime = totalTime;
+            updateTimerDisplay();
+            updateProgress();
+            document.getElementById('timerBtn').textContent = 'Start Session';
+            document.getElementById('sessionStatus').textContent = 'Ready to start analysis session';
+            document.getElementById('timerDisplay').classList.remove('timer-warning');
+        }
+
+        function completeSession() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerBtn').textContent = 'Start Session';
+            document.getElementById('sessionStatus').textContent = 'Session completed! Time to summarize.';
+            document.getElementById('timerDisplay').classList.remove('timer-warning');
+            
+            showToast('⏰ Time\'s up! Wrap up your analysis now.');
+            
+            // Auto-generate summary if there's content
+            if (document.getElementById('decisionTopic').value.trim()) {
+                generateSummary();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            const progress = ((totalTime - currentTime) / totalTime) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function applyPrompt(type) {
+            const prompt = aiPrompts[type];
+            const contextInput = document.getElementById('contextInput');
+            
+            if (contextInput.value.trim()) {
+                contextInput.value += '\n\n' + prompt;
+            } else {
+                contextInput.value = prompt;
+            }
+            
+            contextInput.focus();
+            showToast(`Applied ${type.replace('-', ' ')} prompt`);
+        }
+
+        function addBullet(type) {
+            const inputId = type === 'findings' ? 'findingInput' : 
+                           type === 'options' ? 'optionInput' : 'recommendationInput';
+            const input = document.getElementById(inputId);
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const listId = type + 'List';
+            const currentArray = type === 'findings' ? currentFindings : 
+                                type === 'options' ? currentOptions : currentRecommendations;
+            
+            currentArray.push(text);
+            input.value = '';
+            renderBulletList(type);
+        }
+
+        function removeBullet(type, index) {
+            const currentArray = type === 'findings' ? currentFindings : 
+                                type === 'options' ? currentOptions : currentRecommendations;
+            currentArray.splice(index, 1);
+            renderBulletList(type);
+        }
+
+        function renderBulletList(type) {
+            const listId = type + 'List';
+            const container = document.getElementById(listId);
+            const currentArray = type === 'findings' ? currentFindings : 
+                                type === 'options' ? currentOptions : currentRecommendations;
+            const inputId = type === 'findings' ? 'findingInput' : 
+                           type === 'options' ? 'optionInput' : 'recommendationInput';
+            
+            // Clear existing items except input
+            const items = container.querySelectorAll('.bullet-item');
+            items.forEach(item => item.remove());
+            
+            // Add current items
+            currentArray.forEach((item, index) => {
+                const bulletDiv = document.createElement('div');
+                bulletDiv.className = 'bullet-item';
+                bulletDiv.innerHTML = `
+                    <span class="bullet-text">• ${item}</span>
+                    <button class="remove-bullet" onclick="removeBullet('${type}', ${index})">×</button>
+                `;
+                container.appendChild(bulletDiv);
+            });
+        }
+
+        function generateSummary() {
+            const topic = document.getElementById('decisionTopic').value.trim();
+            const context = document.getElementById('contextInput').value.trim();
+            
+            if (!topic) {
+                showToast('Please enter a decision topic first');
+                return;
+            }
+            
+            const summaryContent = document.getElementById('summaryContent');
+            const currentSummary = document.getElementById('currentSummary');
+            
+            let summaryHTML = `<h4 style="color: #d4af37;">Topic: ${topic}</h4>`;
+            
+            if (context) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h4>Context</h4>
+                        <p style="color: #e6f3e6; line-height: 1.5;">${context}</p>
+                    </div>
+                `;
+            }
+            
+            if (currentFindings.length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h4>Key Findings</h4>
+                        <ul>
+                            ${currentFindings.map(finding => `<li>${finding}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (currentOptions.length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h4>Options Considered</h4>
+                        <ul>
+                            ${currentOptions.map(option => `<li>${option}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            if (currentRecommendations.length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h4>Recommendations</h4>
+                        <ul>
+                            ${currentRecommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            summaryContent.innerHTML = summaryHTML;
+            currentSummary.style.display = 'block';
+            
+            showToast('Summary generated! 📋');
+        }
+
+        function saveSummary() {
+            const topic = document.getElementById('decisionTopic').value.trim();
+            if (!topic) return;
+            
+            const session = {
+                id: Date.now(),
+                topic: topic,
+                context: document.getElementById('contextInput').value.trim(),
+                findings: [...currentFindings],
+                options: [...currentOptions],
+                recommendations: [...currentRecommendations],
+                timestamp: new Date().toISOString(),
+                duration: totalTime - currentTime
+            };
+            
+            sessions.unshift(session);
+            saveData();
+            renderHistory();
+            
+            // Clear current session
+            clearCurrentSession();
+            
+            showToast('Session saved! 💾');
+        }
+
+        function exportSummary() {
+            const topic = document.getElementById('decisionTopic').value.trim();
+            if (!topic) return;
+            
+            let exportText = `DECISION ANALYSIS SUMMARY\n`;
+            exportText += `Topic: ${topic}\n`;
+            exportText += `Date: ${new Date().toLocaleDateString()}\n\n`;
+            
+            const context = document.getElementById('contextInput').value.trim();
+            if (context) {
+                exportText += `CONTEXT:\n${context}\n\n`;
+            }
+            
+            if (currentFindings.length > 0) {
+                exportText += `KEY FINDINGS:\n`;
+                currentFindings.forEach(finding => exportText += `• ${finding}\n`);
+                exportText += '\n';
+            }
+            
+            if (currentOptions.length > 0) {
+                exportText += `OPTIONS CONSIDERED:\n`;
+                currentOptions.forEach(option => exportText += `• ${option}\n`);
+                exportText += '\n';
+            }
+            
+            if (currentRecommendations.length > 0) {
+                exportText += `RECOMMENDATIONS:\n`;
+                currentRecommendations.forEach(rec => exportText += `• ${rec}\n`);
+            }
+            
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `decision-analysis-${topic.replace(/\s+/g, '-').toLowerCase()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showToast('Summary exported! 📄');
+        }
+
+        function clearCurrentSession() {
+            document.getElementById('decisionTopic').value = '';
+            document.getElementById('contextInput').value = '';
+            currentFindings = [];
+            currentOptions = [];
+            currentRecommendations = [];
+            renderBulletList('findings');
+            renderBulletList('options');
+            renderBulletList('recommendations');
+            document.getElementById('currentSummary').style.display = 'none';
+            resetTimer();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('sessionHistory');
+            container.innerHTML = '';
+            
+            if (sessions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #b8d4b8; font-style: italic;">No analysis sessions yet. Start your first timed session above! ⏰</p>';
+                return;
+            }
+            
+            sessions.slice(0, 10).forEach(session => {
+                const historyDiv = document.createElement('div');
+                historyDiv.className = 'history-item';
+                
+                const duration = Math.floor(session.duration / 60);
+                const timeAgo = getTimeAgo(new Date(session.timestamp));
+                
+                historyDiv.innerHTML = `
+                    <div class="history-header">
+                        <div class="history-title">${session.topic}</div>
+                        <div class="history-time">${timeAgo}</div>
+                    </div>
+                    <div style="color: #b8d4b8; font-size: 0.9rem; margin-bottom: 8px;">
+                        Duration: ${duration} minutes | 
+                        Findings: ${session.findings.length} | 
+                        Options: ${session.options.length} | 
+                        Recommendations: ${session.recommendations.length}
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" 
+                                onclick="viewSession(${session.id})">View Details</button>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" 
+                                onclick="deleteSession(${session.id})">Delete</button>
+                    </div>
+                `;
+                
+                container.appendChild(historyDiv);
+            });
+        }
+
+        function viewSession(id) {
+            const session = sessions.find(s => s.id === id);
+            if (!session) return;
+            
+            // Load session data into current form
+            document.getElementById('decisionTopic').value = session.topic;
+            document.getElementById('contextInput').value = session.context;
+            currentFindings = [...session.findings];
+            currentOptions = [...session.options];
+            currentRecommendations = [...session.recommendations];
+            
+            renderBulletList('findings');
+            renderBulletList('options');
+            renderBulletList('recommendations');
+            
+            generateSummary();
+            showToast('Session loaded for review');
+        }
+
+        function deleteSession(id) {
+            if (confirm('Delete this analysis session?')) {
+                sessions = sessions.filter(s => s.id !== id);
+                saveData();
+                renderHistory();
+                showToast('Session deleted');
+            }
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return `${days}d ago`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('decisionSupport', JSON.stringify({
+                    sessions,
+                    lastSaved: new Date().toISOString()
+                }));
+            } catch (e) {
+                showToast('Storage full - consider clearing old sessions');
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('decisionSupport');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    sessions = data.sessions || [];
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
+                sessions = [];
+            }
+        }
+
+        // Initialize app when page loads
+        initializeApp();
+
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986ba11f60d8b9f0',t:'MTc1OTE1MDQ2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
