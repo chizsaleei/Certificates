@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Panel Prep - Master Your Interview</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3d2e 0%, #2d5a3d 100%);
+            color: #f4f1e8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+        }
+
+        .header h1 {
+            color: #d4af37;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(26, 61, 46, 0.8);
+            border-radius: 12px;
+            padding: 8px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #f4f1e8;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: #d4af37;
+            color: #1a3d2e;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(26, 61, 46, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: #1a3d2e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4af37;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            background: rgba(26, 61, 46, 0.8);
+            color: #f4f1e8;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+            border-color: #d4af37;
+        }
+
+        .flashcard.flipped {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: #1a3d2e;
+        }
+
+        .question-bank {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .question-item {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            text-align: center;
+            color: #d4af37;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(26, 61, 46, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37 0%, #b8941f 100%);
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a3d2e;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #d4af37;
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .recording-indicator {
+            width: 12px;
+            height: 12px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .vocabulary-word {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .word-term {
+            font-weight: bold;
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+
+        .word-definition {
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 4s ease-in-out;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.8);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .question-bank {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Academic Panel Prep</h1>
+            <p>Master your academic interview with comprehensive preparation tools</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('questions')">Question Banks</button>
+            <button class="nav-tab" onclick="showTab('flashcards')">Flashcards</button>
+            <button class="nav-tab" onclick="showTab('vocabulary')">Vocabulary</button>
+            <button class="nav-tab" onclick="showTab('breathing')">Focus Reset</button>
+            <button class="nav-tab" onclick="showTab('analytics')">Analytics</button>
+            <button class="nav-tab" onclick="showTab('settings')">Settings</button>
+        </div>
+
+        <!-- Question Banks Tab -->
+        <div id="questions" class="tab-content active">
+            <div class="card">
+                <h3>📚 Question Categories</h3>
+                <div class="input-group">
+                    <label>Select Category:</label>
+                    <select id="categorySelect" onchange="loadQuestions()">
+                        <option value="ethics">Ethics & Research Integrity</option>
+                        <option value="methodology">Research Methodology</option>
+                        <option value="personal">Personal & Non-Academic</option>
+                        <option value="limitations">Study Limitations</option>
+                    </select>
+                </div>
+                <div class="voice-controls">
+                    <button class="btn" onclick="startVoiceInput()">🎤 Voice Input</button>
+                    <button class="btn btn-secondary" onclick="randomQuestion()">🎲 Random Question</button>
+                    <div id="recordingIndicator" class="recording-indicator" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Current Question</h3>
+                <div id="currentQuestion" class="question-item">
+                    <p><strong>Ethics Question:</strong> How would you handle a situation where you discover data manipulation in a colleague's research that you're collaborating on?</p>
+                    <p><em>Model Response Framework:</em> Acknowledge the ethical dilemma → Outline institutional protocols → Discuss professional responsibility → Consider collaborative solutions</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="showAnswer()">Show Model Answer</button>
+                    <button class="btn btn-secondary" onclick="recordResponse()">🎤 Record Response</button>
+                    <button class="btn btn-secondary" onclick="nextQuestion()">Next Question</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>✏️ Add New Question</h3>
+                <div class="input-group">
+                    <label>Question:</label>
+                    <textarea id="newQuestion" rows="3" placeholder="Enter your question here..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Model Answer Framework:</label>
+                    <textarea id="newAnswer" rows="3" placeholder="Enter model response framework..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Category:</label>
+                    <select id="newCategory">
+                        <option value="ethics">Ethics & Research Integrity</option>
+                        <option value="methodology">Research Methodology</option>
+                        <option value="personal">Personal & Non-Academic</option>
+                        <option value="limitations">Study Limitations</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addQuestion()">➕ Add Question</button>
+            </div>
+
+            <div class="card">
+                <h3>📋 Question Bank</h3>
+                <div id="questionsList" class="question-bank"></div>
+            </div>
+        </div>
+
+        <!-- Flashcards Tab -->
+        <div id="flashcards" class="tab-content">
+            <div class="card">
+                <h3>🃏 Interactive Flashcards</h3>
+                <div class="flashcard" id="flashcard" onclick="flipCard()">
+                    <div id="cardContent">
+                        <h4>Critical Phrasing: Discussing Research Limitations</h4>
+                        <p>Click to reveal key phrases and expressions</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="previousCard()">← Previous</button>
+                    <button class="btn" onclick="nextCard()">Next →</button>
+                    <button class="btn btn-secondary" onclick="shuffleCards()">🔀 Shuffle</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>➕ Create Flashcard</h3>
+                <div class="input-group">
+                    <label>Front (Question/Topic):</label>
+                    <textarea id="cardFront" rows="2" placeholder="Enter question or topic..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Back (Answer/Key Phrases):</label>
+                    <textarea id="cardBack" rows="3" placeholder="Enter answer or key phrases..."></textarea>
+                </div>
+                <button class="btn" onclick="createFlashcard()">Create Flashcard</button>
+            </div>
+        </div>
+
+        <!-- Vocabulary Tab -->
+        <div id="vocabulary" class="tab-content">
+            <div class="card">
+                <h3>📖 Advanced Academic Vocabulary</h3>
+                <button class="btn" onclick="generateVocabulary()">🎲 Generate Random Vocabulary</button>
+                <div id="vocabularyList"></div>
+            </div>
+
+            <div class="card">
+                <h3>💬 Critical Academic Expressions</h3>
+                <div id="expressionsList"></div>
+            </div>
+        </div>
+
+        <!-- Breathing Tab -->
+        <div id="breathing" class="tab-content">
+            <div class="card">
+                <h3>🧘 25-Minute Focus Reset</h3>
+                <div class="breathing-circle" id="breathingCircle">
+                    <span id="breathingText">Ready to begin</span>
+                </div>
+                <div class="timer-display" id="breathingTimer">25:00</div>
+                <div style="text-align: center;">
+                    <button class="btn" onclick="startBreathing()">Start Session</button>
+                    <button class="btn btn-secondary" onclick="pauseBreathing()">Pause</button>
+                    <button class="btn btn-secondary" onclick="resetBreathing()">Reset</button>
+                </div>
+                <div id="motivationalMessage" style="text-align: center; margin-top: 20px; font-style: italic; color: #d4af37;"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h3>📊 Progress Analytics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="streakCount">7</div>
+                        <div>Day Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="questionsAnswered">142</div>
+                        <div>Questions Practiced</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="studyTime">18.5</div>
+                        <div>Hours Studied</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="vocabularyLearned">89</div>
+                        <div>Vocabulary Learned</div>
+                    </div>
+                </div>
+                
+                <h4 style="color: #d4af37;">Weekly Progress</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <p>75% of weekly goal completed</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn" onclick="exportPDF()">📄 Export PDF Report</button>
+                    <button class="btn btn-secondary" onclick="backupData()">💾 Backup Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h3>⚙️ App Settings</h3>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="offlineMode" checked> Enable Offline Mode
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="autoSync" checked> Auto-sync when online
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="motivationalPopups" checked> Show motivational messages
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>Daily Study Goal (minutes):</label>
+                    <input type="number" id="studyGoal" value="60" min="15" max="300">
+                </div>
+                <button class="btn" onclick="saveSettings()">Save Settings</button>
+            </div>
+
+            <div class="card">
+                <h3>🎤 Voice & Recording Settings</h3>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="saveRecordings" checked> Save voice recordings
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="saveTranscripts" checked> Save transcripts
+                    </label>
+                </div>
+                <button class="btn btn-secondary" onclick="viewRecordings()">📁 View Saved Recordings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for answers and recordings -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Modal Title</h3>
+            <div id="modalBody">Modal content goes here</div>
+            <button class="btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let currentQuestionIndex = 0;
+        let currentCardIndex = 0;
+        let isRecording = false;
+        let breathingTimer = null;
+        let breathingTimeLeft = 1500; // 25 minutes in seconds
+        let isBreathing = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        // Question Banks
+        const questionBanks = {
+            ethics: [
+                {
+                    question: "How would you handle a situation where you discover data manipulation in a colleague's research that you're collaborating on?",
+                    answer: "I would first verify my concerns through careful review, then approach the colleague directly for clarification. If confirmed, I would follow institutional protocols for research misconduct while maintaining professional relationships and considering the broader impact on the research community."
+                },
+                {
+                    question: "Describe your approach to ensuring informed consent in vulnerable populations.",
+                    answer: "I would implement enhanced consent procedures including simplified language, multiple consent sessions, independent advocates when appropriate, and ongoing consent verification throughout the study period."
+                },
+                {
+                    question: "How do you balance transparency in research with protecting participant confidentiality?",
+                    answer: "I employ data anonymization techniques, secure storage protocols, and transparent reporting of methods while ensuring individual participants cannot be identified in publications or presentations."
+                }
+            ],
+            methodology: [
+                {
+                    question: "Explain your rationale for choosing qualitative over quantitative methods for your research.",
+                    answer: "I selected qualitative methods because my research questions require deep understanding of participant experiences and meanings that cannot be captured through numerical data alone. The exploratory nature of my research necessitates flexible, iterative data collection."
+                },
+                {
+                    question: "How do you ensure rigor in qualitative research design?",
+                    answer: "I employ multiple strategies including triangulation of data sources, member checking, peer debriefing, maintaining an audit trail, and reflexive journaling to enhance credibility, transferability, dependability, and confirmability."
+                },
+                {
+                    question: "Describe your approach to sampling in your research.",
+                    answer: "I use purposive sampling to select information-rich cases that illuminate the research questions. My sampling strategy includes maximum variation sampling to capture diverse perspectives while ensuring theoretical saturation."
+                }
+            ],
+            personal: [
+                {
+                    question: "What motivates you to pursue academic research?",
+                    answer: "I'm driven by intellectual curiosity and the potential to contribute meaningful knowledge to my field. The opportunity to address real-world problems through rigorous inquiry and to mentor the next generation of researchers deeply motivates me."
+                },
+                {
+                    question: "How do you handle criticism of your work?",
+                    answer: "I view criticism as an opportunity for growth and improvement. I listen carefully, evaluate feedback objectively, and use constructive criticism to strengthen my research and professional development."
+                },
+                {
+                    question: "Describe a time when you had to adapt your research approach.",
+                    answer: "When COVID-19 restrictions prevented in-person data collection, I redesigned my methodology to include virtual interviews and digital ethnography while maintaining research rigor and participant safety."
+                }
+            ],
+            limitations: [
+                {
+                    question: "What are the main limitations of your research design?",
+                    answer: "The primary limitations include the specific demographic focus which may limit generalizability, the cross-sectional design which prevents causal inferences, and potential selection bias in participant recruitment."
+                },
+                {
+                    question: "How do these limitations affect the interpretation of your findings?",
+                    answer: "These limitations require cautious interpretation of results, acknowledgment of scope boundaries, and clear articulation of what the findings can and cannot demonstrate about the broader population or phenomena."
+                },
+                {
+                    question: "What would you do differently in future research?",
+                    answer: "I would implement a longitudinal design to capture temporal changes, expand the sample to include more diverse populations, and incorporate mixed methods to provide more comprehensive insights."
+                }
+            ]
+        };
+
+        // Flashcards
+        let flashcards = [
+            {
+                front: "Critical Phrasing: Discussing Research Limitations",
+                back: "• 'While this study provides valuable insights...' • 'It's important to acknowledge that...' • 'These findings should be interpreted within the context of...' • 'Future research could address these limitations by...'"
+            },
+            {
+                front: "Expressing Uncertainty Academically",
+                back: "• 'The data suggests that...' • 'There appears to be a relationship between...' • 'This finding tentatively indicates...' • 'While preliminary, these results point toward...'"
+            },
+            {
+                front: "Defending Methodological Choices",
+                back: "• 'This approach was selected because...' • 'Given the research objectives, this method allows...' • 'The rationale for this design stems from...' • 'This methodology is particularly suited to...'"
+            }
+        ];
+
+        // Vocabulary Bank
+        const vocabularyBank = [
+            { term: "Epistemological", definition: "Relating to the theory of knowledge and how we understand what we know" },
+            { term: "Ontological", definition: "Concerning the nature of being and existence in research contexts" },
+            { term: "Hermeneutic", definition: "The methodology of interpretation, especially of texts and meaning" },
+            { term: "Phenomenological", definition: "Focused on the study of consciousness and direct experience" },
+            { term: "Axiological", definition: "Relating to values and ethics in research" },
+            { term: "Paradigmatic", definition: "Relating to a conceptual framework or model" },
+            { term: "Heuristic", definition: "A problem-solving approach using practical methods" },
+            { term: "Dialectical", definition: "Relating to logical discussion and reasoning" },
+            { term: "Empirical", definition: "Based on observation and experience rather than theory" },
+            { term: "Theoretical", definition: "Concerned with or involving theory rather than practical application" }
+        ];
+
+        // Academic Expressions
+        const academicExpressions = [
+            "In light of these findings, it becomes apparent that...",
+            "The implications of this research extend beyond...",
+            "A critical examination of the literature reveals...",
+            "This study contributes to the growing body of evidence that...",
+            "The theoretical framework underpinning this research...",
+            "From a methodological standpoint, it is crucial to consider...",
+            "The findings warrant careful consideration of...",
+            "This research addresses a significant gap in...",
+            "The data provides compelling evidence for...",
+            "Future research directions should prioritize..."
+        ];
+
+        // Motivational Messages
+        const motivationalMessages = [
+            "Excellence is not a skill, it's an attitude. Keep pushing forward! 🌟",
+            "Every expert was once a beginner. You're making great progress! 💪",
+            "Your dedication to learning will open doors you never imagined. 🚪",
+            "Research is about discovering the unknown. Embrace the journey! 🔍",
+            "Confidence comes from preparation. You're building it every day! 🎯",
+            "Academic success is a marathon, not a sprint. Pace yourself! 🏃‍♀️",
+            "Your curiosity is your greatest asset. Never stop questioning! ❓",
+            "Great researchers are made through consistent practice. Keep going! 📚"
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+            loadFlashcard();
+            generateVocabulary();
+            loadExpressions();
+            loadSettings();
+            showRandomMotivation();
+            
+            // Show random motivational message every 10 minutes
+            setInterval(showRandomMotivation, 600000);
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+
+        // Question Management
+        function loadQuestions() {
+            const category = document.getElementById('categorySelect').value;
+            const questions = questionBanks[category];
+            const questionsList = document.getElementById('questionsList');
+            
+            questionsList.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <p><strong>Q${index + 1}:</strong> ${q.question}</p>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-secondary" onclick="showQuestionAnswer(${index})">Show Answer</button>
+                        <button class="btn btn-danger" onclick="deleteQuestion('${category}', ${index})">Delete</button>
+                    </div>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+        }
+
+        function randomQuestion() {
+            const category = document.getElementById('categorySelect').value;
+            const questions = questionBanks[category];
+            currentQuestionIndex = Math.floor(Math.random() * questions.length);
+            
+            const currentQ = questions[currentQuestionIndex];
+            document.getElementById('currentQuestion').innerHTML = `
+                <p><strong>${category.charAt(0).toUpperCase() + category.slice(1)} Question:</strong> ${currentQ.question}</p>
+                <p><em>Model Response Framework:</em> Click "Show Model Answer" to reveal</p>
+            `;
+        }
+
+        function showAnswer() {
+            const category = document.getElementById('categorySelect').value;
+            const questions = questionBanks[category];
+            const currentQ = questions[currentQuestionIndex];
+            
+            showModal('Model Answer', `
+                <p><strong>Question:</strong> ${currentQ.question}</p>
+                <p><strong>Model Response:</strong> ${currentQ.answer}</p>
+            `);
+        }
+
+        function nextQuestion() {
+            const category = document.getElementById('categorySelect').value;
+            const questions = questionBanks[category];
+            currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+            
+            const currentQ = questions[currentQuestionIndex];
+            document.getElementById('currentQuestion').innerHTML = `
+                <p><strong>${category.charAt(0).toUpperCase() + category.slice(1)} Question:</strong> ${currentQ.question}</p>
+                <p><em>Model Response Framework:</em> Click "Show Model Answer" to reveal</p>
+            `;
+        }
+
+        function addQuestion() {
+            const question = document.getElementById('newQuestion').value.trim();
+            const answer = document.getElementById('newAnswer').value.trim();
+            const category = document.getElementById('newCategory').value;
+            
+            if (question && answer) {
+                questionBanks[category].push({ question, answer });
+                
+                // Clear form
+                document.getElementById('newQuestion').value = '';
+                document.getElementById('newAnswer').value = '';
+                
+                // Reload questions if current category matches
+                if (document.getElementById('categorySelect').value === category) {
+                    loadQuestions();
+                }
+                
+                alert('Question added successfully!');
+            } else {
+                alert('Please fill in both question and answer fields.');
+            }
+        }
+
+        function deleteQuestion(category, index) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                questionBanks[category].splice(index, 1);
+                loadQuestions();
+            }
+        }
+
+        function showQuestionAnswer(index) {
+            const category = document.getElementById('categorySelect').value;
+            const question = questionBanks[category][index];
+            showModal('Question Answer', `
+                <p><strong>Question:</strong> ${question.question}</p>
+                <p><strong>Answer:</strong> ${question.answer}</p>
+            `);
+        }
+
+        // Flashcard Management
+        function loadFlashcard() {
+            const card = flashcards[currentCardIndex];
+            const flashcard = document.getElementById('flashcard');
+            const cardContent = document.getElementById('cardContent');
+            
+            flashcard.classList.remove('flipped');
+            cardContent.innerHTML = `
+                <h4>${card.front}</h4>
+                <p>Click to reveal answer</p>
+            `;
+        }
+
+        function flipCard() {
+            const card = flashcards[currentCardIndex];
+            const flashcard = document.getElementById('flashcard');
+            const cardContent = document.getElementById('cardContent');
+            
+            if (flashcard.classList.contains('flipped')) {
+                flashcard.classList.remove('flipped');
+                cardContent.innerHTML = `
+                    <h4>${card.front}</h4>
+                    <p>Click to reveal answer</p>
+                `;
+            } else {
+                flashcard.classList.add('flipped');
+                cardContent.innerHTML = `
+                    <div style="white-space: pre-line;">${card.back}</div>
+                `;
+            }
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+            loadFlashcard();
+        }
+
+        function previousCard() {
+            currentCardIndex = currentCardIndex === 0 ? flashcards.length - 1 : currentCardIndex - 1;
+            loadFlashcard();
+        }
+
+        function shuffleCards() {
+            for (let i = flashcards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+            }
+            currentCardIndex = 0;
+            loadFlashcard();
+        }
+
+        function createFlashcard() {
+            const front = document.getElementById('cardFront').value.trim();
+            const back = document.getElementById('cardBack').value.trim();
+            
+            if (front && back) {
+                flashcards.push({ front, back });
+                document.getElementById('cardFront').value = '';
+                document.getElementById('cardBack').value = '';
+                alert('Flashcard created successfully!');
+            } else {
+                alert('Please fill in both front and back of the flashcard.');
+            }
+        }
+
+        // Vocabulary Management
+        function generateVocabulary() {
+            const vocabularyList = document.getElementById('vocabularyList');
+            const shuffled = [...vocabularyBank].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            vocabularyList.innerHTML = '';
+            selected.forEach(word => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'vocabulary-word';
+                wordDiv.innerHTML = `
+                    <div class="word-term">${word.term}</div>
+                    <div class="word-definition">${word.definition}</div>
+                `;
+                vocabularyList.appendChild(wordDiv);
+            });
+        }
+
+        function loadExpressions() {
+            const expressionsList = document.getElementById('expressionsList');
+            const shuffled = [...academicExpressions].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            expressionsList.innerHTML = '';
+            selected.forEach(expression => {
+                const expDiv = document.createElement('div');
+                expDiv.className = 'vocabulary-word';
+                expDiv.innerHTML = `<div class="word-definition">"${expression}"</div>`;
+                expressionsList.appendChild(expDiv);
+            });
+        }
+
+        // Breathing Exercise
+        function startBreathing() {
+            if (isBreathing) return;
+            
+            isBreathing = true;
+            const circle = document.getElementById('breathingCircle');
+            const text = document.getElementById('breathingText');
+            const timer = document.getElementById('breathingTimer');
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                const minutes = Math.floor(breathingTimeLeft / 60);
+                const seconds = breathingTimeLeft % 60;
+                timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (breathingTimeLeft <= 0) {
+                    resetBreathing();
+                    showRandomMotivation();
+                }
+            }, 1000);
+            
+            // Breathing cycle
+            let breathingCycle = setInterval(() => {
+                if (!isBreathing) {
+                    clearInterval(breathingCycle);
+                    return;
+                }
+                
+                // Inhale
+                circle.classList.add('inhale');
+                text.textContent = 'Breathe in...';
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    // Exhale
+                    circle.classList.remove('inhale');
+                    circle.classList.add('exhale');
+                    text.textContent = 'Breathe out...';
+                }, 4000);
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    circle.classList.remove('exhale');
+                }, 8000);
+            }, 8000);
+        }
+
+        function pauseBreathing() {
+            isBreathing = false;
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                breathingTimer = null;
+            }
+            document.getElementById('breathingText').textContent = 'Paused';
+        }
+
+        function resetBreathing() {
+            isBreathing = false;
+            breathingTimeLeft = 1500;
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                breathingTimer = null;
+            }
+            
+            const circle = document.getElementById('breathingCircle');
+            const text = document.getElementById('breathingText');
+            const timer = document.getElementById('breathingTimer');
+            
+            circle.classList.remove('inhale', 'exhale');
+            text.textContent = 'Ready to begin';
+            timer.textContent = '25:00';
+        }
+
+        // Voice Input and Recording
+        async function startVoiceInput() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Voice input is not supported in your browser.');
+                return;
+            }
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    showModal('Voice Recording', `
+                        <p>Recording completed!</p>
+                        <audio controls src="${url}"></audio>
+                        <p><em>Note: In a full implementation, this would be transcribed to text and saved.</em></p>
+                    `);
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('recordingIndicator').style.display = 'block';
+                
+                setTimeout(() => {
+                    if (isRecording) {
+                        stopRecording();
+                    }
+                }, 30000); // Auto-stop after 30 seconds
+                
+            } catch (error) {
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordingIndicator').style.display = 'none';
+                
+                // Stop all tracks
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function recordResponse() {
+            startVoiceInput();
+        }
+
+        // Utility Functions
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function showRandomMotivation() {
+            if (!document.getElementById('motivationalPopups').checked) return;
+            
+            const message = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('motivationalMessage').textContent = message;
+            
+            setTimeout(() => {
+                document.getElementById('motivationalMessage').textContent = '';
+            }, 5000);
+        }
+
+        // Settings and Data Management
+        function saveSettings() {
+            const settings = {
+                offlineMode: document.getElementById('offlineMode').checked,
+                autoSync: document.getElementById('autoSync').checked,
+                motivationalPopups: document.getElementById('motivationalPopups').checked,
+                studyGoal: document.getElementById('studyGoal').value,
+                saveRecordings: document.getElementById('saveRecordings').checked,
+                saveTranscripts: document.getElementById('saveTranscripts').checked
+            };
+            
+            localStorage.setItem('academicPanelSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('academicPanelSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('offlineMode').checked = settings.offlineMode ?? true;
+                document.getElementById('autoSync').checked = settings.autoSync ?? true;
+                document.getElementById('motivationalPopups').checked = settings.motivationalPopups ?? true;
+                document.getElementById('studyGoal').value = settings.studyGoal ?? 60;
+                document.getElementById('saveRecordings').checked = settings.saveRecordings ?? true;
+                document.getElementById('saveTranscripts').checked = settings.saveTranscripts ?? true;
+            }
+        }
+
+        function exportPDF() {
+            // Simulate PDF export
+            const stats = {
+                streak: document.getElementById('streakCount').textContent,
+                questions: document.getElementById('questionsAnswered').textContent,
+                studyTime: document.getElementById('studyTime').textContent,
+                vocabulary: document.getElementById('vocabularyLearned').textContent
+            };
+            
+            showModal('PDF Export', `
+                <p>📄 Progress Report Generated</p>
+                <p><strong>Study Streak:</strong> ${stats.streak} days</p>
+                <p><strong>Questions Practiced:</strong> ${stats.questions}</p>
+                <p><strong>Study Time:</strong> ${stats.studyTime} hours</p>
+                <p><strong>Vocabulary Learned:</strong> ${stats.vocabulary} words</p>
+                <p><em>In a full implementation, this would generate and download a PDF report.</em></p>
+            `);
+        }
+
+        function backupData() {
+            const data = {
+                questionBanks,
+                flashcards,
+                settings: JSON.parse(localStorage.getItem('academicPanelSettings') || '{}'),
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `academic-panel-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function viewRecordings() {
+            showModal('Saved Recordings', `
+                <p>📁 Recording Library</p>
+                <p><em>In a full implementation, this would show a list of all saved voice recordings and transcripts with playback controls.</em></p>
+                <div style="margin: 15px 0;">
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Ethics Question Response - 2024-01-15
+                    </div>
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Methodology Discussion - 2024-01-14
+                    </div>
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Personal Question Practice - 2024-01-13
+                    </div>
+                </div>
+            `);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Auto-stop recording when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            if (isRecording && !e.target.closest('.voice-controls')) {
+                stopRecording();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988150e3d5f80890',t:'MTc1OTM3Nzg2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
