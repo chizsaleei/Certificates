@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectors - Networking Scripts</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d32 50%, #2d5a3d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(26, 77, 50, 0.5) 100%);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.2rem;
+            color: #e8f5e8;
+            opacity: 0.9;
+        }
+
+        .script-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, rgba(26, 77, 50, 0.8) 0%, rgba(45, 90, 61, 0.6) 100%);
+            border-radius: 20px;
+            border: 2px solid #2d5a3d;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .category-card:hover::before {
+            left: 100%;
+        }
+
+        .category-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 0;
+        }
+
+        .category-description {
+            color: #e8f5e8;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .script-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .script-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #2d5a3d;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .script-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .script-title {
+            font-weight: 600;
+            color: #f4d03f;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .script-preview {
+            color: #b8d4b8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.8;
+        }
+
+        .script-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 77, 50, 0.95) 0%, rgba(45, 90, 61, 0.95) 100%);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5a3d;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #d4af37;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .tone-selector {
+            margin-bottom: 25px;
+        }
+
+        .tone-label {
+            color: #e8f5e8;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .tone-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tone-btn {
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid #2d5a3d;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tone-btn.active {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            border-color: #b8860b;
+        }
+
+        .tone-btn:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .template-form {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: #e8f5e8;
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #2d5a3d;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: #888;
+        }
+
+        .script-output {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #2d5a3d;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .output-label {
+            color: #d4af37;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .script-text {
+            color: #ffffff;
+            line-height: 1.6;
+            font-size: 1rem;
+            white-space: pre-wrap;
+            min-height: 120px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a4d32 100%);
+            color: #ffffff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a4d32;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .quick-tips {
+            background: rgba(45, 90, 61, 0.3);
+            border: 2px solid #2d5a3d;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .tips-title {
+            color: #d4af37;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tips-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .tip-item {
+            color: #e8f5e8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .script-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤝 Connectors</h1>
+            <p>Professional networking scripts made simple - Fill, customize, and copy in seconds</p>
+        </div>
+
+        <div class="script-categories">
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🌟</div>
+                    <h2 class="category-title">Warm Intros</h2>
+                </div>
+                <p class="category-description">Connect two people in your network with professional, thoughtful introductions</p>
+                <div class="script-list">
+                    <div class="script-item" onclick="openScript('warmIntro', 'basic')">
+                        <div class="script-title">Basic Introduction</div>
+                        <div class="script-preview">Simple, professional intro connecting two contacts...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('warmIntro', 'detailed')">
+                        <div class="script-title">Detailed Introduction</div>
+                        <div class="script-preview">Comprehensive intro with context and mutual benefits...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('warmIntro', 'followup')">
+                        <div class="script-title">Follow-up Introduction</div>
+                        <div class="script-preview">Check in after making an introduction...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🎯</div>
+                    <h2 class="category-title">Asks</h2>
+                </div>
+                <p class="category-description">Make requests professionally while maintaining relationships</p>
+                <div class="script-list">
+                    <div class="script-item" onclick="openScript('ask', 'advice')">
+                        <div class="script-title">Advice Request</div>
+                        <div class="script-preview">Ask for professional guidance or mentorship...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('ask', 'introduction')">
+                        <div class="script-title">Introduction Request</div>
+                        <div class="script-preview">Request an introduction to someone in their network...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('ask', 'opportunity')">
+                        <div class="script-title">Opportunity Inquiry</div>
+                        <div class="script-preview">Inquire about job opportunities or collaborations...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('ask', 'feedback')">
+                        <div class="script-title">Feedback Request</div>
+                        <div class="script-preview">Ask for feedback on projects or ideas...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🤲</div>
+                    <h2 class="category-title">Graceful No's</h2>
+                </div>
+                <p class="category-description">Decline requests professionally while preserving relationships</p>
+                <div class="script-list">
+                    <div class="script-item" onclick="openScript('gracefulNo', 'busy')">
+                        <div class="script-title">Too Busy</div>
+                        <div class="script-preview">Politely decline due to time constraints...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('gracefulNo', 'mismatch')">
+                        <div class="script-title">Not a Good Fit</div>
+                        <div class="script-preview">Decline when the request doesn't align...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('gracefulNo', 'alternative')">
+                        <div class="script-title">Offer Alternative</div>
+                        <div class="script-preview">Decline but suggest other options...</div>
+                    </div>
+                    <div class="script-item" onclick="openScript('gracefulNo', 'future')">
+                        <div class="script-title">Maybe Later</div>
+                        <div class="script-preview">Decline now but leave door open for future...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-tips">
+            <div class="tips-title">
+                💡 Quick Tips
+            </div>
+            <div class="tips-list">
+                <div class="tip-item">• Always personalize with specific details about the people involved</div>
+                <div class="tip-item">• Keep introductions concise but include relevant context</div>
+                <div class="tip-item">• When asking, be specific about what you need and why</div>
+                <div class="tip-item">• For graceful no's, acknowledge the request before declining</div>
+                <div class="tip-item">• Use the tone selector to match your relationship level</div>
+                <div class="tip-item">• Copy to clipboard works for both email and DM platforms</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Modal -->
+    <div class="script-modal" id="scriptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Script Template</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="tone-selector">
+                <label class="tone-label">Select Tone:</label>
+                <div class="tone-buttons">
+                    <button class="tone-btn active" data-tone="professional" onclick="selectTone('professional')">Professional</button>
+                    <button class="tone-btn" data-tone="friendly" onclick="selectTone('friendly')">Friendly</button>
+                    <button class="tone-btn" data-tone="casual" onclick="selectTone('casual')">Casual</button>
+                    <button class="tone-btn" data-tone="formal" onclick="selectTone('formal')">Formal</button>
+                </div>
+            </div>
+
+            <div class="template-form" id="templateForm">
+                <!-- Form fields will be populated here -->
+            </div>
+
+            <div class="script-output">
+                <div class="output-label">
+                    📝 Generated Script
+                </div>
+                <div class="script-text" id="scriptText">
+                    Fill in the fields above to generate your personalized script...
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn" onclick="copyToClipboard()">
+                    📋 Copy to Clipboard
+                </button>
+                <button class="action-btn secondary" onclick="generateNew()">
+                    🔄 Generate New
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentScript = null;
+        let currentTone = 'professional';
+
+        const scriptTemplates = {
+            warmIntro: {
+                basic: {
+                    title: "Basic Warm Introduction",
+                    fields: [
+                        { name: 'person1Name', label: 'First Person\'s Name', placeholder: 'Sarah Johnson' },
+                        { name: 'person2Name', label: 'Second Person\'s Name', placeholder: 'Mike Chen' },
+                        { name: 'person1Title', label: 'First Person\'s Role', placeholder: 'Marketing Director at TechCorp' },
+                        { name: 'person2Title', label: 'Second Person\'s Role', placeholder: 'Product Manager at StartupXYZ' },
+                        { name: 'connectionReason', label: 'Why Connect Them', placeholder: 'Both working on AI marketing solutions' }
+                    ],
+                    templates: {
+                        professional: "Hi {person1Name} and {person2Name},\n\nI'd like to introduce you both as I think you'd have a lot to discuss. {person1Name} is {person1Title}, and {person2Name} is {person2Title}.\n\nI thought you might find value in connecting since {connectionReason}.\n\nI'll let you both take it from here!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {person1Name} and {person2Name}!\n\nI'm excited to introduce you two! {person1Name}, meet {person2Name} - {person2Title}. {person2Name}, this is {person1Name} - {person1Title}.\n\nI immediately thought of connecting you both because {connectionReason}. I have a feeling you'll really hit it off!\n\nI'll step back and let you two connect directly.\n\nCheers,\n[Your name]",
+                        casual: "Hi {person1Name} and {person2Name}!\n\n{person1Name} - {person2Name}, {person2Name} - {person1Name}. You're both awesome and should definitely know each other!\n\n{person1Name} is {person1Title} and {person2Name} is {person2Title}. Figured you'd want to connect since {connectionReason}.\n\nGo forth and network!\n\n[Your name]",
+                        formal: "Dear {person1Name} and {person2Name},\n\nI hope this message finds you well. I would like to formally introduce you to each other as I believe there may be mutual benefit in your acquaintance.\n\n{person1Name} serves as {person1Title}, while {person2Name} holds the position of {person2Title}.\n\nGiven that {connectionReason}, I thought it would be valuable for you to connect.\n\nI trust you will find this introduction mutually beneficial.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                detailed: {
+                    title: "Detailed Warm Introduction",
+                    fields: [
+                        { name: 'person1Name', label: 'First Person\'s Name', placeholder: 'Sarah Johnson' },
+                        { name: 'person2Name', label: 'Second Person\'s Name', placeholder: 'Mike Chen' },
+                        { name: 'person1Background', label: 'First Person\'s Background', placeholder: 'Led 3 successful product launches, expert in B2B marketing' },
+                        { name: 'person2Background', label: 'Second Person\'s Background', placeholder: 'Former Google PM, now building AI-powered analytics tools' },
+                        { name: 'mutualBenefit', label: 'Mutual Benefit', placeholder: 'Sarah\'s marketing expertise + Mike\'s product insights' },
+                        { name: 'specificContext', label: 'Specific Context', placeholder: 'Both mentioned challenges with user acquisition at our last meetup' }
+                    ],
+                    templates: {
+                        professional: "Hi {person1Name} and {person2Name},\n\nI'm delighted to introduce you both. I believe this connection could be mutually valuable.\n\n{person1Name}: {person1Background}\n{person2Name}: {person2Background}\n\nI thought you should connect because {mutualBenefit}. Specifically, {specificContext}.\n\nI'm confident you'll both find this conversation worthwhile. I'll leave you to connect directly.\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {person1Name} and {person2Name}!\n\nI'm so excited to introduce you two - I think this could be the start of something great!\n\n{person1Name} - {person1Background}\n{person2Name} - {person2Background}\n\nWhat got me thinking about connecting you is {mutualBenefit}. Plus, {specificContext}, so the timing feels perfect!\n\nI'll get out of the way now and let you two work your magic!\n\nCheers,\n[Your name]",
+                        casual: "Hi {person1Name} and {person2Name}!\n\nOkay, this intro is happening because you two NEED to know each other!\n\n{person1Name}: {person1Background}\n{person2Name}: {person2Background}\n\nSeriously though, {mutualBenefit}. And {specificContext} - it's like the universe is telling me to make this happen!\n\nGo connect and do amazing things together!\n\n[Your name]",
+                        formal: "Dear {person1Name} and {person2Name},\n\nI am pleased to facilitate this introduction between two distinguished professionals in your respective fields.\n\n{person1Name}: {person1Background}\n{person2Name}: {person2Background}\n\nI believe there is significant potential for collaboration given {mutualBenefit}. Furthermore, {specificContext}, which suggests this introduction is particularly timely.\n\nI trust you will both find value in this connection.\n\nRespectfully,\n[Your name]"
+                    }
+                },
+                followup: {
+                    title: "Introduction Follow-up",
+                    fields: [
+                        { name: 'person1Name', label: 'First Person\'s Name', placeholder: 'Sarah' },
+                        { name: 'person2Name', label: 'Second Person\'s Name', placeholder: 'Mike' },
+                        { name: 'timeFrame', label: 'Time Since Intro', placeholder: 'a couple weeks ago' },
+                        { name: 'hopedOutcome', label: 'Hoped Outcome', placeholder: 'explore potential collaboration' }
+                    ],
+                    templates: {
+                        professional: "Hi {person1Name} and {person2Name},\n\nI hope you've had a chance to connect since I introduced you {timeFrame}. I was hoping you'd be able to {hopedOutcome}.\n\nIf you haven't connected yet, no worries - I know everyone's busy. Just wanted to follow up and see if there's anything I can do to facilitate.\n\nLet me know how it goes!\n\nBest,\n[Your name]",
+                        friendly: "Hey {person1Name} and {person2Name}!\n\nJust checking in on you two! I introduced you {timeFrame} and was curious how things went. Did you get a chance to {hopedOutcome}?\n\nHoping the connection was as valuable as I thought it would be!\n\nLet me know how it's going!\n\n[Your name]",
+                        casual: "Hi {person1Name} and {person2Name}!\n\nSo... did you two connect after I introduced you {timeFrame}? I'm dying to know if you managed to {hopedOutcome}!\n\nSpill the tea - how did it go?\n\n[Your name]",
+                        formal: "Dear {person1Name} and {person2Name},\n\nI trust this message finds you well. I am following up on the introduction I facilitated {timeFrame}.\n\nI am curious to learn whether you have had the opportunity to {hopedOutcome} as I had hoped.\n\nPlease let me know if there is any additional assistance I can provide.\n\nSincerely,\n[Your name]"
+                    }
+                }
+            },
+            ask: {
+                advice: {
+                    title: "Request for Advice",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Jennifer' },
+                        { name: 'yourBackground', label: 'Your Current Situation', placeholder: 'transitioning from marketing to product management' },
+                        { name: 'specificAdvice', label: 'Specific Advice Needed', placeholder: 'how to position myself for PM roles without direct experience' },
+                        { name: 'timeCommitment', label: 'Time Commitment', placeholder: '15-20 minute call' },
+                        { name: 'whyThem', label: 'Why Them', placeholder: 'your successful transition from marketing to VP of Product' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nI hope you're doing well. I'm reaching out because I'm {yourBackground} and would greatly value your perspective.\n\nSpecifically, I'm looking for advice on {specificAdvice}. Given {whyThem}, I thought you'd be the perfect person to ask.\n\nWould you be open to a brief {timeCommitment} to share your insights? I'm happy to work around your schedule.\n\nThank you for considering this, and I completely understand if you're not available.\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nHope you're crushing it! I'm reaching out because I'm {yourBackground} and could really use some wisdom from someone who's been there.\n\nI'm specifically trying to figure out {specificAdvice}. Knowing {whyThem}, I immediately thought of you!\n\nAny chance you'd be up for a quick {timeCommitment}? I'd love to pick your brain and learn from your experience.\n\nNo pressure at all if you're swamped!\n\nThanks!\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nSo I'm {yourBackground} and honestly feeling a bit lost! 😅\n\nI keep coming back to this question: {specificAdvice}. Since {whyThem}, I figured you'd be the perfect person to help me figure this out!\n\nWould you be up for a {timeCommitment}? I promise I'll come prepared with specific questions!\n\nTotally get it if you're too busy though!\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI hope this message finds you in good health and spirits. I am writing to respectfully request your professional guidance.\n\nCurrently, I am {yourBackground} and find myself seeking counsel regarding {specificAdvice}.\n\nGiven {whyThem}, I believe your insights would be invaluable to my professional development.\n\nWould you be amenable to a brief {timeCommitment} at your convenience? I would be most grateful for any wisdom you could share.\n\nThank you for your time and consideration.\n\nRespectfully yours,\n[Your name]"
+                    }
+                },
+                introduction: {
+                    title: "Request for Introduction",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'David' },
+                        { name: 'targetPerson', label: 'Person You Want to Meet', placeholder: 'Lisa Chen from TechStartup' },
+                        { name: 'targetRole', label: 'Their Role/Background', placeholder: 'Head of Engineering' },
+                        { name: 'connectionReason', label: 'Why You Want to Connect', placeholder: 'exploring engineering leadership opportunities' },
+                        { name: 'yourRelevance', label: 'Your Relevant Background', placeholder: 'senior developer looking to transition to management' },
+                        { name: 'mutualValue', label: 'Potential Mutual Value', placeholder: 'I could share insights on scaling development teams' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nI hope you're doing well. I'm reaching out to see if you'd be comfortable making an introduction.\n\nI'm interested in connecting with {targetPerson}, {targetRole}, as I'm {connectionReason}. Given my background as {yourRelevance}, I believe {mutualValue}.\n\nI completely understand if you prefer not to make introductions, or if now isn't a good time. No pressure at all.\n\nIf you're comfortable with it, I'd be happy to provide a brief note you could forward.\n\nThank you for considering this!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nHope things are going great! I have a small favor to ask - would you be open to introducing me to {targetPerson}?\n\nI know they're {targetRole} and I'm {connectionReason}. As {yourRelevance}, I think {mutualValue}.\n\nTotally fine if you'd rather not - I know introductions can be tricky! Just thought I'd ask since you know us both.\n\nLet me know what you think!\n\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nSo I have a random request - any chance you'd be up for introducing me to {targetPerson}?\n\nI'm {connectionReason} and thought it might be cool to chat with them since they're {targetRole}. Plus, {mutualValue}!\n\nNo worries if it's weird or you'd rather not - just figured I'd throw it out there!\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI trust this message finds you well. I am writing to inquire whether you would be willing to facilitate an introduction.\n\nI would be most grateful for an introduction to {targetPerson}, {targetRole}. My interest stems from {connectionReason}.\n\nAs {yourRelevance}, I believe {mutualValue}, which could make this a mutually beneficial connection.\n\nI completely understand if you prefer not to make such introductions, and I respect whatever decision you make.\n\nThank you for your consideration.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                opportunity: {
+                    title: "Opportunity Inquiry",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Alex' },
+                        { name: 'companyName', label: 'Company Name', placeholder: 'InnovateCorp' },
+                        { name: 'opportunityType', label: 'Type of Opportunity', placeholder: 'product management roles' },
+                        { name: 'yourBackground', label: 'Your Relevant Background', placeholder: '5 years in product development with 2 successful launches' },
+                        { name: 'specificInterest', label: 'Specific Interest', placeholder: 'the AI/ML product team' },
+                        { name: 'valueProposition', label: 'What You Bring', placeholder: 'experience scaling products from 0 to 10M users' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nI hope you're doing well. I'm reaching out because I'm very interested in {opportunityType} at {companyName}.\n\nWith {yourBackground}, I'm particularly drawn to {specificInterest}. I believe I could contribute significantly through {valueProposition}.\n\nI'd love to learn more about current or upcoming opportunities. Would you be open to a brief conversation, or could you point me toward the right person to speak with?\n\nI'm happy to send over my resume and any other materials that would be helpful.\n\nThank you for your time!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nHope you're loving life at {companyName}! I'm reaching out because I'm really interested in {opportunityType} there.\n\nI've got {yourBackground} and I'm especially excited about {specificInterest}. I think {valueProposition} could be really valuable to the team.\n\nAny chance you'd be up for a quick chat about opportunities? Or maybe you could point me to the right person?\n\nWould love to buy you coffee and hear about your experience there too!\n\nThanks!\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nSo I've been keeping an eye on {companyName} and I'm super interested in {opportunityType}!\n\nI've got {yourBackground} and I'm really excited about {specificInterest}. Plus, {valueProposition} - which seems like it could be a great fit!\n\nAny insider info on opportunities? Or know who I should talk to?\n\nThanks for any help!\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI trust this correspondence finds you well. I am writing to express my strong interest in {opportunityType} at {companyName}.\n\nMy professional background includes {yourBackground}, and I am particularly interested in {specificInterest}. I am confident that {valueProposition} would be of significant value to your organization.\n\nI would be most grateful for the opportunity to discuss potential openings or to be directed to the appropriate hiring manager.\n\nI am prepared to provide my curriculum vitae and any additional documentation you may require.\n\nThank you for your consideration.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                feedback: {
+                    title: "Request for Feedback",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Maria' },
+                        { name: 'projectName', label: 'Project/Idea Name', placeholder: 'my new SaaS product concept' },
+                        { name: 'projectDescription', label: 'Brief Description', placeholder: 'a tool that helps remote teams coordinate across time zones' },
+                        { name: 'specificFeedback', label: 'Specific Feedback Needed', placeholder: 'the market positioning and pricing strategy' },
+                        { name: 'whyThem', label: 'Why Their Opinion Matters', placeholder: 'your experience building and scaling B2B SaaS products' },
+                        { name: 'timeCommitment', label: 'Time Needed', placeholder: '10-15 minutes to review' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nI hope you're doing well. I'm reaching out because I'd greatly value your feedback on {projectName}.\n\nIn brief, it's {projectDescription}. I'm particularly looking for input on {specificFeedback}.\n\nGiven {whyThem}, I believe your perspective would be incredibly valuable. It would only require {timeCommitment}.\n\nWould you be open to taking a look? I'm happy to share materials in whatever format works best for you.\n\nThank you for considering this, and I completely understand if you're not available.\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nHope you're doing awesome! I'm working on {projectName} and would love your thoughts on it.\n\nBasically, it's {projectDescription}. I'm especially curious about your take on {specificFeedback}.\n\nKnowing {whyThem}, I immediately thought of you! It would just take {timeCommitment}.\n\nAny chance you'd be up for giving it a quick look? No pressure if you're swamped!\n\nThanks!\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nSo I've been working on {projectName} and I'm dying to get your opinion on it!\n\nIt's {projectDescription} and I'm trying to figure out {specificFeedback}. Since {whyThem}, you're literally the perfect person to ask!\n\nWould only need {timeCommitment} - promise!\n\nInterested in taking a peek?\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI trust you are well. I am writing to respectfully request your professional feedback on {projectName}.\n\nThe concept involves {projectDescription}. I am particularly seeking guidance regarding {specificFeedback}.\n\nGiven {whyThem}, I believe your expertise would provide invaluable insights. The review would require approximately {timeCommitment}.\n\nWould you be amenable to providing your professional assessment? I would be most grateful for any insights you could share.\n\nThank you for your consideration.\n\nRespectfully,\n[Your name]"
+                    }
+                }
+            },
+            gracefulNo: {
+                busy: {
+                    title: "Decline Due to Time Constraints",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'John' },
+                        { name: 'requestType', label: 'What They Asked For', placeholder: 'coffee meeting to discuss career advice' },
+                        { name: 'currentCommitments', label: 'Current Commitments', placeholder: 'launching a new product and traveling frequently' },
+                        { name: 'timeFrame', label: 'When You Might Be Available', placeholder: 'after Q1 ends in March' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nThank you for reaching out about {requestType}. I'm flattered that you thought of me.\n\nUnfortunately, I'm not able to commit to this right now as I'm {currentCommitments}. I don't want to say yes and then not be able to give you the attention you deserve.\n\nIf you're still interested {timeFrame}, I'd be happy to revisit this conversation then.\n\nThank you for understanding, and best of luck with everything!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nThanks so much for thinking of me for {requestType}! I really appreciate it.\n\nI wish I could help right now, but I'm completely swamped with {currentCommitments}. I'd hate to say yes and then not be able to give you proper attention.\n\nMaybe we could reconnect {timeFrame}? I should have more bandwidth then.\n\nThanks for understanding!\n\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nAw, thanks for asking about {requestType}! Super flattering.\n\nI'm totally buried right now with {currentCommitments} - like, barely keeping my head above water! 😅\n\nCould we maybe circle back {timeFrame}? I should be human again by then!\n\nSorry I can't help right now!\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nThank you for your recent request regarding {requestType}. I am honored that you considered me for this opportunity.\n\nRegrettably, I must decline at this time due to {currentCommitments}. I believe it would be unfair to both of us if I were to commit without being able to provide the proper attention this deserves.\n\nPerhaps we might revisit this matter {timeFrame}, when my schedule permits greater flexibility.\n\nThank you for your understanding.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                mismatch: {
+                    title: "Decline - Not a Good Fit",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Sarah' },
+                        { name: 'requestType', label: 'What They Asked For', placeholder: 'introduction to investors for their fintech startup' },
+                        { name: 'whyNotFit', label: 'Why It\'s Not a Good Fit', placeholder: 'my network is primarily in B2B SaaS, not fintech' },
+                        { name: 'acknowledgment', label: 'Acknowledge Their Effort', placeholder: 'the concept sounds really innovative' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nThank you for thinking of me for {requestType}. I appreciate you reaching out.\n\nWhile {acknowledgment}, I don't think I'm the right person to help with this particular request. {whyNotFit}, so I wouldn't be able to provide the most valuable connections for you.\n\nI'd hate to waste your time or make introductions that aren't truly beneficial. You deserve someone who can really add value to your efforts.\n\nBest of luck with this - I'm rooting for you!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nThanks for reaching out about {requestType}! I'm honored you thought of me.\n\nHonestly though, I don't think I'm the best person to help with this one. {whyNotFit}, so I probably wouldn't be super helpful.\n\nI really think {acknowledgment}, and you deserve someone who can give you amazing connections! I just don't want to waste your time.\n\nHoping you find the perfect person to help!\n\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nThanks for asking about {requestType}! Really cool that you thought of me.\n\nBut honestly, I'm probably not your person for this one. {whyNotFit} - so I'd basically be useless! 😅\n\nI think {acknowledgment} though! You just need someone with better connections than me.\n\nGood luck finding the right person!\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nThank you for your confidence in approaching me regarding {requestType}.\n\nAfter careful consideration, I believe I may not be the most suitable person to assist with this particular request. {whyNotFit}, which would limit my ability to provide meaningful value.\n\nWhile {acknowledgment}, I believe you would be better served by someone with more relevant expertise and connections in this area.\n\nI wish you every success in your endeavors.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                alternative: {
+                    title: "Decline but Offer Alternative",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Mike' },
+                        { name: 'originalRequest', label: 'Original Request', placeholder: 'speaking at their company\'s tech conference' },
+                        { name: 'whyCantDo', label: 'Why You Can\'t Do It', placeholder: 'I\'ll be traveling that month' },
+                        { name: 'alternative', label: 'Alternative You Can Offer', placeholder: 'record a video presentation or suggest other speakers' },
+                        { name: 'alternativeValue', label: 'Why Alternative is Good', placeholder: 'you could use it for future events too' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nThank you for the invitation to {originalRequest}. I'm truly honored that you thought of me.\n\nUnfortunately, I won't be able to participate as {whyCantDo}. However, I'd love to help in another way.\n\nWould you be interested in {alternative}? The benefit would be that {alternativeValue}.\n\nIf that doesn't work, I'm happy to brainstorm other ways I might be able to support your event.\n\nThank you again for thinking of me!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nThanks so much for asking me to {originalRequest}! Super flattering.\n\nSadly, I can't make it work since {whyCantDo}. But I hate to just say no without offering something!\n\nWhat if I {alternative}? That way {alternativeValue} - might actually be even better!\n\nLet me know if that could work, or if there's another way I can help out!\n\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nAw man, I'd love to {originalRequest} but {whyCantDo}! 😞\n\nBut wait! What if I {alternative} instead? That way {alternativeValue}!\n\nWould that work? Or is there something else I could do to help?\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI am deeply honored by your invitation to {originalRequest}.\n\nRegrettably, I must decline as {whyCantDo}. However, I would very much like to contribute in an alternative capacity.\n\nMight I suggest that I {alternative}? This approach would offer the advantage that {alternativeValue}.\n\nI remain committed to supporting your initiative in whatever way possible.\n\nSincerely,\n[Your name]"
+                    }
+                },
+                future: {
+                    title: "Maybe Later - Keep Door Open",
+                    fields: [
+                        { name: 'recipientName', label: 'Recipient\'s Name', placeholder: 'Lisa' },
+                        { name: 'requestType', label: 'What They Asked For', placeholder: 'joining their advisory board' },
+                        { name: 'whyNotNow', label: 'Why Not Right Now', placeholder: 'I\'m already on two other boards and want to give them proper attention' },
+                        { name: 'whenRevisit', label: 'When to Revisit', placeholder: 'in 6-8 months when my current commitments wind down' },
+                        { name: 'genuineInterest', label: 'Why You\'re Interested', placeholder: 'I love what you\'re building and think I could add real value' }
+                    ],
+                    templates: {
+                        professional: "Hi {recipientName},\n\nThank you for the opportunity to {requestType}. I'm genuinely excited about what you're building.\n\nWhile I can't commit right now because {whyNotNow}, this is definitely something I'd love to explore {whenRevisit}.\n\nI believe {genuineInterest}, so I'd hate for this to be a permanent no. Would you be open to reconnecting then to see if the timing works better?\n\nIn the meantime, please keep me posted on your progress - I'm rooting for you!\n\nBest regards,\n[Your name]",
+                        friendly: "Hey {recipientName}!\n\nThanks for asking me to {requestType}! I'm seriously flattered and excited about what you're doing.\n\nI can't jump in right now because {whyNotNow}, but I'd love to revisit this {whenRevisit}.\n\nHonestly, {genuineInterest}, so this isn't a \"no forever\" - just a \"not right now\"!\n\nCan we circle back then? I'd hate to miss out on working together!\n\n[Your name]",
+                        casual: "Hi {recipientName}!\n\nOh wow, thanks for asking me to {requestType}! That's awesome.\n\nI can't do it right now because {whyNotNow}, but could we maybe talk again {whenRevisit}?\n\nI really think {genuineInterest} - so I don't want this to be a forever no!\n\nSound good?\n\n[Your name]",
+                        formal: "Dear {recipientName},\n\nI am most grateful for your invitation to {requestType}. The opportunity is both flattering and intriguing.\n\nWhile I cannot commit at present due to {whyNotNow}, I would very much like to revisit this possibility {whenRevisit}.\n\nI believe {genuineInterest}, and I would not want to foreclose this opportunity permanently due to current timing constraints.\n\nMight we reconnect at that time to explore whether circumstances have become more favorable?\n\nSincerely,\n[Your name]"
+                    }
+                }
+            }
+        };
+
+        function openScript(category, type) {
+            currentScript = { category, type };
+            const template = scriptTemplates[category][type];
+            
+            document.getElementById('modalTitle').textContent = template.title;
+            
+            // Generate form fields
+            const form = document.getElementById('templateForm');
+            form.innerHTML = template.fields.map(field => `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">${field.label}</label>
+                        <input type="text" class="form-input" id="${field.name}" placeholder="${field.placeholder}" oninput="updateScript()">
+                    </div>
+                </div>
+            `).join('');
+            
+            // Reset tone to professional
+            selectTone('professional');
+            
+            // Show modal
+            document.getElementById('scriptModal').style.display = 'flex';
+            
+            // Focus first input
+            setTimeout(() => {
+                const firstInput = form.querySelector('input');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        function closeModal() {
+            document.getElementById('scriptModal').style.display = 'none';
+            currentScript = null;
+        }
+
+        function selectTone(tone) {
+            currentTone = tone;
+            
+            // Update button states
+            document.querySelectorAll('.tone-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tone="${tone}"]`).classList.add('active');
+            
+            updateScript();
+        }
+
+        function updateScript() {
+            if (!currentScript) return;
+            
+            const template = scriptTemplates[currentScript.category][currentScript.type];
+            let scriptTemplate = template.templates[currentTone];
+            
+            // Get form values
+            const formData = {};
+            template.fields.forEach(field => {
+                const input = document.getElementById(field.name);
+                formData[field.name] = input ? input.value : '';
+            });
+            
+            // Replace placeholders
+            let generatedScript = scriptTemplate;
+            Object.keys(formData).forEach(key => {
+                const value = formData[key] || `[${key}]`;
+                generatedScript = generatedScript.replace(new RegExp(`{${key}}`, 'g'), value);
+            });
+            
+            document.getElementById('scriptText').textContent = generatedScript;
+        }
+
+        function copyToClipboard() {
+            const scriptText = document.getElementById('scriptText').textContent;
+            
+            if (scriptText.includes('[') && scriptText.includes(']')) {
+                showToast('Please fill in all fields before copying! 📝');
+                return;
+            }
+            
+            navigator.clipboard.writeText(scriptText).then(() => {
+                showToast('Script copied to clipboard! 📋 Ready to paste anywhere!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = scriptText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Script copied to clipboard! 📋');
+            });
+        }
+
+        function generateNew() {
+            // Clear all form fields
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset script text
+            document.getElementById('scriptText').textContent = 'Fill in the fields above to generate your personalized script...';
+            
+            // Focus first input
+            const firstInput = document.querySelector('.form-input');
+            if (firstInput) firstInput.focus();
+            
+            showToast('Form cleared! Ready for new script 🔄');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('scriptModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && currentScript) {
+                closeModal();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c' && currentScript) {
+                e.preventDefault();
+                copyToClipboard();
+            }
+        });
+
+        // Auto-save form data to localStorage
+        function saveFormData() {
+            if (!currentScript) return;
+            
+            const formData = {};
+            document.querySelectorAll('.form-input').forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            localStorage.setItem(`connectors_${currentScript.category}_${currentScript.type}`, JSON.stringify(formData));
+        }
+
+        function loadFormData() {
+            if (!currentScript) return;
+            
+            const saved = localStorage.getItem(`connectors_${currentScript.category}_${currentScript.type}`);
+            if (saved) {
+                const formData = JSON.parse(saved);
+                Object.keys(formData).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = formData[key];
+                });
+                updateScript();
+            }
+        }
+
+        // Add auto-save functionality
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('form-input')) {
+                saveFormData();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986c05b7d4a226d1',t:'MTc1OTE1NDU4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
