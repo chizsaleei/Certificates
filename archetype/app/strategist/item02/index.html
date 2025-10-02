@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrategyLab - Strategic Planning & Scenario Simulation</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b0d 0%, #1a2e1a 50%, #2d4a2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .strategy-section {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            flex: 1;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .strategy-card {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #daa520;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .strategy-card:hover {
+            background: rgba(45, 74, 45, 0.8);
+            transform: translateX(5px);
+        }
+
+        .strategy-card.completed {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+            opacity: 0.7;
+        }
+
+        .strategy-card.high-risk {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .strategy-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .strategy-category {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .strategy-timeline {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        .strategy-timeline.urgent {
+            color: #ff5722;
+            font-weight: bold;
+        }
+
+        .success-probability {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 6px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .probability-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .strategy-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .strategy-actions .action-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: rgba(218, 165, 32, 0.2);
+            border: 1px solid #daa520;
+            color: #ffd700;
+        }
+
+        .simulate-now-btn {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 0.9rem;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(244, 67, 54, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(244, 67, 54, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: rgba(26, 46, 26, 0.8);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #daa520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0d1b0d;
+        }
+
+        .focus-timer {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-btn.active {
+            background: #f44336;
+            color: white;
+        }
+
+        .simulation-panel {
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .variable-slider {
+            margin: 15px 0;
+        }
+
+        .variable-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #daa520;
+            cursor: pointer;
+        }
+
+        .outcome-prediction {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #ffd700;
+        }
+
+        .prediction-positive {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .prediction-negative {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(26, 46, 26, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #daa520;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #4caf50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+        }
+
+        .strategy-card.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .motivational-message {
+            background: rgba(218, 165, 32, 0.1);
+            border: 2px solid #daa520;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 74, 45, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 100px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 10px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 5px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🎯 StrategyLab</h1>
+            <p>Strategic Planning & Scenario Simulation</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="activeStrategies">0</div>
+                <div class="stat-label">Active Strategies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="simulationsRun">0</div>
+                <div class="stat-label">Simulations Run</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentStreak">0</div>
+                <div class="stat-label">Planning Streak</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('strategies')">📋 Strategies</button>
+            <button class="nav-tab" onclick="switchTab('create')">🎯 Create</button>
+            <button class="nav-tab" onclick="switchTab('simulate')">🔬 Simulate</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Strategies Tab -->
+        <div id="strategies" class="tab-content active">
+            <input type="text" class="search-bar" id="strategySearch" placeholder="🔍 Search strategies, categories, or tags..." oninput="filterStrategies()" aria-label="Search strategies">
+            
+            <div class="input-group">
+                <select class="form-select" id="strategyFilter">
+                    <option value="all">All Strategies</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="high-risk">High Risk</option>
+                    <option value="testing">Testing Phase</option>
+                </select>
+                <select class="form-select" id="sortStrategies">
+                    <option value="timeline">Sort by Timeline</option>
+                    <option value="priority">Sort by Priority</option>
+                    <option value="success">Sort by Success Rate</option>
+                    <option value="created">Sort by Created</option>
+                </select>
+            </div>
+
+            <div id="strategyList"></div>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content">
+            <div class="strategy-section">
+                <h3>🚀 Strategic Plan Builder</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="strategyTitle" placeholder="Strategy title..." aria-label="Strategy title">
+                    <button class="voice-btn" onclick="startVoiceInput('strategyTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="strategyDescription" placeholder="Strategic objective and context..." rows="3"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="strategyCategory">
+                        <option value="market-expansion">Market Expansion</option>
+                        <option value="product-development">Product Development</option>
+                        <option value="operational-efficiency">Operational Efficiency</option>
+                        <option value="competitive-advantage">Competitive Advantage</option>
+                        <option value="risk-management">Risk Management</option>
+                        <option value="digital-transformation">Digital Transformation</option>
+                    </select>
+                    <select class="form-select" id="strategyPriority">
+                        <option value="low">Low Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="high">High Priority</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="date" class="form-input" id="strategyTimeline" aria-label="Strategy timeline">
+                    <select class="form-select" id="reminderFreq">
+                        <option value="none">No Reminders</option>
+                        <option value="daily">Daily Review</option>
+                        <option value="weekly">Weekly Review</option>
+                        <option value="monthly">Monthly Review</option>
+                    </select>
+                </div>
+                
+                <div class="tags-input" id="strategyTags" onclick="focusTagInput('strategyTagInput')">
+                    <input type="text" id="strategyTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="add-btn" onclick="createStrategy()">🎯 Create Strategy</button>
+                    <button class="simulate-now-btn" onclick="createAndSimulate()">⚡ CREATE & SIMULATE</button>
+                </div>
+            </div>
+
+            <!-- Action Checklist Template -->
+            <div class="strategy-section">
+                <h3>✅ Action Checklist</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checklistItem" placeholder="Add action item..." aria-label="Checklist item">
+                    <button class="add-btn" onclick="addChecklistItem()">Add</button>
+                </div>
+                <div id="checklistPreview"></div>
+            </div>
+        </div>
+
+        <!-- Simulate Tab -->
+        <div id="simulate" class="tab-content">
+            <div class="simulation-panel">
+                <h3>🔬 What-If Scenario Simulator</h3>
+                <div class="input-group">
+                    <select class="form-select" id="simulationStrategy">
+                        <option value="">Select strategy to simulate...</option>
+                    </select>
+                    <button class="action-btn" onclick="loadSimulation()">Load Strategy</button>
+                </div>
+                
+                <div id="simulationVariables"></div>
+                <div id="outcomesPrediction"></div>
+                
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="add-btn" onclick="runSimulation()">🔬 Run Simulation</button>
+                    <button class="action-btn" onclick="saveScenario()">💾 Save Scenario</button>
+                    <button class="action-btn" onclick="resetSimulation()">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- Scenario History -->
+            <div class="strategy-section">
+                <h3>📊 Simulation History</h3>
+                <div id="simulationHistory"></div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Strategic Focus Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
+                <p style="color: #a0a0a0; margin-top: 15px;">Focus on strategic thinking and planning</p>
+            </div>
+
+            <div class="strategy-section">
+                <h3>💡 Daily Strategic Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>📈 Strategy Success Rate</h4>
+                    <div class="stat-value" id="overallSuccessRate">0%</div>
+                    <div class="chart-placeholder">Success Trend</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Planning Streak</h4>
+                    <div class="stat-value" id="planningStreak">0</div>
+                    <div class="stat-label">Days of consistent planning</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⚡ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTime">0h</div>
+                    <div class="stat-label">This week</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🎯 Simulations Run</h4>
+                    <div class="stat-value" id="totalSimulations">0</div>
+                    <div class="chart-placeholder">Simulation Activity</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportToPDF()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategy Detail Modal -->
+    <div id="strategyModal" class="modal">
+        <div class="modal-content">
+            <h3 id="strategyModalTitle">Strategy Details <span class="close" onclick="closeStrategyModal()">&times;</span></h3>
+            <div id="strategyModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your motivational message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let strategies = [];
+        let simulationHistory = [];
+        let currentChecklist = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let currentStreak = 0;
+        let totalSimulations = 0;
+        let currentSimulation = null;
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat.",
+            "In preparing for battle I have always found that plans are useless, but planning is indispensable.",
+            "The essence of strategy is choosing what not to do.",
+            "A good strategy will fail if it's not properly executed.",
+            "Strategy is about making choices, trade-offs; it's about deliberately choosing to be different.",
+            "The best strategies are simple, clear, and focused.",
+            "Adaptability is not imitation. It means power of resistance and assimilation.",
+            "Vision without execution is hallucination.",
+            "Strategy is a commodity, execution is an art.",
+            "The successful strategist is one who can adapt quickly to changing circumstances."
+        ];
+
+        // Daily strategic prompts
+        const dailyPrompts = [
+            "Review your competitive landscape and identify new opportunities",
+            "Analyze a recent strategic decision and its outcomes",
+            "Identify potential risks in your current strategies",
+            "Brainstorm innovative approaches to existing challenges",
+            "Evaluate the effectiveness of your resource allocation",
+            "Consider how market trends might affect your strategies",
+            "Review and update your strategic priorities",
+            "Assess the adaptability of your current plans"
+        ];
+
+        // Simulation variables
+        const simulationVariables = [
+            { name: 'Market Conditions', min: 0, max: 100, default: 50, impact: 'high' },
+            { name: 'Competition Level', min: 0, max: 100, default: 60, impact: 'high' },
+            { name: 'Resource Availability', min: 0, max: 100, default: 70, impact: 'medium' },
+            { name: 'Team Capability', min: 0, max: 100, default: 75, impact: 'medium' },
+            { name: 'Economic Climate', min: 0, max: 100, default: 55, impact: 'high' },
+            { name: 'Technology Adoption', min: 0, max: 100, default: 65, impact: 'medium' },
+            { name: 'Regulatory Environment', min: 0, max: 100, default: 50, impact: 'low' },
+            { name: 'Customer Demand', min: 0, max: 100, default: 70, impact: 'high' }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            renderStrategies();
+            updateSimulationOptions();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (strategies.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+        });
+
+        function initializeSampleData() {
+            strategies = [
+                {
+                    id: 1,
+                    title: 'Digital Market Expansion',
+                    description: 'Expand into digital markets through e-commerce platform development and online marketing strategies',
+                    category: 'market-expansion',
+                    priority: 'high',
+                    timeline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    status: 'active',
+                    successProbability: 75,
+                    tags: ['digital', 'expansion', 'e-commerce'],
+                    checklist: [
+                        { id: 1, text: 'Market research and analysis', completed: true },
+                        { id: 2, text: 'Platform development planning', completed: false },
+                        { id: 3, text: 'Marketing strategy design', completed: false }
+                    ],
+                    createdAt: new Date(),
+                    reminders: { frequency: 'weekly', lastSent: null },
+                    simulationResults: []
+                },
+                {
+                    id: 2,
+                    title: 'Operational Efficiency Initiative',
+                    description: 'Streamline operations through process automation and workflow optimization',
+                    category: 'operational-efficiency',
+                    priority: 'medium',
+                    timeline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    status: 'active',
+                    successProbability: 85,
+                    tags: ['automation', 'efficiency', 'process'],
+                    checklist: [],
+                    createdAt: new Date(),
+                    reminders: { frequency: 'monthly', lastSent: null },
+                    simulationResults: []
+                }
+            ];
+            
+            renderStrategies();
+            updateSimulationOptions();
+            updateStats();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Strategy management
+        function createStrategy() {
+            const title = document.getElementById('strategyTitle').value.trim();
+            const description = document.getElementById('strategyDescription').value.trim();
+            const category = document.getElementById('strategyCategory').value;
+            const priority = document.getElementById('strategyPriority').value;
+            const timeline = document.getElementById('strategyTimeline').value;
+            const reminderFreq = document.getElementById('reminderFreq').value;
+            const tagInput = document.getElementById('strategyTagInput');
+            
+            if (!title || !description || !timeline) {
+                showNotification('Please fill in title, description, and timeline', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const strategy = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                timeline: timeline,
+                status: 'active',
+                successProbability: 50,
+                tags: tags,
+                checklist: [...currentChecklist],
+                createdAt: new Date(),
+                reminders: { frequency: reminderFreq, lastSent: null },
+                simulationResults: []
+            };
+            
+            strategies.push(strategy);
+            
+            // Clear form
+            clearStrategyForm();
+            
+            renderStrategies();
+            updateSimulationOptions();
+            updateStats();
+            updateStreak();
+            saveData();
+            showNotification('Strategy created successfully! 🎯');
+        }
+
+        function createAndSimulate() {
+            createStrategy();
+            if (strategies.length > 0) {
+                const latestStrategy = strategies[strategies.length - 1];
+                switchTab('simulate');
+                document.querySelector('[onclick="switchTab(\'simulate\')"]').classList.add('active');
+                document.getElementById('simulationStrategy').value = latestStrategy.id;
+                loadSimulation();
+            }
+        }
+
+        function clearStrategyForm() {
+            document.getElementById('strategyTitle').value = '';
+            document.getElementById('strategyDescription').value = '';
+            document.getElementById('strategyCategory').value = 'market-expansion';
+            document.getElementById('strategyPriority').value = 'medium';
+            document.getElementById('strategyTimeline').value = '';
+            document.getElementById('reminderFreq').value = 'none';
+            document.getElementById('strategyTagInput').value = '';
+            document.getElementById('strategyTags').innerHTML = '<input type="text" id="strategyTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentChecklist = [];
+            renderChecklistPreview();
+        }
+
+        function renderStrategies() {
+            const container = document.getElementById('strategyList');
+            const searchTerm = document.getElementById('strategySearch')?.value.toLowerCase() || '';
+            const filter = document.getElementById('strategyFilter')?.value || 'all';
+            const sort = document.getElementById('sortStrategies')?.value || 'timeline';
+            
+            let filteredStrategies = strategies.filter(strategy => {
+                const matchesSearch = strategy.title.toLowerCase().includes(searchTerm) ||
+                                    strategy.category.toLowerCase().includes(searchTerm) ||
+                                    strategy.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                
+                const matchesFilter = filter === 'all' || 
+                                    (filter === 'active' && strategy.status === 'active') ||
+                                    (filter === 'completed' && strategy.status === 'completed') ||
+                                    (filter === 'high-risk' && strategy.successProbability < 50) ||
+                                    (filter === 'testing' && strategy.simulationResults.length > 0);
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            // Sort strategies
+            filteredStrategies.sort((a, b) => {
+                switch(sort) {
+                    case 'timeline':
+                        return new Date(a.timeline) - new Date(b.timeline);
+                    case 'priority':
+                        const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+                        return priorityOrder[b.priority] - priorityOrder[a.priority];
+                    case 'success':
+                        return b.successProbability - a.successProbability;
+                    case 'created':
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    default:
+                        return 0;
+                }
+            });
+            
+            container.innerHTML = '';
+            
+            filteredStrategies.forEach(strategy => {
+                const element = document.createElement('div');
+                element.className = `strategy-card ${strategy.status === 'completed' ? 'completed' : ''} ${strategy.successProbability < 50 ? 'high-risk' : ''}`;
+                element.setAttribute('data-strategy-id', strategy.id);
+                
+                const priorityEmoji = {
+                    critical: '🔥',
+                    high: '⚡',
+                    medium: '📋',
+                    low: '📝'
+                };
+                
+                const categoryEmoji = {
+                    'market-expansion': '🌍',
+                    'product-development': '🚀',
+                    'operational-efficiency': '⚙️',
+                    'competitive-advantage': '🏆',
+                    'risk-management': '🛡️',
+                    'digital-transformation': '💻'
+                };
+                
+                const timelineText = formatTimeline(strategy.timeline);
+                
+                element.innerHTML = `
+                    <div class="strategy-header">
+                        <div>
+                            <div class="strategy-title">${priorityEmoji[strategy.priority]} ${strategy.title}</div>
+                            <div class="strategy-category">${categoryEmoji[strategy.category]} ${strategy.category.replace('-', ' ').toUpperCase()}</div>
+                            <div class="strategy-timeline">📅 ${timelineText}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.9rem; color: #ffd700;">${strategy.successProbability}%</div>
+                            ${strategy.simulationResults.length > 0 ? '<div style="font-size: 0.7rem; color: #4caf50;">✓ Tested</div>' : ''}
+                        </div>
+                    </div>
+                    
+                    <p style="margin: 10px 0; color: #a0a0a0;">${strategy.description}</p>
+                    
+                    <div class="success-probability">
+                        <div class="probability-bar" style="width: ${strategy.successProbability}%"></div>
+                    </div>
+                    
+                    ${strategy.checklist.length > 0 ? `
+                        <div style="margin: 10px 0;">
+                            <small style="color: #a0a0a0;">
+                                ✅ ${strategy.checklist.filter(item => item.completed).length}/${strategy.checklist.length} actions completed
+                            </small>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="margin: 10px 0;">
+                        ${strategy.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                    
+                    <div class="strategy-actions">
+                        <button class="action-btn" onclick="viewStrategyDetails(${strategy.id})">👁️ View</button>
+                        <button class="action-btn" onclick="editStrategy(${strategy.id})">✏️ Edit</button>
+                        <button class="action-btn" onclick="simulateStrategy(${strategy.id})">🔬 Simulate</button>
+                        ${strategy.status === 'active' ? 
+                            `<button class="action-btn" onclick="completeStrategy(${strategy.id})">✅ Complete</button>` :
+                            `<button class="action-btn" onclick="reactivateStrategy(${strategy.id})">🔄 Reactivate</button>`
+                        }
+                        <button class="action-btn" onclick="deleteStrategy(${strategy.id})">🗑️ Delete</button>
+                    </div>
+                    
+                    <div class="swipe-actions">
+                        ✅ Complete
+                    </div>
+                `;
+                
+                // Add swipe functionality
+                addSwipeGestures(element, strategy.id);
+                
+                container.appendChild(element);
+            });
+        }
+
+        function addSwipeGestures(element, strategyId) {
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            
+            element.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            });
+            
+            element.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+                const diffX = startX - currentX;
+                
+                if (diffX > 50) {
+                    element.classList.add('swiping');
+                } else {
+                    element.classList.remove('swiping');
+                }
+            });
+            
+            element.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const diffX = startX - currentX;
+                if (diffX > 100) {
+                    completeStrategy(strategyId);
+                }
+                element.classList.remove('swiping');
+            });
+        }
+
+        function viewStrategyDetails(strategyId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (!strategy) return;
+            
+            const content = `
+                <div style="margin-bottom: 20px;">
+                    <h4>${strategy.title}</h4>
+                    <p><strong>Category:</strong> ${strategy.category.replace('-', ' ').toUpperCase()}</p>
+                    <p><strong>Priority:</strong> ${strategy.priority.toUpperCase()}</p>
+                    <p><strong>Timeline:</strong> ${formatTimeline(strategy.timeline)}</p>
+                    <p><strong>Success Probability:</strong> ${strategy.successProbability}%</p>
+                    <p><strong>Status:</strong> ${strategy.status}</p>
+                    <p><strong>Description:</strong> ${strategy.description}</p>
+                </div>
+                
+                ${strategy.checklist.length > 0 ? `
+                    <div style="margin-bottom: 20px;">
+                        <h5>Action Checklist:</h5>
+                        ${strategy.checklist.map(item => `
+                            <div class="checklist-item ${item.completed ? 'completed' : ''}" onclick="toggleChecklistItem(${strategy.id}, ${item.id})">
+                                <div class="checkbox ${item.completed ? 'checked' : ''}">
+                                    ${item.completed ? '✓' : ''}
+                                </div>
+                                <span>${item.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                ${strategy.simulationResults.length > 0 ? `
+                    <div style="margin-bottom: 20px;">
+                        <h5>Simulation Results:</h5>
+                        ${strategy.simulationResults.slice(-3).map(result => `
+                            <div class="outcome-prediction ${result.outcome > 70 ? 'prediction-positive' : result.outcome < 40 ? 'prediction-negative' : ''}">
+                                <strong>Scenario:</strong> ${result.scenario}<br>
+                                <strong>Predicted Outcome:</strong> ${result.outcome}%<br>
+                                <strong>Date:</strong> ${new Date(result.date).toLocaleDateString()}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                <div style="margin-bottom: 20px;">
+                    <h5>Tags:</h5>
+                    ${strategy.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                </div>
+                
+                <div class="input-group">
+                    <button class="action-btn" onclick="editStrategy(${strategy.id}); closeStrategyModal();">Edit Strategy</button>
+                    <button class="action-btn" onclick="duplicateStrategy(${strategy.id}); closeStrategyModal();">Duplicate</button>
+                    <button class="action-btn" onclick="simulateStrategy(${strategy.id}); closeStrategyModal();">Simulate</button>
+                </div>
+            `;
+            
+            document.getElementById('strategyModalTitle').innerHTML = 
+                `Strategy Details <span class="close" onclick="closeStrategyModal()">&times;</span>`;
+            document.getElementById('strategyModalContent').innerHTML = content;
+            document.getElementById('strategyModal').style.display = 'block';
+        }
+
+        function editStrategy(strategyId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (!strategy) return;
+            
+            // Populate form with strategy data
+            document.getElementById('strategyTitle').value = strategy.title;
+            document.getElementById('strategyDescription').value = strategy.description;
+            document.getElementById('strategyCategory').value = strategy.category;
+            document.getElementById('strategyPriority').value = strategy.priority;
+            document.getElementById('strategyTimeline').value = strategy.timeline;
+            document.getElementById('reminderFreq').value = strategy.reminders.frequency;
+            document.getElementById('strategyTagInput').value = strategy.tags.join(', ');
+            currentChecklist = [...strategy.checklist];
+            renderChecklistPreview();
+            
+            // Switch to create tab
+            switchTab('create');
+            document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+            
+            // Remove the original strategy (will be re-created when form is submitted)
+            strategies = strategies.filter(s => s.id !== strategyId);
+            renderStrategies();
+            updateStats();
+            
+            showNotification('Strategy loaded for editing ✏️');
+        }
+
+        function completeStrategy(strategyId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (strategy) {
+                strategy.status = 'completed';
+                strategy.successProbability = 100;
+                
+                renderStrategies();
+                updateStats();
+                saveData();
+                showNotification('🎉 Strategy completed! Excellent strategic execution!');
+            }
+        }
+
+        function reactivateStrategy(strategyId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (strategy) {
+                strategy.status = 'active';
+                strategy.successProbability = Math.max(50, strategy.successProbability - 10);
+                
+                renderStrategies();
+                updateStats();
+                saveData();
+                showNotification('Strategy reactivated! 🔄');
+            }
+        }
+
+        function deleteStrategy(strategyId) {
+            if (confirm('Delete this strategy? This action cannot be undone.')) {
+                strategies = strategies.filter(s => s.id !== strategyId);
+                
+                // Close modal if it's open for this strategy
+                const modal = document.getElementById('strategyModal');
+                if (modal.style.display === 'block') {
+                    closeStrategyModal();
+                }
+                
+                renderStrategies();
+                updateSimulationOptions();
+                updateStats();
+                saveData();
+                showNotification('Strategy deleted successfully 🗑️');
+            }
+        }
+
+        function duplicateStrategy(strategyId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (strategy) {
+                const newStrategy = {
+                    ...strategy,
+                    id: Date.now(),
+                    title: strategy.title + ' (Copy)',
+                    status: 'active',
+                    createdAt: new Date(),
+                    checklist: strategy.checklist.map(item => ({ ...item, completed: false })),
+                    simulationResults: []
+                };
+                
+                strategies.push(newStrategy);
+                
+                renderStrategies();
+                updateSimulationOptions();
+                updateStats();
+                saveData();
+                showNotification('Strategy duplicated! 📋');
+            }
+        }
+
+        function simulateStrategy(strategyId) {
+            switchTab('simulate');
+            document.querySelector('[onclick="switchTab(\'simulate\')"]').classList.add('active');
+            document.getElementById('simulationStrategy').value = strategyId;
+            loadSimulation();
+        }
+
+        function toggleChecklistItem(strategyId, itemId) {
+            const strategy = strategies.find(s => s.id === strategyId);
+            if (strategy) {
+                const item = strategy.checklist.find(i => i.id === itemId);
+                if (item) {
+                    item.completed = !item.completed;
+                    
+                    // Update strategy success probability based on checklist completion
+                    const completedItems = strategy.checklist.filter(i => i.completed).length;
+                    const totalItems = strategy.checklist.length;
+                    const completionBonus = Math.round((completedItems / totalItems) * 20);
+                    strategy.successProbability = Math.min(100, 50 + completionBonus);
+                    
+                    if (completedItems === totalItems && strategy.status === 'active') {
+                        strategy.status = 'completed';
+                        showNotification('🎉 Strategy completed via checklist!');
+                    }
+                    
+                    renderStrategies();
+                    updateStats();
+                    saveData();
+                    
+                    // Refresh modal if open
+                    if (document.getElementById('strategyModal').style.display === 'block') {
+                        viewStrategyDetails(strategyId);
+                    }
+                }
+            }
+        }
+
+        function filterStrategies() {
+            renderStrategies();
+        }
+
+        // Simulation functionality
+        function updateSimulationOptions() {
+            const select = document.getElementById('simulationStrategy');
+            select.innerHTML = '<option value="">Select strategy to simulate...</option>';
+            
+            strategies.forEach(strategy => {
+                const option = document.createElement('option');
+                option.value = strategy.id;
+                option.textContent = strategy.title;
+                select.appendChild(option);
+            });
+        }
+
+        function loadSimulation() {
+            const strategyId = parseInt(document.getElementById('simulationStrategy').value);
+            const strategy = strategies.find(s => s.id === strategyId);
+            
+            if (!strategy) {
+                showNotification('Please select a strategy to simulate', 'error');
+                return;
+            }
+            
+            currentSimulation = {
+                strategyId: strategyId,
+                variables: {},
+                predictions: []
+            };
+            
+            renderSimulationVariables();
+            showNotification('Strategy loaded for simulation 🔬');
+        }
+
+        function renderSimulationVariables() {
+            const container = document.getElementById('simulationVariables');
+            container.innerHTML = '<h4>🎛️ Adjust Variables</h4>';
+            
+            simulationVariables.forEach(variable => {
+                const variableDiv = document.createElement('div');
+                variableDiv.className = 'variable-slider';
+                
+                const currentValue = currentSimulation.variables[variable.name] || variable.default;
+                
+                variableDiv.innerHTML = `
+                    <div class="variable-label">
+                        <span>${variable.name}</span>
+                        <span id="${variable.name.replace(' ', '')}_value">${currentValue}%</span>
+                    </div>
+                    <input type="range" class="slider" 
+                           min="${variable.min}" 
+                           max="${variable.max}" 
+                           value="${currentValue}"
+                           oninput="updateVariable('${variable.name}', this.value)"
+                           aria-label="${variable.name}">
+                    <div style="font-size: 0.8rem; color: #a0a0a0; margin-top: 5px;">
+                        Impact: ${variable.impact.toUpperCase()}
+                    </div>
+                `;
+                
+                container.appendChild(variableDiv);
+            });
+            
+            // Initial prediction
+            updatePredictions();
+        }
+
+        function updateVariable(variableName, value) {
+            currentSimulation.variables[variableName] = parseInt(value);
+            document.getElementById(variableName.replace(' ', '') + '_value').textContent = value + '%';
+            updatePredictions();
+        }
+
+        function updatePredictions() {
+            if (!currentSimulation) return;
+            
+            const container = document.getElementById('outcomesPrediction');
+            container.innerHTML = '<h4>🔮 Outcome Predictions</h4>';
+            
+            // Calculate overall success probability based on variables
+            let totalScore = 0;
+            let weightSum = 0;
+            
+            simulationVariables.forEach(variable => {
+                const value = currentSimulation.variables[variable.name] || variable.default;
+                const weight = variable.impact === 'high' ? 3 : variable.impact === 'medium' ? 2 : 1;
+                totalScore += value * weight;
+                weightSum += weight;
+            });
+            
+            const overallProbability = Math.round(totalScore / weightSum);
+            
+            // Generate specific predictions
+            const predictions = [
+                {
+                    scenario: 'Best Case Scenario',
+                    probability: Math.min(100, overallProbability + 15),
+                    description: 'All variables align favorably'
+                },
+                {
+                    scenario: 'Most Likely Scenario',
+                    probability: overallProbability,
+                    description: 'Current variable settings maintained'
+                },
+                {
+                    scenario: 'Worst Case Scenario',
+                    probability: Math.max(0, overallProbability - 20),
+                    description: 'Multiple variables turn unfavorable'
+                }
+            ];
+            
+            predictions.forEach(prediction => {
+                const predictionDiv = document.createElement('div');
+                predictionDiv.className = `outcome-prediction ${
+                    prediction.probability > 70 ? 'prediction-positive' : 
+                    prediction.probability < 40 ? 'prediction-negative' : ''
+                }`;
+                
+                predictionDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>${prediction.scenario}</strong>
+                        <span style="font-size: 1.2rem; font-weight: bold;">${prediction.probability}%</span>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.9rem; opacity: 0.8;">
+                        ${prediction.description}
+                    </div>
+                `;
+                
+                container.appendChild(predictionDiv);
+            });
+            
+            currentSimulation.predictions = predictions;
+        }
+
+        function runSimulation() {
+            if (!currentSimulation) {
+                showNotification('Please load a strategy first', 'error');
+                return;
+            }
+            
+            const strategy = strategies.find(s => s.id === currentSimulation.strategyId);
+            if (!strategy) return;
+            
+            const mostLikelyOutcome = currentSimulation.predictions.find(p => p.scenario === 'Most Likely Scenario');
+            
+            const simulationResult = {
+                id: Date.now(),
+                strategyId: currentSimulation.strategyId,
+                scenario: 'Custom Simulation',
+                variables: { ...currentSimulation.variables },
+                outcome: mostLikelyOutcome.probability,
+                date: new Date().toISOString(),
+                predictions: [...currentSimulation.predictions]
+            };
+            
+            // Add to strategy's simulation results
+            strategy.simulationResults.push(simulationResult);
+            
+            // Add to global simulation history
+            simulationHistory.push(simulationResult);
+            
+            // Update strategy success probability
+            strategy.successProbability = mostLikelyOutcome.probability;
+            
+            totalSimulations++;
+            
+            renderSimulationHistory();
+            renderStrategies();
+            updateStats();
+            saveData();
+            
+            showNotification(`🔬 Simulation complete! Predicted outcome: ${mostLikelyOutcome.probability}%`);
+        }
+
+        function saveScenario() {
+            if (!currentSimulation) {
+                showNotification('No simulation to save', 'error');
+                return;
+            }
+            
+            const scenarioName = prompt('Enter scenario name:');
+            if (!scenarioName) return;
+            
+            const scenario = {
+                id: Date.now(),
+                name: scenarioName,
+                strategyId: currentSimulation.strategyId,
+                variables: { ...currentSimulation.variables },
+                predictions: [...currentSimulation.predictions],
+                createdAt: new Date()
+            };
+            
+            // Save to localStorage for future use
+            const savedScenarios = JSON.parse(localStorage.getItem('strategylab_scenarios') || '[]');
+            savedScenarios.push(scenario);
+            localStorage.setItem('strategylab_scenarios', JSON.stringify(savedScenarios));
+            
+            showNotification('Scenario saved! 💾');
+        }
+
+        function resetSimulation() {
+            if (currentSimulation) {
+                currentSimulation.variables = {};
+                renderSimulationVariables();
+                showNotification('Simulation reset 🔄');
+            }
+        }
+
+        function renderSimulationHistory() {
+            const container = document.getElementById('simulationHistory');
+            container.innerHTML = '';
+            
+            const recentSimulations = simulationHistory.slice(-5).reverse();
+            
+            recentSimulations.forEach(simulation => {
+                const strategy = strategies.find(s => s.id === simulation.strategyId);
+                if (!strategy) return;
+                
+                const element = document.createElement('div');
+                element.className = 'strategy-card';
+                element.innerHTML = `
+                    <div class="strategy-header">
+                        <div>
+                            <div class="strategy-title">📊 ${strategy.title}</div>
+                            <div class="strategy-category">Outcome: ${simulation.outcome}%</div>
+                            <div class="strategy-timeline">📅 ${new Date(simulation.date).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    <div class="success-probability">
+                        <div class="probability-bar" style="width: ${simulation.outcome}%"></div>
+                    </div>
+                `;
+                
+                container.appendChild(element);
+            });
+            
+            if (recentSimulations.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #a0a0a0;">No simulations run yet</p>';
+            }
+        }
+
+        // Checklist management
+        function addChecklistItem() {
+            const input = document.getElementById('checklistItem');
+            const text = input.value.trim();
+            
+            if (text) {
+                currentChecklist.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                });
+                
+                input.value = '';
+                renderChecklistPreview();
+                showNotification('Action item added ✅');
+            }
+        }
+
+        function renderChecklistPreview() {
+            const container = document.getElementById('checklistPreview');
+            container.innerHTML = '';
+            
+            currentChecklist.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'checklist-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <button class="action-btn" onclick="removeChecklistItem(${index})" style="margin-left: auto; padding: 4px 8px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeChecklistItem(index) {
+            currentChecklist.splice(index, 1);
+            renderChecklistPreview();
+        }
+
+        // Focus timer
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Strategic focus session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Strategic focus session complete! Excellent strategic thinking!');
+            updateStats();
+            saveData();
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyPromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...dailyPrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyPromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="strategy-card" style="margin-bottom: 10px;">
+                    <div class="strategy-title">💡 ${prompt}</div>
+                    <div class="strategy-actions">
+                        <button class="simulate-now-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyPrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great strategic thinking! 🌟');
+            updateStreak();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customMotivationalMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customMotivationalMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Utility functions
+        function formatTimeline(timeline) {
+            const date = new Date(timeline);
+            const now = new Date();
+            const diffTime = date - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                return `Overdue by ${Math.abs(diffDays)} days`;
+            } else if (diffDays === 0) {
+                return 'Due today';
+            } else if (diffDays === 1) {
+                return 'Due tomorrow';
+            } else {
+                return `Due in ${diffDays} days`;
+            }
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const activeStrategies = strategies.filter(s => s.status === 'active').length;
+            const completedStrategies = strategies.filter(s => s.status === 'completed').length;
+            const successRate = strategies.length > 0 ? 
+                Math.round((completedStrategies / strategies.length) * 100) : 0;
+            
+            document.getElementById('activeStrategies').textContent = activeStrategies;
+            document.getElementById('simulationsRun').textContent = totalSimulations;
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('currentStreak').textContent = currentStreak;
+            
+            // Analytics tab stats
+            document.getElementById('overallSuccessRate').textContent = successRate + '%';
+            document.getElementById('planningStreak').textContent = currentStreak;
+            document.getElementById('totalFocusTime').textContent = Math.round(totalFocusTime / 60) + 'h';
+            document.getElementById('totalSimulations').textContent = totalSimulations;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    currentStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    currentStreak = 1;
+                }
+            } else {
+                // First time
+                currentStreak = 1;
+            }
+            
+            localStorage.setItem('lastActiveDate', today);
+            localStorage.setItem('currentStreak', currentStreak.toString());
+            updateStats();
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            strategies.forEach(strategy => {
+                if (strategy.status !== 'active' || strategy.reminders.frequency === 'none') return;
+                
+                const timeline = new Date(strategy.timeline);
+                const timeDiff = timeline - now;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                
+                let shouldRemind = false;
+                
+                switch(strategy.reminders.frequency) {
+                    case 'daily':
+                        shouldRemind = daysDiff <= 7;
+                        break;
+                    case 'weekly':
+                        shouldRemind = daysDiff <= 14;
+                        break;
+                    case 'monthly':
+                        shouldRemind = daysDiff <= 30;
+                        break;
+                }
+                
+                if (shouldRemind && (!strategy.reminders.lastSent || 
+                    new Date(strategy.reminders.lastSent).toDateString() !== now.toDateString())) {
+                    
+                    showNotification(`Strategic Review: "${strategy.title}" - ${formatTimeline(strategy.timeline)}`, 'reminder');
+                    strategy.reminders.lastSent = now.toISOString();
+                    saveData();
+                }
+            });
+        }
+
+        // Export and backup
+        function exportToPDF() {
+            const content = generateStrategyReport();
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategy-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Strategy report exported! 📄');
+        }
+
+        function generateStrategyReport() {
+            const activeStrategies = strategies.filter(s => s.status === 'active');
+            const completedStrategies = strategies.filter(s => s.status === 'completed');
+            const highRiskStrategies = strategies.filter(s => s.successProbability < 50);
+            
+            return `
+StrategyLab Strategic Planning Report
+Generated: ${new Date().toLocaleDateString()}
+
+STRATEGIC OVERVIEW
+==================
+Total Strategies: ${strategies.length}
+Active Strategies: ${activeStrategies.length}
+Completed Strategies: ${completedStrategies.length}
+High Risk Strategies: ${highRiskStrategies.length}
+Total Simulations Run: ${totalSimulations}
+Current Planning Streak: ${currentStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+
+ACTIVE STRATEGIES
+=================
+${activeStrategies.map(strategy => `🎯 ${strategy.title} - ${strategy.category} - ${formatTimeline(strategy.timeline)} (${strategy.successProbability}%)`).join('\n')}
+
+HIGH RISK STRATEGIES
+====================
+${highRiskStrategies.map(strategy => `⚠️ ${strategy.title} - ${strategy.category} - Success Rate: ${strategy.successProbability}%`).join('\n')}
+
+COMPLETED STRATEGIES
+====================
+${completedStrategies.slice(-10).map(strategy => `✅ ${strategy.title} - ${strategy.category} - Completed`).join('\n')}
+
+RECENT SIMULATIONS
+==================
+${simulationHistory.slice(-10).map(sim => {
+    const strategy = strategies.find(s => s.id === sim.strategyId);
+    return `🔬 ${strategy ? strategy.title : 'Unknown'} - Outcome: ${sim.outcome}% - ${new Date(sim.date).toLocaleDateString()}`;
+}).join('\n')}
+            `.trim();
+        }
+
+        function backupData() {
+            const data = {
+                strategies: strategies,
+                simulationHistory: simulationHistory,
+                totalFocusTime: totalFocusTime,
+                currentStreak: currentStreak,
+                totalSimulations: totalSimulations,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategylab-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        strategies = data.strategies || [];
+                        simulationHistory = data.simulationHistory || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        currentStreak = data.currentStreak || 0;
+                        totalSimulations = data.totalSimulations || 0;
+                        
+                        renderStrategies();
+                        updateSimulationOptions();
+                        renderSimulationHistory();
+                        updateStats();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('strategylab_strategies', JSON.stringify(strategies));
+            localStorage.setItem('strategylab_simulations', JSON.stringify(simulationHistory));
+            localStorage.setItem('strategylab_focusTime', totalFocusTime);
+            localStorage.setItem('strategylab_streak', currentStreak);
+            localStorage.setItem('strategylab_totalSims', totalSimulations);
+        }
+
+        function loadData() {
+            const savedStrategies = localStorage.getItem('strategylab_strategies');
+            const savedSimulations = localStorage.getItem('strategylab_simulations');
+            const savedFocusTime = localStorage.getItem('strategylab_focusTime');
+            const savedStreak = localStorage.getItem('strategylab_streak');
+            const savedTotalSims = localStorage.getItem('strategylab_totalSims');
+            
+            if (savedStrategies) strategies = JSON.parse(savedStrategies);
+            if (savedSimulations) simulationHistory = JSON.parse(savedSimulations);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) currentStreak = parseInt(savedStreak);
+            if (savedTotalSims) totalSimulations = parseInt(savedTotalSims);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeStrategyModal() {
+            document.getElementById('strategyModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 193, 7, 0.9)';
+                notification.style.color = '#1a237e';
+            } else {
+                notification.style.background = 'rgba(76, 175, 80, 0.9)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('strategyTitle').focus();
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const strategyModal = document.getElementById('strategyModal');
+            const messageModal = document.getElementById('messageModal');
+            
+            if (event.target === strategyModal) {
+                closeStrategyModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871224b739dfc92',t:'MTc1OTIwODE4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
