@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrategyMapper - Visual Strategic Planning</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b0d 0%, #1a2e1a 50%, #2d4a2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .mindmap-container {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .mindmap-canvas {
+            width: 100%;
+            height: 600px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .mindmap-canvas.dragging {
+            cursor: grabbing;
+        }
+
+        .mindmap-node {
+            position: absolute;
+            background: rgba(218, 165, 32, 0.9);
+            color: #0d1b0d;
+            padding: 12px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+            border: 2px solid #ffd700;
+            min-width: 120px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .mindmap-node.selected {
+            border-color: #ff5722;
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.6);
+        }
+
+        .mindmap-node.root {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            font-size: 1.2rem;
+            padding: 16px 24px;
+            border-radius: 30px;
+        }
+
+        .mindmap-node.child {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .mindmap-node.grandchild {
+            background: rgba(33, 150, 243, 0.9);
+            color: white;
+            border-color: #2196f3;
+        }
+
+        .mindmap-connection {
+            position: absolute;
+            background: #daa520;
+            height: 2px;
+            transform-origin: left center;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .mindmap-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .control-btn {
+            padding: 8px 12px;
+            background: rgba(218, 165, 32, 0.9);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #ffd700;
+            transform: scale(1.05);
+        }
+
+        .outline-container {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+        }
+
+        .outline-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .outline-item:hover {
+            background: rgba(26, 46, 26, 0.8);
+        }
+
+        .outline-item.level-1 {
+            margin-left: 0;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .outline-item.level-2 {
+            margin-left: 20px;
+            color: #4caf50;
+        }
+
+        .outline-item.level-3 {
+            margin-left: 40px;
+            color: #2196f3;
+        }
+
+        .outline-toggle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #daa520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .outline-toggle.expanded {
+            background: #daa520;
+            color: #0d1b0d;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .strategy-card {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #daa520;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .strategy-card:hover {
+            background: rgba(45, 74, 45, 0.8);
+            transform: translateX(5px);
+        }
+
+        .strategy-card.completed {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+            opacity: 0.7;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .strategy-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .strategy-category {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .strategy-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .strategy-actions .action-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: rgba(218, 165, 32, 0.2);
+            border: 1px solid #daa520;
+            color: #ffd700;
+        }
+
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 0.9rem;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(244, 67, 54, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(244, 67, 54, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: rgba(26, 46, 26, 0.8);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #daa520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0d1b0d;
+        }
+
+        .focus-timer {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-btn.active {
+            background: #f44336;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(26, 46, 26, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #daa520;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #4caf50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+        }
+
+        .strategy-card.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .motivational-message {
+            background: rgba(218, 165, 32, 0.1);
+            border: 2px solid #daa520;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 74, 45, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 100px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 10px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .stakeholder-panel {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+        }
+
+        .stakeholder-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stakeholder-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0d1b0d;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-card:hover {
+            background: rgba(26, 46, 26, 1);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 5px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .mindmap-canvas {
+                height: 400px;
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🗺️ StrategyMapper</h1>
+            <p>Visual Strategic Planning & Mind Mapping</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalMaps">0</div>
+                <div class="stat-label">Strategy Maps</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalNodes">0</div>
+                <div class="stat-label">Total Nodes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedActions">0</div>
+                <div class="stat-label">Actions Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentStreak">0</div>
+                <div class="stat-label">Planning Streak</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "A goal without a plan is just a wish. Visualize your strategy to make it reality."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('mindmap')">🗺️ Mind Map</button>
+            <button class="nav-tab" onclick="switchTab('outline')">📋 Outline</button>
+            <button class="nav-tab" onclick="switchTab('create')">🎯 Create</button>
+            <button class="nav-tab" onclick="switchTab('stakeholders')">👥 Stakeholders</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Mind Map Tab -->
+        <div id="mindmap" class="tab-content active">
+            <div class="input-group">
+                <select class="form-select" id="mapSelector">
+                    <option value="">Select a strategy map...</option>
+                </select>
+                <button class="action-btn" onclick="loadMap()">Load Map</button>
+                <button class="action-btn" onclick="createNewMap()">New Map</button>
+            </div>
+
+            <div class="mindmap-container">
+                <div class="mindmap-controls">
+                    <button class="control-btn" onclick="addNode()" title="Add Node">➕ Node</button>
+                    <button class="control-btn" onclick="deleteNode()" title="Delete Selected">🗑️</button>
+                    <button class="control-btn" onclick="zoomIn()" title="Zoom In">🔍+</button>
+                    <button class="control-btn" onclick="zoomOut()" title="Zoom Out">🔍-</button>
+                    <button class="control-btn" onclick="centerMap()" title="Center Map">🎯</button>
+                    <button class="control-btn" onclick="saveMap()" title="Save Map">💾</button>
+                </div>
+                <div class="mindmap-canvas" id="mindmapCanvas"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="nodeText" placeholder="Enter node text..." aria-label="Node text">
+                <button class="voice-btn" onclick="startVoiceInput('nodeText')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="addNodeWithText()">Add Node</button>
+                <button class="do-it-now-btn" onclick="executeNode()">⚡ DO IT NOW</button>
+            </div>
+        </div>
+
+        <!-- Outline Tab -->
+        <div id="outline" class="tab-content">
+            <div class="input-group">
+                <select class="form-select" id="outlineMapSelector">
+                    <option value="">Select strategy map for outline...</option>
+                </select>
+                <button class="action-btn" onclick="generateOutline()">Generate Outline</button>
+                <button class="action-btn" onclick="exportOutline()">📄 Export</button>
+            </div>
+
+            <div class="outline-container">
+                <h3>📋 Strategic Outline</h3>
+                <div id="outlineContent"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="outlineItem" placeholder="Add outline item..." aria-label="Outline item">
+                <select class="form-select" id="outlineLevel">
+                    <option value="1">Level 1 - Main Strategy</option>
+                    <option value="2">Level 2 - Sub-strategy</option>
+                    <option value="3">Level 3 - Action Item</option>
+                </select>
+                <button class="add-btn" onclick="addOutlineItem()">Add Item</button>
+            </div>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content">
+            <div class="strategy-card">
+                <h3>🚀 Strategy Map Builder</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="mapTitle" placeholder="Strategy map title..." aria-label="Map title">
+                    <button class="voice-btn" onclick="startVoiceInput('mapTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="mapDescription" placeholder="Strategic vision and objectives..." rows="3"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="mapCategory">
+                        <option value="business-strategy">Business Strategy</option>
+                        <option value="product-roadmap">Product Roadmap</option>
+                        <option value="market-expansion">Market Expansion</option>
+                        <option value="digital-transformation">Digital Transformation</option>
+                        <option value="operational-excellence">Operational Excellence</option>
+                        <option value="innovation-strategy">Innovation Strategy</option>
+                    </select>
+                    <select class="form-select" id="mapPriority">
+                        <option value="low">Low Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="high">High Priority</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="date" class="form-input" id="mapTimeline" aria-label="Map timeline">
+                    <select class="form-select" id="reminderFreq">
+                        <option value="none">No Reminders</option>
+                        <option value="daily">Daily Review</option>
+                        <option value="weekly">Weekly Review</option>
+                        <option value="monthly">Monthly Review</option>
+                    </select>
+                </div>
+                
+                <div class="tags-input" id="mapTags" onclick="focusTagInput('mapTagInput')">
+                    <input type="text" id="mapTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="add-btn" onclick="createStrategyMap()">🗺️ Create Map</button>
+                    <button class="do-it-now-btn" onclick="createAndOpen()">⚡ CREATE & OPEN</button>
+                </div>
+            </div>
+
+            <!-- Action Checklist Template -->
+            <div class="strategy-card">
+                <h3>✅ Action Checklist</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checklistItem" placeholder="Add action item..." aria-label="Checklist item">
+                    <button class="add-btn" onclick="addChecklistItem()">Add</button>
+                </div>
+                <div id="checklistPreview"></div>
+            </div>
+        </div>
+
+        <!-- Stakeholders Tab -->
+        <div id="stakeholders" class="tab-content">
+            <div class="stakeholder-panel">
+                <h3>👥 Stakeholder Management</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="stakeholderName" placeholder="Stakeholder name..." aria-label="Stakeholder name">
+                    <input type="email" class="form-input" id="stakeholderEmail" placeholder="Email address..." aria-label="Stakeholder email">
+                    <select class="form-select" id="stakeholderRole">
+                        <option value="executive">Executive</option>
+                        <option value="manager">Manager</option>
+                        <option value="team-lead">Team Lead</option>
+                        <option value="contributor">Contributor</option>
+                        <option value="external">External Partner</option>
+                    </select>
+                    <button class="add-btn" onclick="addStakeholder()">Add</button>
+                </div>
+                <div id="stakeholderList"></div>
+            </div>
+
+            <div class="export-options">
+                <div class="export-card" onclick="shareWithStakeholders()">
+                    <h4>📧 Share via Email</h4>
+                    <p>Send strategy maps to stakeholders</p>
+                </div>
+                <div class="export-card" onclick="generateShareableLink()">
+                    <h4>🔗 Shareable Link</h4>
+                    <p>Create view-only link</p>
+                </div>
+                <div class="export-card" onclick="exportForPresentation()">
+                    <h4>📊 Presentation Export</h4>
+                    <p>Export for PowerPoint/Keynote</p>
+                </div>
+                <div class="export-card" onclick="collaborativeEdit()">
+                    <h4>✏️ Collaborative Edit</h4>
+                    <p>Enable real-time collaboration</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Strategic Planning Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
+                <p style="color: #a0a0a0; margin-top: 15px;">Focus on strategic visualization and planning</p>
+            </div>
+
+            <div class="strategy-card">
+                <h3>💡 Daily Planning Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>📈 Planning Activity</h4>
+                    <div class="stat-value" id="weeklyActivity">0</div>
+                    <div class="stat-label">Maps created this week</div>
+                    <div class="chart-placeholder">Activity Trend</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Planning Streak</h4>
+                    <div class="stat-value" id="planningStreak">0</div>
+                    <div class="stat-label">Days of consistent planning</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⚡ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTime">0h</div>
+                    <div class="stat-label">This week</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🎯 Completion Rate</h4>
+                    <div class="stat-value" id="completionRate">0%</div>
+                    <div class="chart-placeholder">Progress Tracking</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportAnalytics()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Node Edit Modal -->
+    <div id="nodeModal" class="modal">
+        <div class="modal-content">
+            <h3 id="nodeModalTitle">Edit Node <span class="close" onclick="closeNodeModal()">&times;</span></h3>
+            <div id="nodeModalContent">
+                <input type="text" class="form-input" id="editNodeText" placeholder="Node text...">
+                <textarea class="form-textarea" id="editNodeDescription" placeholder="Node description..." rows="3"></textarea>
+                <select class="form-select" id="editNodeType">
+                    <option value="strategy">Strategy</option>
+                    <option value="objective">Objective</option>
+                    <option value="action">Action Item</option>
+                    <option value="milestone">Milestone</option>
+                </select>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveNodeEdit()">Save Changes</button>
+                    <button class="action-btn" onclick="addChildNode()">Add Child</button>
+                    <button class="action-btn" onclick="deleteCurrentNode()">Delete Node</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your motivational message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let strategyMaps = [];
+        let currentMap = null;
+        let selectedNode = null;
+        let currentChecklist = [];
+        let stakeholders = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let currentStreak = 0;
+        let mapZoom = 1;
+        let mapOffset = { x: 0, y: 0 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "A goal without a plan is just a wish. Visualize your strategy to make it reality.",
+            "Strategic thinking is the bridge between where you are and where you want to be.",
+            "The best strategies are born from clear visualization and systematic planning.",
+            "Mind mapping transforms complex strategies into actionable insights.",
+            "Every great achievement starts with a well-mapped strategy.",
+            "Visualization is the first step toward realization.",
+            "Strategic clarity comes from organized thinking and visual planning.",
+            "Map your thoughts, plan your success, execute with precision.",
+            "The power of strategy lies in its visual representation and clear execution.",
+            "Transform ideas into action through strategic visualization."
+        ];
+
+        // Daily planning prompts
+        const dailyPrompts = [
+            "Review and update your strategic priorities for the quarter",
+            "Identify potential roadblocks in your current strategy map",
+            "Brainstorm new connections between existing strategic elements",
+            "Evaluate the effectiveness of your stakeholder engagement",
+            "Assess progress on key strategic milestones",
+            "Consider how market changes might affect your strategy",
+            "Review and refine your strategic objectives",
+            "Plan next steps for your highest priority initiatives"
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            updateMapSelectors();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            renderStakeholders();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (strategyMaps.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+            
+            // Initialize mindmap canvas
+            initializeMindmapCanvas();
+        });
+
+        function initializeSampleData() {
+            strategyMaps = [
+                {
+                    id: 1,
+                    title: 'Digital Transformation Strategy',
+                    description: 'Comprehensive digital transformation roadmap for organizational modernization',
+                    category: 'digital-transformation',
+                    priority: 'high',
+                    timeline: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    tags: ['digital', 'transformation', 'technology'],
+                    nodes: [
+                        { id: 1, text: 'Digital Transformation', x: 400, y: 300, type: 'root', parent: null },
+                        { id: 2, text: 'Technology Infrastructure', x: 200, y: 200, type: 'child', parent: 1 },
+                        { id: 3, text: 'Process Automation', x: 600, y: 200, type: 'child', parent: 1 },
+                        { id: 4, text: 'Data Analytics', x: 200, y: 400, type: 'child', parent: 1 },
+                        { id: 5, text: 'Customer Experience', x: 600, y: 400, type: 'child', parent: 1 }
+                    ],
+                    checklist: [
+                        { id: 1, text: 'Assess current technology stack', completed: true },
+                        { id: 2, text: 'Define digital strategy roadmap', completed: false },
+                        { id: 3, text: 'Identify automation opportunities', completed: false }
+                    ],
+                    createdAt: new Date(),
+                    reminders: { frequency: 'weekly', lastSent: null }
+                },
+                {
+                    id: 2,
+                    title: 'Market Expansion Plan',
+                    description: 'Strategic plan for entering new geographic markets',
+                    category: 'market-expansion',
+                    priority: 'medium',
+                    timeline: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    tags: ['expansion', 'market', 'growth'],
+                    nodes: [
+                        { id: 1, text: 'Market Expansion', x: 400, y: 300, type: 'root', parent: null },
+                        { id: 2, text: 'Market Research', x: 250, y: 200, type: 'child', parent: 1 },
+                        { id: 3, text: 'Competitive Analysis', x: 550, y: 200, type: 'child', parent: 1 },
+                        { id: 4, text: 'Go-to-Market Strategy', x: 400, y: 450, type: 'child', parent: 1 }
+                    ],
+                    checklist: [],
+                    createdAt: new Date(),
+                    reminders: { frequency: 'monthly', lastSent: null }
+                }
+            ];
+            
+            stakeholders = [
+                { id: 1, name: 'Sarah Johnson', email: 'sarah.j@company.com', role: 'executive', avatar: 'SJ' },
+                { id: 2, name: 'Mike Chen', email: 'mike.c@company.com', role: 'manager', avatar: 'MC' },
+                { id: 3, name: 'Lisa Rodriguez', email: 'lisa.r@company.com', role: 'team-lead', avatar: 'LR' }
+            ];
+            
+            updateMapSelectors();
+            updateStats();
+            renderStakeholders();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Mind Map functionality
+        function initializeMindmapCanvas() {
+            const canvas = document.getElementById('mindmapCanvas');
+            
+            // Mouse events for dragging
+            canvas.addEventListener('mousedown', startDrag);
+            canvas.addEventListener('mousemove', drag);
+            canvas.addEventListener('mouseup', endDrag);
+            canvas.addEventListener('mouseleave', endDrag);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', handleTouch);
+            
+            // Prevent context menu
+            canvas.addEventListener('contextmenu', e => e.preventDefault());
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            dragStart.x = e.clientX - mapOffset.x;
+            dragStart.y = e.clientY - mapOffset.y;
+            document.getElementById('mindmapCanvas').classList.add('dragging');
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            
+            mapOffset.x = e.clientX - dragStart.x;
+            mapOffset.y = e.clientY - dragStart.y;
+            
+            renderMindMap();
+        }
+
+        function endDrag() {
+            isDragging = false;
+            document.getElementById('mindmapCanvas').classList.remove('dragging');
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0] || e.changedTouches[0];
+            
+            switch(e.type) {
+                case 'touchstart':
+                    startDrag({ clientX: touch.clientX, clientY: touch.clientY });
+                    break;
+                case 'touchmove':
+                    drag({ clientX: touch.clientX, clientY: touch.clientY });
+                    break;
+                case 'touchend':
+                    endDrag();
+                    break;
+            }
+        }
+
+        function createNewMap() {
+            const title = prompt('Enter strategy map title:');
+            if (!title) return;
+            
+            const newMap = {
+                id: Date.now(),
+                title: title,
+                description: '',
+                category: 'business-strategy',
+                priority: 'medium',
+                timeline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                tags: [],
+                nodes: [
+                    { id: 1, text: title, x: 400, y: 300, type: 'root', parent: null }
+                ],
+                checklist: [],
+                createdAt: new Date(),
+                reminders: { frequency: 'none', lastSent: null }
+            };
+            
+            strategyMaps.push(newMap);
+            currentMap = newMap;
+            
+            updateMapSelectors();
+            document.getElementById('mapSelector').value = newMap.id;
+            renderMindMap();
+            updateStats();
+            saveData();
+            showNotification('New strategy map created! 🗺️');
+        }
+
+        function loadMap() {
+            const mapId = parseInt(document.getElementById('mapSelector').value);
+            const map = strategyMaps.find(m => m.id === mapId);
+            
+            if (!map) {
+                showNotification('Please select a strategy map', 'error');
+                return;
+            }
+            
+            currentMap = map;
+            mapZoom = 1;
+            mapOffset = { x: 0, y: 0 };
+            renderMindMap();
+            showNotification(`Loaded: ${map.title} 🗺️`);
+        }
+
+        function renderMindMap() {
+            const canvas = document.getElementById('mindmapCanvas');
+            canvas.innerHTML = '';
+            
+            if (!currentMap || !currentMap.nodes) return;
+            
+            // Render connections first
+            currentMap.nodes.forEach(node => {
+                if (node.parent) {
+                    const parentNode = currentMap.nodes.find(n => n.id === node.parent);
+                    if (parentNode) {
+                        renderConnection(parentNode, node, canvas);
+                    }
+                }
+            });
+            
+            // Render nodes
+            currentMap.nodes.forEach(node => {
+                renderNode(node, canvas);
+            });
+        }
+
+        function renderConnection(parentNode, childNode, canvas) {
+            const connection = document.createElement('div');
+            connection.className = 'mindmap-connection';
+            
+            const parentX = (parentNode.x * mapZoom) + mapOffset.x;
+            const parentY = (parentNode.y * mapZoom) + mapOffset.y;
+            const childX = (childNode.x * mapZoom) + mapOffset.x;
+            const childY = (childNode.y * mapZoom) + mapOffset.y;
+            
+            const deltaX = childX - parentX;
+            const deltaY = childY - parentY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+            
+            connection.style.left = parentX + 'px';
+            connection.style.top = parentY + 'px';
+            connection.style.width = distance + 'px';
+            connection.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.appendChild(connection);
+        }
+
+        function renderNode(node, canvas) {
+            const nodeElement = document.createElement('div');
+            nodeElement.className = `mindmap-node ${node.type}`;
+            nodeElement.textContent = node.text;
+            nodeElement.setAttribute('data-node-id', node.id);
+            
+            const x = (node.x * mapZoom) + mapOffset.x;
+            const y = (node.y * mapZoom) + mapOffset.y;
+            
+            nodeElement.style.left = x + 'px';
+            nodeElement.style.top = y + 'px';
+            nodeElement.style.transform = `scale(${mapZoom})`;
+            
+            if (selectedNode && selectedNode.id === node.id) {
+                nodeElement.classList.add('selected');
+            }
+            
+            nodeElement.addEventListener('click', () => selectNode(node));
+            nodeElement.addEventListener('dblclick', () => editNode(node));
+            
+            canvas.appendChild(nodeElement);
+        }
+
+        function selectNode(node) {
+            selectedNode = node;
+            renderMindMap();
+            document.getElementById('nodeText').value = node.text;
+        }
+
+        function editNode(node) {
+            selectedNode = node;
+            document.getElementById('editNodeText').value = node.text;
+            document.getElementById('editNodeDescription').value = node.description || '';
+            document.getElementById('editNodeType').value = node.type;
+            document.getElementById('nodeModal').style.display = 'block';
+        }
+
+        function addNode() {
+            if (!currentMap) {
+                showNotification('Please load or create a map first', 'error');
+                return;
+            }
+            
+            const newNode = {
+                id: Date.now(),
+                text: 'New Node',
+                x: 400 + Math.random() * 200 - 100,
+                y: 300 + Math.random() * 200 - 100,
+                type: selectedNode ? 'child' : 'strategy',
+                parent: selectedNode ? selectedNode.id : null
+            };
+            
+            currentMap.nodes.push(newNode);
+            renderMindMap();
+            selectNode(newNode);
+            updateStats();
+            saveData();
+            showNotification('Node added! ➕');
+        }
+
+        function addNodeWithText() {
+            const text = document.getElementById('nodeText').value.trim();
+            if (!text) {
+                showNotification('Please enter node text', 'error');
+                return;
+            }
+            
+            if (!currentMap) {
+                showNotification('Please load or create a map first', 'error');
+                return;
+            }
+            
+            const newNode = {
+                id: Date.now(),
+                text: text,
+                x: 400 + Math.random() * 200 - 100,
+                y: 300 + Math.random() * 200 - 100,
+                type: selectedNode ? 'child' : 'strategy',
+                parent: selectedNode ? selectedNode.id : null
+            };
+            
+            currentMap.nodes.push(newNode);
+            document.getElementById('nodeText').value = '';
+            renderMindMap();
+            selectNode(newNode);
+            updateStats();
+            saveData();
+            showNotification('Node added with text! ➕');
+        }
+
+        function deleteNode() {
+            if (!selectedNode || !currentMap) {
+                showNotification('Please select a node to delete', 'error');
+                return;
+            }
+            
+            if (selectedNode.type === 'root') {
+                showNotification('Cannot delete root node', 'error');
+                return;
+            }
+            
+            // Remove node and its children
+            const nodesToRemove = [selectedNode.id];
+            const findChildren = (parentId) => {
+                currentMap.nodes.forEach(node => {
+                    if (node.parent === parentId) {
+                        nodesToRemove.push(node.id);
+                        findChildren(node.id);
+                    }
+                });
+            };
+            
+            findChildren(selectedNode.id);
+            
+            currentMap.nodes = currentMap.nodes.filter(node => !nodesToRemove.includes(node.id));
+            selectedNode = null;
+            
+            renderMindMap();
+            updateStats();
+            saveData();
+            showNotification('Node deleted! 🗑️');
+        }
+
+        function saveNodeEdit() {
+            if (!selectedNode) return;
+            
+            selectedNode.text = document.getElementById('editNodeText').value;
+            selectedNode.description = document.getElementById('editNodeDescription').value;
+            selectedNode.type = document.getElementById('editNodeType').value;
+            
+            renderMindMap();
+            closeNodeModal();
+            saveData();
+            showNotification('Node updated! ✏️');
+        }
+
+        function addChildNode() {
+            if (!selectedNode) return;
+            
+            const newNode = {
+                id: Date.now(),
+                text: 'Child Node',
+                x: selectedNode.x + 150,
+                y: selectedNode.y + 100,
+                type: 'grandchild',
+                parent: selectedNode.id
+            };
+            
+            currentMap.nodes.push(newNode);
+            closeNodeModal();
+            renderMindMap();
+            updateStats();
+            saveData();
+            showNotification('Child node added! 👶');
+        }
+
+        function deleteCurrentNode() {
+            closeNodeModal();
+            deleteNode();
+        }
+
+        function zoomIn() {
+            mapZoom = Math.min(mapZoom * 1.2, 3);
+            renderMindMap();
+        }
+
+        function zoomOut() {
+            mapZoom = Math.max(mapZoom / 1.2, 0.3);
+            renderMindMap();
+        }
+
+        function centerMap() {
+            mapOffset = { x: 0, y: 0 };
+            mapZoom = 1;
+            renderMindMap();
+        }
+
+        function saveMap() {
+            if (!currentMap) {
+                showNotification('No map to save', 'error');
+                return;
+            }
+            
+            saveData();
+            showNotification('Map saved! 💾');
+        }
+
+        function executeNode() {
+            if (!selectedNode) {
+                showNotification('Please select a node to execute', 'error');
+                return;
+            }
+            
+            // Mark as completed or add to action list
+            showNotification(`Executing: ${selectedNode.text} ⚡`, 'success');
+            
+            // Add to daily actions or mark as done
+            const completedAction = {
+                id: Date.now(),
+                text: selectedNode.text,
+                mapId: currentMap.id,
+                nodeId: selectedNode.id,
+                completedAt: new Date()
+            };
+            
+            // Store completed actions
+            const completedActions = JSON.parse(localStorage.getItem('strategyMapper_completedActions') || '[]');
+            completedActions.push(completedAction);
+            localStorage.setItem('strategyMapper_completedActions', JSON.stringify(completedActions));
+            
+            updateStats();
+        }
+
+        // Outline functionality
+        function generateOutline() {
+            const mapId = parseInt(document.getElementById('outlineMapSelector').value);
+            const map = strategyMaps.find(m => m.id === mapId);
+            
+            if (!map) {
+                showNotification('Please select a strategy map', 'error');
+                return;
+            }
+            
+            const container = document.getElementById('outlineContent');
+            container.innerHTML = '';
+            
+            // Build hierarchical structure
+            const rootNodes = map.nodes.filter(node => node.parent === null);
+            
+            rootNodes.forEach(rootNode => {
+                renderOutlineNode(rootNode, map.nodes, container, 1);
+            });
+            
+            showNotification('Outline generated! 📋');
+        }
+
+        function renderOutlineNode(node, allNodes, container, level) {
+            const item = document.createElement('div');
+            item.className = `outline-item level-${level}`;
+            
+            const toggle = document.createElement('div');
+            toggle.className = 'outline-toggle';
+            
+            const children = allNodes.filter(n => n.parent === node.id);
+            if (children.length > 0) {
+                toggle.textContent = '▼';
+                toggle.classList.add('expanded');
+                toggle.onclick = () => toggleOutlineItem(toggle, item);
+            }
+            
+            const text = document.createElement('span');
+            text.textContent = node.text;
+            
+            item.appendChild(toggle);
+            item.appendChild(text);
+            container.appendChild(item);
+            
+            // Add children
+            children.forEach(child => {
+                renderOutlineNode(child, allNodes, container, level + 1);
+            });
+        }
+
+        function toggleOutlineItem(toggle, item) {
+            const isExpanded = toggle.classList.contains('expanded');
+            
+            if (isExpanded) {
+                toggle.textContent = '▶';
+                toggle.classList.remove('expanded');
+                // Hide children
+                let nextSibling = item.nextElementSibling;
+                while (nextSibling && nextSibling.classList.contains('outline-item')) {
+                    const nextLevel = parseInt(nextSibling.className.match(/level-(\d+)/)[1]);
+                    const currentLevel = parseInt(item.className.match(/level-(\d+)/)[1]);
+                    
+                    if (nextLevel <= currentLevel) break;
+                    
+                    nextSibling.style.display = 'none';
+                    nextSibling = nextSibling.nextElementSibling;
+                }
+            } else {
+                toggle.textContent = '▼';
+                toggle.classList.add('expanded');
+                // Show direct children
+                let nextSibling = item.nextElementSibling;
+                while (nextSibling && nextSibling.classList.contains('outline-item')) {
+                    const nextLevel = parseInt(nextSibling.className.match(/level-(\d+)/)[1]);
+                    const currentLevel = parseInt(item.className.match(/level-(\d+)/)[1]);
+                    
+                    if (nextLevel <= currentLevel) break;
+                    if (nextLevel === currentLevel + 1) {
+                        nextSibling.style.display = 'flex';
+                    }
+                    
+                    nextSibling = nextSibling.nextElementSibling;
+                }
+            }
+        }
+
+        function addOutlineItem() {
+            const text = document.getElementById('outlineItem').value.trim();
+            const level = parseInt(document.getElementById('outlineLevel').value);
+            
+            if (!text) {
+                showNotification('Please enter outline item text', 'error');
+                return;
+            }
+            
+            const container = document.getElementById('outlineContent');
+            const item = document.createElement('div');
+            item.className = `outline-item level-${level}`;
+            
+            const toggle = document.createElement('div');
+            toggle.className = 'outline-toggle';
+            
+            const textSpan = document.createElement('span');
+            textSpan.textContent = text;
+            
+            item.appendChild(toggle);
+            item.appendChild(textSpan);
+            container.appendChild(item);
+            
+            document.getElementById('outlineItem').value = '';
+            showNotification('Outline item added! 📝');
+        }
+
+        function exportOutline() {
+            const content = document.getElementById('outlineContent');
+            if (!content.children.length) {
+                showNotification('No outline to export', 'error');
+                return;
+            }
+            
+            let outlineText = 'Strategic Outline\n================\n\n';
+            
+            Array.from(content.children).forEach(item => {
+                const level = parseInt(item.className.match(/level-(\d+)/)[1]);
+                const indent = '  '.repeat(level - 1);
+                const text = item.querySelector('span').textContent;
+                outlineText += `${indent}${level === 1 ? '•' : '◦'} ${text}\n`;
+            });
+            
+            const blob = new Blob([outlineText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategic-outline-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Outline exported! 📄');
+        }
+
+        // Strategy Map Creation
+        function createStrategyMap() {
+            const title = document.getElementById('mapTitle').value.trim();
+            const description = document.getElementById('mapDescription').value.trim();
+            const category = document.getElementById('mapCategory').value;
+            const priority = document.getElementById('mapPriority').value;
+            const timeline = document.getElementById('mapTimeline').value;
+            const reminderFreq = document.getElementById('reminderFreq').value;
+            const tagInput = document.getElementById('mapTagInput');
+            
+            if (!title || !description || !timeline) {
+                showNotification('Please fill in title, description, and timeline', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const map = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                category: category,
+                priority: priority,
+                timeline: timeline,
+                tags: tags,
+                nodes: [
+                    { id: 1, text: title, x: 400, y: 300, type: 'root', parent: null }
+                ],
+                checklist: [...currentChecklist],
+                createdAt: new Date(),
+                reminders: { frequency: reminderFreq, lastSent: null }
+            };
+            
+            strategyMaps.push(map);
+            
+            // Clear form
+            clearMapForm();
+            
+            updateMapSelectors();
+            updateStats();
+            updateStreak();
+            saveData();
+            showNotification('Strategy map created successfully! 🗺️');
+        }
+
+        function createAndOpen() {
+            createStrategyMap();
+            if (strategyMaps.length > 0) {
+                const latestMap = strategyMaps[strategyMaps.length - 1];
+                switchTab('mindmap');
+                document.querySelector('[onclick="switchTab(\'mindmap\')"]').classList.add('active');
+                document.getElementById('mapSelector').value = latestMap.id;
+                loadMap();
+            }
+        }
+
+        function clearMapForm() {
+            document.getElementById('mapTitle').value = '';
+            document.getElementById('mapDescription').value = '';
+            document.getElementById('mapCategory').value = 'business-strategy';
+            document.getElementById('mapPriority').value = 'medium';
+            document.getElementById('mapTimeline').value = '';
+            document.getElementById('reminderFreq').value = 'none';
+            document.getElementById('mapTagInput').value = '';
+            document.getElementById('mapTags').innerHTML = '<input type="text" id="mapTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentChecklist = [];
+            renderChecklistPreview();
+        }
+
+        function updateMapSelectors() {
+            const selectors = ['mapSelector', 'outlineMapSelector'];
+            
+            selectors.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                select.innerHTML = '<option value="">Select a strategy map...</option>';
+                
+                strategyMaps.forEach(map => {
+                    const option = document.createElement('option');
+                    option.value = map.id;
+                    option.textContent = map.title;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Stakeholder Management
+        function addStakeholder() {
+            const name = document.getElementById('stakeholderName').value.trim();
+            const email = document.getElementById('stakeholderEmail').value.trim();
+            const role = document.getElementById('stakeholderRole').value;
+            
+            if (!name || !email) {
+                showNotification('Please enter name and email', 'error');
+                return;
+            }
+            
+            const stakeholder = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                role: role,
+                avatar: name.split(' ').map(n => n[0]).join('').toUpperCase()
+            };
+            
+            stakeholders.push(stakeholder);
+            
+            document.getElementById('stakeholderName').value = '';
+            document.getElementById('stakeholderEmail').value = '';
+            
+            renderStakeholders();
+            saveData();
+            showNotification('Stakeholder added! 👥');
+        }
+
+        function renderStakeholders() {
+            const container = document.getElementById('stakeholderList');
+            container.innerHTML = '';
+            
+            stakeholders.forEach(stakeholder => {
+                const item = document.createElement('div');
+                item.className = 'stakeholder-item';
+                
+                item.innerHTML = `
+                    <div class="stakeholder-avatar">${stakeholder.avatar}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold;">${stakeholder.name}</div>
+                        <div style="color: #a0a0a0; font-size: 0.9rem;">${stakeholder.email}</div>
+                        <div style="color: #ffd700; font-size: 0.8rem;">${stakeholder.role.toUpperCase()}</div>
+                    </div>
+                    <button class="action-btn" onclick="removeStakeholder(${stakeholder.id})" style="padding: 4px 8px;">✕</button>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        function removeStakeholder(stakeholderId) {
+            stakeholders = stakeholders.filter(s => s.id !== stakeholderId);
+            renderStakeholders();
+            saveData();
+            showNotification('Stakeholder removed');
+        }
+
+        function shareWithStakeholders() {
+            if (stakeholders.length === 0) {
+                showNotification('No stakeholders to share with', 'error');
+                return;
+            }
+            
+            if (!currentMap) {
+                showNotification('Please select a map to share', 'error');
+                return;
+            }
+            
+            const emails = stakeholders.map(s => s.email).join(';');
+            const subject = `Strategic Plan: ${currentMap.title}`;
+            const body = `Please review the strategic plan: ${currentMap.title}\n\nDescription: ${currentMap.description}\n\nThis strategy map was created using StrategyMapper.`;
+            
+            const mailtoLink = `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink, '_blank', 'noopener,noreferrer');
+            
+            showNotification('Email client opened for sharing! 📧');
+        }
+
+        function generateShareableLink() {
+            if (!currentMap) {
+                showNotification('Please select a map to share', 'error');
+                return;
+            }
+            
+            // Simulate generating a shareable link
+            const shareId = btoa(currentMap.id.toString()).replace(/[^a-zA-Z0-9]/g, '');
+            const shareLink = `https://strategymapper.app/view/${shareId}`;
+            
+            navigator.clipboard.writeText(shareLink).then(() => {
+                showNotification('Shareable link copied to clipboard! 🔗');
+            }).catch(() => {
+                showNotification('Link generated (copy manually): ' + shareLink);
+            });
+        }
+
+        function exportForPresentation() {
+            if (!currentMap) {
+                showNotification('Please select a map to export', 'error');
+                return;
+            }
+            
+            const presentationData = {
+                title: currentMap.title,
+                description: currentMap.description,
+                nodes: currentMap.nodes,
+                exportDate: new Date().toISOString(),
+                format: 'presentation'
+            };
+            
+            const blob = new Blob([JSON.stringify(presentationData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentMap.title.replace(/[^a-zA-Z0-9]/g, '_')}_presentation.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Presentation data exported! 📊');
+        }
+
+        function collaborativeEdit() {
+            showNotification('Collaborative editing feature coming soon! ✏️', 'info');
+        }
+
+        // Checklist management
+        function addChecklistItem() {
+            const input = document.getElementById('checklistItem');
+            const text = input.value.trim();
+            
+            if (text) {
+                currentChecklist.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                });
+                
+                input.value = '';
+                renderChecklistPreview();
+                showNotification('Action item added ✅');
+            }
+        }
+
+        function renderChecklistPreview() {
+            const container = document.getElementById('checklistPreview');
+            container.innerHTML = '';
+            
+            currentChecklist.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'checklist-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <button class="action-btn" onclick="removeChecklistItem(${index})" style="margin-left: auto; padding: 4px 8px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeChecklistItem(index) {
+            currentChecklist.splice(index, 1);
+            renderChecklistPreview();
+        }
+
+        // Focus timer
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Strategic planning session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Strategic planning session complete! Excellent strategic thinking!');
+            updateStats();
+            saveData();
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyPromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...dailyPrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyPromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="strategy-card" style="margin-bottom: 10px;">
+                    <div class="strategy-title">💡 ${prompt}</div>
+                    <div class="strategy-actions">
+                        <button class="do-it-now-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyPrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great strategic thinking! 🌟');
+            updateStreak();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customMotivationalMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customMotivationalMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const totalMaps = strategyMaps.length;
+            const totalNodes = strategyMaps.reduce((sum, map) => sum + (map.nodes ? map.nodes.length : 0), 0);
+            const completedActions = JSON.parse(localStorage.getItem('strategyMapper_completedActions') || '[]').length;
+            
+            document.getElementById('totalMaps').textContent = totalMaps;
+            document.getElementById('totalNodes').textContent = totalNodes;
+            document.getElementById('completedActions').textContent = completedActions;
+            document.getElementById('currentStreak').textContent = currentStreak;
+            
+            // Analytics tab stats
+            const thisWeekMaps = strategyMaps.filter(map => {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return new Date(map.createdAt) > weekAgo;
+            }).length;
+            
+            document.getElementById('weeklyActivity').textContent = thisWeekMaps;
+            document.getElementById('planningStreak').textContent = currentStreak;
+            document.getElementById('totalFocusTime').textContent = Math.round(totalFocusTime / 60) + 'h';
+            
+            const completionRate = totalMaps > 0 ? Math.round((completedActions / totalMaps) * 100) : 0;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    currentStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    currentStreak = 1;
+                }
+            } else {
+                // First time
+                currentStreak = 1;
+            }
+            
+            localStorage.setItem('lastActiveDate', today);
+            localStorage.setItem('currentStreak', currentStreak.toString());
+            updateStats();
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            strategyMaps.forEach(map => {
+                if (map.reminders.frequency === 'none') return;
+                
+                const timeline = new Date(map.timeline);
+                const timeDiff = timeline - now;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                
+                let shouldRemind = false;
+                
+                switch(map.reminders.frequency) {
+                    case 'daily':
+                        shouldRemind = daysDiff <= 7;
+                        break;
+                    case 'weekly':
+                        shouldRemind = daysDiff <= 14;
+                        break;
+                    case 'monthly':
+                        shouldRemind = daysDiff <= 30;
+                        break;
+                }
+                
+                if (shouldRemind && (!map.reminders.lastSent || 
+                    new Date(map.reminders.lastSent).toDateString() !== now.toDateString())) {
+                    
+                    showNotification(`Strategic Review: "${map.title}" - Timeline approaching`, 'reminder');
+                    map.reminders.lastSent = now.toISOString();
+                    saveData();
+                }
+            });
+        }
+
+        // Export and backup
+        function exportAnalytics() {
+            const completedActions = JSON.parse(localStorage.getItem('strategyMapper_completedActions') || '[]');
+            
+            const content = `
+StrategyMapper Analytics Report
+Generated: ${new Date().toLocaleDateString()}
+
+STRATEGIC OVERVIEW
+==================
+Total Strategy Maps: ${strategyMaps.length}
+Total Nodes Created: ${strategyMaps.reduce((sum, map) => sum + (map.nodes ? map.nodes.length : 0), 0)}
+Completed Actions: ${completedActions.length}
+Current Planning Streak: ${currentStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+
+STRATEGY MAPS
+=============
+${strategyMaps.map(map => `🗺️ ${map.title} - ${map.category} - ${map.nodes ? map.nodes.length : 0} nodes`).join('\n')}
+
+RECENT ACTIONS
+==============
+${completedActions.slice(-10).map(action => `✅ ${action.text} - ${new Date(action.completedAt).toLocaleDateString()}`).join('\n')}
+
+STAKEHOLDERS
+============
+${stakeholders.map(s => `👤 ${s.name} (${s.role}) - ${s.email}`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategymapper-analytics-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Analytics report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                strategyMaps: strategyMaps,
+                stakeholders: stakeholders,
+                totalFocusTime: totalFocusTime,
+                currentStreak: currentStreak,
+                completedActions: JSON.parse(localStorage.getItem('strategyMapper_completedActions') || '[]'),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategymapper-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        strategyMaps = data.strategyMaps || [];
+                        stakeholders = data.stakeholders || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        currentStreak = data.currentStreak || 0;
+                        
+                        if (data.completedActions) {
+                            localStorage.setItem('strategyMapper_completedActions', JSON.stringify(data.completedActions));
+                        }
+                        
+                        updateMapSelectors();
+                        renderStakeholders();
+                        updateStats();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('strategyMapper_maps', JSON.stringify(strategyMaps));
+            localStorage.setItem('strategyMapper_stakeholders', JSON.stringify(stakeholders));
+            localStorage.setItem('strategyMapper_focusTime', totalFocusTime);
+            localStorage.setItem('strategyMapper_streak', currentStreak);
+        }
+
+        function loadData() {
+            const savedMaps = localStorage.getItem('strategyMapper_maps');
+            const savedStakeholders = localStorage.getItem('strategyMapper_stakeholders');
+            const savedFocusTime = localStorage.getItem('strategyMapper_focusTime');
+            const savedStreak = localStorage.getItem('strategyMapper_streak');
+            
+            if (savedMaps) strategyMaps = JSON.parse(savedMaps);
+            if (savedStakeholders) stakeholders = JSON.parse(savedStakeholders);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) currentStreak = parseInt(savedStreak);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeNodeModal() {
+            document.getElementById('nodeModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 193, 7, 0.9)';
+                notification.style.color = '#1a237e';
+            } else if (type === 'info') {
+                notification.style.background = 'rgba(33, 150, 243, 0.9)';
+                notification.style.color = 'white';
+            } else {
+                notification.style.background = 'rgba(76, 175, 80, 0.9)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('mapTitle').focus();
+                        break;
+                    case 'm':
+                        e.preventDefault();
+                        switchTab('mindmap');
+                        document.querySelector('[onclick="switchTab(\'mindmap\')"]').classList.add('active');
+                        break;
+                }
+            }
+            
+            // Delete key for selected node
+            if (e.key === 'Delete' && selectedNode) {
+                deleteNode();
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const nodeModal = document.getElementById('nodeModal');
+            const messageModal = document.getElementById('messageModal');
+            
+            if (event.target === nodeModal) {
+                closeNodeModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'987144ef36aa1072',t:'MTc1OTIwOTYwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
