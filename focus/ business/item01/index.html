@@ -1,1 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfferCraft - Business Offer Calculator & Customer Calls</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        
+        .card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .offer-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .offer-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .offer-card.high-margin {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .offer-card.low-margin {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+        
+        .step-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            position: relative;
+        }
+        
+        .step-card.completed {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: #d4af37;
+        }
+        
+        .progress-dot.completed {
+            background: #4ade80;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.3); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: #1a3b2e;
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .recording-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+            z-index: 3000;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .severity-high { border-left: 4px solid #ef4444; }
+        .severity-medium { border-left: 4px solid #f59e0b; }
+        .severity-low { border-left: 4px solid #10b981; }
+        
+        .phrase-card {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .phrase-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Recording Indicator -->
+    <div id="recordingIndicator" class="recording-indicator hidden">
+        🔴 Recording Call
+    </div>
 
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">💼 OfferCraft</h1>
+        <p class="text-lg text-gray-300 mb-4">Business Offer Calculator & Customer Calls</p>
+        
+        <!-- Stats Overview -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="offerStreak">0</div>
+                <div class="text-sm text-gray-400">Offer Streak</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="avgMargin">0%</div>
+                <div class="text-sm text-gray-400">Avg Margin</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="totalCalls">0</div>
+                <div class="text-sm text-gray-400">Total Calls</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="conversionRate">0%</div>
+                <div class="text-sm text-gray-400">Conversion</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('offers')" id="offersBtn" class="nav-btn active">💰 Offers</button>
+        <button onclick="showScreen('calls')" id="callsBtn" class="nav-btn">📞 Customer Calls</button>
+        <button onclick="showScreen('vocabulary')" id="vocabularyBtn" class="nav-btn">💬 Sales Phrases</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">🧘 25-Min Reset</button>
+        <button onclick="showScreen('analytics')" id="analyticsBtn" class="nav-btn">📊 Analytics</button>
+    </nav>
+
+    <!-- Floating Add Button -->
+    <div onclick="showQuickAdd()" class="floating-btn" title="Quick Add">+</div>
+
+    <!-- Offers Screen -->
+    <div id="offersScreen" class="screen p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💰 Offer Calculator</h2>
+                <p class="text-gray-300">Build and test offers with pain, promise, proof, price</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="text-3xl text-accent mb-2">📋</div>
+                    <div class="text-2xl font-bold text-white" id="totalOffers">0</div>
+                    <div class="text-gray-400">Total Offers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-green-400 mb-2">💚</div>
+                    <div class="text-2xl font-bold text-white" id="highMarginOffers">0</div>
+                    <div class="text-gray-400">High Margin</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-blue-400 mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="testedOffers">0</div>
+                    <div class="text-gray-400">Tested</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-accent mb-2">🏆</div>
+                    <div class="text-2xl font-bold text-white" id="bestMargin">0%</div>
+                    <div class="text-gray-400">Best Margin</div>
+                </div>
+            </div>
+
+            <!-- Add New Offer -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-accent">🚀 Create New Offer</h3>
+                    <button onclick="addOffer()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        ➕ Add Offer
+                    </button>
+                </div>
+                
+                <div class="text-gray-300 text-center py-4">
+                    Click "Add Offer" to start building your next winning offer
+                </div>
+            </div>
+
+            <!-- Offers List -->
+            <div id="offersList" class="space-y-4">
+                <!-- Offers will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Calls Screen -->
+    <div id="callsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">📞 Customer Calls</h2>
+                <p class="text-gray-300">Track discovery calls with Jobs To Be Done framework</p>
+            </div>
+
+            <!-- Call Controls -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-accent">🎙️ Call Recording</h3>
+                    <div class="flex gap-3">
+                        <button onclick="startRecording()" id="startRecordBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">
+                            🔴 Start Recording
+                        </button>
+                        <button onclick="stopRecording()" id="stopRecordBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-bold" disabled>
+                            ⏹️ Stop Recording
+                        </button>
+                        <button onclick="addCall()" class="bg-accent text-black px-4 py-2 rounded-lg font-bold">
+                            ➕ Add Call
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Voice-to-Text Notes</label>
+                        <textarea id="voiceNotes" placeholder="Click microphone to start voice-to-text..." 
+                                  class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                        <button onclick="startVoiceToText()" id="voiceBtn" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
+                            🎤 Voice to Text
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Quick Call Summary</label>
+                        <div class="bg-gray-800 p-3 rounded-lg h-32 overflow-y-auto" id="quickSummary">
+                            <div class="text-gray-400 text-sm">Recording summary will appear here...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="text-3xl text-blue-400 mb-2">📞</div>
+                    <div class="text-2xl font-bold text-white" id="totalCallsCount">0</div>
+                    <div class="text-gray-400">Total Calls</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-red-400 mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="highSeverityCalls">0</div>
+                    <div class="text-gray-400">High Severity</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-green-400 mb-2">✅</div>
+                    <div class="text-2xl font-bold text-white" id="conversions">0</div>
+                    <div class="text-gray-400">Conversions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl text-accent mb-2">⏱️</div>
+                    <div class="text-2xl font-bold text-white" id="avgCallTime">0m</div>
+                    <div class="text-gray-400">Avg Duration</div>
+                </div>
+            </div>
+
+            <!-- Calls List -->
+            <div id="callsList" class="space-y-4">
+                <!-- Calls will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Vocabulary Screen -->
+    <div id="vocabularyScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-accent mb-2">💬 Sales Power Phrases</h2>
+                <p class="text-gray-300">Master the language of effective sales and positioning</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Discovery Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🔍 Discovery Questions</h3>
+                    <div id="discoveryPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newDiscoveryPhrase" placeholder="Add discovery question..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addDiscoveryPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Positioning Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🎯 Positioning & Value</h3>
+                    <div id="positioningPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newPositioningPhrase" placeholder="Add positioning phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addPositioningPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Closing Phrases -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-accent mb-4">🤝 Closing & Objections</h3>
+                    <div id="closingPhrases" class="space-y-2 max-h-80 overflow-y-auto mb-4">
+                        <!-- Phrases will be populated here -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="newClosingPhrase" placeholder="Add closing phrase..." 
+                               class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                        <button onclick="addClosingPhrase()" class="bg-accent text-black px-3 py-2 rounded font-bold text-sm">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-accent mb-8">🧘 25-Minute Business Reset</h2>
+            
+            <div class="breathing-circle mb-8" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold mb-8" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 py-4 bg-black bg-opacity-40 rounded-lg mb-8">
+                "Great businesses are built through customer obsession and rapid iteration!"
+            </div>
+            
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Custom Messages -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Business Mantras</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMantra" placeholder="Add your business mantra..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="addMantra()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMantras" class="space-y-2">
+                    <!-- Custom mantras will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Screen -->
+    <div id="analyticsScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-accent text-center mb-8">📊 Business Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">💰</div>
+                    <div class="text-2xl font-bold text-white" id="totalRevenue">$0</div>
+                    <div class="text-gray-400">Projected Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="currentOfferStreak">0</div>
+                    <div class="text-gray-400">Offer Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">📈</div>
+                    <div class="text-2xl font-bold text-white" id="callConversionRate">0%</div>
+                    <div class="text-gray-400">Call Conversion</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">⭐</div>
+                    <div class="text-2xl font-bold text-white" id="topOfferMargin">0%</div>
+                    <div class="text-gray-400">Top Margin</div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Export & Backup</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportOfferSheet()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Export Offers
+                    </button>
+                    <button onclick="exportCallSummaries()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📞 Export Calls
+                    </button>
+                    <button onclick="backupAllData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <h3 class="text-xl font-bold text-accent mb-4">📈 Recent Activity</h3>
+                <div id="recentActivity" class="space-y-3">
+                    <!-- Recent activity will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offer Modal -->
+    <div id="offerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent" id="offerModalTitle">Create New Offer</h3>
+                <button onclick="closeOfferModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <!-- Progress Dots -->
+            <div class="progress-dots justify-center mb-6">
+                <div class="progress-dot active" data-step="1"></div>
+                <div class="progress-dot" data-step="2"></div>
+                <div class="progress-dot" data-step="3"></div>
+                <div class="progress-dot" data-step="4"></div>
+                <div class="progress-dot" data-step="5"></div>
+            </div>
+            
+            <!-- Step 1: Pain -->
+            <div id="step1" class="step-card">
+                <h4 class="text-lg font-bold text-accent mb-4">🎯 Step 1: Pain Point</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">What specific pain does this solve?</label>
+                        <textarea id="offerPain" placeholder="e.g., Small businesses waste 10+ hours/week on manual invoicing..." 
+                                  class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Target Customer</label>
+                        <input type="text" id="offerTarget" placeholder="e.g., Small business owners with 5-50 employees" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                <button onclick="nextStep(2)" class="mt-4 bg-accent text-black px-6 py-2 rounded-lg font-bold">
+                    Next: Promise →
+                </button>
+            </div>
+            
+            <!-- Step 2: Promise -->
+            <div id="step2" class="step-card hidden">
+                <h4 class="text-lg font-bold text-accent mb-4">🚀 Step 2: Promise & Outcome</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">What transformation do you promise?</label>
+                        <textarea id="offerPromise" placeholder="e.g., Reduce invoicing time by 90% and get paid 50% faster..." 
+                                  class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Specific Outcome/Guarantee</label>
+                        <input type="text" id="offerOutcome" placeholder="e.g., Save 8+ hours per week or money back" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="prevStep(1)" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-bold">
+                        ← Back
+                    </button>
+                    <button onclick="nextStep(3)" class="bg-accent text-black px-6 py-2 rounded-lg font-bold">
+                        Next: Proof →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Proof -->
+            <div id="step3" class="step-card hidden">
+                <h4 class="text-lg font-bold text-accent mb-4">✅ Step 3: Proof & Credibility</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Social Proof (testimonials, case studies)</label>
+                        <textarea id="offerProof" placeholder="e.g., 'Saved me 12 hours/week!' - Sarah, Restaurant Owner. 500+ businesses served..." 
+                                  class="w-full h-24 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Credentials/Authority</label>
+                        <input type="text" id="offerCredentials" placeholder="e.g., 10+ years experience, certified QuickBooks ProAdvisor" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="prevStep(2)" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-bold">
+                        ← Back
+                    </button>
+                    <button onclick="nextStep(4)" class="bg-accent text-black px-6 py-2 rounded-lg font-bold">
+                        Next: Price →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Price -->
+            <div id="step4" class="step-card hidden">
+                <h4 class="text-lg font-bold text-accent mb-4">💰 Step 4: Pricing & Costs</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Price ($)</label>
+                        <input type="number" id="offerPrice" placeholder="997" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white" 
+                               oninput="calculateMargin()">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Cost ($)</label>
+                        <input type="number" id="offerCost" placeholder="297" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white" 
+                               oninput="calculateMargin()">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Margin (%)</label>
+                        <input type="text" id="offerMargin" readonly 
+                               class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-accent font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Profit ($)</label>
+                        <input type="text" id="offerProfit" readonly 
+                               class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-accent font-bold">
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="prevStep(3)" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-bold">
+                        ← Back
+                    </button>
+                    <button onclick="nextStep(5)" class="bg-accent text-black px-6 py-2 rounded-lg font-bold">
+                        Next: Details →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Final Details -->
+            <div id="step5" class="step-card hidden">
+                <h4 class="text-lg font-bold text-accent mb-4">📋 Step 5: Final Details</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Offer Name</label>
+                        <input type="text" id="offerName" placeholder="e.g., QuickBooks Setup & Training Package" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Status</label>
+                        <select id="offerStatus" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="draft">Draft</option>
+                            <option value="testing">Testing</option>
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Notes</label>
+                        <textarea id="offerNotes" placeholder="Additional notes, variations, test results..." 
+                                  class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="prevStep(4)" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-bold">
+                        ← Back
+                    </button>
+                    <button onclick="saveOffer()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">
+                        💾 Save Offer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Modal -->
+    <div id="callModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">📞 Customer Call Scorecard</h3>
+                <button onclick="closeCallModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Customer Name</label>
+                        <input type="text" id="callCustomer" placeholder="John Smith" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Company</label>
+                        <input type="text" id="callCompany" placeholder="Smith Consulting" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Job To Be Done</label>
+                    <textarea id="callJobToBeDone" placeholder="What job is the customer hiring your product/service to do?" 
+                              class="w-full h-20 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Pain Severity</label>
+                        <select id="callSeverity" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="low">Low - Nice to have</option>
+                            <option value="medium">Medium - Important</option>
+                            <option value="high">High - Urgent/Critical</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Call Duration (minutes)</label>
+                        <input type="number" id="callDuration" placeholder="30" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Call Notes</label>
+                    <textarea id="callNotes" placeholder="Key insights, objections, next steps..." 
+                              class="w-full h-32 p-3 rounded-lg bg-gray-800 border border-accent text-white resize-none"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Outcome</label>
+                        <select id="callOutcome" class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                            <option value="discovery">Discovery Call</option>
+                            <option value="proposal">Proposal Sent</option>
+                            <option value="closed-won">Closed Won</option>
+                            <option value="closed-lost">Closed Lost</option>
+                            <option value="follow-up">Follow-up Scheduled</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Deal Value ($)</label>
+                        <input type="number" id="callValue" placeholder="5000" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 mt-6">
+                    <button onclick="saveCall()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Save Call
+                    </button>
+                    <button onclick="closeCallModal()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">⚡ Quick Add</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="quickAddOffer()" class="bg-blue-600 text-white p-4 rounded-lg font-bold">
+                    💰 Add Offer
+                </button>
+                <button onclick="quickAddCall()" class="bg-green-600 text-white p-4 rounded-lg font-bold">
+                    📞 Add Call
+                </button>
+                <button onclick="quickAddPhrase()" class="bg-purple-600 text-white p-4 rounded-lg font-bold">
+                    💬 Add Phrase
+                </button>
+                <button onclick="quickAddMantra()" class="bg-orange-600 text-white p-4 rounded-lg font-bold">
+                    💭 Add Mantra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            offers: [],
+            calls: [],
+            vocabulary: {
+                discovery: [
+                    "What's the biggest challenge you're facing with [problem area]?",
+                    "How much time/money is this costing you currently?",
+                    "What have you tried before to solve this?",
+                    "What would success look like for you?",
+                    "Who else is involved in this decision?"
+                ],
+                positioning: [
+                    "We specialize in helping [target] achieve [outcome]...",
+                    "Our clients typically see [specific result] within [timeframe]...",
+                    "The difference with our approach is [unique value]...",
+                    "This investment pays for itself through [ROI mechanism]...",
+                    "We guarantee [specific outcome] or [risk reversal]..."
+                ],
+                closing: [
+                    "Based on what you've shared, this sounds like a perfect fit...",
+                    "What questions do you have before we move forward?",
+                    "Would you like to start with [option A] or [option B]?",
+                    "I can see this saving you [specific benefit]. Shall we get started?",
+                    "What would need to happen for this to be a yes for you?"
+                ]
+            },
+            mantras: [
+                "Great businesses are built through customer obsession and rapid iteration!",
+                "Every customer conversation is a goldmine of insights!",
+                "Test fast, learn faster, iterate fastest!",
+                "High margins come from solving high-value problems!",
+                "The market is the ultimate judge of your offer!"
+            ],
+            progress: {
+                offerStreak: 0,
+                totalOffers: 0,
+                totalCalls: 0,
+                conversions: 0
+            },
+            recordings: {},
+            currentRecording: null
+        };
+
+        // Audio/Recording variables
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recognition = null;
+        let isRecording = false;
+        let isListening = false;
+
+        // Timers
+        let resetTimer = null;
+        let breathingInterval = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            loadOffers();
+            loadCalls();
+            loadVocabulary();
+            loadMantras();
+            initializeSpeechRecognition();
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('offerCraftData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem('offerCraftData', JSON.stringify(appData));
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'offers': loadOffers(); break;
+                case 'calls': loadCalls(); break;
+                case 'vocabulary': loadVocabulary(); break;
+                case 'analytics': loadAnalytics(); break;
+            }
+        }
+
+        // Offer Management
+        function loadOffers() {
+            updateOfferStats();
+            
+            const container = document.getElementById('offersList');
+            
+            if (appData.offers.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <div class="text-6xl mb-4">💰</div>
+                        <h3 class="text-xl font-bold mb-2">No offers created yet</h3>
+                        <p class="mb-6">Start building your first winning offer with the 5-step framework</p>
+                        <button onclick="addOffer()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Create Your First Offer
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.offers.map(offer => {
+                const marginClass = offer.margin >= 70 ? 'high-margin' : offer.margin <= 30 ? 'low-margin' : '';
+                return `
+                    <div class="offer-card ${marginClass}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h4 class="text-xl font-bold text-white">${offer.name}</h4>
+                                    <span class="text-xs px-2 py-1 rounded ${getStatusColor(offer.status)} text-white">
+                                        ${offer.status}
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-400 mb-2">${offer.target}</div>
+                                <div class="text-sm text-gray-300">${offer.pain.substring(0, 100)}...</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-accent">$${offer.price}</div>
+                                <div class="text-sm text-gray-400">Margin: ${offer.margin}%</div>
+                                <div class="text-xs text-gray-500">Profit: $${offer.profit}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 p-3 rounded mb-3">
+                            <div class="text-sm font-semibold text-accent mb-1">Promise:</div>
+                            <div class="text-sm text-gray-300">${offer.promise}</div>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="viewOffer('${offer.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                👁️ View
+                            </button>
+                            <button onclick="editOffer('${offer.id}')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                                ✏️ Edit
+                            </button>
+                            <button onclick="duplicateOffer('${offer.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                📋 Duplicate
+                            </button>
+                            <button onclick="deleteOffer('${offer.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateOfferStats() {
+            const total = appData.offers.length;
+            const highMargin = appData.offers.filter(o => o.margin >= 70).length;
+            const tested = appData.offers.filter(o => o.status === 'testing' || o.status === 'active').length;
+            const bestMargin = total > 0 ? Math.max(...appData.offers.map(o => o.margin)) : 0;
+            
+            document.getElementById('totalOffers').textContent = total;
+            document.getElementById('highMarginOffers').textContent = highMargin;
+            document.getElementById('testedOffers').textContent = tested;
+            document.getElementById('bestMargin').textContent = bestMargin + '%';
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'active': return 'bg-green-600';
+                case 'testing': return 'bg-blue-600';
+                case 'paused': return 'bg-yellow-600';
+                default: return 'bg-gray-600';
+            }
+        }
+
+        function addOffer() {
+            document.getElementById('offerModalTitle').textContent = 'Create New Offer';
+            resetOfferModal();
+            document.getElementById('offerModal').classList.remove('hidden');
+        }
+
+        function editOffer(offerId) {
+            const offer = appData.offers.find(o => o.id === offerId);
+            if (offer) {
+                document.getElementById('offerModalTitle').textContent = 'Edit Offer';
+                populateOfferModal(offer);
+                document.getElementById('offerModal').classList.remove('hidden');
+            }
+        }
+
+        function populateOfferModal(offer) {
+            document.getElementById('offerPain').value = offer.pain || '';
+            document.getElementById('offerTarget').value = offer.target || '';
+            document.getElementById('offerPromise').value = offer.promise || '';
+            document.getElementById('offerOutcome').value = offer.outcome || '';
+            document.getElementById('offerProof').value = offer.proof || '';
+            document.getElementById('offerCredentials').value = offer.credentials || '';
+            document.getElementById('offerPrice').value = offer.price || '';
+            document.getElementById('offerCost').value = offer.cost || '';
+            document.getElementById('offerName').value = offer.name || '';
+            document.getElementById('offerStatus').value = offer.status || 'draft';
+            document.getElementById('offerNotes').value = offer.notes || '';
+            
+            calculateMargin();
+            
+            // Store the offer ID for editing
+            document.getElementById('offerModal').dataset.editId = offer.id;
+        }
+
+        function resetOfferModal() {
+            document.querySelectorAll('#offerModal input, #offerModal textarea, #offerModal select').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset to step 1
+            showStep(1);
+            
+            // Remove edit ID
+            delete document.getElementById('offerModal').dataset.editId;
+        }
+
+        function nextStep(step) {
+            showStep(step);
+        }
+
+        function prevStep(step) {
+            showStep(step);
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+            
+            // Show current step
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            
+            // Update progress dots
+            document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index + 1 < step) {
+                    dot.classList.add('completed');
+                } else if (index + 1 === step) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        function calculateMargin() {
+            const price = parseFloat(document.getElementById('offerPrice').value) || 0;
+            const cost = parseFloat(document.getElementById('offerCost').value) || 0;
+            
+            if (price > 0) {
+                const profit = price - cost;
+                const margin = ((profit / price) * 100).toFixed(1);
+                
+                document.getElementById('offerMargin').value = margin + '%';
+                document.getElementById('offerProfit').value = '$' + profit.toFixed(2);
+            } else {
+                document.getElementById('offerMargin').value = '';
+                document.getElementById('offerProfit').value = '';
+            }
+        }
+
+        function saveOffer() {
+            const offerData = {
+                pain: document.getElementById('offerPain').value,
+                target: document.getElementById('offerTarget').value,
+                promise: document.getElementById('offerPromise').value,
+                outcome: document.getElementById('offerOutcome').value,
+                proof: document.getElementById('offerProof').value,
+                credentials: document.getElementById('offerCredentials').value,
+                price: parseFloat(document.getElementById('offerPrice').value) || 0,
+                cost: parseFloat(document.getElementById('offerCost').value) || 0,
+                name: document.getElementById('offerName').value,
+                status: document.getElementById('offerStatus').value,
+                notes: document.getElementById('offerNotes').value
+            };
+            
+            // Validate required fields
+            if (!offerData.pain || !offerData.promise || !offerData.name || !offerData.price) {
+                showNotification('Please fill in all required fields');
+                return;
+            }
+            
+            // Calculate margin and profit
+            const profit = offerData.price - offerData.cost;
+            const margin = offerData.price > 0 ? ((profit / offerData.price) * 100) : 0;
+            
+            offerData.profit = profit;
+            offerData.margin = parseFloat(margin.toFixed(1));
+            
+            const editId = document.getElementById('offerModal').dataset.editId;
+            
+            if (editId) {
+                // Edit existing offer
+                const offerIndex = appData.offers.findIndex(o => o.id === editId);
+                if (offerIndex !== -1) {
+                    appData.offers[offerIndex] = { ...appData.offers[offerIndex], ...offerData };
+                    showNotification('✏️ Offer updated successfully!');
+                }
+            } else {
+                // Create new offer
+                const newOffer = {
+                    id: Date.now().toString(),
+                    ...offerData,
+                    createdDate: new Date().toISOString()
+                };
+                
+                appData.offers.push(newOffer);
+                appData.progress.totalOffers++;
+                showNotification('💰 New offer created successfully!');
+            }
+            
+            saveAppData();
+            updateAllStats();
+            loadOffers();
+            closeOfferModal();
+        }
+
+        function closeOfferModal() {
+            document.getElementById('offerModal').classList.add('hidden');
+        }
+
+        function viewOffer(offerId) {
+            const offer = appData.offers.find(o => o.id === offerId);
+            if (offer) {
+                const details = `
+OFFER: ${offer.name}
+Status: ${offer.status}
+Target: ${offer.target}
+
+PAIN:
+${offer.pain}
+
+PROMISE:
+${offer.promise}
+
+PROOF:
+${offer.proof}
+
+PRICING:
+Price: $${offer.price}
+Cost: $${offer.cost}
+Margin: ${offer.margin}%
+Profit: $${offer.profit}
+
+NOTES:
+${offer.notes || 'None'}
+                `;
+                alert(details);
+            }
+        }
+
+        function duplicateOffer(offerId) {
+            const offer = appData.offers.find(o => o.id === offerId);
+            if (offer) {
+                const duplicate = {
+                    ...offer,
+                    id: Date.now().toString(),
+                    name: offer.name + ' (Copy)',
+                    status: 'draft',
+                    createdDate: new Date().toISOString()
+                };
+                
+                appData.offers.push(duplicate);
+                appData.progress.totalOffers++;
+                
+                saveAppData();
+                updateAllStats();
+                loadOffers();
+                showNotification('📋 Offer duplicated successfully!');
+            }
+        }
+
+        function deleteOffer(offerId) {
+            if (confirm('Delete this offer? This cannot be undone.')) {
+                appData.offers = appData.offers.filter(o => o.id !== offerId);
+                saveAppData();
+                updateAllStats();
+                loadOffers();
+                showNotification('🗑️ Offer deleted');
+            }
+        }
+
+        // Call Management
+        function loadCalls() {
+            updateCallStats();
+            
+            const container = document.getElementById('callsList');
+            
+            if (appData.calls.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <div class="text-6xl mb-4">📞</div>
+                        <h3 class="text-xl font-bold mb-2">No customer calls logged yet</h3>
+                        <p class="mb-6">Start tracking your discovery calls with the Jobs To Be Done framework</p>
+                        <button onclick="addCall()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Log Your First Call
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.calls.map(call => `
+                <div class="offer-card severity-${call.severity}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h4 class="text-xl font-bold text-white">${call.customer}</h4>
+                                <span class="text-xs px-2 py-1 rounded ${getSeverityColor(call.severity)} text-white">
+                                    ${call.severity} severity
+                                </span>
+                                <span class="text-xs px-2 py-1 rounded ${getOutcomeColor(call.outcome)} text-white">
+                                    ${call.outcome}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-400 mb-2">${call.company} • ${call.duration}min</div>
+                            <div class="text-sm text-gray-300">${call.jobToBeDone}</div>
+                        </div>
+                        <div class="text-right">
+                            ${call.value ? `<div class="text-lg font-bold text-accent">$${call.value}</div>` : ''}
+                            <div class="text-xs text-gray-500">${new Date(call.date).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-3 rounded mb-3">
+                        <div class="text-sm font-semibold text-accent mb-1">Notes:</div>
+                        <div class="text-sm text-gray-300">${call.notes}</div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="viewCall('${call.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            👁️ View
+                        </button>
+                        <button onclick="editCall('${call.id}')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                            ✏️ Edit
+                        </button>
+                        ${call.recording ? `
+                            <button onclick="playRecording('${call.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                🎵 Play Recording
+                            </button>
+                        ` : ''}
+                        <button onclick="deleteCall('${call.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCallStats() {
+            const total = appData.calls.length;
+            const highSeverity = appData.calls.filter(c => c.severity === 'high').length;
+            const conversions = appData.calls.filter(c => c.outcome === 'closed-won').length;
+            const avgDuration = total > 0 ? Math.round(appData.calls.reduce((sum, c) => sum + (c.duration || 0), 0) / total) : 0;
+            
+            document.getElementById('totalCallsCount').textContent = total;
+            document.getElementById('highSeverityCalls').textContent = highSeverity;
+            document.getElementById('conversions').textContent = conversions;
+            document.getElementById('avgCallTime').textContent = avgDuration + 'm';
+        }
+
+        function getSeverityColor(severity) {
+            switch(severity) {
+                case 'high': return 'bg-red-600';
+                case 'medium': return 'bg-yellow-600';
+                default: return 'bg-green-600';
+            }
+        }
+
+        function getOutcomeColor(outcome) {
+            switch(outcome) {
+                case 'closed-won': return 'bg-green-600';
+                case 'closed-lost': return 'bg-red-600';
+                case 'proposal': return 'bg-blue-600';
+                default: return 'bg-gray-600';
+            }
+        }
+
+        function addCall() {
+            resetCallModal();
+            document.getElementById('callModal').classList.remove('hidden');
+        }
+
+        function editCall(callId) {
+            const call = appData.calls.find(c => c.id === callId);
+            if (call) {
+                populateCallModal(call);
+                document.getElementById('callModal').classList.remove('hidden');
+            }
+        }
+
+        function populateCallModal(call) {
+            document.getElementById('callCustomer').value = call.customer || '';
+            document.getElementById('callCompany').value = call.company || '';
+            document.getElementById('callJobToBeDone').value = call.jobToBeDone || '';
+            document.getElementById('callSeverity').value = call.severity || 'medium';
+            document.getElementById('callDuration').value = call.duration || '';
+            document.getElementById('callNotes').value = call.notes || '';
+            document.getElementById('callOutcome').value = call.outcome || 'discovery';
+            document.getElementById('callValue').value = call.value || '';
+            
+            // Store the call ID for editing
+            document.getElementById('callModal').dataset.editId = call.id;
+        }
+
+        function resetCallModal() {
+            document.querySelectorAll('#callModal input, #callModal textarea, #callModal select').forEach(input => {
+                input.value = '';
+            });
+            
+            // Remove edit ID
+            delete document.getElementById('callModal').dataset.editId;
+        }
+
+        function saveCall() {
+            const callData = {
+                customer: document.getElementById('callCustomer').value,
+                company: document.getElementById('callCompany').value,
+                jobToBeDone: document.getElementById('callJobToBeDone').value,
+                severity: document.getElementById('callSeverity').value,
+                duration: parseInt(document.getElementById('callDuration').value) || 0,
+                notes: document.getElementById('callNotes').value,
+                outcome: document.getElementById('callOutcome').value,
+                value: parseFloat(document.getElementById('callValue').value) || 0
+            };
+            
+            // Validate required fields
+            if (!callData.customer || !callData.jobToBeDone) {
+                showNotification('Please fill in customer name and job to be done');
+                return;
+            }
+            
+            const editId = document.getElementById('callModal').dataset.editId;
+            
+            if (editId) {
+                // Edit existing call
+                const callIndex = appData.calls.findIndex(c => c.id === editId);
+                if (callIndex !== -1) {
+                    appData.calls[callIndex] = { ...appData.calls[callIndex], ...callData };
+                    showNotification('✏️ Call updated successfully!');
+                }
+            } else {
+                // Create new call
+                const newCall = {
+                    id: Date.now().toString(),
+                    ...callData,
+                    date: new Date().toISOString(),
+                    recording: appData.currentRecording || null
+                };
+                
+                appData.calls.push(newCall);
+                appData.progress.totalCalls++;
+                
+                if (callData.outcome === 'closed-won') {
+                    appData.progress.conversions++;
+                }
+                
+                showNotification('📞 Call logged successfully!');
+            }
+            
+            // Clear current recording
+            appData.currentRecording = null;
+            
+            saveAppData();
+            updateAllStats();
+            loadCalls();
+            closeCallModal();
+        }
+
+        function closeCallModal() {
+            document.getElementById('callModal').classList.add('hidden');
+        }
+
+        function viewCall(callId) {
+            const call = appData.calls.find(c => c.id === callId);
+            if (call) {
+                const details = `
+CUSTOMER: ${call.customer}
+Company: ${call.company}
+Date: ${new Date(call.date).toLocaleDateString()}
+Duration: ${call.duration} minutes
+
+JOB TO BE DONE:
+${call.jobToBeDone}
+
+SEVERITY: ${call.severity}
+OUTCOME: ${call.outcome}
+VALUE: $${call.value || 0}
+
+NOTES:
+${call.notes}
+                `;
+                alert(details);
+            }
+        }
+
+        function deleteCall(callId) {
+            if (confirm('Delete this call record? This cannot be undone.')) {
+                appData.calls = appData.calls.filter(c => c.id !== callId);
+                saveAppData();
+                updateAllStats();
+                loadCalls();
+                showNotification('🗑️ Call deleted');
+            }
+        }
+
+        // Recording Functions
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showNotification('Recording not supported in this browser');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        
+                        // Store recording
+                        appData.currentRecording = {
+                            url: audioUrl,
+                            blob: audioBlob,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        // Generate transcript (simulated)
+                        generateTranscript(audioBlob);
+                        
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    document.getElementById('startRecordBtn').disabled = true;
+                    document.getElementById('stopRecordBtn').disabled = false;
+                    document.getElementById('recordingIndicator').classList.remove('hidden');
+                    
+                    showNotification('🔴 Recording started');
+                })
+                .catch(error => {
+                    showNotification('Error accessing microphone');
+                    console.error('Recording error:', error);
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('startRecordBtn').disabled = false;
+                document.getElementById('stopRecordBtn').disabled = true;
+                document.getElementById('recordingIndicator').classList.add('hidden');
+                
+                showNotification('⏹️ Recording stopped');
+            }
+        }
+
+        function generateTranscript(audioBlob) {
+            // Simulated transcript generation
+            const sampleTranscripts = [
+                "Customer discussed challenges with current invoicing system. Mentioned spending 8-10 hours per week on manual processes. Interested in automation solution.",
+                "Discovery call revealed pain points around inventory management. Customer loses approximately $2000/month due to stockouts. High urgency to solve.",
+                "Follow-up call to discuss proposal. Customer has budget approved. Decision timeline is 2 weeks. Competitor pricing is $500 higher.",
+                "Initial consultation about marketing automation. Customer currently using 3 different tools. Looking to consolidate and improve ROI tracking."
+            ];
+            
+            const transcript = sampleTranscripts[Math.floor(Math.random() * sampleTranscripts.length)];
+            
+            document.getElementById('quickSummary').innerHTML = `
+                <div class="text-white text-sm">${transcript}</div>
+                <div class="text-xs text-gray-400 mt-2">Auto-generated summary</div>
+            `;
+        }
+
+        function playRecording(callId) {
+            const call = appData.calls.find(c => c.id === callId);
+            if (call && call.recording) {
+                const audio = new Audio(call.recording.url);
+                audio.play().catch(error => {
+                    showNotification('Error playing recording');
+                    console.error('Playback error:', error);
+                });
+            }
+        }
+
+        // Voice to Text
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        const currentNotes = document.getElementById('voiceNotes').value;
+                        document.getElementById('voiceNotes').value = currentNotes + ' ' + finalTranscript;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    showNotification('Voice recognition error: ' + event.error);
+                    stopVoiceToText();
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceToText();
+                };
+            }
+        }
+
+        function startVoiceToText() {
+            if (!recognition) {
+                showNotification('Voice recognition not supported');
+                return;
+            }
+            
+            if (isListening) {
+                stopVoiceToText();
+                return;
+            }
+            
+            recognition.start();
+            isListening = true;
+            
+            document.getElementById('voiceBtn').textContent = '⏹️ Stop Listening';
+            document.getElementById('voiceBtn').classList.remove('bg-blue-600');
+            document.getElementById('voiceBtn').classList.add('bg-red-600');
+            
+            showNotification('🎤 Listening...');
+        }
+
+        function stopVoiceToText() {
+            if (recognition && isListening) {
+                recognition.stop();
+                isListening = false;
+                
+                document.getElementById('voiceBtn').textContent = '🎤 Voice to Text';
+                document.getElementById('voiceBtn').classList.remove('bg-red-600');
+                document.getElementById('voiceBtn').classList.add('bg-blue-600');
+            }
+        }
+
+        // Vocabulary Management
+        function loadVocabulary() {
+            loadDiscoveryPhrases();
+            loadPositioningPhrases();
+            loadClosingPhrases();
+        }
+
+        function loadDiscoveryPhrases() {
+            const container = document.getElementById('discoveryPhrases');
+            container.innerHTML = appData.vocabulary.discovery.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadPositioningPhrases() {
+            const container = document.getElementById('positioningPhrases');
+            container.innerHTML = appData.vocabulary.positioning.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadClosingPhrases() {
+            const container = document.getElementById('closingPhrases');
+            container.innerHTML = appData.vocabulary.closing.map((phrase, index) => `
+                <div class="phrase-card" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addDiscoveryPhrase() {
+            const phrase = document.getElementById('newDiscoveryPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.discovery.push(phrase);
+                document.getElementById('newDiscoveryPhrase').value = '';
+                saveAppData();
+                loadDiscoveryPhrases();
+                showNotification('🔍 Discovery phrase added!');
+            }
+        }
+
+        function addPositioningPhrase() {
+            const phrase = document.getElementById('newPositioningPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.positioning.push(phrase);
+                document.getElementById('newPositioningPhrase').value = '';
+                saveAppData();
+                loadPositioningPhrases();
+                showNotification('🎯 Positioning phrase added!');
+            }
+        }
+
+        function addClosingPhrase() {
+            const phrase = document.getElementById('newClosingPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.closing.push(phrase);
+                document.getElementById('newClosingPhrase').value = '';
+                saveAppData();
+                loadClosingPhrases();
+                showNotification('🤝 Closing phrase added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        // Reset Session (25-minute breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                    showNotification('🧘 25-minute reset completed! Mind refreshed and focused!');
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            if (appData.mantras.length > 0) {
+                const randomMessage = appData.mantras[Math.floor(Math.random() * appData.mantras.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            document.getElementById('resetTimer').textContent = '25:00';
+            document.getElementById('breathingInstruction').textContent = 'Ready to Reset';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.classList.remove('inhale', 'exhale');
+        }
+
+        function addMantra() {
+            const mantra = document.getElementById('newMantra').value.trim();
+            if (!mantra) {
+                showNotification('Please enter a mantra');
+                return;
+            }
+            
+            appData.mantras.push(mantra);
+            saveAppData();
+            
+            document.getElementById('newMantra').value = '';
+            loadMantras();
+            showNotification('💭 Business mantra added!');
+        }
+
+        function loadMantras() {
+            const container = document.getElementById('customMantras');
+            const customMantras = appData.mantras.slice(5); // Skip default mantras
+            
+            if (customMantras.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom mantras yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMantras.map((mantra, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${mantra}"</span>
+                    <button onclick="removeMantra(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMantra(index) {
+            appData.mantras.splice(index, 1);
+            saveAppData();
+            loadMantras();
+            showNotification('🗑️ Mantra removed');
+        }
+
+        // Analytics
+        function loadAnalytics() {
+            updateAnalyticsStats();
+            loadRecentActivity();
+        }
+
+        function updateAnalyticsStats() {
+            const totalRevenue = appData.offers.reduce((sum, offer) => sum + (offer.price || 0), 0);
+            const conversions = appData.calls.filter(c => c.outcome === 'closed-won').length;
+            const totalCalls = appData.calls.length;
+            const conversionRate = totalCalls > 0 ? Math.round((conversions / totalCalls) * 100) : 0;
+            const topMargin = appData.offers.length > 0 ? Math.max(...appData.offers.map(o => o.margin)) : 0;
+            
+            document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toLocaleString();
+            document.getElementById('currentOfferStreak').textContent = appData.progress.offerStreak;
+            document.getElementById('callConversionRate').textContent = conversionRate + '%';
+            document.getElementById('topOfferMargin').textContent = topMargin + '%';
+        }
+
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const activities = [];
+            
+            // Add recent offers
+            appData.offers.slice(-5).forEach(offer => {
+                activities.push({
+                    type: 'offer',
+                    date: offer.createdDate,
+                    description: `Created offer: ${offer.name} ($${offer.price}, ${offer.margin}% margin)`,
+                    icon: '💰'
+                });
+            });
+            
+            // Add recent calls
+            appData.calls.slice(-5).forEach(call => {
+                activities.push({
+                    type: 'call',
+                    date: call.date,
+                    description: `Call with ${call.customer} - ${call.outcome}`,
+                    icon: '📞'
+                });
+            });
+            
+            // Sort by date
+            activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No recent activity</div>';
+                return;
+            }
+            
+            container.innerHTML = activities.slice(0, 10).map(activity => `
+                <div class="bg-gray-800 p-3 rounded flex items-center gap-3">
+                    <span class="text-2xl">${activity.icon}</span>
+                    <div class="flex-1">
+                        <div class="text-white text-sm">${activity.description}</div>
+                        <div class="text-xs text-gray-500">${new Date(activity.date).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Export Functions
+        function exportOfferSheet() {
+            if (appData.offers.length === 0) {
+                showNotification('No offers to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Offer Portfolio', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Total Offers: ${appData.offers.length}`, 20, 60);
+            
+            let yPos = 80;
+            
+            appData.offers.forEach((offer, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`${index + 1}. ${offer.name}`, 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.text(`Price: $${offer.price} | Margin: ${offer.margin}% | Status: ${offer.status}`, 25, yPos);
+                yPos += 8;
+                
+                const painLines = doc.splitTextToSize(`Pain: ${offer.pain}`, 170);
+                doc.text(painLines, 25, yPos);
+                yPos += painLines.length * 4 + 5;
+                
+                const promiseLines = doc.splitTextToSize(`Promise: ${offer.promise}`, 170);
+                doc.text(promiseLines, 25, yPos);
+                yPos += promiseLines.length * 4 + 10;
+            });
+            
+            doc.save(`offer-portfolio-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Offer portfolio exported!');
+        }
+
+        function exportCallSummaries() {
+            if (appData.calls.length === 0) {
+                showNotification('No calls to export');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Customer Call Summaries', 20, 30);
+            
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            doc.text(`Total Calls: ${appData.calls.length}`, 20, 60);
+            
+            let yPos = 80;
+            
+            appData.calls.forEach((call, index) => {
+                if (yPos > 240) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFontSize(14);
+                doc.text(`${index + 1}. ${call.customer} (${call.company})`, 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.text(`Date: ${new Date(call.date).toLocaleDateString()} | Duration: ${call.duration}min | Severity: ${call.severity}`, 25, yPos);
+                yPos += 8;
+                
+                const jobLines = doc.splitTextToSize(`Job: ${call.jobToBeDone}`, 170);
+                doc.text(jobLines, 25, yPos);
+                yPos += jobLines.length * 4 + 5;
+                
+                const notesLines = doc.splitTextToSize(`Notes: ${call.notes}`, 170);
+                doc.text(notesLines, 25, yPos);
+                yPos += notesLines.length * 4 + 10;
+            });
+            
+            doc.save(`call-summaries-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📞 Call summaries exported!');
+        }
+
+        function backupAllData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `offercraft-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Complete backup created!');
+        }
+
+        // Quick Add Functions
+        function showQuickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function quickAddOffer() {
+            closeQuickAdd();
+            addOffer();
+        }
+
+        function quickAddCall() {
+            closeQuickAdd();
+            addCall();
+        }
+
+        function quickAddPhrase() {
+            closeQuickAdd();
+            showScreen('vocabulary');
+            document.getElementById('newDiscoveryPhrase').focus();
+        }
+
+        function quickAddMantra() {
+            closeQuickAdd();
+            showScreen('reset');
+            document.getElementById('newMantra').focus();
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            // Update header stats
+            const avgMargin = appData.offers.length > 0 ? 
+                Math.round(appData.offers.reduce((sum, o) => sum + o.margin, 0) / appData.offers.length) : 0;
+            const conversions = appData.calls.filter(c => c.outcome === 'closed-won').length;
+            const conversionRate = appData.calls.length > 0 ? 
+                Math.round((conversions / appData.calls.length) * 100) : 0;
+            
+            document.getElementById('offerStreak').textContent = appData.progress.offerStreak;
+            document.getElementById('avgMargin').textContent = avgMargin + '%';
+            document.getElementById('totalCalls').textContent = appData.calls.length;
+            document.getElementById('conversionRate').textContent = conversionRate + '%';
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle Enter key for input fields
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'newDiscoveryPhrase') {
+                    addDiscoveryPhrase();
+                } else if (activeElement.id === 'newPositioningPhrase') {
+                    addPositioningPhrase();
+                } else if (activeElement.id === 'newClosingPhrase') {
+                    addClosingPhrase();
+                } else if (activeElement.id === 'newMantra') {
+                    addMantra();
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988304aca1bcfee5',t:'MTc1OTM5NTcxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
