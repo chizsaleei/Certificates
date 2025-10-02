@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Interview Practice Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .custom-green { background: linear-gradient(135deg, #1e3a2e, #2d5a3d); }
+        .custom-gold { background: linear-gradient(135deg, #d4af37, #f4d03f); }
+        .text-gold { color: #d4af37; }
+        .border-gold { border-color: #d4af37; }
+        .bg-gold { background-color: #d4af37; }
+        .hover-gold:hover { background-color: #f4d03f; }
+        
+        .flowchart-node {
+            background: linear-gradient(135deg, #2d5a3d, #1e3a2e);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px;
+            color: white;
+            position: relative;
+        }
+        
+        .flowchart-arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #d4af37;
+            margin: 0 auto;
+        }
+        
+        .key-expression {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin: 2px;
+            display: inline-block;
+            color: #d4af37;
+            font-size: 0.9em;
+        }
+        
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .micro-tip {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid #d4af37;
+            padding: 8px 12px;
+            margin: 4px 0;
+            font-size: 0.85em;
+            color: #d4af37;
+        }
+        
+        .recording-pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .transcript-highlight {
+            background-color: rgba(212, 175, 55, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="custom-green min-h-screen text-white">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gold mb-2">🎯 Job Interview Practice Studio</h1>
+            <p class="text-lg opacity-90">Master your interviews with structured practice and feedback</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap justify-center mb-8 bg-black bg-opacity-30 rounded-lg p-2">
+            <button onclick="showTab('roles')" id="rolesTab" class="tab-btn px-6 py-3 mx-1 rounded-lg bg-gold text-black font-semibold">Roles & Questions</button>
+            <button onclick="showTab('practice')" id="practiceTab" class="tab-btn px-6 py-3 mx-1 rounded-lg bg-transparent border border-gold text-gold hover-gold">Practice Session</button>
+            <button onclick="showTab('recordings')" id="recordingsTab" class="tab-btn px-6 py-3 mx-1 rounded-lg bg-transparent border border-gold text-gold hover-gold">My Recordings</button>
+            <button onclick="showTab('settings')" id="settingsTab" class="tab-btn px-6 py-3 mx-1 rounded-lg bg-transparent border border-gold text-gold hover-gold">Settings</button>
+        </nav>
+
+        <!-- Roles & Questions Tab -->
+        <div id="rolesContent" class="tab-content">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Role Management -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">📋 Manage Roles</h2>
+                    
+                    <div class="mb-4">
+                        <input type="text" id="newRoleName" placeholder="Enter role name (e.g., Software Engineer)" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400">
+                        <button onclick="addRole()" class="mt-2 w-full bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                            ➕ Add New Role
+                        </button>
+                    </div>
+                    
+                    <div id="rolesList" class="space-y-2">
+                        <!-- Roles will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Question Editor -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">❓ Question Editor</h2>
+                    
+                    <div id="questionEditor" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-gold mb-2">Self Introduction:</label>
+                            <textarea id="selfIntro" rows="3" placeholder="Write your self-introduction for this role..."
+                                    class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400"></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gold mb-2">Interview Question:</label>
+                            <textarea id="questionText" rows="2" placeholder="Enter interview question..."
+                                    class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400"></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gold mb-2">Model Answer:</label>
+                            <textarea id="modelAnswer" rows="4" placeholder="Enter model answer with structure and key points..."
+                                    class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400"></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gold mb-2">Key Expressions (comma-separated):</label>
+                            <input type="text" id="keyExpressions" placeholder="e.g., In my experience, Furthermore, To summarize"
+                                   class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400">
+                        </div>
+                        
+                        <button onclick="saveQuestion()" class="w-full bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                            💾 Save Question
+                        </button>
+                        
+                        <div id="questionsList" class="mt-6 space-y-2">
+                            <!-- Questions will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="selectRolePrompt" class="text-center text-gray-400 py-8">
+                        Select a role to start adding questions
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Session Tab -->
+        <div id="practiceContent" class="tab-content hidden">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Session Setup -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">🎯 Practice Setup</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Select Role:</label>
+                        <select id="practiceRole" onchange="loadPracticeQuestions()" 
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                            <option value="">Choose a role...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Select Question:</label>
+                        <select id="practiceQuestion" onchange="loadQuestionDetails()" 
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                            <option value="">Choose a question...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Answer Time (minutes):</label>
+                        <input type="number" id="answerTime" value="3" min="1" max="10" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                    </div>
+                    
+                    <button onclick="startPractice()" id="startPracticeBtn" 
+                            class="w-full bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                        🚀 Start Practice
+                    </button>
+                </div>
+
+                <!-- Visual Guide -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">🗺️ Visual Guide</h2>
+                    
+                    <div class="mb-4 flex gap-2">
+                        <button onclick="toggleGuideView('flowchart')" id="flowchartBtn" 
+                                class="px-4 py-2 rounded-lg bg-gold text-black font-semibold">Flowchart</button>
+                        <button onclick="toggleGuideView('mindmap')" id="mindmapBtn" 
+                                class="px-4 py-2 rounded-lg bg-transparent border border-gold text-gold">Mind Map</button>
+                    </div>
+                    
+                    <div id="visualGuide" class="min-h-64 border border-gold rounded-lg p-4">
+                        <div class="text-center text-gray-400 py-8">
+                            Select a question to generate visual guide
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer & Recording -->
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">⏱️ Timer & Recording</h2>
+                    
+                    <div class="text-center mb-6">
+                        <div id="timerDisplay" class="timer-display text-gold">03:00</div>
+                        <div id="timerStatus" class="text-sm text-gray-400">Ready to start</div>
+                    </div>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="startTimer()" id="startTimerBtn" 
+                                class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">▶️ Start</button>
+                        <button onclick="pauseTimer()" id="pauseTimerBtn" 
+                                class="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold" disabled>⏸️ Pause</button>
+                        <button onclick="resetTimer()" id="resetTimerBtn" 
+                                class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">🔄 Reset</button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <button onclick="toggleRecording()" id="recordBtn" 
+                                class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-semibold">
+                            🎤 Start Recording
+                        </button>
+                    </div>
+                    
+                    <div id="microTips" class="space-y-2">
+                        <div class="micro-tip">💡 State your stance clearly</div>
+                        <div class="micro-tip">📊 Provide two concrete examples</div>
+                        <div class="micro-tip">🎯 Close with your unique value</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Expressions Panel -->
+            <div class="mt-6 bg-black bg-opacity-40 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-gold mb-4">🔑 Key Expressions</h3>
+                <div id="keyExpressionsDisplay" class="flex flex-wrap gap-2">
+                    <!-- Key expressions will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Transcript Panel -->
+            <div id="transcriptPanel" class="mt-6 bg-black bg-opacity-40 rounded-lg p-6 hidden">
+                <h3 class="text-xl font-bold text-gold mb-4">📝 Your Answer Transcript</h3>
+                <div id="transcriptText" class="bg-gray-800 p-4 rounded-lg min-h-32 text-white">
+                    <!-- Transcript will appear here -->
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="saveRecording()" class="bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                        💾 Save Recording
+                    </button>
+                    <button onclick="retryAnswer()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        🔄 Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recordings Tab -->
+        <div id="recordingsContent" class="tab-content hidden">
+            <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                <h2 class="text-2xl font-bold text-gold mb-4">🎵 My Recordings</h2>
+                
+                <div class="mb-4 flex gap-2">
+                    <button onclick="exportAllRecordings()" class="bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                        📦 Export All (ZIP)
+                    </button>
+                    <button onclick="clearAllRecordings()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        🗑️ Clear All
+                    </button>
+                </div>
+                
+                <div id="recordingsList" class="space-y-4">
+                    <!-- Recordings will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settingsContent" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">⚙️ Practice Settings</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Default Answer Time (minutes):</label>
+                        <input type="number" id="defaultTime" value="3" min="1" max="10" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Grace Period (seconds):</label>
+                        <input type="number" id="gracePeriod" value="30" min="0" max="120" 
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Key Expressions to Show:</label>
+                        <select id="expressionsCount" class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white">
+                            <option value="5">5 expressions</option>
+                            <option value="10" selected>10 expressions</option>
+                            <option value="15">15 expressions</option>
+                            <option value="all">All expressions</option>
+                        </select>
+                    </div>
+                    
+                    <button onclick="saveSettings()" class="w-full bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-gold">
+                        💾 Save Settings
+                    </button>
+                </div>
+                
+                <div class="bg-black bg-opacity-40 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-gold mb-4">📥 Import/Export</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gold mb-2">Import Question Bank:</label>
+                        <textarea id="importData" rows="6" placeholder="Paste JSON data or formatted questions here..."
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gold text-white placeholder-gray-400"></textarea>
+                        <button onclick="importQuestions()" class="mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            📥 Import Questions
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <button onclick="exportData()" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            📤 Export All Data
+                        </button>
+                    </div>
+                    
+                    <div class="text-sm text-gray-400">
+                        <p>💡 Import format: JSON with roles, questions, and answers</p>
+                        <p>🔒 All data is stored locally in your browser</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentRole = null;
+        let currentQuestion = null;
+        let timer = null;
+        let timeLeft = 0;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let currentRecordingBlob = null;
+        let currentTranscript = '';
+        let guideView = 'flowchart';
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRoles();
+            loadSettings();
+            loadRecordings();
+            showTab('roles');
+        });
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-6 py-3 mx-1 rounded-lg bg-transparent border border-gold text-gold hover-gold';
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            
+            // Add active class to selected tab
+            document.getElementById(tabName + 'Tab').className = 'tab-btn px-6 py-3 mx-1 rounded-lg bg-gold text-black font-semibold';
+            
+            // Load data for specific tabs
+            if (tabName === 'practice') {
+                loadPracticeRoles();
+            }
+        }
+
+        // Role management
+        function addRole() {
+            const roleName = document.getElementById('newRoleName').value.trim();
+            if (!roleName) return;
+            
+            const roles = getRoles();
+            const roleId = Date.now().toString();
+            roles[roleId] = {
+                name: roleName,
+                questions: [],
+                selfIntro: ''
+            };
+            
+            localStorage.setItem('interviewRoles', JSON.stringify(roles));
+            document.getElementById('newRoleName').value = '';
+            loadRoles();
+        }
+
+        function loadRoles() {
+            const roles = getRoles();
+            const rolesList = document.getElementById('rolesList');
+            
+            rolesList.innerHTML = '';
+            
+            Object.entries(roles).forEach(([id, role]) => {
+                const roleDiv = document.createElement('div');
+                roleDiv.className = 'bg-gray-800 p-3 rounded-lg border border-gold flex justify-between items-center';
+                roleDiv.innerHTML = `
+                    <div>
+                        <div class="font-semibold text-gold">${role.name}</div>
+                        <div class="text-sm text-gray-400">${role.questions.length} questions</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editRole('${id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Edit</button>
+                        <button onclick="deleteRole('${id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">Delete</button>
+                    </div>
+                `;
+                rolesList.appendChild(roleDiv);
+            });
+        }
+
+        function editRole(roleId) {
+            currentRole = roleId;
+            const roles = getRoles();
+            const role = roles[roleId];
+            
+            document.getElementById('selfIntro').value = role.selfIntro || '';
+            document.getElementById('selectRolePrompt').classList.add('hidden');
+            document.getElementById('questionEditor').classList.remove('hidden');
+            
+            loadQuestions();
+        }
+
+        function deleteRole(roleId) {
+            if (confirm('Are you sure you want to delete this role and all its questions?')) {
+                const roles = getRoles();
+                delete roles[roleId];
+                localStorage.setItem('interviewRoles', JSON.stringify(roles));
+                loadRoles();
+                
+                if (currentRole === roleId) {
+                    currentRole = null;
+                    document.getElementById('selectRolePrompt').classList.remove('hidden');
+                    document.getElementById('questionEditor').classList.add('hidden');
+                }
+            }
+        }
+
+        // Question management
+        function saveQuestion() {
+            if (!currentRole) return;
+            
+            const questionText = document.getElementById('questionText').value.trim();
+            const modelAnswer = document.getElementById('modelAnswer').value.trim();
+            const keyExpressions = document.getElementById('keyExpressions').value.trim();
+            const selfIntro = document.getElementById('selfIntro').value.trim();
+            
+            if (!questionText || !modelAnswer) {
+                alert('Please fill in both question and model answer');
+                return;
+            }
+            
+            const roles = getRoles();
+            const questionId = Date.now().toString();
+            
+            roles[currentRole].selfIntro = selfIntro;
+            roles[currentRole].questions.push({
+                id: questionId,
+                question: questionText,
+                modelAnswer: modelAnswer,
+                keyExpressions: keyExpressions.split(',').map(expr => expr.trim()).filter(expr => expr)
+            });
+            
+            localStorage.setItem('interviewRoles', JSON.stringify(roles));
+            
+            // Clear form
+            document.getElementById('questionText').value = '';
+            document.getElementById('modelAnswer').value = '';
+            document.getElementById('keyExpressions').value = '';
+            
+            loadQuestions();
+            loadRoles();
+        }
+
+        function loadQuestions() {
+            if (!currentRole) return;
+            
+            const roles = getRoles();
+            const role = roles[currentRole];
+            const questionsList = document.getElementById('questionsList');
+            
+            questionsList.innerHTML = '<h4 class="text-gold font-semibold mb-2">Saved Questions:</h4>';
+            
+            role.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'bg-gray-700 p-3 rounded-lg border border-gray-600 mb-2';
+                questionDiv.innerHTML = `
+                    <div class="font-semibold text-white mb-1">${question.question}</div>
+                    <div class="text-sm text-gray-300 mb-2">${question.modelAnswer.substring(0, 100)}...</div>
+                    <div class="flex gap-2">
+                        <button onclick="deleteQuestion(${index})" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Delete</button>
+                    </div>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+        }
+
+        function deleteQuestion(index) {
+            if (!currentRole) return;
+            
+            const roles = getRoles();
+            roles[currentRole].questions.splice(index, 1);
+            localStorage.setItem('interviewRoles', JSON.stringify(roles));
+            
+            loadQuestions();
+            loadRoles();
+        }
+
+        // Practice session
+        function loadPracticeRoles() {
+            const roles = getRoles();
+            const select = document.getElementById('practiceRole');
+            
+            select.innerHTML = '<option value="">Choose a role...</option>';
+            
+            Object.entries(roles).forEach(([id, role]) => {
+                if (role.questions.length > 0) {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = role.name;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        function loadPracticeQuestions() {
+            const roleId = document.getElementById('practiceRole').value;
+            const select = document.getElementById('practiceQuestion');
+            
+            select.innerHTML = '<option value="">Choose a question...</option>';
+            
+            if (!roleId) return;
+            
+            const roles = getRoles();
+            const role = roles[roleId];
+            
+            role.questions.forEach((question, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = question.question;
+                select.appendChild(option);
+            });
+        }
+
+        function loadQuestionDetails() {
+            const roleId = document.getElementById('practiceRole').value;
+            const questionIndex = document.getElementById('practiceQuestion').value;
+            
+            if (!roleId || questionIndex === '') return;
+            
+            const roles = getRoles();
+            const question = roles[roleId].questions[questionIndex];
+            
+            currentQuestion = question;
+            generateVisualGuide(question);
+            displayKeyExpressions(question.keyExpressions);
+        }
+
+        function generateVisualGuide(question) {
+            const guideDiv = document.getElementById('visualGuide');
+            
+            if (guideView === 'flowchart') {
+                generateFlowchart(question, guideDiv);
+            } else {
+                generateMindMap(question, guideDiv);
+            }
+        }
+
+        function generateFlowchart(question, container) {
+            const steps = extractSteps(question.modelAnswer);
+            
+            container.innerHTML = '';
+            
+            steps.forEach((step, index) => {
+                const node = document.createElement('div');
+                node.className = 'flowchart-node text-center';
+                node.innerHTML = `<div class="font-semibold mb-2">Step ${index + 1}</div><div>${step}</div>`;
+                container.appendChild(node);
+                
+                if (index < steps.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'flowchart-arrow';
+                    container.appendChild(arrow);
+                }
+            });
+        }
+
+        function generateMindMap(question, container) {
+            const keyPoints = extractKeyPoints(question.modelAnswer);
+            
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="flowchart-node inline-block mb-4">
+                        <div class="font-bold">Main Answer</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${keyPoints.map(point => `
+                            <div class="flowchart-node">
+                                <div class="text-sm">${point}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function extractSteps(answer) {
+            // Simple extraction - split by sentences and take first few
+            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 10);
+            return sentences.slice(0, 4).map(s => s.trim());
+        }
+
+        function extractKeyPoints(answer) {
+            // Extract key points from model answer
+            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 5);
+            return sentences.slice(0, 6).map(s => s.trim().substring(0, 80) + '...');
+        }
+
+        function toggleGuideView(view) {
+            guideView = view;
+            
+            document.getElementById('flowchartBtn').className = view === 'flowchart' 
+                ? 'px-4 py-2 rounded-lg bg-gold text-black font-semibold'
+                : 'px-4 py-2 rounded-lg bg-transparent border border-gold text-gold';
+                
+            document.getElementById('mindmapBtn').className = view === 'mindmap' 
+                ? 'px-4 py-2 rounded-lg bg-gold text-black font-semibold'
+                : 'px-4 py-2 rounded-lg bg-transparent border border-gold text-gold';
+            
+            if (currentQuestion) {
+                generateVisualGuide(currentQuestion);
+            }
+        }
+
+        function displayKeyExpressions(expressions) {
+            const container = document.getElementById('keyExpressionsDisplay');
+            const settings = getSettings();
+            const maxExpressions = settings.expressionsCount === 'all' ? expressions.length : parseInt(settings.expressionsCount);
+            
+            container.innerHTML = '';
+            
+            expressions.slice(0, maxExpressions).forEach(expr => {
+                const span = document.createElement('span');
+                span.className = 'key-expression cursor-pointer';
+                span.textContent = expr;
+                span.onclick = () => span.classList.toggle('bg-gold');
+                container.appendChild(span);
+            });
+        }
+
+        // Timer functionality
+        function startTimer() {
+            const minutes = parseInt(document.getElementById('answerTime').value);
+            timeLeft = minutes * 60;
+            
+            document.getElementById('startTimerBtn').disabled = true;
+            document.getElementById('pauseTimerBtn').disabled = false;
+            document.getElementById('timerStatus').textContent = 'Timer running...';
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('timerStatus').textContent = 'Time\'s up!';
+                    document.getElementById('startTimerBtn').disabled = false;
+                    document.getElementById('pauseTimerBtn').disabled = true;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            document.getElementById('startTimerBtn').disabled = false;
+            document.getElementById('pauseTimerBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Timer paused';
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            const minutes = parseInt(document.getElementById('answerTime').value);
+            timeLeft = minutes * 60;
+            updateTimerDisplay();
+            
+            document.getElementById('startTimerBtn').disabled = false;
+            document.getElementById('pauseTimerBtn').disabled = true;
+            document.getElementById('timerStatus').textContent = 'Ready to start';
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Recording functionality
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    currentRecordingBlob = audioBlob;
+                    processRecording(audioBlob);
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                const recordBtn = document.getElementById('recordBtn');
+                recordBtn.textContent = '⏹️ Stop Recording';
+                recordBtn.className = 'w-full bg-red-600 text-white px-4 py-3 rounded-lg font-semibold recording-pulse';
+                
+            } catch (error) {
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+                
+                const recordBtn = document.getElementById('recordBtn');
+                recordBtn.textContent = '🎤 Start Recording';
+                recordBtn.className = 'w-full bg-red-600 text-white px-4 py-3 rounded-lg font-semibold';
+            }
+        }
+
+        function processRecording(audioBlob) {
+            // Simulate transcription (in real app, would use speech-to-text API)
+            const simulatedTranscript = generateSimulatedTranscript();
+            currentTranscript = simulatedTranscript;
+            
+            displayTranscript(simulatedTranscript);
+            highlightUsedExpressions(simulatedTranscript);
+        }
+
+        function generateSimulatedTranscript() {
+            const sampleTranscripts = [
+                "In my experience working as a software developer, I have found that effective communication is crucial for project success. Furthermore, I believe that continuous learning and adaptation are key to staying relevant in this field. To summarize, my approach combines technical expertise with strong collaborative skills.",
+                "I would approach this challenge by first analyzing the requirements thoroughly. Then, I would break down the problem into smaller, manageable components. Additionally, I would ensure regular communication with stakeholders throughout the process. In conclusion, my systematic approach ensures both quality and timely delivery.",
+                "Based on my previous role, I have developed strong problem-solving abilities. Moreover, I have experience working in agile environments where adaptability is essential. To elaborate, I believe in taking ownership of my work while maintaining open communication with team members."
+            ];
+            
+            return sampleTranscripts[Math.floor(Math.random() * sampleTranscripts.length)];
+        }
+
+        function displayTranscript(transcript) {
+            document.getElementById('transcriptText').textContent = transcript;
+            document.getElementById('transcriptPanel').classList.remove('hidden');
+        }
+
+        function highlightUsedExpressions(transcript) {
+            if (!currentQuestion) return;
+            
+            const expressions = currentQuestion.keyExpressions;
+            const transcriptDiv = document.getElementById('transcriptText');
+            let highlightedText = transcript;
+            
+            expressions.forEach(expr => {
+                const regex = new RegExp(`\\b${expr}\\b`, 'gi');
+                if (regex.test(transcript)) {
+                    highlightedText = highlightedText.replace(regex, `<span class="transcript-highlight">${expr}</span>`);
+                }
+            });
+            
+            transcriptDiv.innerHTML = highlightedText;
+        }
+
+        function saveRecording() {
+            if (!currentRecordingBlob || !currentTranscript) return;
+            
+            const roleId = document.getElementById('practiceRole').value;
+            const questionIndex = document.getElementById('practiceQuestion').value;
+            
+            if (!roleId || questionIndex === '') return;
+            
+            const roles = getRoles();
+            const role = roles[roleId];
+            const question = role.questions[questionIndex];
+            
+            const recording = {
+                id: Date.now().toString(),
+                roleName: role.name,
+                question: question.question,
+                transcript: currentTranscript,
+                audioBlob: currentRecordingBlob,
+                timestamp: new Date().toISOString(),
+                duration: '0:00' // Would calculate actual duration in real app
+            };
+            
+            const recordings = getRecordings();
+            recordings.push(recording);
+            localStorage.setItem('interviewRecordings', JSON.stringify(recordings.map(r => ({...r, audioBlob: null})))); // Store without blob for localStorage
+            
+            // Store audio blob separately (in real app, would use IndexedDB)
+            sessionStorage.setItem(`audio_${recording.id}`, 'audio_data_placeholder');
+            
+            alert('Recording saved successfully!');
+            loadRecordings();
+        }
+
+        function retryAnswer() {
+            document.getElementById('transcriptPanel').classList.add('hidden');
+            currentRecordingBlob = null;
+            currentTranscript = '';
+            resetTimer();
+        }
+
+        // Recordings management
+        function loadRecordings() {
+            const recordings = getRecordings();
+            const container = document.getElementById('recordingsList');
+            
+            if (recordings.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-400 py-8">No recordings yet</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            recordings.forEach(recording => {
+                const recordingDiv = document.createElement('div');
+                recordingDiv.className = 'bg-gray-800 p-4 rounded-lg border border-gold';
+                recordingDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="font-semibold text-gold">${recording.roleName}</div>
+                            <div class="text-sm text-gray-400">${new Date(recording.timestamp).toLocaleDateString()}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="downloadRecording('${recording.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Download</button>
+                            <button onclick="deleteRecording('${recording.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">Delete</button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-white mb-2">${recording.question}</div>
+                    <div class="text-xs text-gray-300 bg-gray-700 p-2 rounded">${recording.transcript.substring(0, 200)}...</div>
+                `;
+                container.appendChild(recordingDiv);
+            });
+        }
+
+        function deleteRecording(recordingId) {
+            if (confirm('Are you sure you want to delete this recording?')) {
+                const recordings = getRecordings();
+                const filteredRecordings = recordings.filter(r => r.id !== recordingId);
+                localStorage.setItem('interviewRecordings', JSON.stringify(filteredRecordings));
+                sessionStorage.removeItem(`audio_${recordingId}`);
+                loadRecordings();
+            }
+        }
+
+        function downloadRecording(recordingId) {
+            const recordings = getRecordings();
+            const recording = recordings.find(r => r.id === recordingId);
+            
+            if (recording) {
+                // Create a text file with the transcript
+                const content = `Interview Practice Recording
+Role: ${recording.roleName}
+Question: ${recording.question}
+Date: ${new Date(recording.timestamp).toLocaleString()}
+
+Transcript:
+${recording.transcript}`;
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `interview_${recording.roleName}_${recording.id}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function exportAllRecordings() {
+            const recordings = getRecordings();
+            if (recordings.length === 0) {
+                alert('No recordings to export');
+                return;
+            }
+            
+            // Create a comprehensive export
+            const exportData = {
+                recordings: recordings,
+                exportDate: new Date().toISOString(),
+                totalRecordings: recordings.length
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `interview_recordings_export_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllRecordings() {
+            if (confirm('Are you sure you want to delete all recordings? This cannot be undone.')) {
+                localStorage.removeItem('interviewRecordings');
+                // Clear all audio data from sessionStorage
+                Object.keys(sessionStorage).forEach(key => {
+                    if (key.startsWith('audio_')) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
+                loadRecordings();
+            }
+        }
+
+        // Settings management
+        function saveSettings() {
+            const settings = {
+                defaultTime: document.getElementById('defaultTime').value,
+                gracePeriod: document.getElementById('gracePeriod').value,
+                expressionsCount: document.getElementById('expressionsCount').value
+            };
+            
+            localStorage.setItem('interviewSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        }
+
+        function loadSettings() {
+            const settings = getSettings();
+            
+            document.getElementById('defaultTime').value = settings.defaultTime;
+            document.getElementById('gracePeriod').value = settings.gracePeriod;
+            document.getElementById('expressionsCount').value = settings.expressionsCount;
+            document.getElementById('answerTime').value = settings.defaultTime;
+        }
+
+        // Import/Export functionality
+        function importQuestions() {
+            const data = document.getElementById('importData').value.trim();
+            if (!data) return;
+            
+            try {
+                const importedData = JSON.parse(data);
+                
+                if (importedData.roles) {
+                    // Merge with existing roles
+                    const existingRoles = getRoles();
+                    const mergedRoles = { ...existingRoles, ...importedData.roles };
+                    localStorage.setItem('interviewRoles', JSON.stringify(mergedRoles));
+                    
+                    loadRoles();
+                    document.getElementById('importData').value = '';
+                    alert('Questions imported successfully!');
+                } else {
+                    alert('Invalid data format. Please check your JSON structure.');
+                }
+            } catch (error) {
+                alert('Error parsing JSON data. Please check the format.');
+            }
+        }
+
+        function exportData() {
+            const exportData = {
+                roles: getRoles(),
+                settings: getSettings(),
+                recordings: getRecordings(),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `interview_practice_data_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function startPractice() {
+            const roleId = document.getElementById('practiceRole').value;
+            const questionIndex = document.getElementById('practiceQuestion').value;
+            
+            if (!roleId || questionIndex === '') {
+                alert('Please select both a role and a question');
+                return;
+            }
+            
+            resetTimer();
+            document.getElementById('transcriptPanel').classList.add('hidden');
+            alert('Practice session ready! Use the timer and recording controls to begin your answer.');
+        }
+
+        // Utility functions
+        function getRoles() {
+            return JSON.parse(localStorage.getItem('interviewRoles') || '{}');
+        }
+
+        function getRecordings() {
+            return JSON.parse(localStorage.getItem('interviewRecordings') || '[]');
+        }
+
+        function getSettings() {
+            return JSON.parse(localStorage.getItem('interviewSettings') || JSON.stringify({
+                defaultTime: '3',
+                gracePeriod: '30',
+                expressionsCount: '10'
+            }));
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showTab('roles');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showTab('practice');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showTab('recordings');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        showTab('settings');
+                        break;
+                    case ' ':
+                        e.preventDefault();
+                        if (document.getElementById('practiceContent').classList.contains('hidden')) return;
+                        if (!timer) startTimer();
+                        else pauseTimer();
+                        break;
+                }
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9881e08c95e7fee5',t:'MTc1OTM4Mzc1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
