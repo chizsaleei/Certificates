@@ -1,1 +1,2164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - Role Map & Interview Drill</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, #1a3b2e, #2d5a3d, #1f4a35); }
+        .bg-accent { background-color: #d4af37; }
+        .text-accent { color: #d4af37; }
+        .border-accent { border-color: #d4af37; }
+        .hover-accent:hover { background-color: #f4d03f; }
+        
+        .role-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .role-card:hover {
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            border-color: #d4af37;
+        }
+        
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .nav-btn:not(.active) {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+        }
+        
+        .skill-card {
+            background: rgba(26, 59, 46, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .skill-card:hover {
+            border-color: #d4af37;
+            transform: scale(1.02);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .skill-card.has-evidence {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .skill-card.needs-evidence {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+        
+        .skill-card.partial-evidence {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .voice-btn {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .voice-btn.listening {
+            background: #ff4444;
+            animation: recordingPulse 1s infinite;
+        }
+        
+        .streak-counter {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            border: 8px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+        }
+        
+        .progress-fill {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: #d4af37;
+            transition: transform 0.5s ease;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: transform 4s ease-in-out;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .breathing-circle.inhale { transform: scale(1.4); }
+        .breathing-circle.exhale { transform: scale(1); }
+        
+        .drill-timer {
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .recording-indicator {
+            width: 20px;
+            height: 20px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: recordingPulse 1s infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            padding: 30px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 2000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            animation: achievementBounce 0.6s ease-out;
+        }
+        
+        @keyframes achievementBounce {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .online-indicator {
+            background: #44ff44;
+            color: #000;
+        }
+        
+        .floating-add-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-add-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(26, 59, 46, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+        }
+        
+        .gap-indicator {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .gap-none { background: #4ade80; color: #000; }
+        .gap-partial { background: #fbbf24; color: #000; }
+        .gap-critical { background: #f87171; color: #000; }
+        
+        .drill-question {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .drill-question:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .vocab-phrase {
+            background: rgba(26, 59, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocab-phrase:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+        }
+    </style>
+</head>
+<body class="bg-primary min-h-screen text-white">
+    <!-- Connection Status -->
+    <div id="connectionStatus" class="offline-indicator online-indicator">🟢 Online</div>
+
+    <!-- Header -->
+    <header class="p-6 text-center border-b-2 border-accent">
+        <h1 class="text-4xl font-bold text-accent mb-2">🎯 CareerCraft</h1>
+        <p class="text-lg text-gray-300 mb-4">Role Map & Interview Drill</p>
+        
+        <!-- Progress Overview -->
+        <div class="flex justify-center items-center gap-8 flex-wrap">
+            <div class="streak-counter">
+                <span class="text-2xl">🔥</span>
+                <span><span id="currentStreak">0</span> Day Streak</span>
+            </div>
+            <div class="text-center">
+                <div class="progress-ring mb-2">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent" id="completionRate">0%</div>
+                        <div class="text-xs text-gray-400">Ready</div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-accent" id="totalRoles">0</div>
+                <div class="text-sm text-gray-400">Target Roles</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="p-4 flex justify-center gap-3 flex-wrap">
+        <button onclick="showScreen('roles')" id="rolesBtn" class="nav-btn active">Role Map</button>
+        <button onclick="showScreen('gaps')" id="gapsBtn" class="nav-btn">Skill Gaps</button>
+        <button onclick="showScreen('drill')" id="drillBtn" class="nav-btn">Interview Drill</button>
+        <button onclick="showScreen('vocab')" id="vocabBtn" class="nav-btn">Vocabulary</button>
+        <button onclick="showScreen('reset')" id="resetBtn" class="nav-btn">Reset</button>
+        <button onclick="showScreen('progress')" id="progressBtn" class="nav-btn">Progress</button>
+    </nav>
+
+    <!-- Floating Add Button -->
+    <div onclick="showQuickAdd()" class="floating-add-btn" title="Quick Add">+</div>
+
+    <!-- Role Map Screen -->
+    <div id="rolesScreen" class="screen p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-accent mb-4">🗺️ Your Role Map</h2>
+                <p class="text-gray-300 mb-6">Define target roles and required skills</p>
+            </div>
+
+            <!-- Roles List -->
+            <div id="rolesList" class="space-y-6">
+                <!-- Roles will be populated here -->
+            </div>
+
+            <!-- Add Role Button -->
+            <div class="text-center">
+                <button onclick="addNewRole()" class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ➕ Add New Role
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Gaps Screen -->
+    <div id="gapsScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-accent mb-4">📊 Skill Gap Analysis</h2>
+                <p class="text-gray-300 mb-6">Compare target skills vs current evidence</p>
+            </div>
+
+            <!-- Gap Summary -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="text-3xl text-green-400 mb-2">✅</div>
+                    <div class="text-2xl font-bold text-white" id="skillsReady">0</div>
+                    <div class="text-gray-400">Skills Ready</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl text-yellow-400 mb-2">⚠️</div>
+                    <div class="text-2xl font-bold text-white" id="skillsPartial">0</div>
+                    <div class="text-gray-400">Needs Work</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-3xl text-red-400 mb-2">🚨</div>
+                    <div class="text-2xl font-bold text-white" id="skillsCritical">0</div>
+                    <div class="text-gray-400">Critical Gaps</div>
+                </div>
+            </div>
+
+            <!-- Gap Details -->
+            <div id="gapDetails" class="space-y-6">
+                <!-- Gap analysis will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Interview Drill Screen -->
+    <div id="drillScreen" class="screen hidden p-6">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-accent mb-4">🎤 Interview Drill</h2>
+                <p class="text-gray-300 mb-6">Practice with timer, recording & transcription</p>
+            </div>
+
+            <!-- Drill Controls -->
+            <div class="role-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-accent">Practice Session</h3>
+                    <div class="flex gap-3">
+                        <select id="drillRole" class="bg-gray-800 border border-accent text-white p-2 rounded">
+                            <option value="">Select Role</option>
+                        </select>
+                        <button onclick="startDrillSession()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            🚀 Start Drill
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Timer Display -->
+                <div id="drillTimer" class="drill-timer hidden">
+                    <div class="text-4xl font-bold text-accent mb-2" id="timerDisplay">02:00</div>
+                    <div class="text-gray-400">Time Remaining</div>
+                </div>
+            </div>
+
+            <!-- Current Question -->
+            <div id="currentQuestion" class="drill-question hidden">
+                <div class="text-center mb-6">
+                    <h4 class="text-xl font-bold text-accent mb-4" id="questionText">Question will appear here</h4>
+                    <div class="text-gray-400 mb-4">Question <span id="questionNumber">1</span> of <span id="totalQuestions">5</span></div>
+                </div>
+                
+                <!-- Recording Controls -->
+                <div class="flex justify-center gap-4 mb-6">
+                    <button onclick="startRecording()" id="startRecordBtn" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
+                        🎤 Start Recording
+                    </button>
+                    <button onclick="stopRecording()" id="stopRecordBtn" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold" disabled>
+                        ⏹️ Stop Recording
+                    </button>
+                    <button onclick="nextQuestion()" id="nextQuestionBtn" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        ➡️ Next Question
+                    </button>
+                </div>
+                
+                <!-- Recording Indicator -->
+                <div id="recordingIndicator" class="hidden flex items-center justify-center gap-2 text-red-400 mb-4">
+                    <div class="recording-indicator"></div>
+                    <span>Recording in progress...</span>
+                </div>
+                
+                <!-- Voice Notes -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Voice Notes & Practice Answer</label>
+                    <div class="flex gap-2">
+                        <textarea id="practiceAnswer" rows="4" placeholder="Your answer notes (voice-to-text available)..." 
+                                  class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white"></textarea>
+                        <button onclick="startVoiceInput('practiceAnswer')" class="voice-btn">
+                            🎤
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Auto Transcript -->
+                <div id="autoTranscript" class="hidden">
+                    <label class="block text-white font-semibold mb-2">Auto Transcript</label>
+                    <div class="bg-gray-900 p-4 rounded-lg border border-gray-600">
+                        <div id="transcriptText" class="text-gray-300">Transcript will appear here...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drill History -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">📚 Recent Sessions</h3>
+                <div id="drillHistory" class="space-y-3">
+                    <!-- Drill history will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div id="vocabScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-accent mb-4">💬 Interview Vocabulary</h2>
+                <p class="text-gray-300 mb-6">Professional phrases and workplace vocabulary</p>
+            </div>
+
+            <!-- Vocabulary Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Interview Phrases -->
+                <div class="role-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">🎯 Interview Power Phrases</h3>
+                    <div id="interviewPhrases" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- Interview phrases will be populated here -->
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="newInterviewPhrase" placeholder="Add new interview phrase..." 
+                                   class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                            <button onclick="startVoiceInput('newInterviewPhrase')" class="voice-btn" style="width: 40px; height: 40px; font-size: 16px;">
+                                🎤
+                            </button>
+                        </div>
+                        <button onclick="addInterviewPhrase()" class="w-full bg-accent text-black p-2 rounded mt-2 font-bold text-sm">
+                            Add Phrase
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Workplace Vocabulary -->
+                <div class="role-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">🏢 Workplace Vocabulary</h3>
+                    <div id="workplaceVocab" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- Workplace vocabulary will be populated here -->
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="newWorkplaceVocab" placeholder="Add workplace term..." 
+                                   class="flex-1 p-2 rounded bg-gray-800 border border-accent text-white text-sm">
+                            <button onclick="startVoiceInput('newWorkplaceVocab')" class="voice-btn" style="width: 40px; height: 40px; font-size: 16px;">
+                                🎤
+                            </button>
+                        </div>
+                        <button onclick="addWorkplaceVocab()" class="w-full bg-accent text-black p-2 rounded mt-2 font-bold text-sm">
+                            Add Term
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Section -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">📖 Review Queue</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="startVocabReview('interview')" class="bg-purple-600 text-white p-4 rounded-lg font-bold">
+                        🎯 Review Interview Phrases
+                    </button>
+                    <button onclick="startVocabReview('workplace')" class="bg-blue-600 text-white p-4 rounded-lg font-bold">
+                        🏢 Review Workplace Terms
+                    </button>
+                </div>
+                <div id="vocabReview" class="hidden mt-6">
+                    <!-- Vocabulary review will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Screen -->
+    <div id="resetScreen" class="screen hidden p-6">
+        <div class="max-w-2xl mx-auto text-center space-y-8">
+            <h2 class="text-3xl font-bold text-accent">🧘 Breathing Reset</h2>
+            
+            <div class="breathing-circle" id="breathingCircle">
+                <div class="text-accent font-bold text-2xl" id="breathingInstruction">Ready to Reset</div>
+            </div>
+            
+            <div class="text-accent text-5xl font-bold" id="resetTimer">25:00</div>
+            
+            <div id="motivationalMessage" class="text-white text-xl italic px-6 min-h-16 flex items-center justify-center bg-black bg-opacity-40 rounded-lg">
+                "Success is where preparation meets opportunity!"
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="startResetSession()" id="startResetBtn" 
+                        class="bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg">
+                    ▶️ Start Reset Session
+                </button>
+                <button onclick="stopResetSession()" id="stopResetBtn" 
+                        class="bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg" disabled>
+                    ⏹️ Stop Session
+                </button>
+            </div>
+            
+            <!-- Custom Motivational Messages -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">💭 Your Motivational Messages</h3>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="newMotivationalMessage" placeholder="Add your motivational message..." 
+                           class="flex-1 p-3 rounded-lg bg-gray-800 border border-accent text-white">
+                    <button onclick="startVoiceInput('newMotivationalMessage')" class="voice-btn">
+                        🎤
+                    </button>
+                    <button onclick="addMotivationalMessage()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                        Add
+                    </button>
+                </div>
+                <div id="customMotivationalMessages" class="space-y-2">
+                    <!-- Custom messages will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Screen -->
+    <div id="progressScreen" class="screen hidden p-6">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <h2 class="text-3xl font-bold text-accent text-center">📊 Your Career Progress</h2>
+            
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🎯</div>
+                    <div class="text-2xl font-bold text-white" id="totalRolesStats">0</div>
+                    <div class="text-gray-400">Target Roles</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🔥</div>
+                    <div class="text-2xl font-bold text-white" id="streakStats">0</div>
+                    <div class="text-gray-400">Day Streak</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">🎤</div>
+                    <div class="text-2xl font-bold text-white" id="drillSessionsStats">0</div>
+                    <div class="text-gray-400">Drill Sessions</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="text-4xl text-accent mb-2">⏱️</div>
+                    <div class="text-2xl font-bold text-white" id="practiceTimeStats">0</div>
+                    <div class="text-gray-400">Hours Practiced</div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">💾 Data Management</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <button onclick="exportRoleMapPDF()" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📄 Export Role Map
+                    </button>
+                    <button onclick="backupData()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+                        💾 Backup Data
+                    </button>
+                    <button onclick="restoreData()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+                        📥 Restore Data
+                    </button>
+                    <button onclick="syncData()" class="bg-yellow-600 text-white px-6 py-3 rounded-lg font-bold">
+                        🔄 Sync Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Session History -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">📚 Session History</h3>
+                <div id="sessionHistory" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Session history will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recordings -->
+            <div class="role-card">
+                <h3 class="text-xl font-bold text-accent mb-4">🎤 Your Recordings</h3>
+                <div id="recordingsList" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Recordings will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent">➕ Quick Add</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="quickAddRole()" class="bg-blue-600 text-white p-4 rounded-lg font-bold">
+                    🎯 Add Role
+                </button>
+                <button onclick="quickAddSkill()" class="bg-green-600 text-white p-4 rounded-lg font-bold">
+                    🛠️ Add Skill
+                </button>
+                <button onclick="quickAddProof()" class="bg-purple-600 text-white p-4 rounded-lg font-bold">
+                    📋 Add Proof
+                </button>
+                <button onclick="quickAddQuestion()" class="bg-orange-600 text-white p-4 rounded-lg font-bold">
+                    ❓ Add Question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Modal -->
+    <div id="roleModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-accent" id="roleModalTitle">Add New Role</h3>
+                <button onclick="closeRoleModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white font-semibold mb-2">Role Title</label>
+                    <input type="text" id="roleTitle" placeholder="e.g., Senior Software Engineer" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Company/Industry</label>
+                    <input type="text" id="roleCompany" placeholder="e.g., Tech Startup, Healthcare" 
+                           class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Description & Notes</label>
+                    <div class="flex gap-2">
+                        <textarea id="roleDescription" rows="3" placeholder="Role details, requirements, notes..." 
+                                  class="flex-1 p-3 rounded-lg bg-gray-700 border border-accent text-white"></textarea>
+                        <button onclick="startVoiceInput('roleDescription')" class="voice-btn">
+                            🎤
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-white font-semibold mb-2">Priority Level</label>
+                    <select id="rolePriority" class="w-full p-3 rounded-lg bg-gray-700 border border-accent text-white">
+                        <option value="high">High Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                </div>
+                
+                <button onclick="saveRole()" class="w-full bg-accent text-black p-3 rounded-lg font-bold text-lg">
+                    💾 Save Role
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appData = {
+            roles: [],
+            skills: [],
+            proofs: [],
+            questions: [],
+            drillSessions: [],
+            recordings: [],
+            vocabulary: {
+                interviewPhrases: [
+                    "I'm particularly excited about this opportunity because...",
+                    "In my previous role, I successfully...",
+                    "One of my key strengths is my ability to...",
+                    "I believe I would be a strong fit for this position because...",
+                    "When faced with challenges, I typically...",
+                    "My approach to problem-solving involves...",
+                    "I'm passionate about continuous learning and...",
+                    "What sets me apart from other candidates is...",
+                    "I thrive in environments where...",
+                    "My long-term career goal is to..."
+                ],
+                workplaceVocab: [
+                    "Stakeholder engagement and alignment",
+                    "Cross-functional collaboration",
+                    "Data-driven decision making",
+                    "Agile methodology and sprint planning",
+                    "Key performance indicators (KPIs)",
+                    "Process optimization and efficiency",
+                    "Strategic planning and execution",
+                    "Change management and adaptation",
+                    "Quality assurance and best practices",
+                    "Professional development and growth"
+                ]
+            },
+            motivationalMessages: [
+                "Success is where preparation meets opportunity!",
+                "Every interview is a chance to showcase your unique value!",
+                "Confidence comes from thorough preparation!",
+                "Your skills and experience have brought you this far!",
+                "Believe in yourself and your abilities!"
+            ],
+            progress: {
+                streak: 0,
+                totalSessions: 0,
+                practiceTime: 0,
+                completionRate: 0
+            },
+            settings: {
+                questionTimer: 120, // 2 minutes default
+                autoSync: true
+            },
+            lastActiveDate: null
+        };
+
+        // Speech Recognition
+        let speechRecognition = null;
+        let isListening = false;
+        let currentVoiceTarget = null;
+
+        // Recording
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+
+        // Timers
+        let drillTimer = null;
+        let resetTimer = null;
+        let breathingInterval = null;
+
+        // Current Sessions
+        let currentDrillSession = null;
+        let currentEditingRole = null;
+
+        // Connection Status
+        let isOnline = navigator.onLine;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppData();
+            updateAllStats();
+            initializeSpeechRecognition();
+            checkConnection();
+            updateStreak();
+            loadRoles();
+            loadVocabulary();
+            loadCustomMotivationalMessages();
+            
+            // Setup connection listeners
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateConnectionStatus();
+                if (appData.settings.autoSync) syncData();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateConnectionStatus();
+            });
+        });
+
+        // Data Management
+        function loadAppData() {
+            const savedData = localStorage.getItem('careerCraftData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                appData = { ...appData, ...data };
+            }
+        }
+
+        function saveAppData() {
+            appData.lastSaveDate = new Date().toISOString();
+            localStorage.setItem('careerCraftData', JSON.stringify(appData));
+            
+            if (isOnline && appData.settings.autoSync) {
+                console.log('Data auto-synced');
+            }
+        }
+
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('connectionStatus');
+            if (isOnline) {
+                indicator.textContent = '🟢 Online';
+                indicator.className = 'offline-indicator online-indicator';
+            } else {
+                indicator.textContent = '🔴 Offline';
+                indicator.className = 'offline-indicator';
+            }
+        }
+
+        function checkConnection() {
+            isOnline = navigator.onLine;
+            updateConnectionStatus();
+        }
+
+        // Speech Recognition Setup
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                
+                speechRecognition.continuous = false;
+                speechRecognition.interimResults = false;
+                speechRecognition.lang = 'en-US';
+                
+                speechRecognition.onstart = function() {
+                    isListening = true;
+                    updateVoiceButtons();
+                };
+                
+                speechRecognition.onend = function() {
+                    isListening = false;
+                    updateVoiceButtons();
+                };
+                
+                speechRecognition.onerror = function(event) {
+                    isListening = false;
+                    updateVoiceButtons();
+                    showNotification(`Voice recognition error: ${event.error}`);
+                };
+                
+                speechRecognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    handleVoiceInput(transcript);
+                };
+            }
+        }
+
+        function startVoiceInput(targetInputId) {
+            if (!speechRecognition) {
+                showNotification('Voice recognition not supported in this browser');
+                return;
+            }
+            
+            if (isListening) {
+                speechRecognition.stop();
+                return;
+            }
+            
+            currentVoiceTarget = targetInputId;
+            speechRecognition.start();
+        }
+
+        function handleVoiceInput(transcript) {
+            if (currentVoiceTarget) {
+                const targetElement = document.getElementById(currentVoiceTarget);
+                if (targetElement) {
+                    if (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT') {
+                        targetElement.value = transcript;
+                        showNotification(`Voice input: "${transcript}"`);
+                    }
+                }
+            }
+        }
+
+        function updateVoiceButtons() {
+            const voiceButtons = document.querySelectorAll('.voice-btn');
+            voiceButtons.forEach(btn => {
+                if (isListening) {
+                    btn.classList.add('listening');
+                } else {
+                    btn.classList.remove('listening');
+                }
+            });
+        }
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(screenName + 'Screen').classList.remove('hidden');
+            document.getElementById(screenName + 'Btn').classList.add('active');
+            
+            // Load screen-specific data
+            switch(screenName) {
+                case 'roles': loadRoles(); break;
+                case 'gaps': loadGapAnalysis(); break;
+                case 'drill': loadDrillScreen(); break;
+                case 'vocab': loadVocabulary(); break;
+                case 'progress': loadProgressScreen(); break;
+            }
+        }
+
+        // Role Management
+        function loadRoles() {
+            const container = document.getElementById('rolesList');
+            
+            if (appData.roles.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <div class="text-6xl mb-4">🎯</div>
+                        <h3 class="text-xl font-bold mb-2">No target roles defined yet</h3>
+                        <p class="mb-6">Start by adding your first target role to begin mapping your career path</p>
+                        <button onclick="addNewRole()" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Add Your First Role
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.roles.map(role => `
+                <div class="role-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-2xl font-bold text-accent">${role.title}</h3>
+                                <span class="gap-indicator gap-${role.priority}">${role.priority}</span>
+                            </div>
+                            <div class="text-gray-300 mb-2">${role.company}</div>
+                            <div class="text-gray-400 text-sm mb-4">${role.description}</div>
+                            
+                            <!-- Skills for this role -->
+                            <div class="mb-4">
+                                <h4 class="font-bold text-white mb-2">Required Skills:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${getSkillsForRole(role.id).map(skill => `
+                                        <span class="bg-gray-700 text-white px-3 py-1 rounded-full text-sm">
+                                            ${skill.name}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- Questions for this role -->
+                            <div class="mb-4">
+                                <h4 class="font-bold text-white mb-2">Interview Questions:</h4>
+                                <div class="text-sm text-gray-400">
+                                    ${getQuestionsForRole(role.id).length} questions prepared
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="editRole('${role.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="addSkillToRole('${role.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            🛠️ Add Skill
+                        </button>
+                        <button onclick="addQuestionToRole('${role.id}')" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            ❓ Add Question
+                        </button>
+                        <button onclick="deleteRole('${role.id}')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addNewRole() {
+            currentEditingRole = null;
+            document.getElementById('roleModalTitle').textContent = 'Add New Role';
+            document.getElementById('roleTitle').value = '';
+            document.getElementById('roleCompany').value = '';
+            document.getElementById('roleDescription').value = '';
+            document.getElementById('rolePriority').value = 'medium';
+            document.getElementById('roleModal').classList.remove('hidden');
+        }
+
+        function editRole(roleId) {
+            const role = appData.roles.find(r => r.id === roleId);
+            if (role) {
+                currentEditingRole = roleId;
+                document.getElementById('roleModalTitle').textContent = 'Edit Role';
+                document.getElementById('roleTitle').value = role.title;
+                document.getElementById('roleCompany').value = role.company;
+                document.getElementById('roleDescription').value = role.description;
+                document.getElementById('rolePriority').value = role.priority;
+                document.getElementById('roleModal').classList.remove('hidden');
+            }
+        }
+
+        function saveRole() {
+            const title = document.getElementById('roleTitle').value.trim();
+            const company = document.getElementById('roleCompany').value.trim();
+            const description = document.getElementById('roleDescription').value.trim();
+            const priority = document.getElementById('rolePriority').value;
+            
+            if (!title || !company) {
+                showNotification('Please enter role title and company');
+                return;
+            }
+            
+            if (currentEditingRole) {
+                // Edit existing role
+                const role = appData.roles.find(r => r.id === currentEditingRole);
+                if (role) {
+                    role.title = title;
+                    role.company = company;
+                    role.description = description;
+                    role.priority = priority;
+                    role.updatedDate = new Date().toISOString();
+                }
+                showNotification('✅ Role updated successfully!');
+            } else {
+                // Add new role
+                const newRole = {
+                    id: Date.now().toString(),
+                    title: title,
+                    company: company,
+                    description: description,
+                    priority: priority,
+                    createdDate: new Date().toISOString(),
+                    updatedDate: new Date().toISOString()
+                };
+                
+                appData.roles.push(newRole);
+                showAchievement(`🎯 New role added: ${title}!`);
+            }
+            
+            saveAppData();
+            updateAllStats();
+            closeRoleModal();
+            loadRoles();
+        }
+
+        function deleteRole(roleId) {
+            if (confirm('Delete this role? This will also remove associated skills and questions.')) {
+                appData.roles = appData.roles.filter(r => r.id !== roleId);
+                appData.skills = appData.skills.filter(s => s.roleId !== roleId);
+                appData.questions = appData.questions.filter(q => q.roleId !== roleId);
+                
+                saveAppData();
+                updateAllStats();
+                loadRoles();
+                showNotification('🗑️ Role deleted');
+            }
+        }
+
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+            currentEditingRole = null;
+        }
+
+        // Skill Management
+        function getSkillsForRole(roleId) {
+            return appData.skills.filter(skill => skill.roleId === roleId);
+        }
+
+        function addSkillToRole(roleId) {
+            const skillName = prompt('Enter skill name:');
+            if (skillName && skillName.trim()) {
+                const newSkill = {
+                    id: Date.now().toString(),
+                    roleId: roleId,
+                    name: skillName.trim(),
+                    level: 'beginner',
+                    proofs: [],
+                    createdDate: new Date().toISOString()
+                };
+                
+                appData.skills.push(newSkill);
+                saveAppData();
+                loadRoles();
+                showNotification(`🛠️ Skill "${skillName}" added!`);
+            }
+        }
+
+        // Question Management
+        function getQuestionsForRole(roleId) {
+            return appData.questions.filter(question => question.roleId === roleId);
+        }
+
+        function addQuestionToRole(roleId) {
+            const questionText = prompt('Enter interview question:');
+            if (questionText && questionText.trim()) {
+                const newQuestion = {
+                    id: Date.now().toString(),
+                    roleId: roleId,
+                    question: questionText.trim(),
+                    modelAnswer: '',
+                    category: 'general',
+                    createdDate: new Date().toISOString()
+                };
+                
+                appData.questions.push(newQuestion);
+                saveAppData();
+                loadRoles();
+                showNotification(`❓ Question added!`);
+            }
+        }
+
+        // Gap Analysis
+        function loadGapAnalysis() {
+            const allSkills = appData.skills;
+            let skillsReady = 0;
+            let skillsPartial = 0;
+            let skillsCritical = 0;
+            
+            const gapDetails = document.getElementById('gapDetails');
+            
+            if (allSkills.length === 0) {
+                gapDetails.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <div class="text-6xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold mb-2">No skills to analyze yet</h3>
+                        <p class="mb-6">Add roles and skills to see your gap analysis</p>
+                        <button onclick="showScreen('roles')" class="bg-accent text-black px-6 py-3 rounded-lg font-bold">
+                            Go to Role Map
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const roleGroups = {};
+            allSkills.forEach(skill => {
+                const role = appData.roles.find(r => r.id === skill.roleId);
+                if (role) {
+                    if (!roleGroups[role.id]) {
+                        roleGroups[role.id] = {
+                            role: role,
+                            skills: []
+                        };
+                    }
+                    
+                    // Analyze skill gap
+                    const proofCount = appData.proofs.filter(p => p.skillId === skill.id).length;
+                    let gapLevel = 'critical';
+                    
+                    if (proofCount >= 3) {
+                        gapLevel = 'none';
+                        skillsReady++;
+                    } else if (proofCount >= 1) {
+                        gapLevel = 'partial';
+                        skillsPartial++;
+                    } else {
+                        skillsCritical++;
+                    }
+                    
+                    roleGroups[role.id].skills.push({
+                        ...skill,
+                        gapLevel: gapLevel,
+                        proofCount: proofCount
+                    });
+                }
+            });
+            
+            // Update stats
+            document.getElementById('skillsReady').textContent = skillsReady;
+            document.getElementById('skillsPartial').textContent = skillsPartial;
+            document.getElementById('skillsCritical').textContent = skillsCritical;
+            
+            // Render gap details
+            gapDetails.innerHTML = Object.values(roleGroups).map(group => `
+                <div class="role-card">
+                    <h3 class="text-xl font-bold text-accent mb-4">${group.role.title} - ${group.role.company}</h3>
+                    <div class="space-y-3">
+                        ${group.skills.map(skill => `
+                            <div class="skill-card ${skill.gapLevel === 'none' ? 'has-evidence' : skill.gapLevel === 'partial' ? 'partial-evidence' : 'needs-evidence'}">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <h4 class="font-bold text-white">${skill.name}</h4>
+                                            <span class="gap-indicator gap-${skill.gapLevel}">
+                                                ${skill.gapLevel === 'none' ? 'Ready' : skill.gapLevel === 'partial' ? 'Needs Work' : 'Critical Gap'}
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-gray-400">
+                                            ${skill.proofCount} proof${skill.proofCount !== 1 ? 's' : ''} of evidence
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="addProofToSkill('${skill.id}')" class="bg-green-600 text-white px-3 py-2 rounded font-semibold text-sm">
+                                            📋 Add Proof
+                                        </button>
+                                        <button onclick="viewSkillProofs('${skill.id}')" class="bg-blue-600 text-white px-3 py-2 rounded font-semibold text-sm">
+                                            👁️ View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addProofToSkill(skillId) {
+            const proofText = prompt('Enter proof of this skill (project, achievement, experience):');
+            if (proofText && proofText.trim()) {
+                const newProof = {
+                    id: Date.now().toString(),
+                    skillId: skillId,
+                    description: proofText.trim(),
+                    type: 'experience',
+                    createdDate: new Date().toISOString()
+                };
+                
+                appData.proofs.push(newProof);
+                saveAppData();
+                loadGapAnalysis();
+                showNotification(`📋 Proof added!`);
+            }
+        }
+
+        function viewSkillProofs(skillId) {
+            const skill = appData.skills.find(s => s.id === skillId);
+            const proofs = appData.proofs.filter(p => p.skillId === skillId);
+            
+            if (proofs.length === 0) {
+                showNotification('No proofs added for this skill yet');
+                return;
+            }
+            
+            const proofList = proofs.map(proof => `• ${proof.description}`).join('\n');
+            alert(`Proofs for "${skill.name}":\n\n${proofList}`);
+        }
+
+        // Interview Drill
+        function loadDrillScreen() {
+            // Populate role selector
+            const roleSelect = document.getElementById('drillRole');
+            roleSelect.innerHTML = '<option value="">Select Role</option>' + 
+                appData.roles.map(role => `<option value="${role.id}">${role.title} - ${role.company}</option>`).join('');
+            
+            loadDrillHistory();
+        }
+
+        function startDrillSession() {
+            const selectedRoleId = document.getElementById('drillRole').value;
+            if (!selectedRoleId) {
+                showNotification('Please select a role first');
+                return;
+            }
+            
+            const questions = getQuestionsForRole(selectedRoleId);
+            if (questions.length === 0) {
+                showNotification('No questions available for this role. Add some questions first.');
+                return;
+            }
+            
+            currentDrillSession = {
+                roleId: selectedRoleId,
+                questions: questions,
+                currentQuestionIndex: 0,
+                answers: [],
+                startTime: new Date().toISOString(),
+                recordings: []
+            };
+            
+            document.getElementById('drillTimer').classList.remove('hidden');
+            document.getElementById('currentQuestion').classList.remove('hidden');
+            document.getElementById('totalQuestions').textContent = questions.length;
+            
+            loadCurrentQuestion();
+            startQuestionTimer();
+        }
+
+        function loadCurrentQuestion() {
+            if (!currentDrillSession) return;
+            
+            const question = currentDrillSession.questions[currentDrillSession.currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('questionNumber').textContent = currentDrillSession.currentQuestionIndex + 1;
+            document.getElementById('practiceAnswer').value = '';
+            document.getElementById('autoTranscript').classList.add('hidden');
+            
+            // Reset recording state
+            document.getElementById('startRecordBtn').disabled = false;
+            document.getElementById('stopRecordBtn').disabled = true;
+            document.getElementById('recordingIndicator').classList.add('hidden');
+        }
+
+        function startQuestionTimer() {
+            let timeLeft = appData.settings.questionTimer;
+            
+            drillTimer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(timeLeft);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(drillTimer);
+                    showNotification('⏰ Time up! Moving to next question...');
+                    setTimeout(nextQuestion, 2000);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showNotification('Recording not supported in this browser');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    recordedChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        saveRecording(blob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    document.getElementById('startRecordBtn').disabled = true;
+                    document.getElementById('stopRecordBtn').disabled = false;
+                    document.getElementById('recordingIndicator').classList.remove('hidden');
+                    
+                    // Start speech recognition for auto-transcript
+                    if (speechRecognition) {
+                        speechRecognition.continuous = true;
+                        speechRecognition.interimResults = true;
+                        speechRecognition.onresult = function(event) {
+                            let transcript = '';
+                            for (let i = event.resultIndex; i < event.results.length; i++) {
+                                transcript += event.results[i][0].transcript;
+                            }
+                            document.getElementById('transcriptText').textContent = transcript;
+                            document.getElementById('autoTranscript').classList.remove('hidden');
+                        };
+                        speechRecognition.start();
+                    }
+                })
+                .catch(error => {
+                    showNotification('Could not access microphone');
+                    console.error('Recording error:', error);
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('startRecordBtn').disabled = false;
+                document.getElementById('stopRecordBtn').disabled = true;
+                document.getElementById('recordingIndicator').classList.add('hidden');
+                
+                // Stop speech recognition
+                if (speechRecognition) {
+                    speechRecognition.stop();
+                    speechRecognition.continuous = false;
+                }
+            }
+        }
+
+        function saveRecording(blob) {
+            const recording = {
+                id: Date.now().toString(),
+                questionId: currentDrillSession.questions[currentDrillSession.currentQuestionIndex].id,
+                blob: blob,
+                url: URL.createObjectURL(blob),
+                transcript: document.getElementById('transcriptText').textContent,
+                date: new Date().toISOString()
+            };
+            
+            appData.recordings.push(recording);
+            currentDrillSession.recordings.push(recording);
+            
+            showNotification('🎤 Recording saved with transcript!');
+        }
+
+        function nextQuestion() {
+            if (!currentDrillSession) return;
+            
+            // Save current answer
+            const answer = {
+                questionId: currentDrillSession.questions[currentDrillSession.currentQuestionIndex].id,
+                answer: document.getElementById('practiceAnswer').value,
+                transcript: document.getElementById('transcriptText').textContent,
+                timestamp: new Date().toISOString()
+            };
+            
+            currentDrillSession.answers.push(answer);
+            
+            // Clear timer
+            if (drillTimer) {
+                clearInterval(drillTimer);
+            }
+            
+            // Move to next question or end session
+            currentDrillSession.currentQuestionIndex++;
+            
+            if (currentDrillSession.currentQuestionIndex >= currentDrillSession.questions.length) {
+                endDrillSession();
+            } else {
+                loadCurrentQuestion();
+                startQuestionTimer();
+            }
+        }
+
+        function endDrillSession() {
+            if (!currentDrillSession) return;
+            
+            currentDrillSession.endTime = new Date().toISOString();
+            appData.drillSessions.push(currentDrillSession);
+            appData.progress.totalSessions++;
+            appData.progress.practiceTime += 0.5; // Estimate 30 minutes per session
+            
+            saveAppData();
+            updateAllStats();
+            
+            showAchievement(`🎯 Drill session complete! ${currentDrillSession.questions.length} questions practiced.`);
+            
+            // Reset UI
+            document.getElementById('drillTimer').classList.add('hidden');
+            document.getElementById('currentQuestion').classList.add('hidden');
+            
+            currentDrillSession = null;
+            loadDrillHistory();
+        }
+
+        function loadDrillHistory() {
+            const container = document.getElementById('drillHistory');
+            
+            if (appData.drillSessions.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No drill sessions yet</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.drillSessions.slice(-5).reverse().map(session => {
+                const role = appData.roles.find(r => r.id === session.roleId);
+                return `
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-semibold text-white">${role ? role.title : 'Unknown Role'}</div>
+                                <div class="text-sm text-gray-400">${new Date(session.startTime).toLocaleString()}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold">${session.questions.length} questions</div>
+                                <div class="text-sm text-gray-400">${session.recordings.length} recordings</div>
+                            </div>
+                        </div>
+                        <button onclick="viewSessionDetails('${session.startTime}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            View Details
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewSessionDetails(sessionStartTime) {
+            const session = appData.drillSessions.find(s => s.startTime === sessionStartTime);
+            if (session) {
+                const role = appData.roles.find(r => r.id === session.roleId);
+                const details = `
+Session: ${role ? role.title : 'Unknown Role'}
+Date: ${new Date(session.startTime).toLocaleString()}
+Questions: ${session.questions.length}
+Recordings: ${session.recordings.length}
+Answers: ${session.answers.length}
+
+Questions practiced:
+${session.questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}
+                `;
+                alert(details);
+            }
+        }
+
+        // Vocabulary Management
+        function loadVocabulary() {
+            loadInterviewPhrases();
+            loadWorkplaceVocab();
+        }
+
+        function loadInterviewPhrases() {
+            const container = document.getElementById('interviewPhrases');
+            container.innerHTML = appData.vocabulary.interviewPhrases.map((phrase, index) => `
+                <div class="vocab-phrase" onclick="copyToClipboard('${phrase}')">
+                    <div class="text-white text-sm">${phrase}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function loadWorkplaceVocab() {
+            const container = document.getElementById('workplaceVocab');
+            container.innerHTML = appData.vocabulary.workplaceVocab.map((term, index) => `
+                <div class="vocab-phrase" onclick="copyToClipboard('${term}')">
+                    <div class="text-white text-sm">${term}</div>
+                    <div class="text-xs text-gray-400 mt-1">Click to copy</div>
+                </div>
+            `).join('');
+        }
+
+        function addInterviewPhrase() {
+            const phrase = document.getElementById('newInterviewPhrase').value.trim();
+            if (phrase) {
+                appData.vocabulary.interviewPhrases.push(phrase);
+                document.getElementById('newInterviewPhrase').value = '';
+                saveAppData();
+                loadInterviewPhrases();
+                showNotification('💬 Interview phrase added!');
+            }
+        }
+
+        function addWorkplaceVocab() {
+            const term = document.getElementById('newWorkplaceVocab').value.trim();
+            if (term) {
+                appData.vocabulary.workplaceVocab.push(term);
+                document.getElementById('newWorkplaceVocab').value = '';
+                saveAppData();
+                loadWorkplaceVocab();
+                showNotification('🏢 Workplace term added!');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('📋 Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋 Copied to clipboard!');
+            });
+        }
+
+        function startVocabReview(type) {
+            const items = type === 'interview' ? appData.vocabulary.interviewPhrases : appData.vocabulary.workplaceVocab;
+            const reviewContainer = document.getElementById('vocabReview');
+            
+            if (items.length === 0) {
+                showNotification('No items to review');
+                return;
+            }
+            
+            const randomItems = items.sort(() => 0.5 - Math.random()).slice(0, 5);
+            
+            reviewContainer.innerHTML = `
+                <h4 class="text-lg font-bold text-accent mb-4">Review: ${type === 'interview' ? 'Interview Phrases' : 'Workplace Terms'}</h4>
+                <div class="space-y-3">
+                    ${randomItems.map((item, index) => `
+                        <div class="vocab-phrase">
+                            <div class="text-white">${index + 1}. ${item}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="document.getElementById('vocabReview').classList.add('hidden')" class="mt-4 bg-gray-600 text-white px-4 py-2 rounded">
+                    Close Review
+                </button>
+            `;
+            
+            reviewContainer.classList.remove('hidden');
+        }
+
+        // Reset Session (Breathing)
+        function startResetSession() {
+            let resetTimeLeft = 25 * 60; // 25 minutes
+            
+            document.getElementById('startResetBtn').disabled = true;
+            document.getElementById('stopResetBtn').disabled = false;
+            
+            resetTimer = setInterval(() => {
+                resetTimeLeft--;
+                updateResetTimer(resetTimeLeft);
+                
+                if (resetTimeLeft <= 0) {
+                    stopResetSession();
+                }
+            }, 1000);
+            
+            startBreathingAnimation();
+            showRandomMotivationalMessage();
+        }
+
+        function startBreathingAnimation() {
+            const circle = document.getElementById('breathingCircle');
+            const instruction = document.getElementById('breathingInstruction');
+            let breathingPhase = 'inhale';
+            
+            breathingInterval = setInterval(() => {
+                if (breathingPhase === 'inhale') {
+                    circle.classList.add('inhale');
+                    circle.classList.remove('exhale');
+                    instruction.textContent = 'Breathe In';
+                    breathingPhase = 'exhale';
+                } else {
+                    circle.classList.add('exhale');
+                    circle.classList.remove('inhale');
+                    instruction.textContent = 'Breathe Out';
+                    breathingPhase = 'inhale';
+                }
+            }, 4000);
+        }
+
+        function updateResetTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('resetTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showRandomMotivationalMessage() {
+            const messages = appData.motivationalMessages;
+            if (messages.length > 0) {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                document.getElementById('motivationalMessage').textContent = `"${randomMessage}"`;
+            }
+        }
+
+        function stopResetSession() {
+            if (resetTimer) {
+                clearInterval(resetTimer);
+                clearInterval(breathingInterval);
+                resetTimer = null;
+                breathingInterval = null;
+            }
+            
+            document.getElementById('startResetBtn').disabled = false;
+            document.getElementById('stopResetBtn').disabled = true;
+            
+            showAchievement('🧘 Reset session completed! Mind refreshed!');
+        }
+
+        function addMotivationalMessage() {
+            const message = document.getElementById('newMotivationalMessage').value.trim();
+            if (!message) {
+                showNotification('Please enter a message');
+                return;
+            }
+            
+            appData.motivationalMessages.push(message);
+            saveAppData();
+            
+            document.getElementById('newMotivationalMessage').value = '';
+            loadCustomMotivationalMessages();
+            showNotification('💭 Motivational message added!');
+        }
+
+        function loadCustomMotivationalMessages() {
+            const container = document.getElementById('customMotivationalMessages');
+            const customMessages = appData.motivationalMessages.slice(5); // Skip default messages
+            
+            if (customMessages.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center text-sm">No custom messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = customMessages.map((message, index) => `
+                <div class="bg-gray-800 p-3 rounded flex justify-between items-center">
+                    <span class="text-sm">"${message}"</span>
+                    <button onclick="removeMotivationalMessage(${index + 5})" class="text-red-400 text-xs ml-3">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeMotivationalMessage(index) {
+            appData.motivationalMessages.splice(index, 1);
+            saveAppData();
+            loadCustomMotivationalMessages();
+            showNotification('🗑️ Message removed');
+        }
+
+        // Progress Screen
+        function loadProgressScreen() {
+            updateProgressStats();
+            loadSessionHistory();
+            loadRecordingsList();
+        }
+
+        function updateProgressStats() {
+            document.getElementById('totalRolesStats').textContent = appData.roles.length;
+            document.getElementById('streakStats').textContent = appData.progress.streak;
+            document.getElementById('drillSessionsStats').textContent = appData.progress.totalSessions;
+            document.getElementById('practiceTimeStats').textContent = Math.floor(appData.progress.practiceTime);
+        }
+
+        function loadSessionHistory() {
+            const container = document.getElementById('sessionHistory');
+            
+            if (appData.drillSessions.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No sessions recorded yet</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.drillSessions.slice(-10).reverse().map(session => {
+                const role = appData.roles.find(r => r.id === session.roleId);
+                return `
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-semibold text-white">${role ? role.title : 'Unknown Role'}</div>
+                                <div class="text-sm text-gray-400">${new Date(session.startTime).toLocaleString()}</div>
+                                <div class="text-xs text-gray-500">${session.questions.length} questions, ${session.recordings.length} recordings</div>
+                            </div>
+                            <button onclick="exportSessionPDF('${session.startTime}')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                                📄 Export
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadRecordingsList() {
+            const container = document.getElementById('recordingsList');
+            
+            if (appData.recordings.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center py-4">No recordings saved yet</div>';
+                return;
+            }
+            
+            container.innerHTML = appData.recordings.slice(-10).reverse().map(recording => `
+                <div class="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+                    <div>
+                        <div class="font-semibold text-white">Interview Recording</div>
+                        <div class="text-sm text-gray-400">${new Date(recording.date).toLocaleString()}</div>
+                        ${recording.transcript ? `<div class="text-xs text-gray-500 mt-1">"${recording.transcript.substring(0, 50)}..."</div>` : ''}
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="playRecording('${recording.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                            ▶️ Play
+                        </button>
+                        <button onclick="deleteRecording('${recording.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playRecording(recordingId) {
+            const recording = appData.recordings.find(r => r.id === recordingId);
+            if (recording && recording.url) {
+                const audio = new Audio(recording.url);
+                audio.play();
+            }
+        }
+
+        function deleteRecording(recordingId) {
+            if (confirm('Delete this recording?')) {
+                appData.recordings = appData.recordings.filter(r => r.id !== recordingId);
+                saveAppData();
+                loadRecordingsList();
+                showNotification('🗑️ Recording deleted');
+            }
+        }
+
+        // Quick Add Functions
+        function showQuickAdd() {
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function closeQuickAdd() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function quickAddRole() {
+            closeQuickAdd();
+            addNewRole();
+        }
+
+        function quickAddSkill() {
+            closeQuickAdd();
+            if (appData.roles.length === 0) {
+                showNotification('Add a role first before adding skills');
+                return;
+            }
+            
+            const roleId = appData.roles[0].id; // Use first role for simplicity
+            addSkillToRole(roleId);
+        }
+
+        function quickAddProof() {
+            closeQuickAdd();
+            if (appData.skills.length === 0) {
+                showNotification('Add skills first before adding proofs');
+                return;
+            }
+            
+            const skillId = appData.skills[0].id; // Use first skill for simplicity
+            addProofToSkill(skillId);
+        }
+
+        function quickAddQuestion() {
+            closeQuickAdd();
+            if (appData.roles.length === 0) {
+                showNotification('Add a role first before adding questions');
+                return;
+            }
+            
+            const roleId = appData.roles[0].id; // Use first role for simplicity
+            addQuestionToRole(roleId);
+        }
+
+        // Export Functions
+        function exportRoleMapPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('CareerCraft Role Map', 20, 30);
+            
+            // Date
+            doc.setFontSize(12);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+            
+            let yPos = 65;
+            
+            // Roles
+            doc.setFontSize(16);
+            doc.text('Target Roles', 20, yPos);
+            yPos += 15;
+            
+            doc.setFontSize(12);
+            appData.roles.forEach(role => {
+                doc.text(`• ${role.title} - ${role.company}`, 25, yPos);
+                yPos += 8;
+                
+                const skills = getSkillsForRole(role.id);
+                if (skills.length > 0) {
+                    doc.text(`  Skills: ${skills.map(s => s.name).join(', ')}`, 30, yPos);
+                    yPos += 8;
+                }
+                
+                yPos += 5;
+            });
+            
+            // Skills Gap Summary
+            if (appData.skills.length > 0) {
+                doc.setFontSize(16);
+                doc.text('Skills Gap Summary', 20, yPos + 10);
+                yPos += 25;
+                
+                doc.setFontSize(12);
+                appData.skills.forEach(skill => {
+                    const proofCount = appData.proofs.filter(p => p.skillId === skill.id).length;
+                    const status = proofCount >= 3 ? 'Ready' : proofCount >= 1 ? 'Needs Work' : 'Critical Gap';
+                    doc.text(`• ${skill.name}: ${status} (${proofCount} proofs)`, 25, yPos);
+                    yPos += 8;
+                });
+            }
+            
+            doc.save(`careercraft-rolemap-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Role map exported to PDF!');
+        }
+
+        function exportSessionPDF(sessionStartTime) {
+            const session = appData.drillSessions.find(s => s.startTime === sessionStartTime);
+            if (!session) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const role = appData.roles.find(r => r.id === session.roleId);
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('Interview Drill Session', 20, 30);
+            
+            // Session Info
+            doc.setFontSize(12);
+            doc.text(`Role: ${role ? role.title : 'Unknown'}`, 20, 50);
+            doc.text(`Date: ${new Date(session.startTime).toLocaleString()}`, 20, 65);
+            doc.text(`Questions: ${session.questions.length}`, 20, 80);
+            
+            let yPos = 100;
+            
+            // Questions and Answers
+            doc.setFontSize(14);
+            doc.text('Questions & Answers', 20, yPos);
+            yPos += 15;
+            
+            doc.setFontSize(10);
+            session.questions.forEach((question, index) => {
+                const answer = session.answers.find(a => a.questionId === question.id);
+                
+                doc.text(`Q${index + 1}: ${question.question}`, 20, yPos);
+                yPos += 8;
+                
+                if (answer && answer.answer) {
+                    const answerLines = doc.splitTextToSize(`A: ${answer.answer}`, 170);
+                    doc.text(answerLines, 25, yPos);
+                    yPos += answerLines.length * 5 + 5;
+                }
+                
+                if (answer && answer.transcript) {
+                    const transcriptLines = doc.splitTextToSize(`Transcript: ${answer.transcript}`, 170);
+                    doc.text(transcriptLines, 25, yPos);
+                    yPos += transcriptLines.length * 5 + 10;
+                }
+                
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+            
+            doc.save(`drill-session-${new Date(session.startTime).toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Session exported to PDF!');
+        }
+
+        function backupData() {
+            const backup = {
+                ...appData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `careercraft-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('💾 Data backup created successfully!');
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('Restore data? This will overwrite your current progress.')) {
+                            appData = { ...appData, ...importedData };
+                            saveAppData();
+                            updateAllStats();
+                            showNotification('📥 Data restored successfully!');
+                            location.reload();
+                        }
+                    } catch (error) {
+                        showNotification('❌ Error reading backup file');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function syncData() {
+            if (isOnline) {
+                // Simulate cloud sync
+                showNotification('🔄 Data synced to cloud!');
+                saveAppData();
+            } else {
+                showNotification('❌ Cannot sync while offline');
+            }
+        }
+
+        // Utility Functions
+        function updateAllStats() {
+            document.getElementById('currentStreak').textContent = appData.progress.streak;
+            document.getElementById('totalRoles').textContent = appData.roles.length;
+            
+            // Calculate completion rate
+            const totalSkills = appData.skills.length;
+            const skillsWithProofs = appData.skills.filter(skill => 
+                appData.proofs.some(proof => proof.skillId === skill.id)
+            ).length;
+            
+            const completionRate = totalSkills > 0 ? Math.round((skillsWithProofs / totalSkills) * 100) : 0;
+            appData.progress.completionRate = completionRate;
+            
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+            
+            // Update progress ring
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.transform = `rotate(${(completionRate / 100) * 360}deg)`;
+            }
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            
+            if (appData.lastActiveDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (appData.lastActiveDate === yesterday.toDateString()) {
+                    // Streak continues
+                    appData.progress.streak++;
+                } else if (appData.lastActiveDate !== null) {
+                    // Streak broken
+                    appData.progress.streak = 1;
+                } else {
+                    // First day
+                    appData.progress.streak = 1;
+                }
+                
+                appData.lastActiveDate = today;
+                saveAppData();
+            }
+        }
+
+        function showAchievement(message) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement-popup';
+            achievement.textContent = message;
+            
+            document.body.appendChild(achievement);
+            
+            setTimeout(() => {
+                achievement.remove();
+            }, 3000);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-accent text-black px-6 py-3 rounded-lg font-bold z-50';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9882d616d28efee5',t:'MTc1OTM5MzgxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
