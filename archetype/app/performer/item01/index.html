@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Recovery App - Transform Performance Notes into Growth</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #2d5a3d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: recovery-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes recovery-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .recovery-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: recovery-float 3s ease-in-out infinite;
+        }
+
+        @keyframes recovery-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.2);
+            border-color: #daa520;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(218, 165, 32, 0.1);
+            color: #ffd700;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .feedback-card {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .feedback-card:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(218, 165, 32, 0.4);
+        }
+
+        .feedback-card.positive {
+            border-left: 4px solid #66bb6a;
+            background: rgba(102, 187, 106, 0.1);
+        }
+
+        .feedback-card.constructive {
+            border-left: 4px solid #ffa726;
+            background: rgba(255, 167, 38, 0.1);
+        }
+
+        .feedback-card.critical {
+            border-left: 4px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .feedback-card.processed {
+            opacity: 0.7;
+            border-left-color: #66bb6a;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .feedback-type {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .type-positive {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .type-constructive {
+            background: #ffa726;
+            color: white;
+        }
+
+        .type-critical {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .performance-info {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .recovery-guide {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+            background: rgba(45, 90, 61, 0.8);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 14px 18px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+            background: linear-gradient(45deg, #b8941c, #e6c200);
+        }
+
+        .voice-btn.recording {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            color: white;
+            border: none;
+            padding: 18px 28px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            min-height: 45px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .action-item:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateX(5px);
+        }
+
+        .action-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            background: rgba(102, 187, 106, 0.2);
+        }
+
+        .action-item.swiping {
+            transform: translateX(-100px);
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #daa520;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0d2818;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #66bb6a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .action-item.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .focus-timer {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .focus-timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 14px 28px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d2818;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+        }
+
+        .timer-btn.active {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .affirmation-card {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .affirmation-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #ffd700;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .recovery-script {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            line-height: 1.8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(45, 90, 61, 0.95);
+            margin: 3% auto;
+            padding: 35px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            border: 2px solid #daa520;
+            max-height: 85vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.4rem;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 18px 25px;
+            background: rgba(102, 187, 106, 0.95);
+            color: white;
+            border-radius: 10px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .motivational-message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #daa520;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motivational-message:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .chart-placeholder {
+            height: 120px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 15px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 10px 15px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .offline-indicator.online {
+            background: rgba(102, 187, 106, 0.9);
+        }
+
+        .recovery-generator {
+            background: rgba(45, 90, 61, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .generator-display {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .feedback-analysis {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .insight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 8px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2.5rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .delete-btn {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff8a80;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Recovery-themed decorative elements */
+        .recovery-decoration {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 4rem;
+            color: #daa520;
+            pointer-events: none;
+            animation: recovery-float 6s ease-in-out infinite;
+        }
+
+        .recovery-decoration:nth-child(2) {
+            animation-delay: -2s;
+        }
+
+        .recovery-decoration:nth-child(3) {
+            animation-delay: -4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <span class="recovery-icon">🔄</span>
+            <h1>Feedback Recovery App</h1>
+            <p>Transform Performance Notes into Growth & Recovery</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalFeedback">0</div>
+                <div class="stat-label">Feedback Notes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="processedFeedback">0</div>
+                <div class="stat-label">Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="recoveryStreak">0</div>
+                <div class="stat-label">Recovery Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="growthScore">GROWING</div>
+                <div class="stat-label">Growth Status</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "Every piece of feedback is a stepping stone to your next breakthrough performance."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('feedback')">🔄 Feedback</button>
+            <button class="nav-tab" onclick="switchTab('create')">📝 Add Note</button>
+            <button class="nav-tab" onclick="switchTab('recovery')">💪 Recovery</button>
+            <button class="nav-tab" onclick="switchTab('affirmations')">✨ Affirmations</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Feedback Tab -->
+        <div id="feedback" class="tab-content active">
+            <div class="input-group">
+                <input type="text" class="search-bar" id="feedbackSearch" placeholder="Search feedback by performance, source, or tags..." oninput="filterFeedback()">
+            </div>
+
+            <div class="feedback-analysis">
+                <h4>🎯 Quick Recovery Actions</h4>
+                <div class="insight-item">
+                    <span>Process Latest Feedback</span>
+                    <button class="do-it-now-btn" onclick="startQuickRecovery('process')">DO IT NOW</button>
+                </div>
+                <div class="insight-item">
+                    <span>5-Minute Confidence Reset</span>
+                    <button class="action-btn" onclick="startQuickRecovery('confidence')">Start</button>
+                </div>
+            </div>
+
+            <div id="feedbackList"></div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="quickFeedback" placeholder="Quick add feedback note..." aria-label="Quick feedback">
+                <button class="voice-btn" onclick="startVoiceInput('quickFeedback')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickAddFeedback()">Quick Add</button>
+                <button class="do-it-now-btn" onclick="startEmergencyRecovery()">🚨 EMERGENCY RECOVERY</button>
+            </div>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content">
+            <div class="feedback-card">
+                <h3>🔄 Feedback Note Creator</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="feedbackTitle" placeholder="Performance/event title..." aria-label="Feedback title">
+                    <button class="voice-btn" onclick="startVoiceInput('feedbackTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="form-input" id="feedbackSource" placeholder="Feedback source (director, coach, audience)..." aria-label="Feedback source">
+                    <input type="text" class="form-input" id="feedbackVenue" placeholder="Venue or event location..." aria-label="Venue">
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="feedbackContent" placeholder="Feedback content and notes..." rows="4"></textarea>
+                    <button class="voice-btn" onclick="startVoiceInput('feedbackContent')" aria-label="Voice input for content">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="feedbackType">
+                        <option value="positive">Positive Feedback</option>
+                        <option value="constructive">Constructive Feedback</option>
+                        <option value="critical">Critical Feedback</option>
+                    </select>
+                    <select class="form-select" id="performanceType">
+                        <option value="music">Music Performance</option>
+                        <option value="theater">Theater/Acting</option>
+                        <option value="dance">Dance Performance</option>
+                        <option value="public-speaking">Public Speaking</option>
+                        <option value="comedy">Comedy/Stand-up</option>
+                        <option value="sports">Sports Competition</option>
+                        <option value="presentation">Business Presentation</option>
+                        <option value="audition">Audition</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="datetime-local" class="form-input" id="performanceDate" aria-label="Performance date">
+                    <input type="number" class="form-input" id="impactLevel" placeholder="Impact level (1-10)" min="1" max="10" aria-label="Impact level">
+                </div>
+                
+                <div class="tags-input" id="feedbackTags" onclick="focusTagInput('feedbackTagInput')">
+                    <input type="text" id="feedbackTagInput" placeholder="Add tags (technique, stage-presence, timing)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <h4>📋 Action Items</h4>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="actionItem" placeholder="Action to take..." aria-label="Action item">
+                    <select class="form-select" id="actionPriority">
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                    <button class="add-btn" onclick="addActionItem()">Add</button>
+                </div>
+                <div id="actionPreview"></div>
+                
+                <h4>✨ Recovery Plan</h4>
+                <div class="input-group">
+                    <select class="form-select" id="recoveryType">
+                        <option value="confidence">Confidence Building</option>
+                        <option value="skill">Skill Development</option>
+                        <option value="mindset">Mindset Reset</option>
+                        <option value="technique">Technique Improvement</option>
+                        <option value="emotional">Emotional Recovery</option>
+                    </select>
+                    <input type="number" class="form-input" id="recoveryDuration" placeholder="Duration (days)" min="1" max="30" value="7">
+                    <button class="add-btn" onclick="addRecoveryPlan()">Add Plan</button>
+                </div>
+                <div id="recoveryPreview"></div>
+                
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="add-btn" onclick="createFeedbackNote()">🔄 Create Note</button>
+                    <button class="do-it-now-btn" onclick="createAndProcess()">⚡ CREATE & PROCESS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recovery Tab -->
+        <div id="recovery" class="tab-content">
+            <div class="recovery-generator">
+                <h3>💪 Quick Recovery Generator</h3>
+                <div class="generator-display" id="recoveryDisplay">Click generate to get your personalized recovery action</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="generateRecovery('confidence')">Confidence Boost</button>
+                    <button class="timer-btn" onclick="generateRecovery('skill')">Skill Focus</button>
+                    <button class="timer-btn" onclick="generateRecovery('mindset')">Mindset Reset</button>
+                    <button class="timer-btn" onclick="generateRecovery('random')">Surprise Me</button>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>🎯 Recovery Strategies Library</h3>
+                <div id="recoveryLibrary">
+                    <div class="recovery-guide">
+                        <h4>Confidence Recovery</h4>
+                        <p>Rebuild your confidence through positive visualization and past success reflection.</p>
+                        <button class="action-btn" onclick="startRecoverySession('confidence')">Start Session</button>
+                    </div>
+                    <div class="recovery-guide">
+                        <h4>Skill Development Focus</h4>
+                        <p>Turn feedback into targeted practice sessions for specific skill improvement.</p>
+                        <button class="action-btn" onclick="startRecoverySession('skill')">Start Session</button>
+                    </div>
+                    <div class="recovery-guide">
+                        <h4>Emotional Reset</h4>
+                        <p>Process difficult feedback and transform it into motivation for growth.</p>
+                        <button class="action-btn" onclick="startRecoverySession('emotional')">Start Session</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>📊 Recovery Progress Tracker</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="logRecoverySession()">📝 Log Session</button>
+                    <button class="action-btn" onclick="setRecoveryReminder()">⏰ Set Reminder</button>
+                    <button class="action-btn" onclick="viewRecoveryStats()">📈 View Progress</button>
+                </div>
+                <div id="recoveryStats">
+                    <p>💪 Sessions today: <span id="todayRecoverySessions">0</span></p>
+                    <p>⏱️ Total recovery time: <span id="totalRecoveryTime">0</span> minutes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Affirmations Tab -->
+        <div id="affirmations" class="tab-content">
+            <div class="affirmation-card">
+                <h3>✨ Daily Affirmations</h3>
+                <div class="affirmation-text" id="affirmationText">
+                    I am constantly growing and improving as a performer.
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="nextAffirmation()">Next Affirmation</button>
+                    <button class="timer-btn" onclick="saveAffirmation()">Save Favorite</button>
+                    <button class="timer-btn" onclick="createCustomAffirmation()">Create Custom</button>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>🌟 Affirmation Categories</h3>
+                <div id="affirmationCategories">
+                    <div class="feedback-card">
+                        <h4>💪 Confidence Builders</h4>
+                        <p>Affirmations focused on building unshakeable self-confidence and stage presence.</p>
+                        <button class="action-btn" onclick="showAffirmations('confidence')">View Affirmations</button>
+                    </div>
+                    <div class="feedback-card">
+                        <h4>🎯 Growth Mindset</h4>
+                        <p>Affirmations that help you see feedback as opportunities for growth and learning.</p>
+                        <button class="action-btn" onclick="showAffirmations('growth')">View Affirmations</button>
+                    </div>
+                    <div class="feedback-card">
+                        <h4>🔄 Recovery & Resilience</h4>
+                        <p>Affirmations for bouncing back stronger from challenging feedback or performances.</p>
+                        <button class="action-btn" onclick="showAffirmations('recovery')">View Affirmations</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>📝 Custom Affirmation Builder</h3>
+                <div class="input-group">
+                    <textarea class="form-textarea" id="customAffirmationText" placeholder="Create your personal affirmation..." rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <button class="add-btn" onclick="saveCustomAffirmation()">Save Affirmation</button>
+                    <button class="action-btn" onclick="previewAffirmation()">Preview</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Recovery Focus Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                    <button class="timer-btn" onclick="setCustomTimer()">Custom</button>
+                </div>
+                <p style="color: #e0e0e0; margin-top: 20px;">Focus on processing feedback and planning your growth</p>
+            </div>
+
+            <div class="feedback-card">
+                <h3>💡 Daily Recovery Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>🎯 Recovery Action Items</h3>
+                <div class="input-group">
+                    <button class="action-btn" onclick="reviewFeedbackNotes()">📋 Review Feedback</button>
+                    <button class="action-btn" onclick="practiceImprovement()">🎭 Practice Session</button>
+                    <button class="action-btn" onclick="mentalRecovery()">🧠 Mental Recovery</button>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>📚 Recovery Tips</h3>
+                <div id="recoveryTips">
+                    <div class="performance-info">
+                        <h4>🎵 Music Performance Recovery</h4>
+                        <p>Focus on technical feedback first, then work on emotional expression and stage presence.</p>
+                    </div>
+                    <div class="performance-info">
+                        <h4>🎭 Theater & Acting Recovery</h4>
+                        <p>Use feedback to deepen character understanding and improve emotional authenticity.</p>
+                    </div>
+                    <div class="performance-info">
+                        <h4>🗣️ Public Speaking Recovery</h4>
+                        <p>Transform nervous energy into passionate delivery through targeted practice and preparation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>🔄 Feedback Stats</h4>
+                    <div class="stat-value" id="totalFeedbackAnalytics">0</div>
+                    <div class="stat-label">Total feedback notes</div>
+                    <div class="chart-placeholder">Feedback Timeline</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Recovery Streak</h4>
+                    <div class="stat-value" id="recoveryStreakAnalytics">0</div>
+                    <div class="stat-label">Days of consistent recovery work</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⏱️ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTimeAnalytics">0h</div>
+                    <div class="stat-label">This month</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>📊 Growth Trends</h4>
+                    <div class="stat-value" id="growthTrend">IMPROVING</div>
+                    <div class="chart-placeholder">Growth Patterns</div>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <h3>📈 Detailed Analytics</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>🎭 Feedback Types</h4>
+                        <div id="feedbackBreakdown"></div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>📈 Recovery Progress</h4>
+                        <div id="recoveryTrends"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportFeedbackReport()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Edit Modal -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <h3 id="feedbackModalTitle">Edit Feedback Note <span class="close" onclick="closeFeedbackModal()">&times;</span></h3>
+            <div id="feedbackModalContent">
+                <input type="text" class="form-input" id="editFeedbackTitle" placeholder="Feedback title...">
+                <input type="text" class="form-input" id="editFeedbackSource" placeholder="Source...">
+                <textarea class="form-textarea" id="editFeedbackContent" placeholder="Content..." rows="4"></textarea>
+                <select class="form-select" id="editFeedbackType">
+                    <option value="positive">Positive Feedback</option>
+                    <option value="constructive">Constructive Feedback</option>
+                    <option value="critical">Critical Feedback</option>
+                </select>
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="action-btn" onclick="saveFeedbackEdit()">Save Changes</button>
+                    <button class="action-btn" onclick="processFeedback()">Process Now</button>
+                    <button class="action-btn delete-btn" onclick="deleteCurrentFeedback()">Delete Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recovery Session Modal -->
+    <div id="recoveryModal" class="modal">
+        <div class="modal-content">
+            <h3>💪 Recovery Session <span class="close" onclick="closeRecoveryModal()">&times;</span></h3>
+            <div class="recovery-script" id="recoveryScript">
+                <p>Select a recovery type to begin your personalized recovery session.</p>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-btn" onclick="startRecoveryTimer()">Start Session</button>
+                <button class="timer-btn" onclick="pauseRecoveryTimer()">Pause</button>
+                <button class="timer-btn" onclick="completeRecoverySession()">Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your recovery motivation message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let feedbackNotes = [];
+        let currentFeedback = null;
+        let currentActionItems = [];
+        let currentRecoveryPlans = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recoveryInterval = null;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let recoveryStreak = 0;
+        let recoverySessions = 0;
+        let totalRecoveryTime = 0;
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "Every piece of feedback is a stepping stone to your next breakthrough performance.",
+            "Growth happens in the space between feedback and action. You're in that space now.",
+            "Your willingness to receive and process feedback shows your commitment to excellence.",
+            "Feedback is not judgment - it's information that helps you become the performer you're meant to be.",
+            "The strongest performers are those who transform criticism into fuel for improvement.",
+            "Each note of feedback is a gift that brings you closer to your artistic vision.",
+            "Recovery is not about forgetting feedback - it's about integrating it with wisdom and grace.",
+            "Your talent combined with thoughtful feedback creates unstoppable growth.",
+            "Embrace feedback as your teacher, and let recovery be your path to mastery.",
+            "Every great performer has walked the path from feedback to breakthrough. You're on that path now."
+        ];
+
+        // Daily recovery prompts
+        const recoveryPrompts = [
+            "Review your most recent feedback and identify one specific action to take today",
+            "Practice the skill that received the most constructive feedback",
+            "Write down three things you did well in your last performance",
+            "Visualize yourself successfully implementing recent feedback",
+            "Reach out to your feedback source to clarify or ask follow-up questions",
+            "Spend time working on the technical aspect that needs the most improvement",
+            "Practice your recovery routine and positive self-talk",
+            "Set up a practice session focused on your growth areas"
+        ];
+
+        // Affirmations by category
+        const affirmations = {
+            confidence: [
+                "I am a talented performer who grows stronger with every piece of feedback.",
+                "My confidence comes from my commitment to continuous improvement.",
+                "I trust in my abilities and my capacity to learn and grow.",
+                "Each performance is an opportunity to showcase my developing skills.",
+                "I am worthy of success and capable of achieving my artistic goals.",
+                "My unique voice and style are valuable contributions to my art form.",
+                "I face challenges with courage and turn obstacles into opportunities.",
+                "I am resilient, adaptable, and always moving forward in my craft."
+            ],
+            growth: [
+                "Every piece of feedback is valuable information for my artistic journey.",
+                "I welcome constructive criticism as a tool for my development.",
+                "Mistakes are stepping stones to mastery, and I embrace them as learning opportunities.",
+                "I am constantly evolving and improving as a performer.",
+                "My willingness to grow sets me apart and accelerates my progress.",
+                "I see challenges as chances to discover new strengths within myself.",
+                "Growth is my natural state, and I trust the process of becoming.",
+                "I am open to learning from every source and every experience."
+            ],
+            recovery: [
+                "I bounce back from setbacks stronger and wiser than before.",
+                "Difficult feedback cannot diminish my passion or my potential.",
+                "I have the strength to transform any criticism into positive action.",
+                "My resilience is one of my greatest assets as a performer.",
+                "I recover quickly from disappointments and focus on moving forward.",
+                "Each recovery makes me more prepared for future challenges.",
+                "I am in control of my response to feedback and choose growth over defeat.",
+                "My ability to recover and adapt is a superpower in my artistic journey."
+            ]
+        };
+
+        // Recovery strategies
+        const recoveryStrategies = {
+            confidence: [
+                "Spend 10 minutes reviewing your past successes and achievements",
+                "Practice positive self-talk and affirmations for 5 minutes",
+                "Visualize yourself performing confidently and successfully",
+                "Write down three things you're proud of from your recent performances",
+                "Do a power pose for 2 minutes while repeating confidence affirmations",
+                "Listen to music that makes you feel powerful and confident",
+                "Review positive feedback and testimonials you've received",
+                "Practice your strongest piece or skill to reconnect with your abilities"
+            ],
+            skill: [
+                "Break down the feedback into specific, actionable practice goals",
+                "Spend 15 minutes on focused practice of the identified skill",
+                "Research techniques or methods to improve in the feedback area",
+                "Create a practice schedule that addresses the specific feedback",
+                "Find a mentor or coach who can help with this particular skill",
+                "Record yourself practicing to objectively assess your progress",
+                "Set measurable goals for improvement in this area",
+                "Practice the skill in different contexts to build versatility"
+            ],
+            mindset: [
+                "Reframe the feedback as information rather than judgment",
+                "Write about what you learned from the feedback experience",
+                "Practice gratitude for the opportunity to receive guidance",
+                "Meditate on your long-term goals and how this feedback serves them",
+                "Remind yourself that all great performers have received similar feedback",
+                "Focus on your growth journey rather than comparing to others",
+                "Set an intention for how you want to use this feedback",
+                "Practice self-compassion and treat yourself as you would a good friend"
+            ],
+            emotional: [
+                "Allow yourself to feel the emotions that came up from the feedback",
+                "Journal about your emotional response without judgment",
+                "Practice deep breathing to center yourself emotionally",
+                "Talk to a trusted friend or mentor about your feelings",
+                "Do something nurturing for yourself as an act of self-care",
+                "Remind yourself that your worth isn't determined by one performance",
+                "Practice emotional regulation techniques like progressive muscle relaxation",
+                "Create a ritual that helps you release negative emotions and move forward"
+            ]
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            renderFeedback();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (feedbackNotes.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+        });
+
+        function initializeSampleData() {
+            feedbackNotes = [
+                {
+                    id: 1,
+                    title: 'Piano Recital - Community Center',
+                    source: 'Music Director Sarah',
+                    venue: 'Community Arts Center',
+                    content: 'Beautiful interpretation of the Chopin piece. Work on dynamics in the middle section - could use more contrast between forte and piano passages. Your technical skills are solid, but emotional expression could be deeper.',
+                    feedbackType: 'constructive',
+                    performanceType: 'music',
+                    performanceDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    impactLevel: 7,
+                    tags: ['dynamics', 'expression', 'chopin', 'technique'],
+                    actionItems: [
+                        { id: 1, text: 'Practice dynamic contrasts in Chopin piece', priority: 'high', completed: false },
+                        { id: 2, text: 'Work on emotional connection to the music', priority: 'medium', completed: false },
+                        { id: 3, text: 'Record practice sessions to hear dynamics objectively', priority: 'medium', completed: true }
+                    ],
+                    recoveryPlans: [
+                        { type: 'skill', duration: 14, description: 'Focus on dynamic control and expression' }
+                    ],
+                    processed: false,
+                    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+                },
+                {
+                    id: 2,
+                    title: 'Theater Audition - Local Production',
+                    source: 'Casting Director Mike',
+                    venue: 'Downtown Theater',
+                    content: 'Strong vocal performance and good stage presence. Monologue delivery was confident. Consider working on character motivation - dig deeper into what drives your character. Also, work on projection without losing the intimate moments.',
+                    feedbackType: 'positive',
+                    performanceType: 'theater',
+                    performanceDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                    impactLevel: 8,
+                    tags: ['character-work', 'projection', 'monologue', 'audition'],
+                    actionItems: [
+                        { id: 1, text: 'Research character background and motivation', priority: 'high', completed: false },
+                        { id: 2, text: 'Practice projection exercises', priority: 'medium', completed: false }
+                    ],
+                    recoveryPlans: [
+                        { type: 'confidence', duration: 7, description: 'Build on positive feedback and address growth areas' }
+                    ],
+                    processed: false,
+                    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+                }
+            ];
+            
+            updateStats();
+            renderFeedback();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Feedback management
+        function createFeedbackNote() {
+            const title = document.getElementById('feedbackTitle').value.trim();
+            const source = document.getElementById('feedbackSource').value.trim();
+            const venue = document.getElementById('feedbackVenue').value.trim();
+            const content = document.getElementById('feedbackContent').value.trim();
+            const feedbackType = document.getElementById('feedbackType').value;
+            const performanceType = document.getElementById('performanceType').value;
+            const performanceDate = document.getElementById('performanceDate').value;
+            const impactLevel = parseInt(document.getElementById('impactLevel').value) || 5;
+            const tagInput = document.getElementById('feedbackTagInput');
+            
+            if (!title || !source || !content || !performanceDate) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const feedback = {
+                id: Date.now(),
+                title: title,
+                source: source,
+                venue: venue,
+                content: content,
+                feedbackType: feedbackType,
+                performanceType: performanceType,
+                performanceDate: performanceDate,
+                impactLevel: impactLevel,
+                tags: tags,
+                actionItems: [...currentActionItems],
+                recoveryPlans: [...currentRecoveryPlans],
+                processed: false,
+                createdAt: new Date()
+            };
+            
+            feedbackNotes.push(feedback);
+            
+            // Clear form
+            clearFeedbackForm();
+            
+            updateStats();
+            updateStreak();
+            renderFeedback();
+            saveData();
+            showNotification('Feedback note created! 🔄');
+        }
+
+        function createAndProcess() {
+            createFeedbackNote();
+            if (feedbackNotes.length > 0) {
+                const latestFeedback = feedbackNotes[feedbackNotes.length - 1];
+                latestFeedback.processed = true;
+                switchTab('recovery');
+                document.querySelector('[onclick="switchTab(\'recovery\')"]').classList.add('active');
+                showNotification(`Processing feedback: "${latestFeedback.title}"! 🚨`);
+                saveData();
+            }
+        }
+
+        function quickAddFeedback() {
+            const content = document.getElementById('quickFeedback').value.trim();
+            if (!content) {
+                showNotification('Please enter feedback content', 'error');
+                return;
+            }
+            
+            const feedback = {
+                id: Date.now(),
+                title: 'Quick Feedback Note',
+                source: 'Source TBD',
+                venue: 'Venue TBD',
+                content: content,
+                feedbackType: 'constructive',
+                performanceType: 'music',
+                performanceDate: new Date().toISOString().slice(0, 16),
+                impactLevel: 5,
+                tags: ['quick-add'],
+                actionItems: [],
+                recoveryPlans: [],
+                processed: false,
+                createdAt: new Date()
+            };
+            
+            feedbackNotes.push(feedback);
+            document.getElementById('quickFeedback').value = '';
+            
+            updateStats();
+            renderFeedback();
+            saveData();
+            showNotification('Quick feedback note added! 🚀');
+        }
+
+        function startEmergencyRecovery() {
+            showNotification('Emergency recovery mode activated! 🚨', 'emergency');
+            
+            // Switch to recovery tab and start immediate recovery
+            switchTab('recovery');
+            document.querySelector('[onclick="switchTab(\'recovery\')"]').classList.add('active');
+            
+            // Start confidence recovery immediately
+            setTimeout(() => {
+                generateRecovery('confidence');
+            }, 500);
+        }
+
+        function startQuickRecovery(type) {
+            if (type === 'process') {
+                showNotification('Starting feedback processing...', 'info');
+                switchTab('recovery');
+                document.querySelector('[onclick="switchTab(\'recovery\')"]').classList.add('active');
+                setTimeout(() => generateRecovery('skill'), 500);
+            } else if (type === 'confidence') {
+                showNotification('Starting confidence reset...', 'info');
+                switchTab('affirmations');
+                document.querySelector('[onclick="switchTab(\'affirmations\')"]').classList.add('active');
+                setTimeout(() => showAffirmations('confidence'), 500);
+            }
+        }
+
+        function clearFeedbackForm() {
+            document.getElementById('feedbackTitle').value = '';
+            document.getElementById('feedbackSource').value = '';
+            document.getElementById('feedbackVenue').value = '';
+            document.getElementById('feedbackContent').value = '';
+            document.getElementById('feedbackType').value = 'positive';
+            document.getElementById('performanceType').value = 'music';
+            document.getElementById('performanceDate').value = '';
+            document.getElementById('impactLevel').value = '';
+            document.getElementById('feedbackTagInput').value = '';
+            document.getElementById('feedbackTags').innerHTML = '<input type="text" id="feedbackTagInput" placeholder="Add tags (technique, stage-presence, timing)..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentActionItems = [];
+            currentRecoveryPlans = [];
+            renderActionPreview();
+            renderRecoveryPreview();
+        }
+
+        function renderFeedback() {
+            const container = document.getElementById('feedbackList');
+            container.innerHTML = '';
+            
+            const filteredFeedback = filterFeedbackBySearch();
+            
+            if (filteredFeedback.length === 0) {
+                container.innerHTML = '<div class="feedback-card"><p>No feedback notes found. Add your first feedback note to begin your recovery journey!</p></div>';
+                return;
+            }
+            
+            filteredFeedback.forEach(feedback => {
+                const card = createFeedbackCard(feedback);
+                container.appendChild(card);
+            });
+        }
+
+        function createFeedbackCard(feedback) {
+            const card = document.createElement('div');
+            card.className = `feedback-card ${feedback.feedbackType} ${feedback.processed ? 'processed' : ''}`;
+            
+            const completedActions = feedback.actionItems.filter(item => item.completed).length;
+            const totalActions = feedback.actionItems.length;
+            const progress = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+            
+            const performanceDate = new Date(feedback.performanceDate);
+            const isRecent = (new Date() - performanceDate) < (7 * 24 * 60 * 60 * 1000);
+            
+            card.innerHTML = `
+                <div class="feedback-header">
+                    <div>
+                        <div class="feedback-title">${feedback.title}</div>
+                        <div style="color: #e0e0e0; font-size: 0.9rem;">🎭 ${feedback.source} at ${feedback.venue}</div>
+                        <div style="color: #e0e0e0; font-size: 0.9rem; margin-top: 8px;">${feedback.content.substring(0, 150)}${feedback.content.length > 150 ? '...' : ''}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="feedback-type type-${feedback.feedbackType}">${feedback.feedbackType}</div>
+                        <div style="color: #e0e0e0; font-size: 0.8rem;">Impact: ${feedback.impactLevel}/10</div>
+                        ${isRecent ? '<div style="color: #ffd700; font-weight: bold; font-size: 0.8rem;">🆕 RECENT</div>' : ''}
+                    </div>
+                </div>
+                
+                <div class="performance-info">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>🎯 Type: ${feedback.performanceType}</span>
+                        <span>📅 Date: ${performanceDate.toLocaleDateString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>📊 Actions: ${completedActions}/${totalActions} completed</span>
+                        <span>⏱️ Recovery Plans: ${feedback.recoveryPlans.length}</span>
+                    </div>
+                </div>
+                
+                ${feedback.actionItems.length > 0 ? `
+                    <div class="recovery-guide">
+                        <strong>📋 Action Items:</strong>
+                        ${feedback.actionItems.slice(0, 3).map(action => `
+                            <div style="font-size: 0.9rem; margin: 3px 0;">
+                                ${action.completed ? '✅' : '☐'} ${action.text} (${action.priority})
+                            </div>
+                        `).join('')}
+                        ${feedback.actionItems.length > 3 ? `<div style="font-size: 0.8rem; color: #e0e0e0;">+${feedback.actionItems.length - 3} more actions</div>` : ''}
+                    </div>
+                ` : ''}
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0;">
+                    ${feedback.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <span>Recovery Progress: ${progress}%</span>
+                    <div style="width: 120px; height: 8px; background: rgba(45, 90, 61, 0.6); border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${progress}%; height: 100%; background: linear-gradient(45deg, #daa520, #ffd700);"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+                    <button class="action-btn" onclick="editFeedback(${feedback.id})">✏️ Edit</button>
+                    <button class="action-btn" onclick="viewActions(${feedback.id})">📋 Actions</button>
+                    ${!feedback.processed ? `
+                        <button class="action-btn" onclick="processFeedbackNote(${feedback.id})">🔄 Process</button>
+                    ` : `
+                        <button class="action-btn" onclick="reviewFeedbackNote(${feedback.id})">👁️ Review</button>
+                    `}
+                    <button class="do-it-now-btn" onclick="startRecoveryFromFeedback(${feedback.id})">🚀 START RECOVERY</button>
+                    <button class="action-btn delete-btn" onclick="deleteFeedback(${feedback.id})">🗑️ Delete</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function filterFeedback() {
+            renderFeedback();
+        }
+
+        function filterFeedbackBySearch() {
+            const searchTerm = document.getElementById('feedbackSearch').value.toLowerCase();
+            if (!searchTerm) return feedbackNotes;
+            
+            return feedbackNotes.filter(feedback => 
+                feedback.title.toLowerCase().includes(searchTerm) ||
+                feedback.source.toLowerCase().includes(searchTerm) ||
+                feedback.content.toLowerCase().includes(searchTerm) ||
+                feedback.performanceType.toLowerCase().includes(searchTerm) ||
+                feedback.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        function editFeedback(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (!feedback) return;
+            
+            currentFeedback = feedback;
+            document.getElementById('editFeedbackTitle').value = feedback.title;
+            document.getElementById('editFeedbackSource').value = feedback.source;
+            document.getElementById('editFeedbackContent').value = feedback.content;
+            document.getElementById('editFeedbackType').value = feedback.feedbackType;
+            document.getElementById('feedbackModal').style.display = 'block';
+        }
+
+        function saveFeedbackEdit() {
+            if (!currentFeedback) return;
+            
+            currentFeedback.title = document.getElementById('editFeedbackTitle').value;
+            currentFeedback.source = document.getElementById('editFeedbackSource').value;
+            currentFeedback.content = document.getElementById('editFeedbackContent').value;
+            currentFeedback.feedbackType = document.getElementById('editFeedbackType').value;
+            
+            renderFeedback();
+            closeFeedbackModal();
+            saveData();
+            showNotification('Feedback note updated! ✏️');
+        }
+
+        function processFeedback() {
+            if (!currentFeedback) return;
+            
+            currentFeedback.processed = true;
+            
+            renderFeedback();
+            closeFeedbackModal();
+            updateStats();
+            saveData();
+            showNotification('🔄 Feedback processed! Ready for recovery actions!');
+        }
+
+        function deleteCurrentFeedback() {
+            if (!currentFeedback) return;
+            
+            if (confirm('Are you sure you want to delete this feedback note?')) {
+                feedbackNotes = feedbackNotes.filter(f => f.id !== currentFeedback.id);
+                renderFeedback();
+                closeFeedbackModal();
+                updateStats();
+                saveData();
+                showNotification('Feedback note deleted');
+            }
+        }
+
+        function processFeedbackNote(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (feedback) {
+                feedback.processed = true;
+                renderFeedback();
+                updateStats();
+                saveData();
+                showNotification(`🔄 "${feedback.title}" processed!`);
+            }
+        }
+
+        function reviewFeedbackNote(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (feedback) {
+                showNotification(`👁️ Reviewing "${feedback.title}"`);
+            }
+        }
+
+        function startRecoveryFromFeedback(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (!feedback) return;
+            
+            showNotification(`🚀 Starting recovery for: "${feedback.title}"!`);
+            
+            // Process the feedback and switch to recovery
+            feedback.processed = true;
+            
+            // Switch to recovery tab
+            switchTab('recovery');
+            document.querySelector('[onclick="switchTab(\'recovery\')"]').classList.add('active');
+            
+            // Generate appropriate recovery based on feedback type
+            setTimeout(() => {
+                if (feedback.feedbackType === 'critical') {
+                    generateRecovery('emotional');
+                } else if (feedback.feedbackType === 'constructive') {
+                    generateRecovery('skill');
+                } else {
+                    generateRecovery('confidence');
+                }
+            }, 500);
+        }
+
+        function viewActions(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (!feedback) return;
+            
+            showNotification(`📋 Viewing actions for "${feedback.title}"`);
+        }
+
+        function deleteFeedback(feedbackId) {
+            const feedback = feedbackNotes.find(f => f.id === feedbackId);
+            if (!feedback) return;
+            
+            const confirmMessage = feedback.processed ? 
+                `Are you sure you want to delete the processed feedback "${feedback.title}"?` :
+                `Are you sure you want to delete "${feedback.title}"? This action cannot be undone.`;
+            
+            if (confirm(confirmMessage)) {
+                feedbackNotes = feedbackNotes.filter(f => f.id !== feedbackId);
+                renderFeedback();
+                updateStats();
+                saveData();
+                showNotification(`Feedback note "${feedback.title}" deleted 🗑️`);
+            }
+        }
+
+        // Action items management
+        function addActionItem() {
+            const text = document.getElementById('actionItem').value.trim();
+            const priority = document.getElementById('actionPriority').value;
+            
+            if (!text) {
+                showNotification('Please enter an action item', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                text: text,
+                priority: priority,
+                completed: false
+            };
+            
+            currentActionItems.push(item);
+            
+            document.getElementById('actionItem').value = '';
+            renderActionPreview();
+            showNotification('Action item added! 📋');
+        }
+
+        function renderActionPreview() {
+            const container = document.getElementById('actionPreview');
+            container.innerHTML = '';
+            
+            currentActionItems.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'action-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <span class="tag" style="margin-left: auto;">${item.priority}</span>
+                    <button class="action-btn" onclick="removeActionItem(${index})" style="padding: 6px 10px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeActionItem(index) {
+            currentActionItems.splice(index, 1);
+            renderActionPreview();
+        }
+
+        // Recovery plans management
+        function addRecoveryPlan() {
+            const type = document.getElementById('recoveryType').value;
+            const duration = parseInt(document.getElementById('recoveryDuration').value) || 7;
+            
+            const plan = {
+                type: type,
+                duration: duration,
+                description: `${type} recovery plan for ${duration} days`
+            };
+            
+            currentRecoveryPlans.push(plan);
+            
+            document.getElementById('recoveryDuration').value = '7';
+            renderRecoveryPreview();
+            showNotification('Recovery plan added! 💪');
+        }
+
+        function renderRecoveryPreview() {
+            const container = document.getElementById('recoveryPreview');
+            container.innerHTML = '';
+            
+            currentRecoveryPlans.forEach((plan, index) => {
+                const element = document.createElement('div');
+                element.className = 'recovery-guide';
+                element.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${plan.type.charAt(0).toUpperCase() + plan.type.slice(1)} Recovery</strong>
+                            <div style="font-size: 0.8rem; color: #e0e0e0;">${plan.duration} days</div>
+                        </div>
+                        <button class="action-btn" onclick="removeRecoveryPlan(${index})" style="padding: 6px 10px;">✕</button>
+                    </div>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeRecoveryPlan(index) {
+            currentRecoveryPlans.splice(index, 1);
+            renderRecoveryPreview();
+        }
+
+        // Recovery generators
+        function generateRecovery(type) {
+            const strategies = recoveryStrategies[type] || recoveryStrategies.confidence;
+            const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
+            
+            document.getElementById('recoveryDisplay').textContent = randomStrategy;
+            
+            showNotification(`💪 ${type.charAt(0).toUpperCase() + type.slice(1)} recovery generated!`);
+        }
+
+        function startRecoverySession(type) {
+            showNotification(`Starting ${type} recovery session...`, 'info');
+            
+            const scripts = {
+                confidence: "Take a deep breath and remember: you are a talented performer who is constantly growing. Every piece of feedback is helping you become the artist you're meant to be.",
+                skill: "Focus on the specific skill that needs development. Break it down into small, manageable steps. Practice with intention and patience.",
+                emotional: "It's okay to feel disappointed or frustrated. These emotions are valid. Now, let's transform them into fuel for your growth and improvement."
+            };
+            
+            document.getElementById('recoveryScript').innerHTML = `<p style="font-size: 1.1rem; line-height: 1.8;">${scripts[type] || scripts.confidence}</p>`;
+            document.getElementById('recoveryModal').style.display = 'block';
+        }
+
+        function startRecoveryTimer() {
+            showNotification('Recovery session started! Focus on your growth and healing.');
+        }
+
+        function pauseRecoveryTimer() {
+            showNotification('Recovery session paused. Take your time.');
+        }
+
+        function completeRecoverySession() {
+            recoverySessions++;
+            totalRecoveryTime += 15; // Approximate session time
+            updateRecoveryStats();
+            closeRecoveryModal();
+            saveData();
+            showNotification('🎉 Recovery session complete! You\'re stronger now!');
+        }
+
+        function logRecoverySession() {
+            recoverySessions++;
+            totalRecoveryTime += 10;
+            updateRecoveryStats();
+            saveData();
+            showNotification('Recovery session logged! 📝');
+        }
+
+        function updateRecoveryStats() {
+            document.getElementById('todayRecoverySessions').textContent = recoverySessions;
+            document.getElementById('totalRecoveryTime').textContent = totalRecoveryTime;
+        }
+
+        function setRecoveryReminder() {
+            showNotification('Recovery reminder set for daily check-ins 💪');
+        }
+
+        function viewRecoveryStats() {
+            showNotification(`Today: ${recoverySessions} sessions, ${totalRecoveryTime} minutes total`);
+        }
+
+        // Affirmations
+        function nextAffirmation() {
+            const allAffirmations = [...affirmations.confidence, ...affirmations.growth, ...affirmations.recovery];
+            const randomAffirmation = allAffirmations[Math.floor(Math.random() * allAffirmations.length)];
+            document.getElementById('affirmationText').textContent = randomAffirmation;
+        }
+
+        function saveAffirmation() {
+            const currentAffirmation = document.getElementById('affirmationText').textContent;
+            // In a full app, this would save to favorites
+            showNotification('Affirmation saved to favorites! ⭐');
+        }
+
+        function createCustomAffirmation() {
+            document.getElementById('customAffirmationText').focus();
+            showNotification('Create your personal affirmation below 📝');
+        }
+
+        function showAffirmations(category) {
+            const categoryAffirmations = affirmations[category] || affirmations.confidence;
+            const randomAffirmation = categoryAffirmations[Math.floor(Math.random() * categoryAffirmations.length)];
+            document.getElementById('affirmationText').textContent = randomAffirmation;
+            showNotification(`Showing ${category} affirmations ✨`);
+        }
+
+        function saveCustomAffirmation() {
+            const customText = document.getElementById('customAffirmationText').value.trim();
+            if (customText) {
+                // In a full app, this would save to custom affirmations
+                showNotification('Custom affirmation saved! ✨');
+                document.getElementById('customAffirmationText').value = '';
+            }
+        }
+
+        function previewAffirmation() {
+            const customText = document.getElementById('customAffirmationText').value.trim();
+            if (customText) {
+                document.getElementById('affirmationText').textContent = customText;
+                showNotification('Previewing your custom affirmation');
+            }
+        }
+
+        // Focus timer functionality
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Recovery focus session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function setCustomTimer() {
+            const minutes = prompt('Enter timer duration in minutes (1-180):', '25');
+            if (minutes && !isNaN(minutes) && minutes > 0 && minutes <= 180) {
+                timerSeconds = parseInt(minutes) * 60;
+                updateTimerDisplay();
+                showNotification(`Timer set to ${minutes} minutes`);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Recovery focus session complete! You\'ve made great progress!');
+            updateStats();
+            saveData();
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyRecoveryPromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...recoveryPrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyRecoveryPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyRecoveryPromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailyRecoveryPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="feedback-card" style="margin-bottom: 12px;">
+                    <div class="feedback-title">💡 ${prompt}</div>
+                    <div style="margin-top: 12px;">
+                        <button class="do-it-now-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyRecoveryPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyRecoveryPrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great recovery work! 🌟');
+            updateStreak();
+        }
+
+        // Recovery action functions
+        function reviewFeedbackNotes() {
+            showNotification('📋 Opening feedback review...');
+        }
+
+        function practiceImprovement() {
+            showNotification('🎭 Starting improvement practice...');
+        }
+
+        function mentalRecovery() {
+            showNotification('🧠 Beginning mental recovery session...');
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customRecoveryMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customRecoveryMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const processedFeedback = feedbackNotes.filter(f => f.processed).length;
+            const totalActions = feedbackNotes.reduce((sum, feedback) => 
+                sum + feedback.actionItems.filter(item => item.completed).length, 0);
+            
+            // Calculate growth status
+            const recentFeedback = feedbackNotes.filter(f => 
+                (new Date() - new Date(f.createdAt)) < (7 * 24 * 60 * 60 * 1000)
+            );
+            const growthStatus = recentFeedback.length > 0 ? 'GROWING' : 'STABLE';
+            
+            document.getElementById('totalFeedback').textContent = feedbackNotes.length;
+            document.getElementById('processedFeedback').textContent = processedFeedback;
+            document.getElementById('recoveryStreak').textContent = recoveryStreak;
+            document.getElementById('growthScore').textContent = growthStatus;
+            
+            // Update growth status color
+            const growthElement = document.getElementById('growthScore');
+            growthElement.className = 'stat-value';
+            if (growthStatus === 'GROWING') {
+                growthElement.style.color = '#66bb6a';
+            } else {
+                growthElement.style.color = '#ffd700';
+            }
+            
+            // Analytics tab stats
+            document.getElementById('totalFeedbackAnalytics').textContent = feedbackNotes.length;
+            document.getElementById('recoveryStreakAnalytics').textContent = recoveryStreak;
+            document.getElementById('totalFocusTimeAnalytics').textContent = Math.round(totalFocusTime / 60) + 'h';
+            document.getElementById('growthTrend').textContent = growthStatus;
+            
+            updateFeedbackBreakdown();
+            updateRecoveryTrends();
+        }
+
+        function updateFeedbackBreakdown() {
+            const feedbackTypes = {};
+            feedbackNotes.forEach(feedback => {
+                feedbackTypes[feedback.feedbackType] = (feedbackTypes[feedback.feedbackType] || 0) + 1;
+            });
+            
+            const container = document.getElementById('feedbackBreakdown');
+            container.innerHTML = Object.entries(feedbackTypes)
+                .map(([type, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+                        <span>${type}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateRecoveryTrends() {
+            const container = document.getElementById('recoveryTrends');
+            const processedCount = feedbackNotes.filter(f => f.processed).length;
+            const unprocessedCount = feedbackNotes.length - processedCount;
+            
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+                    <span>Processed</span>
+                    <span>${processedCount}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 6px 0;">
+                    <span>Pending</span>
+                    <span>${unprocessedCount}</span>
+                </div>
+            `;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastRecoveryActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    recoveryStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    recoveryStreak = 1;
+                }
+            } else {
+                // First time
+                recoveryStreak = 1;
+            }
+            
+            localStorage.setItem('lastRecoveryActiveDate', today);
+            localStorage.setItem('recoveryStreak', recoveryStreak.toString());
+            updateStats();
+        }
+
+        // Export and backup
+        function exportFeedbackReport() {
+            const processedFeedback = feedbackNotes.filter(f => f.processed);
+            const unprocessedFeedback = feedbackNotes.filter(f => !f.processed);
+            const totalActions = feedbackNotes.reduce((sum, feedback) => 
+                sum + feedback.actionItems.filter(item => item.completed).length, 0);
+            
+            const content = `
+Feedback Recovery App Report
+Generated: ${new Date().toLocaleDateString()}
+
+RECOVERY OVERVIEW
+================
+Total Feedback Notes: ${feedbackNotes.length}
+Processed Feedback: ${processedFeedback.length}
+Pending Feedback: ${unprocessedFeedback.length}
+Completed Actions: ${totalActions}
+Current Recovery Streak: ${recoveryStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+Recovery Sessions: ${recoverySessions}
+
+PROCESSED FEEDBACK
+==================
+${processedFeedback.map(feedback => `
+🔄 ${feedback.title}
+   Source: ${feedback.source}
+   Type: ${feedback.feedbackType.toUpperCase()}
+   Performance: ${feedback.performanceType}
+   Date: ${new Date(feedback.performanceDate).toLocaleDateString()}
+   Impact Level: ${feedback.impactLevel}/10
+   
+   Content: ${feedback.content}
+   
+   Action Items:
+   ${feedback.actionItems.map(item => `   ${item.completed ? '✅' : '☐'} ${item.text} (${item.priority})`).join('\n   ')}
+   
+   Recovery Plans:
+   ${feedback.recoveryPlans.map(plan => `   💪 ${plan.type} recovery (${plan.duration} days)`).join('\n   ')}
+`).join('\n')}
+
+PENDING FEEDBACK
+================
+${unprocessedFeedback.map(f => `🔄 ${f.title} - ${f.feedbackType} - Impact: ${f.impactLevel}/10`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `feedback-recovery-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Recovery report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                feedbackNotes: feedbackNotes,
+                totalFocusTime: totalFocusTime,
+                recoveryStreak: recoveryStreak,
+                recoverySessions: recoverySessions,
+                totalRecoveryTime: totalRecoveryTime,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `feedback-recovery-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        feedbackNotes = data.feedbackNotes || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        recoveryStreak = data.recoveryStreak || 0;
+                        recoverySessions = data.recoverySessions || 0;
+                        totalRecoveryTime = data.totalRecoveryTime || 0;
+                        
+                        renderFeedback();
+                        updateStats();
+                        updateRecoveryStats();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            feedbackNotes.forEach(feedback => {
+                if (feedback.processed) return;
+                
+                const feedbackDate = new Date(feedback.createdAt);
+                const daysDiff = (now - feedbackDate) / (1000 * 60 * 60 * 24);
+                
+                // Remind to process feedback after 2 days
+                if (daysDiff >= 2 && daysDiff < 3) {
+                    showNotification(`Reminder: Process feedback "${feedback.title}"`, 'reminder');
+                }
+                
+                // Urgent reminder after 7 days
+                if (daysDiff >= 7) {
+                    showNotification(`Urgent: Unprocessed feedback "${feedback.title}" needs attention!`, 'emergency');
+                }
+            });
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('feedbackRecovery_notes', JSON.stringify(feedbackNotes));
+            localStorage.setItem('feedbackRecovery_focusTime', totalFocusTime);
+            localStorage.setItem('feedbackRecovery_streak', recoveryStreak);
+            localStorage.setItem('feedbackRecovery_sessions', recoverySessions);
+            localStorage.setItem('feedbackRecovery_recoveryTime', totalRecoveryTime);
+        }
+
+        function loadData() {
+            const savedNotes = localStorage.getItem('feedbackRecovery_notes');
+            const savedFocusTime = localStorage.getItem('feedbackRecovery_focusTime');
+            const savedStreak = localStorage.getItem('feedbackRecovery_streak');
+            const savedSessions = localStorage.getItem('feedbackRecovery_sessions');
+            const savedRecoveryTime = localStorage.getItem('feedbackRecovery_recoveryTime');
+            
+            if (savedNotes) feedbackNotes = JSON.parse(savedNotes);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) recoveryStreak = parseInt(savedStreak);
+            if (savedSessions) recoverySessions = parseInt(savedSessions);
+            if (savedRecoveryTime) totalRecoveryTime = parseInt(savedRecoveryTime);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        function closeRecoveryModal() {
+            document.getElementById('recoveryModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+            } else if (type === 'emergency') {
+                notification.style.background = 'rgba(255, 107, 107, 0.95)';
+                notification.style.color = 'white';
+                notification.style.fontWeight = 'bold';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 167, 38, 0.95)';
+                notification.style.color = 'white';
+            } else if (type === 'info') {
+                notification.style.background = 'rgba(33, 150, 243, 0.95)';
+                notification.style.color = 'white';
+            } else {
+                notification.style.background = 'rgba(102, 187, 106, 0.95)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, type === 'emergency' ? 8000 : 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('feedbackTitle').focus();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        switchTab('recovery');
+                        document.querySelector('[onclick="switchTab(\'recovery\')"]').classList.add('active');
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const feedbackModal = document.getElementById('feedbackModal');
+            const messageModal = document.getElementById('messageModal');
+            const recoveryModal = document.getElementById('recoveryModal');
+            
+            if (event.target === feedbackModal) {
+                closeFeedbackModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+            if (event.target === recoveryModal) {
+                closeRecoveryModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98719c4a2361bc4b',t:'MTc1OTIxMzE4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
