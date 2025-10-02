@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Flow - Capture to Publish</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a1f0d 0%, #1a3d1f 25%, #0f2d15 50%, #1e4a25 75%, #0a1f0d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(26, 61, 31, 0.5) 50%, rgba(30, 74, 37, 0.3) 100%);
+            border-radius: 20px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #a8d4a8;
+            opacity: 0.9;
+        }
+
+        .pipeline {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stage {
+            background: linear-gradient(135deg, rgba(26, 61, 31, 0.4) 0%, rgba(15, 45, 21, 0.6) 100%);
+            border-radius: 15px;
+            border: 2px solid #2d5a3d;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stage-title {
+            color: #d4af37;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stage-count {
+            background: rgba(212, 175, 55, 0.2);
+            color: #f4d03f;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .quick-capture {
+            background: rgba(15, 45, 21, 0.6);
+            border: 2px solid #1e4a25;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .capture-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1rem;
+            padding: 10px 0;
+            outline: none;
+            resize: none;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .capture-input::placeholder {
+            color: #a8d4a8;
+            opacity: 0.7;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .voice-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #2d5a3d;
+            border-radius: 8px;
+            color: #d4af37;
+            font-size: 1.2rem;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .voice-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        .voice-btn.recording {
+            background: linear-gradient(135deg, #dc3545 0%, #ff6b7a 100%);
+            border-color: #dc3545;
+            color: #ffffff;
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-btn.processing {
+            background: linear-gradient(135deg, #ffc107 0%, #ffeb3b 100%);
+            border-color: #ffc107;
+            color: #0a1f0d;
+        }
+
+        .outline-voice-btn {
+            top: 15px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .capture-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0a1f0d;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(45, 90, 61, 0.6);
+            color: #ffffff;
+            border: 1px solid #2d5a3d;
+        }
+
+        .btn-secondary:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .idea-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .idea-item {
+            background: rgba(30, 74, 37, 0.4);
+            border: 1px solid #2d5a3d;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .idea-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .idea-item.selected {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .idea-content {
+            color: #e8f5e8;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .idea-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #a8d4a8;
+            opacity: 0.8;
+        }
+
+        .idea-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .idea-item:hover .idea-actions {
+            opacity: 1;
+        }
+
+        .action-icon {
+            background: none;
+            border: none;
+            color: #d4af37;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.1);
+        }
+
+        .outline-editor {
+            background: rgba(15, 45, 21, 0.6);
+            border: 2px solid #1e4a25;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 300px;
+        }
+
+        .outline-title {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #d4af37;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 10px 0;
+            outline: none;
+            border-bottom: 2px solid #2d5a3d;
+            margin-bottom: 20px;
+        }
+
+        .outline-title::placeholder {
+            color: #a8d4a8;
+            opacity: 0.7;
+        }
+
+        .outline-content {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.6;
+            outline: none;
+            resize: none;
+            min-height: 200px;
+            font-family: inherit;
+        }
+
+        .outline-content::placeholder {
+            color: #a8d4a8;
+            opacity: 0.7;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(30, 74, 37, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2d5a3d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .checklist-checkbox.checked {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border-color: #d4af37;
+            color: #0a1f0d;
+        }
+
+        .checklist-text {
+            color: #e8f5e8;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+
+        .checklist-text.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 74, 37, 0.4);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .export-section {
+            background: rgba(15, 45, 21, 0.6);
+            border: 2px solid #1e4a25;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0a1f0d;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a8d4a8;
+            opacity: 0.7;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0a1f0d;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(26, 61, 31, 0.3);
+            border-radius: 12px;
+            border: 1px solid #2d5a3d;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            color: #d4af37;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            color: #a8d4a8;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 1024px) {
+            .pipeline {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .capture-actions {
+                flex-direction: column;
+            }
+            
+            .stats-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💡 Idea Flow</h1>
+            <p>Capture ideas → Build outlines → Publish content</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number" id="ideaCount">0</span>
+                <span class="stat-label">Ideas Captured</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="outlineCount">0</span>
+                <span class="stat-label">Outlines Created</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="publishCount">0</span>
+                <span class="stat-label">Content Published</span>
+            </div>
+        </div>
+
+        <div class="pipeline">
+            <!-- Stage 1: Idea Inbox -->
+            <div class="stage">
+                <div class="stage-header">
+                    <h2 class="stage-title">
+                        📥 Idea Inbox
+                    </h2>
+                    <span class="stage-count" id="inboxCount">0</span>
+                </div>
+
+                <div class="quick-capture">
+                    <div class="input-container">
+                        <textarea class="capture-input" id="ideaInput" placeholder="What's your idea? Just start typing or use voice..."></textarea>
+                        <button class="voice-btn" id="ideaVoiceBtn" onclick="toggleVoiceRecording('idea')" title="Voice to text">
+                            🎤
+                        </button>
+                    </div>
+                    <div class="capture-actions">
+                        <button class="btn btn-secondary" onclick="clearIdea()">Clear</button>
+                        <button class="btn btn-primary" onclick="captureIdea()">💡 Capture</button>
+                    </div>
+                </div>
+
+                <div class="idea-list" id="ideaList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <p>No ideas yet. Start capturing!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Outline Builder -->
+            <div class="stage">
+                <div class="stage-header">
+                    <h2 class="stage-title">
+                        📝 Outline Builder
+                    </h2>
+                    <span class="stage-count" id="outlineCountBadge">0</span>
+                </div>
+
+                <div id="outlineSection">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>Select an idea to start outlining</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: Publish Checklist -->
+            <div class="stage">
+                <div class="stage-header">
+                    <h2 class="stage-title">
+                        🚀 Publish Ready
+                    </h2>
+                    <span class="stage-count" id="publishCountBadge">0</span>
+                </div>
+
+                <div id="publishSection">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>Create an outline to see publish checklist</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let ideas = [];
+        let outlines = [];
+        let currentIdea = null;
+        let currentOutline = null;
+        let recognition = null;
+        let isRecording = false;
+        let currentRecordingType = null;
+
+        const publishChecklist = [
+            "Content has a clear purpose and target audience",
+            "Introduction hooks the reader effectively",
+            "Main points are well-structured and logical",
+            "Examples and evidence support key claims",
+            "Conclusion provides clear takeaways or next steps",
+            "Grammar, spelling, and formatting are polished",
+            "Call-to-action is compelling and specific",
+            "Content is optimized for chosen platform",
+            "Visuals or media enhance the message",
+            "Final review completed and ready to publish"
+        ];
+
+        function initializeApp() {
+            loadData();
+            updateUI();
+            setupVoiceRecognition();
+            
+            // Auto-save as user types
+            document.getElementById('ideaInput').addEventListener('input', debounce(saveData, 500));
+            
+            // Enter key to capture idea
+            document.getElementById('ideaInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    captureIdea();
+                }
+            });
+        }
+
+        function setupVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    isRecording = true;
+                    updateVoiceButtonState();
+                };
+                
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    if (currentRecordingType === 'idea') {
+                        const input = document.getElementById('ideaInput');
+                        if (finalTranscript) {
+                            input.value += (input.value ? ' ' : '') + finalTranscript;
+                        }
+                    } else if (currentRecordingType === 'outline') {
+                        const textarea = document.querySelector('.outline-content');
+                        if (textarea && finalTranscript) {
+                            textarea.value += (textarea.value ? ' ' : '') + finalTranscript;
+                            updateOutlineContent(textarea.value);
+                        }
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceRecording();
+                    if (event.error === 'not-allowed') {
+                        showToast('🎤 Microphone access denied. Please allow microphone access.');
+                    } else {
+                        showToast('🎤 Voice recognition error. Please try again.');
+                    }
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceRecording();
+                };
+            } else {
+                console.warn('Speech recognition not supported in this browser');
+            }
+        }
+
+        function toggleVoiceRecording(type) {
+            if (!recognition) {
+                showToast('🎤 Voice recognition not supported in this browser');
+                return;
+            }
+            
+            if (isRecording) {
+                stopVoiceRecording();
+            } else {
+                startVoiceRecording(type);
+            }
+        }
+
+        function startVoiceRecording(type) {
+            currentRecordingType = type;
+            try {
+                recognition.start();
+                showToast('🎤 Listening... Click the microphone again to stop');
+            } catch (error) {
+                console.error('Error starting recognition:', error);
+                showToast('🎤 Could not start voice recognition');
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+            isRecording = false;
+            currentRecordingType = null;
+            updateVoiceButtonState();
+        }
+
+        function updateVoiceButtonState() {
+            const ideaBtn = document.getElementById('ideaVoiceBtn');
+            const outlineBtn = document.getElementById('outlineVoiceBtn');
+            
+            if (ideaBtn) {
+                if (isRecording && currentRecordingType === 'idea') {
+                    ideaBtn.classList.add('recording');
+                    ideaBtn.textContent = '🔴';
+                    ideaBtn.title = 'Stop recording';
+                } else {
+                    ideaBtn.classList.remove('recording');
+                    ideaBtn.textContent = '🎤';
+                    ideaBtn.title = 'Voice to text';
+                }
+            }
+            
+            if (outlineBtn) {
+                if (isRecording && currentRecordingType === 'outline') {
+                    outlineBtn.classList.add('recording');
+                    outlineBtn.textContent = '🔴';
+                    outlineBtn.title = 'Stop recording';
+                } else {
+                    outlineBtn.classList.remove('recording');
+                    outlineBtn.textContent = '🎤';
+                    outlineBtn.title = 'Voice to text';
+                }
+            }
+        }
+
+        function captureIdea() {
+            const input = document.getElementById('ideaInput');
+            const content = input.value.trim();
+            
+            if (!content) {
+                showToast('💭 Write your idea first!');
+                return;
+            }
+
+            const idea = {
+                id: Date.now(),
+                content: content,
+                created: new Date().toISOString(),
+                status: 'inbox'
+            };
+
+            ideas.push(idea);
+            input.value = '';
+            
+            updateUI();
+            saveData();
+            showToast('💡 Idea captured!');
+        }
+
+        function clearIdea() {
+            document.getElementById('ideaInput').value = '';
+        }
+
+        function selectIdea(ideaId) {
+            currentIdea = ideas.find(idea => idea.id === ideaId);
+            if (currentIdea) {
+                // Check if outline already exists
+                currentOutline = outlines.find(outline => outline.ideaId === ideaId);
+                
+                if (!currentOutline) {
+                    // Create new outline
+                    currentOutline = {
+                        id: Date.now(),
+                        ideaId: ideaId,
+                        title: '',
+                        content: '',
+                        checklist: publishChecklist.map((item, index) => ({
+                            id: index,
+                            text: item,
+                            completed: false
+                        })),
+                        created: new Date().toISOString(),
+                        status: 'outline'
+                    };
+                    outlines.push(currentOutline);
+                }
+                
+                // Update idea status
+                currentIdea.status = 'outline';
+                
+                updateUI();
+                saveData();
+                showToast(`📝 Working on: "${currentIdea.content.substring(0, 30)}..."`);
+            }
+        }
+
+        function deleteIdea(ideaId) {
+            if (confirm('Delete this idea?')) {
+                ideas = ideas.filter(idea => idea.id !== ideaId);
+                outlines = outlines.filter(outline => outline.ideaId !== ideaId);
+                
+                if (currentIdea && currentIdea.id === ideaId) {
+                    currentIdea = null;
+                    currentOutline = null;
+                }
+                
+                updateUI();
+                saveData();
+                showToast('🗑️ Idea deleted');
+            }
+        }
+
+        function moveToPublish(outlineId) {
+            const outline = outlines.find(o => o.id === outlineId);
+            const idea = ideas.find(i => i.id === outline.ideaId);
+            
+            if (outline && idea) {
+                outline.status = 'publish';
+                idea.status = 'publish';
+                updateUI();
+                saveData();
+                showToast('🚀 Moved to publish stage!');
+            }
+        }
+
+        function toggleChecklistItem(itemId) {
+            if (currentOutline) {
+                const item = currentOutline.checklist.find(item => item.id === itemId);
+                if (item) {
+                    item.completed = !item.completed;
+                    updateUI();
+                    saveData();
+                    
+                    const completedCount = currentOutline.checklist.filter(item => item.completed).length;
+                    if (completedCount === currentOutline.checklist.length) {
+                        showToast('🎉 All checks complete! Ready to publish!');
+                    }
+                }
+            }
+        }
+
+        function exportToDoc() {
+            if (!currentOutline) {
+                showToast('📝 Create an outline first!');
+                return;
+            }
+
+            const completedChecks = currentOutline.checklist.filter(item => item.completed).length;
+            const totalChecks = currentOutline.checklist.length;
+            
+            if (completedChecks < totalChecks * 0.8) {
+                if (!confirm(`Only ${completedChecks}/${totalChecks} checks completed. Export anyway?`)) {
+                    return;
+                }
+            }
+
+            const docContent = generateDocContent(currentOutline);
+            downloadAsDoc(docContent, currentOutline.title || 'Untitled Content');
+            
+            // Mark as published
+            currentOutline.status = 'published';
+            const idea = ideas.find(i => i.id === currentOutline.ideaId);
+            if (idea) idea.status = 'published';
+            
+            updateUI();
+            saveData();
+            showToast('📄 Exported to document!');
+        }
+
+        function generateDocContent(outline) {
+            const idea = ideas.find(i => i.id === outline.ideaId);
+            const completedChecks = outline.checklist.filter(item => item.completed);
+            
+            return `# ${outline.title || 'Untitled Content'}
+
+## Original Idea
+${idea ? idea.content : 'No original idea found'}
+
+## Outline
+${outline.content || 'No outline content'}
+
+## Publish Checklist Progress
+Completed: ${completedChecks.length}/${outline.checklist.length} items
+
+### Completed Items:
+${completedChecks.map(item => `✅ ${item.text}`).join('\n')}
+
+### Remaining Items:
+${outline.checklist.filter(item => !item.completed).map(item => `⏳ ${item.text}`).join('\n')}
+
+---
+Generated by Idea Flow on ${new Date().toLocaleDateString()}`;
+        }
+
+        function downloadAsDoc(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function updateUI() {
+            updateStats();
+            renderIdeaList();
+            renderOutlineSection();
+            renderPublishSection();
+        }
+
+        function updateStats() {
+            const inboxIdeas = ideas.filter(idea => idea.status === 'inbox').length;
+            const outlineIdeas = ideas.filter(idea => idea.status === 'outline').length;
+            const publishIdeas = ideas.filter(idea => idea.status === 'publish' || idea.status === 'published').length;
+            
+            document.getElementById('ideaCount').textContent = ideas.length;
+            document.getElementById('outlineCount').textContent = outlines.length;
+            document.getElementById('publishCount').textContent = ideas.filter(idea => idea.status === 'published').length;
+            
+            document.getElementById('inboxCount').textContent = inboxIdeas;
+            document.getElementById('outlineCountBadge').textContent = outlineIdeas;
+            document.getElementById('publishCountBadge').textContent = publishIdeas;
+        }
+
+        function renderIdeaList() {
+            const ideaList = document.getElementById('ideaList');
+            const inboxIdeas = ideas.filter(idea => idea.status === 'inbox');
+            
+            if (inboxIdeas.length === 0) {
+                ideaList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <p>No ideas yet. Start capturing!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            ideaList.innerHTML = inboxIdeas.map(idea => `
+                <div class="idea-item ${currentIdea && currentIdea.id === idea.id ? 'selected' : ''}" onclick="selectIdea(${idea.id})">
+                    <div class="idea-content">${idea.content}</div>
+                    <div class="idea-meta">
+                        <span>${new Date(idea.created).toLocaleDateString()}</span>
+                        <div class="idea-actions">
+                            <button class="action-icon" onclick="event.stopPropagation(); selectIdea(${idea.id})" title="Create outline">📝</button>
+                            <button class="action-icon" onclick="event.stopPropagation(); deleteIdea(${idea.id})" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderOutlineSection() {
+            const outlineSection = document.getElementById('outlineSection');
+            
+            if (!currentOutline) {
+                outlineSection.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>Select an idea to start outlining</p>
+                    </div>
+                `;
+                return;
+            }
+
+            outlineSection.innerHTML = `
+                <div class="outline-editor">
+                    <input type="text" class="outline-title" placeholder="Content title..." value="${currentOutline.title}" onchange="updateOutlineTitle(this.value)">
+                    <div class="input-container">
+                        <textarea class="outline-content" placeholder="Build your outline here...
+
+• Main point 1
+  - Supporting detail
+  - Example or evidence
+
+• Main point 2
+  - Supporting detail
+  - Call to action
+
+Feel free to structure this however works best for your content!" onchange="updateOutlineContent(this.value)">${currentOutline.content}</textarea>
+                        <button class="voice-btn outline-voice-btn" id="outlineVoiceBtn" onclick="toggleVoiceRecording('outline')" title="Voice to text">
+                            🎤
+                        </button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="moveToPublish(${currentOutline.id})">🚀 Ready to Publish</button>
+                    <button class="btn btn-secondary" onclick="clearCurrentOutline()">🔄 New Outline</button>
+                </div>
+            `;
+            
+            // Update voice button state after rendering
+            setTimeout(updateVoiceButtonState, 100);
+        }
+
+        function renderPublishSection() {
+            const publishSection = document.getElementById('publishSection');
+            
+            if (!currentOutline || currentOutline.status !== 'publish') {
+                publishSection.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>Create an outline to see publish checklist</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const completedCount = currentOutline.checklist.filter(item => item.completed).length;
+            const progress = (completedCount / currentOutline.checklist.length) * 100;
+            
+            publishSection.innerHTML = `
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                
+                <div class="checklist">
+                    ${currentOutline.checklist.map(item => `
+                        <div class="checklist-item" onclick="toggleChecklistItem(${item.id})">
+                            <div class="checklist-checkbox ${item.completed ? 'checked' : ''}">
+                                ${item.completed ? '✓' : ''}
+                            </div>
+                            <div class="checklist-text ${item.completed ? 'completed' : ''}">${item.text}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportToDoc()" ${completedCount === 0 ? 'disabled' : ''}>
+                        📄 Export to Document
+                    </button>
+                    <p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #a8d4a8; opacity: 0.8;">
+                        ${completedCount}/${currentOutline.checklist.length} checks completed
+                    </p>
+                </div>
+            `;
+        }
+
+        function updateOutlineTitle(title) {
+            if (currentOutline) {
+                currentOutline.title = title;
+                saveData();
+            }
+        }
+
+        function updateOutlineContent(content) {
+            if (currentOutline) {
+                currentOutline.content = content;
+                saveData();
+            }
+        }
+
+        function clearCurrentOutline() {
+            currentIdea = null;
+            currentOutline = null;
+            updateUI();
+            showToast('🔄 Ready for new outline');
+        }
+
+        function saveData() {
+            localStorage.setItem('ideaFlow_ideas', JSON.stringify(ideas));
+            localStorage.setItem('ideaFlow_outlines', JSON.stringify(outlines));
+        }
+
+        function loadData() {
+            const savedIdeas = localStorage.getItem('ideaFlow_ideas');
+            const savedOutlines = localStorage.getItem('ideaFlow_outlines');
+            
+            if (savedIdeas) {
+                ideas = JSON.parse(savedIdeas);
+            }
+            
+            if (savedOutlines) {
+                outlines = JSON.parse(savedOutlines);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Initialize app
+        initializeApp();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986c4d4574a0bc4c',t:'MTc1OTE1NzUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
