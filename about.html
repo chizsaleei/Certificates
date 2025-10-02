@@ -1,198 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About | Chiza</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-
-  <style>
-    /* Image left, text right */
-    .about-hero{display:grid;grid-template-columns:240px 1fr;gap:1.25rem;align-items:start}
-    .about-hero .hero-copy h1{margin-bottom:.25rem}
-    .strap{font-weight:500;margin:.25rem 0;color:var(--ink)}
-    .verse{font-size:.95rem;color:var(--muted);margin:.25rem 0 .9rem;max-width:60ch}
-
-    /* Portrait: small oval, head/shoulders */
-    .about-figure{width:100%;max-width:240px;border-radius:9999px;overflow:hidden;border:1px solid var(--ring);box-shadow:0 6px 18px rgba(0,0,0,.25);aspect-ratio:3/4}
-    .about-figure img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;display:block}
-
-    @media(max-width:860px){.about-hero{grid-template-columns:1fr;gap:1rem}.about-figure{margin:0 auto}}
-
-    /* STACKED rows: Mission, Vision, Values (one per row) */
-    .about-summary{display:grid;grid-template-columns:1fr;gap:12px;margin-top:.5rem}
-    .about-card{border:1px solid var(--ring);border-radius:12px;padding:1rem;background:var(--surface)}
-    .about-card h3{margin:0 0 .5rem}
-    .about-card p{margin:0;color:var(--ink)}
-    .about-card ul{margin:.25rem 0 0 1rem}
-    .about-card li{margin:.35rem 0}
-
-    .under-cards{margin-top:.9rem}
-    .proof-cta{display:flex;gap:.5rem;flex-wrap:wrap}
-
-    /* Keep Ko-fi link clickable but invisible text */
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;clip-path:inset(50%)}
-  </style>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Person",
-    "name":"Chiza",
-    "url":"https://chizsaleei.com",
-    "image":"https://chizsaleei.com/images/prof11.jpg",
-    "sameAs":["https://www.linkedin.com/in/chizsaibanez/","https://ko-fi.com/lifebalanceq"],
-    "jobTitle":"Coach and Educator",
-    "knowsAbout":["Career Coaching","Leadership","Business Communication","Health and Wellness","Financial Basics","IELTS and OET"]
-  }
-  </script>
+  <title>About • Chizsa Coaching</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script defer src="/script.js"></script>
+  <meta name="description" content="About Chizsa. Practical coaching apps for medical and business professionals." />
 </head>
 <body>
-  <header class="site-header" role="banner">
-    <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="Chiza Home">Chiza</a>
-      <nav class="nav" role="navigation" aria-label="Primary">
-        <a href="index.html">Home</a>
-        <a href="quiz.html">Quiz</a>
-        <a href="client-solutions.html">Solutions</a>
-        <a href="coaching.html">Categories</a>
-        <a href="about.html" class="active">About</a>
-        <a href="training.html">Training</a>
-        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container bar">
+      <a class="brand" href="/"><span>CHIZSA | COACHING</span></a>
+      <nav class="site-nav">
+        <a href="/archetype/">Find Your Archetype</a>
+        <a href="/profiles/">Choose Your Profile</a>
+        <a href="/focus/">Select Your Focus</a>
+        <a href="/about.html">About</a>
+        <a href="/training.html">Training</a>
+        <a href="/testimonials.html">Testimonials</a>
+        <a href="/contact/">Contact</a>
+        <a class="support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
   </header>
 
-  <main id="main" class="container" role="main">
-    <section class="hero small">
-      <div class="about-hero">
-        <figure class="about-figure">
-          <img src="images/prof11.jpg" alt="Portrait of Chiza" loading="lazy" />
-        </figure>
-
-        <div class="hero-copy">
-          <h1>About Chiza</h1>
-          <div class="strap">RCh, LPT | Coach for Communication, Leadership, and Wellness | Medical and Business English</div>
-
-          <div class="verse">“And we know that in all things God works for the good of those who love him, who have been called according to his purpose.” — Romans 8:28</div>
-
-          <!-- Stacked rows -->
-          <div class="about-summary">
-            <div class="about-card">
-              <h3>Mission</h3>
-              <ul>
-                <li>Empower professionals to communicate with clarity and confidence.</li>
-                <li>Blend science, coaching, and spirituality for practical growth.</li>
-                <li>Deliver simple tools, lessons, and support that create real results.</li>
-              </ul>
-            </div>
-
-            <div class="about-card">
-              <h3>Vision</h3>
-              <p>Help people learn faster, heal better, and work smarter through science, design, and compassionate communication.</p>
-            </div>
-
-            <div class="about-card">
-              <h3>Values</h3>
-              <p>Curiosity, service, clarity, and integrity.</p>
-            </div>
-          </div>
-
-          <!-- Resume under the cards -->
-          <div class="under-cards">
-            <a class="btn btn-outline" href="https://drive.google.com/file/d/1K1jwGBIrUpr12AGYuhcw4K3VtJEDWCSB/view?usp=sharing" target="_blank" rel="noopener">View Résumé</a>
-          </div>
+  <main class="container">
+    <!-- Intro -->
+    <section class="card" style="display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center">
+      <img class="avatar" src="/assets/images/chizsapic.png" alt="Coach Chizsa portrait" width="120" height="120" />
+      <div>
+        <h1>About Chizsa</h1>
+        <p class="lead">I build tiny, focused web apps that help you practice the right moves daily. Clear structure. Small wins. Real momentum.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn" href="/archetype/">Start with the quiz</a>
+          <a class="btn secondary" href="/profiles/">Browse by profile</a>
+          <a class="btn ghost" href="/focus/">Browse by focus</a>
         </div>
       </div>
     </section>
 
-    <!-- Credentials -->
-    <section class="section" aria-labelledby="cred-title">
-      <div class="section-head">
-        <h2 id="cred-title">Credentials and proof</h2>
-        <p class="caption">Training, certifications, and kind words.</p>
-      </div>
-      <div class="proof-cta">
-        <a class="btn btn-outline" href="training.html">View Training and Certificates</a>
-        <a class="btn btn-outline" href="testimonials.html">Read Testimonials</a>
-      </div>
-      <div class="badges minirow" style="margin-top:.75rem">
-        <span class="badge">Chemist, Licensed Teacher</span>
-        <span class="badge">Medical &amp; Business English</span>
-        <span class="badge">Interview &amp; Presentation Coaching</span>
-      </div>
+    <!-- Approach -->
+    <section class="grid">
+      <article class="card">
+        <h2>Design principles</h2>
+        <ul class="link-list">
+          <li>Open in your browser. No login.</li>
+          <li>Save progress on your device.</li>
+          <li>Short flows with clear next steps.</li>
+          <li>Accessible design with solid contrast.</li>
+          <li>Gold accents used sparingly for clarity.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Who I serve</h2>
+        <p>Medical and business professionals, leaders, students, and anyone who wants a clean path from idea to action.</p>
+        <p class="pill">Career • Leadership • Business • Wellness • Finance • Life Vision • Spiritual • Relationship</p>
+      </article>
     </section>
 
-    <!-- What I offer -->
-    <section class="section" aria-labelledby="offer-title">
-      <div class="section-head">
-        <h2 id="offer-title">What I offer</h2>
-      </div>
-      <div class="card-grid">
-        <article class="card">
-          <div class="card-body">
-            <h3>Downloadable resources</h3>
-            <p>Checklists, planners, and action guides for common pain points.</p>
-          </div>
-          <div class="card-cta">
-            <a class="btn btn-primary" href="client-solutions.html">See Solutions</a>
-            <!-- clickable, text visually hidden -->
-            <a class="btn btn-link" href="https://ko-fi.com/lifebalanceq/shop" target="_blank" rel="noopener" aria-label="Shop on Ko-fi"><span class="sr-only">Shop on Ko-fi</span></a>
-          </div>
-        </article>
+    <!-- Credentials and contact -->
+    <section class="grid">
+      <article class="card">
+        <h2>Credentials</h2>
+        <p>See selected certificates and training history.</p>
+        <p><a class="btn ghost" href="/certificates/">View certificates</a></p>
+      </article>
 
-        <article class="card">
-          <div class="card-body">
-            <h3>Personality based guides</h3>
-            <p>Ten concise PDFs that match your quiz result—three steps and a checklist each.</p>
-          </div>
-          <div class="card-cta">
-            <a class="btn btn-primary" href="quiz.html">Start with the Quiz</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-body">
-            <h3>Focused categories</h3>
-            <p>Career, leadership, business, health &amp; wellness, financial, and life vision.</p>
-          </div>
-          <div class="card-cta">
-            <a class="btn btn-primary" href="coaching.html">Explore Categories</a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Freebie -->
-    <section class="section alt" aria-labelledby="freebie-title">
-      <div class="freebie-inner">
-        <h2 id="freebie-title">Get a free template</h2>
-        <p>Download the Clarity Map and get weekly practical tips.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="freebie.html">Send me the template</a>
+      <article class="card">
+        <h2>Work with me</h2>
+        <p>Have a request or want to collaborate on a tool for your team</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn" href="/contact/">Send a message</a>
+          <a class="btn secondary" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support the project</a>
         </div>
-        <p class="microcopy">No spam. Unsubscribe anytime.</p>
-      </div>
+      </article>
     </section>
   </main>
 
-  <footer class="site-footer" role="contentinfo">
-    <div class="container footer-inner footer-two-cols">
-      <div class="footer-col">
-        <strong>Contact</strong>
-        <div><a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></div>
-        <div><a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener">LinkedIn</a></div>
-      </div>
-      <div class="footer-col footer-right">
-        <a class="btn btn-support" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="left">Chiza | 2025, All Rights Reserved</div>
+      <div class="right">
+        <a href="/about.html">About</a>
+        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
+          <img src="/assets/icons/mail.svg" alt="" width="20" height="20">
+        </a>
+        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <img src="/assets/icons/linkedin.svg" alt="" width="20" height="20">
+        </a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Support">
+          <img src="/assets/icons/ko-fi.svg" alt="" width="20" height="20">
+        </a>
       </div>
     </div>
   </footer>
-
-  <script src="script.js" defer></script>
 </body>
 </html>
