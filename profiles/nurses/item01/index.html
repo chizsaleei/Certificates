@@ -1,0 +1,3217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NurseWrite Pro - Gamified Clinical Writing Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-green: #1e3a2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --primary-gold: #d4af37;
+            --medium-gold: #b8941f;
+            --light-gold: #f4e4a6;
+            --pale-gold: #faf6e8;
+        }
+        
+        .bg-primary-green { background-color: var(--primary-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-primary-gold { background-color: var(--primary-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        
+        .text-primary-green { color: var(--primary-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-primary-gold { color: var(--primary-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-primary-green { border-color: var(--primary-green); }
+        .border-primary-gold { border-color: var(--primary-gold); }
+        
+        .writing-input {
+            border: 2px solid var(--light-gold);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        .writing-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .template-card {
+            background: linear-gradient(135deg, var(--pale-gold) 0%, #ffffff 100%);
+            border: 2px solid var(--light-gold);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+            border-color: var(--primary-gold);
+        }
+        
+        .template-card.selected {
+            border-color: var(--primary-gold);
+            background: linear-gradient(135deg, var(--light-gold) 0%, var(--pale-gold) 100%);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--light-green), var(--accent-green));
+            transition: width 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .level-badge {
+            background: linear-gradient(45deg, var(--primary-gold), var(--medium-gold));
+            color: white;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        .xp-gain {
+            animation: xpPop 0.8s ease-out;
+            color: var(--primary-gold);
+            font-weight: bold;
+        }
+        
+        @keyframes xpPop {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1); opacity: 0; }
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(45deg, var(--medium-green), var(--light-green));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .streak-flame {
+            animation: flicker 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .word-highlight {
+            background: linear-gradient(120deg, var(--light-gold) 0%, var(--pale-gold) 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid var(--primary-gold);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .word-highlight:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+        
+        .error-highlight {
+            background: linear-gradient(120deg, #fee2e2 0%, #fecaca 100%);
+            border: 1px solid #ef4444;
+            text-decoration: underline;
+            text-decoration-color: #ef4444;
+        }
+        
+        .suggestion-popup {
+            background: white;
+            border: 2px solid var(--primary-gold);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            background: rgba(30, 58, 46, 0.8);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .leaderboard-entry {
+            background: linear-gradient(135deg, var(--pale-gold) 0%, #ffffff 100%);
+            border: 1px solid var(--light-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-entry:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+        
+        .leaderboard-entry.current-user {
+            border: 2px solid var(--primary-gold);
+            background: linear-gradient(135deg, var(--light-gold) 0%, var(--pale-gold) 100%);
+        }
+        
+        .writing-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--medium-green) 0%, var(--light-green) 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
+        }
+        
+        .challenge-card {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--medium-gold) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 12px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: challengeShine 3s infinite;
+        }
+        
+        @keyframes challengeShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .voice-recording {
+            animation: voicePulse 1.5s ease-in-out infinite;
+            background: linear-gradient(45deg, #dc2626, #ef4444) !important;
+        }
+        
+        @keyframes voicePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+        }
+        
+        .voice-status {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .voice-wave {
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 1px;
+            border-radius: 2px;
+            animation: voiceWave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+        
+        .tense-indicator {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .tense-past { background: #ddd6fe; color: #7c3aed; }
+        .tense-present { background: #dcfce7; color: #16a34a; }
+        .tense-future { background: #fef3c7; color: #d97706; }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header with Gamification Elements -->
+    <header class="bg-primary-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-primary-gold rounded-full flex items-center justify-center">
+                        <span class="text-3xl">✍️</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">NurseWrite Pro</h1>
+                        <p class="text-accent-green font-medium">Master Clinical Documentation • Level Up Your Writing</p>
+                    </div>
+                </div>
+                
+                <!-- Player Stats -->
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="level-badge" id="playerLevel">Level 1</div>
+                        <div class="text-xs text-accent-green mt-1">Novice Writer</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">⚡</span>
+                            <span class="text-xl font-bold text-primary-gold" id="playerXP">0</span>
+                            <span class="text-sm text-accent-green">/ <span id="nextLevelXP">100</span> XP</span>
+                        </div>
+                        <div class="w-32 bg-medium-green rounded-full h-2 mt-1">
+                            <div class="progress-bar h-2 rounded-full" id="xpProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-primary-gold" id="streakCount">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <button id="achievementsBtn" class="bg-medium-gold hover:bg-primary-gold px-4 py-2 rounded-lg transition-colors font-semibold">
+                        🏆 Achievements
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Overview -->
+        <div id="dashboard" class="max-w-7xl mx-auto">
+            <!-- Daily Challenge -->
+            <div class="challenge-card mb-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2">🎯 Daily Challenge</h2>
+                        <p id="dailyChallengeText" class="text-lg opacity-90">Write a concise incident report using past tense verbs</p>
+                        <div class="flex items-center space-x-4 mt-3">
+                            <span class="text-sm">Reward: +50 XP</span>
+                            <span class="text-sm">⏰ Resets in <span id="challengeTimer">23:45:12</span></span>
+                        </div>
+                    </div>
+                    <button id="startChallengeBtn" class="bg-white text-primary-gold px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        Start Challenge
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="writing-stats mb-8">
+                <div class="stat-card">
+                    <div class="text-2xl font-bold" id="documentsCompleted">0</div>
+                    <div class="text-sm opacity-90">Documents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold" id="averageScore">0%</div>
+                    <div class="text-sm opacity-90">Avg Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold" id="wordsWritten">0</div>
+                    <div class="text-sm opacity-90">Words Written</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold" id="perfectScores">0</div>
+                    <div class="text-sm opacity-90">Perfect Scores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-2xl font-bold" id="currentRank">#--</div>
+                    <div class="text-sm opacity-90">Global Rank</div>
+                </div>
+            </div>
+
+            <!-- Writing Mode Selection -->
+            <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl font-bold text-primary-green mb-6">Choose Your Writing Challenge</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('patient-chart')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">📋 Patient Charting</h3>
+                            <div class="achievement-badge">+25 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Practice concise, accurate patient documentation with proper medical terminology and tense usage.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: Clarity & Precision</span>
+                            <span>⏱️ ~5-10 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('incident-report')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">⚠️ Incident Reports</h3>
+                            <div class="achievement-badge">+35 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Master objective incident documentation with chronological structure and professional language.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: Objectivity & Detail</span>
+                            <span>⏱️ ~10-15 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('care-plan')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">📝 Care Plans</h3>
+                            <div class="achievement-badge">+30 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Develop comprehensive care plans with measurable goals and evidence-based interventions.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: Structure & Goals</span>
+                            <span>⏱️ ~8-12 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('discharge-summary')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">🏠 Discharge Summaries</h3>
+                            <div class="achievement-badge">+40 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Create comprehensive discharge summaries with clear instructions and follow-up plans.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: Completeness & Clarity</span>
+                            <span>⏱️ ~12-18 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('handoff-report')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">🔄 Handoff Reports</h3>
+                            <div class="achievement-badge">+20 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Practice SBAR communication for effective shift handoffs and patient transfers.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: SBAR Structure</span>
+                            <span>⏱️ ~3-8 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card p-6 rounded-xl" onclick="selectWritingMode('free-practice')">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">🎨 Free Practice</h3>
+                            <div class="achievement-badge">+15 XP</div>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">Open writing practice with real-time grammar and style feedback for any clinical document.</p>
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span>🎯 Focus: General Skills</span>
+                            <span>⏱️ Flexible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Achievements -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-primary-green mb-4">🏆 Recent Achievements</h3>
+                <div id="recentAchievements" class="flex flex-wrap gap-3">
+                    <!-- Achievements will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Writing Interface -->
+        <div id="writingInterface" class="hidden max-w-7xl mx-auto">
+            <!-- Writing Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary-green" id="writingModeTitle">Patient Charting Practice</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="achievement-badge" id="currentTemplate">Template: SOAP Note</span>
+                            <span class="text-sm text-gray-600">Progress: <span id="writingProgress">0%</span></span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-600">Score:</span>
+                                <span class="text-lg font-bold text-primary-gold" id="currentScore">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="vocabularyBankBtn" class="bg-medium-gold text-white px-4 py-2 rounded-lg hover:bg-primary-gold transition-colors">
+                            📚 Vocabulary Bank
+                        </button>
+                        <button id="templateGuideBtn" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors">
+                            📋 Template Guide
+                        </button>
+                        <button id="backToDashboard" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            ← Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Writing Area -->
+                <div class="lg:col-span-3 space-y-6">
+                    <!-- Scenario Information -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">📋 Scenario</h3>
+                        <div class="bg-pale-gold p-4 rounded-lg border-l-4 border-primary-gold">
+                            <div id="scenarioDescription">Loading scenario...</div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Editor -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-primary-green">✍️ Your Documentation</h3>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-sm text-gray-600">
+                                    Words: <span id="wordCount">0</span> | 
+                                    Characters: <span id="charCount">0</span>
+                                </div>
+                                <button id="voiceRecordBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center space-x-2">
+                                    <span id="voiceIcon">🎤</span>
+                                    <span id="voiceText">Voice Input</span>
+                                </button>
+                                <button id="checkGrammarBtn" class="bg-primary-gold text-white px-4 py-2 rounded-lg hover:bg-medium-gold transition-colors text-sm">
+                                    🔍 Check Writing
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <textarea 
+                            id="writingEditor" 
+                            class="writing-input w-full h-64 resize-none" 
+                            placeholder="Begin writing your clinical documentation here..."
+                        ></textarea>
+                        
+                        <!-- Voice Recording Status -->
+                        <div id="voiceStatus" class="mt-4 hidden">
+                            <div class="voice-status">
+                                <div class="flex items-center">
+                                    <div class="voice-wave"></div>
+                                    <div class="voice-wave"></div>
+                                    <div class="voice-wave"></div>
+                                    <div class="voice-wave"></div>
+                                </div>
+                                <span id="voiceStatusText">Listening...</span>
+                                <button id="stopVoiceBtn" class="ml-4 px-3 py-1 bg-white bg-opacity-20 rounded text-xs hover:bg-opacity-30 transition-colors">
+                                    Stop
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Real-time Feedback -->
+                        <div id="realTimeFeedback" class="mt-4 space-y-2">
+                            <!-- Feedback will appear here -->
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-4 mt-6">
+                            <button id="submitWriting" class="flex-1 bg-primary-green text-white py-3 rounded-lg hover:bg-medium-green transition-colors font-semibold">
+                                📤 Submit for Review
+                            </button>
+                            <button id="saveProgress" class="px-6 py-3 bg-medium-gold text-white rounded-lg hover:bg-primary-gold transition-colors">
+                                💾 Save Progress
+                            </button>
+                            <button id="exportDocx" class="px-6 py-3 bg-light-green text-white rounded-lg hover:bg-medium-green transition-colors">
+                                📄 Export DOCX
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Tools -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Template Structure -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">📐 Template Structure</h3>
+                        <div id="templateStructure" class="space-y-3">
+                            <!-- Template structure will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Tense Control -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">⏰ Tense Control</h3>
+                        <div class="space-y-3">
+                            <button class="tense-btn w-full p-3 rounded-lg border-2 border-gray-200 hover:border-primary-gold transition-colors text-left" data-tense="past">
+                                <div class="font-semibold">Past Tense</div>
+                                <div class="text-xs text-gray-600">For completed actions</div>
+                                <div class="text-xs text-primary-green mt-1">e.g., "Patient received medication"</div>
+                            </button>
+                            <button class="tense-btn w-full p-3 rounded-lg border-2 border-gray-200 hover:border-primary-gold transition-colors text-left" data-tense="present">
+                                <div class="font-semibold">Present Tense</div>
+                                <div class="text-xs text-gray-600">For current conditions</div>
+                                <div class="text-xs text-primary-green mt-1">e.g., "Patient appears comfortable"</div>
+                            </button>
+                            <button class="tense-btn w-full p-3 rounded-lg border-2 border-gray-200 hover:border-primary-gold transition-colors text-left" data-tense="future">
+                                <div class="font-semibold">Future Tense</div>
+                                <div class="text-xs text-gray-600">For planned actions</div>
+                                <div class="text-xs text-primary-green mt-1">e.g., "Will monitor vital signs"</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Vocabulary -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">💡 Quick Vocabulary</h3>
+                        <div id="quickVocabulary" class="space-y-2">
+                            <!-- Quick vocabulary will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Writing Tips -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-bold text-primary-green mb-4">💡 Writing Tips</h3>
+                        <div id="writingTips" class="space-y-3 text-sm">
+                            <!-- Tips will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results & Feedback -->
+        <div id="resultsInterface" class="hidden max-w-6xl mx-auto">
+            <!-- Results Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary-green">📊 Writing Assessment Results</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="text-lg font-bold text-primary-gold">Final Score: <span id="finalScore">0%</span></span>
+                            <div id="xpGained" class="xp-gain text-lg">+0 XP</div>
+                            <div id="newAchievements" class="flex space-x-2">
+                                <!-- New achievements will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="exportResultsDocx" class="bg-primary-gold text-white px-4 py-2 rounded-lg hover:bg-medium-gold transition-colors">
+                            📄 Export Results
+                        </button>
+                        <button id="tryAgainBtn" class="bg-medium-green text-white px-4 py-2 rounded-lg hover:bg-primary-green transition-colors">
+                            🔄 Try Again
+                        </button>
+                        <button id="newChallengeBtn" class="bg-light-green text-white px-4 py-2 rounded-lg hover:bg-medium-green transition-colors">
+                            ➡️ New Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Detailed Analysis -->
+                <div class="space-y-6">
+                    <!-- Score Breakdown -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">📈 Score Breakdown</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium">Clarity & Conciseness</span>
+                                    <span class="text-sm font-bold text-primary-gold" id="clarityScore">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="progress-bar h-3 rounded-full" id="clarityBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium">Grammar & Tense Usage</span>
+                                    <span class="text-sm font-bold text-primary-gold" id="grammarScore">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="progress-bar h-3 rounded-full" id="grammarBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium">Medical Terminology</span>
+                                    <span class="text-sm font-bold text-primary-gold" id="terminologyScore">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="progress-bar h-3 rounded-full" id="terminologyBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium">Structure & Organization</span>
+                                    <span class="text-sm font-bold text-primary-gold" id="structureScore">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="progress-bar h-3 rounded-full" id="structureBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strengths & Improvements -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">💪 Strengths & Areas for Growth</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-green-700 mb-2">✅ Strengths</h4>
+                                <div id="strengthsList" class="space-y-2">
+                                    <!-- Strengths will be populated here -->
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-orange-700 mb-2">🎯 Areas for Improvement</h4>
+                                <div id="improvementsList" class="space-y-2">
+                                    <!-- Improvements will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Feedback -->
+                <div class="space-y-6">
+                    <!-- Annotated Text -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">📝 Annotated Text</h3>
+                        <div id="annotatedText" class="bg-gray-50 p-4 rounded-lg border text-sm leading-relaxed">
+                            <!-- Annotated text will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Vocabulary Suggestions -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">📚 Vocabulary Enhancements</h3>
+                        <div id="vocabularySuggestions" class="space-y-3">
+                            <!-- Vocabulary suggestions will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-primary-green mb-4">🎯 Recommended Next Steps</h3>
+                        <div id="nextSteps" class="space-y-3">
+                            <!-- Next steps will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Vocabulary Bank Modal -->
+    <div id="vocabularyBankModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-primary-green mb-6">📚 Clinical Vocabulary Bank</h3>
+            
+            <!-- Vocabulary Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="vocabularyCategories">
+                <!-- Vocabulary categories will be populated here -->
+            </div>
+
+            <div class="flex justify-center mt-8 pt-6 border-t border-gray-200">
+                <button id="closeVocabularyBank" class="px-8 py-3 bg-medium-green text-white rounded-lg hover:bg-primary-green transition-colors">
+                    Close Vocabulary Bank
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Guide Modal -->
+    <div id="templateGuideModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-primary-green mb-6">📋 Template Guide</h3>
+            
+            <div id="templateGuideContent" class="space-y-6">
+                <!-- Template guide content will be populated here -->
+            </div>
+
+            <div class="flex justify-center mt-8 pt-6 border-t border-gray-200">
+                <button id="closeTemplateGuide" class="px-8 py-3 bg-medium-green text-white rounded-lg hover:bg-primary-green transition-colors">
+                    Close Guide
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div id="achievementsModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-primary-green mb-6">🏆 Your Achievements</h3>
+            
+            <div id="achievementsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Achievements will be populated here -->
+            </div>
+
+            <div class="flex justify-center mt-8 pt-6 border-t border-gray-200">
+                <button id="closeAchievements" class="px-8 py-3 bg-medium-green text-white rounded-lg hover:bg-primary-green transition-colors">
+                    Close Achievements
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let gameState = {
+            player: {
+                level: 1,
+                xp: 0,
+                streak: 0,
+                totalDocuments: 0,
+                totalWords: 0,
+                averageScore: 0,
+                perfectScores: 0,
+                achievements: [],
+                lastPlayDate: null
+            },
+            currentMode: 'dashboard',
+            currentWritingMode: null,
+            currentScenario: null,
+            currentText: '',
+            currentSession: {
+                startTime: null,
+                mode: null,
+                scenario: null,
+                text: '',
+                scores: {},
+                feedback: {},
+                xpEarned: 0
+            },
+            
+            // Game mechanics
+            xpRequirements: [100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200, 4000],
+            achievements: [],
+            dailyChallenge: null,
+            
+            // Voice recognition state
+            voiceRecognition: {
+                isRecording: false,
+                recognition: null,
+                isSupported: false,
+                currentTranscript: '',
+                finalTranscript: ''
+            }
+        };
+
+        // Writing templates and scenarios
+        const writingTemplates = {
+            'patient-chart': {
+                title: 'Patient Charting',
+                structure: [
+                    { section: 'Subjective', description: 'Patient\'s reported symptoms and concerns', required: true },
+                    { section: 'Objective', description: 'Observable findings and measurements', required: true },
+                    { section: 'Assessment', description: 'Clinical judgment and diagnosis', required: true },
+                    { section: 'Plan', description: 'Treatment plan and interventions', required: true }
+                ],
+                scenarios: [
+                    {
+                        id: 'chart_001',
+                        title: 'Post-Operative Assessment',
+                        description: 'Patient is 24 hours post-appendectomy. Vital signs: BP 120/80, HR 78, RR 16, Temp 98.6°F. Patient reports pain level 4/10 at incision site. Incision appears clean, dry, and intact with no signs of infection. Patient ambulated to bathroom with minimal assistance.',
+                        expectedElements: ['vital signs', 'pain assessment', 'wound assessment', 'mobility status'],
+                        tips: ['Use past tense for completed assessments', 'Include objective measurements', 'Be specific about patient responses']
+                    },
+                    {
+                        id: 'chart_002',
+                        title: 'Medication Administration',
+                        description: 'Administered Morphine 2mg IV push at 1400 for patient complaint of severe abdominal pain rated 8/10. Patient was lying in bed, grimacing, and guarding abdomen. Reassessed pain at 1430 - patient reports pain decreased to 4/10 and appears more comfortable.',
+                        expectedElements: ['medication details', 'pain scores', 'patient response', 'reassessment'],
+                        tips: ['Include exact times and dosages', 'Document patient response to interventions', 'Use objective observations']
+                    }
+                ]
+            },
+            'incident-report': {
+                title: 'Incident Reports',
+                structure: [
+                    { section: 'Date/Time', description: 'Exact date and time of incident', required: true },
+                    { section: 'Location', description: 'Specific location where incident occurred', required: true },
+                    { section: 'Description', description: 'Objective description of what happened', required: true },
+                    { section: 'Actions Taken', description: 'Immediate actions and interventions', required: true },
+                    { section: 'Outcome', description: 'Patient condition and follow-up', required: true }
+                ],
+                scenarios: [
+                    {
+                        id: 'incident_001',
+                        title: 'Patient Fall',
+                        description: 'At 0630 on 3/15/2024, found patient on floor beside bed in room 302. Patient was attempting to get to bathroom independently. No visible injuries noted. Patient alert and oriented x3. Vital signs stable. Physician notified.',
+                        expectedElements: ['exact time', 'objective findings', 'circumstances', 'actions taken'],
+                        tips: ['Avoid speculation about causes', 'Use factual, objective language', 'Include all relevant details chronologically']
+                    }
+                ]
+            },
+            'care-plan': {
+                title: 'Care Plans',
+                structure: [
+                    { section: 'Nursing Diagnosis', description: 'NANDA-approved nursing diagnosis', required: true },
+                    { section: 'Goals/Outcomes', description: 'Measurable, time-specific goals', required: true },
+                    { section: 'Interventions', description: 'Specific nursing actions', required: true },
+                    { section: 'Rationale', description: 'Evidence-based reasoning', required: true },
+                    { section: 'Evaluation', description: 'Assessment of goal achievement', required: true }
+                ],
+                scenarios: [
+                    {
+                        id: 'care_001',
+                        title: 'Acute Pain Management',
+                        description: 'Patient with acute pain related to surgical incision as evidenced by verbal report of pain 7/10, grimacing, and guarding behavior. Develop a comprehensive pain management care plan.',
+                        expectedElements: ['SMART goals', 'evidence-based interventions', 'evaluation criteria'],
+                        tips: ['Use SMART goal format', 'Include both pharmacological and non-pharmacological interventions', 'Base interventions on evidence']
+                    }
+                ]
+            },
+            'discharge-summary': {
+                title: 'Discharge Summaries',
+                structure: [
+                    { section: 'Admission Diagnosis', description: 'Primary reason for admission', required: true },
+                    { section: 'Hospital Course', description: 'Summary of treatment and progress', required: true },
+                    { section: 'Discharge Condition', description: 'Patient\'s condition at discharge', required: true },
+                    { section: 'Medications', description: 'Discharge medications and instructions', required: true },
+                    { section: 'Follow-up', description: 'Appointments and continuing care', required: true }
+                ],
+                scenarios: [
+                    {
+                        id: 'discharge_001',
+                        title: 'Post-Surgical Discharge',
+                        description: 'Patient admitted for laparoscopic cholecystectomy. Surgery completed without complications. Patient tolerated procedure well, pain controlled, ambulating independently. Ready for discharge home with family support.',
+                        expectedElements: ['procedure summary', 'current condition', 'discharge instructions', 'follow-up plans'],
+                        tips: ['Summarize key events chronologically', 'Include specific discharge instructions', 'Mention support systems']
+                    }
+                ]
+            },
+            'handoff-report': {
+                title: 'Handoff Reports (SBAR)',
+                structure: [
+                    { section: 'Situation', description: 'Current patient situation', required: true },
+                    { section: 'Background', description: 'Relevant history and context', required: true },
+                    { section: 'Assessment', description: 'Current assessment findings', required: true },
+                    { section: 'Recommendation', description: 'Suggested actions or concerns', required: true }
+                ],
+                scenarios: [
+                    {
+                        id: 'handoff_001',
+                        title: 'End-of-Shift Report',
+                        description: 'Patient in room 205, admitted yesterday for pneumonia. Currently on oxygen 2L NC, antibiotics, and respiratory treatments. Needs close monitoring of respiratory status and pain management.',
+                        expectedElements: ['current status', 'key treatments', 'priority concerns', 'recommendations'],
+                        tips: ['Follow SBAR format strictly', 'Prioritize most important information', 'Be concise but complete']
+                    }
+                ]
+            },
+            'free-practice': {
+                title: 'Free Practice',
+                structure: [
+                    { section: 'Open Format', description: 'Practice any clinical writing format', required: false }
+                ],
+                scenarios: [
+                    {
+                        id: 'free_001',
+                        title: 'Open Practice',
+                        description: 'Practice writing any type of clinical documentation. Focus on clarity, proper grammar, and professional language.',
+                        expectedElements: ['clear communication', 'proper grammar', 'professional tone'],
+                        tips: ['Focus on clarity and conciseness', 'Use appropriate medical terminology', 'Maintain professional tone']
+                    }
+                ]
+            }
+        };
+
+        // Vocabulary bank
+        const vocabularyBank = {
+            'assessment-terms': {
+                title: 'Assessment Terms',
+                words: [
+                    { word: 'afebrile', definition: 'without fever', example: 'Patient remains afebrile with temperature 98.6°F' },
+                    { word: 'ambulate', definition: 'to walk', example: 'Patient able to ambulate 50 feet with walker' },
+                    { word: 'auscultate', definition: 'to listen with stethoscope', example: 'Auscultated clear breath sounds bilaterally' },
+                    { word: 'palpate', definition: 'to examine by touch', example: 'Palpated abdomen, soft and non-tender' },
+                    { word: 'oriented x3', definition: 'oriented to person, place, and time', example: 'Patient alert and oriented x3' }
+                ]
+            },
+            'vital-signs': {
+                title: 'Vital Signs',
+                words: [
+                    { word: 'hypertensive', definition: 'high blood pressure', example: 'Patient hypertensive with BP 160/95' },
+                    { word: 'tachycardic', definition: 'fast heart rate', example: 'Patient tachycardic with HR 110 bpm' },
+                    { word: 'bradycardic', definition: 'slow heart rate', example: 'Patient bradycardic with HR 55 bpm' },
+                    { word: 'tachypneic', definition: 'fast breathing', example: 'Patient tachypneic with RR 24' },
+                    { word: 'auscultatory', definition: 'relating to listening', example: 'Auscultatory blood pressure 120/80' }
+                ]
+            },
+            'pain-assessment': {
+                title: 'Pain Assessment',
+                words: [
+                    { word: 'analgesic', definition: 'pain-relieving medication', example: 'Administered analgesic for pain relief' },
+                    { word: 'grimacing', definition: 'facial expression of pain', example: 'Patient grimacing with movement' },
+                    { word: 'guarding', definition: 'protecting painful area', example: 'Abdominal guarding noted on palpation' },
+                    { word: 'pallor', definition: 'pale appearance', example: 'Patient exhibits pallor and diaphoresis' },
+                    { word: 'diaphoresis', definition: 'excessive sweating', example: 'Noted diaphoresis during pain episode' }
+                ]
+            },
+            'medication-terms': {
+                title: 'Medication Terms',
+                words: [
+                    { word: 'PRN', definition: 'as needed', example: 'Morphine 2mg IV PRN for pain' },
+                    { word: 'BID', definition: 'twice daily', example: 'Metformin 500mg PO BID' },
+                    { word: 'TID', definition: 'three times daily', example: 'Amoxicillin 500mg PO TID' },
+                    { word: 'QID', definition: 'four times daily', example: 'Ibuprofen 400mg PO QID' },
+                    { word: 'sublingual', definition: 'under the tongue', example: 'Nitroglycerin 0.4mg sublingual PRN' }
+                ]
+            },
+            'wound-care': {
+                title: 'Wound Care',
+                words: [
+                    { word: 'erythema', definition: 'redness', example: 'No erythema noted around incision site' },
+                    { word: 'edema', definition: 'swelling', example: 'Minimal edema at surgical site' },
+                    { word: 'purulent', definition: 'containing pus', example: 'No purulent drainage observed' },
+                    { word: 'serous', definition: 'clear, watery', example: 'Small amount of serous drainage noted' },
+                    { word: 'approximated', definition: 'edges close together', example: 'Wound edges well approximated' }
+                ]
+            },
+            'respiratory-terms': {
+                title: 'Respiratory Terms',
+                words: [
+                    { word: 'dyspnea', definition: 'difficulty breathing', example: 'Patient reports dyspnea on exertion' },
+                    { word: 'orthopnea', definition: 'difficulty breathing when lying flat', example: 'Patient has orthopnea, sleeps with 3 pillows' },
+                    { word: 'cyanosis', definition: 'blue discoloration', example: 'No cyanosis noted in nail beds' },
+                    { word: 'rhonchi', definition: 'coarse lung sounds', example: 'Rhonchi heard in lower lobes' },
+                    { word: 'stridor', definition: 'high-pitched breathing sound', example: 'Inspiratory stridor noted' }
+                ]
+            }
+        };
+
+        // Achievement definitions
+        const achievementDefinitions = [
+            { id: 'first_document', name: 'First Steps', description: 'Complete your first document', icon: '🎯', xp: 25 },
+            { id: 'perfect_score', name: 'Perfectionist', description: 'Achieve a perfect score', icon: '⭐', xp: 50 },
+            { id: 'streak_3', name: 'Getting Consistent', description: 'Maintain a 3-day streak', icon: '🔥', xp: 30 },
+            { id: 'streak_7', name: 'Week Warrior', description: 'Maintain a 7-day streak', icon: '🏆', xp: 75 },
+            { id: 'level_5', name: 'Experienced Writer', description: 'Reach Level 5', icon: '📈', xp: 100 },
+            { id: 'grammar_master', name: 'Grammar Master', description: 'Score 95%+ on grammar 5 times', icon: '📝', xp: 60 },
+            { id: 'vocabulary_expert', name: 'Vocabulary Expert', description: 'Use 50 advanced medical terms', icon: '📚', xp: 80 },
+            { id: 'incident_specialist', name: 'Incident Specialist', description: 'Complete 10 incident reports', icon: '⚠️', xp: 90 },
+            { id: 'care_planner', name: 'Care Planning Pro', description: 'Complete 15 care plans', icon: '📋', xp: 85 },
+            { id: 'speed_writer', name: 'Speed Writer', description: 'Complete a document in under 5 minutes', icon: '⚡', xp: 40 }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameState();
+            setupEventListeners();
+            initializeVoiceRecognition();
+            updateUI();
+            generateDailyChallenge();
+            updateChallengeTimer();
+            setInterval(updateChallengeTimer, 1000);
+        });
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('backToDashboard').addEventListener('click', showDashboard);
+            document.getElementById('tryAgainBtn').addEventListener('click', () => selectWritingMode(gameState.currentWritingMode));
+            document.getElementById('newChallengeBtn').addEventListener('click', showDashboard);
+            
+            // Writing interface
+            document.getElementById('writingEditor').addEventListener('input', handleTextInput);
+            document.getElementById('checkGrammarBtn').addEventListener('click', checkWriting);
+            document.getElementById('voiceRecordBtn').addEventListener('click', toggleVoiceRecording);
+            document.getElementById('stopVoiceBtn').addEventListener('click', stopVoiceRecording);
+            document.getElementById('submitWriting').addEventListener('click', submitWriting);
+            document.getElementById('saveProgress').addEventListener('click', saveProgress);
+            document.getElementById('exportDocx').addEventListener('click', exportToDocx);
+            document.getElementById('exportResultsDocx').addEventListener('click', exportResultsToDocx);
+            
+            // Modals
+            document.getElementById('vocabularyBankBtn').addEventListener('click', openVocabularyBank);
+            document.getElementById('closeVocabularyBank').addEventListener('click', closeVocabularyBank);
+            document.getElementById('templateGuideBtn').addEventListener('click', openTemplateGuide);
+            document.getElementById('closeTemplateGuide').addEventListener('click', closeTemplateGuide);
+            document.getElementById('achievementsBtn').addEventListener('click', openAchievements);
+            document.getElementById('closeAchievements').addEventListener('click', closeAchievements);
+            
+            // Tense control
+            document.querySelectorAll('.tense-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => selectTense(e.currentTarget.dataset.tense));
+            });
+            
+            // Daily challenge
+            document.getElementById('startChallengeBtn').addEventListener('click', startDailyChallenge);
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('nursewrite_gamestate');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                gameState.player = { ...gameState.player, ...savedState.player };
+                gameState.achievements = savedState.achievements || [];
+                
+                // Check if it's a new day for streak calculation
+                const today = new Date().toDateString();
+                const lastPlay = gameState.player.lastPlayDate;
+                
+                if (lastPlay) {
+                    const lastPlayDate = new Date(lastPlay).toDateString();
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayString = yesterday.toDateString();
+                    
+                    if (lastPlayDate !== today && lastPlayDate !== yesterdayString) {
+                        // Streak broken
+                        gameState.player.streak = 0;
+                    }
+                }
+            }
+        }
+
+        function saveGameState() {
+            localStorage.setItem('nursewrite_gamestate', JSON.stringify({
+                player: gameState.player,
+                achievements: gameState.achievements
+            }));
+        }
+
+        function updateUI() {
+            // Update header stats
+            document.getElementById('playerLevel').textContent = `Level ${gameState.player.level}`;
+            document.getElementById('playerXP').textContent = gameState.player.xp;
+            document.getElementById('streakCount').textContent = gameState.player.streak;
+            
+            // Update XP progress
+            const currentLevelXP = gameState.player.level > 1 ? gameState.xpRequirements[gameState.player.level - 2] : 0;
+            const nextLevelXP = gameState.xpRequirements[gameState.player.level - 1] || gameState.xpRequirements[gameState.xpRequirements.length - 1];
+            const progressXP = gameState.player.xp - currentLevelXP;
+            const requiredXP = nextLevelXP - currentLevelXP;
+            const progressPercent = (progressXP / requiredXP) * 100;
+            
+            document.getElementById('nextLevelXP').textContent = nextLevelXP;
+            document.getElementById('xpProgress').style.width = `${Math.min(progressPercent, 100)}%`;
+            
+            // Update dashboard stats
+            document.getElementById('documentsCompleted').textContent = gameState.player.totalDocuments;
+            document.getElementById('averageScore').textContent = `${Math.round(gameState.player.averageScore)}%`;
+            document.getElementById('wordsWritten').textContent = gameState.player.totalWords.toLocaleString();
+            document.getElementById('perfectScores').textContent = gameState.player.perfectScores;
+            
+            // Update recent achievements
+            updateRecentAchievements();
+        }
+
+        function updateRecentAchievements() {
+            const container = document.getElementById('recentAchievements');
+            const recentAchievements = gameState.achievements.slice(-5);
+            
+            if (recentAchievements.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-sm">Complete your first challenge to earn achievements!</div>';
+                return;
+            }
+            
+            container.innerHTML = recentAchievements.map(achievement => {
+                const def = achievementDefinitions.find(a => a.id === achievement.id);
+                return `
+                    <div class="achievement-badge">
+                        ${def.icon} ${def.name}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectWritingMode(mode) {
+            gameState.currentWritingMode = mode;
+            gameState.currentMode = 'writing';
+            
+            // Hide dashboard, show writing interface
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('writingInterface').classList.remove('hidden');
+            document.getElementById('resultsInterface').classList.add('hidden');
+            
+            loadWritingMode(mode);
+        }
+
+        function loadWritingMode(mode) {
+            const template = writingTemplates[mode];
+            const scenario = template.scenarios[Math.floor(Math.random() * template.scenarios.length)];
+            
+            gameState.currentScenario = scenario;
+            gameState.currentSession = {
+                startTime: new Date(),
+                mode: mode,
+                scenario: scenario,
+                text: '',
+                scores: {},
+                feedback: {},
+                xpEarned: 0
+            };
+            
+            // Update UI
+            document.getElementById('writingModeTitle').textContent = `${template.title} Practice`;
+            document.getElementById('currentTemplate').textContent = `Template: ${template.title}`;
+            document.getElementById('scenarioDescription').textContent = scenario.description;
+            
+            // Load template structure
+            loadTemplateStructure(template);
+            
+            // Load quick vocabulary
+            loadQuickVocabulary(mode);
+            
+            // Load writing tips
+            loadWritingTips(scenario);
+            
+            // Reset editor
+            document.getElementById('writingEditor').value = '';
+            updateWordCount();
+        }
+
+        function loadTemplateStructure(template) {
+            const container = document.getElementById('templateStructure');
+            container.innerHTML = template.structure.map(section => `
+                <div class="p-3 bg-pale-gold rounded-lg border-l-4 border-primary-gold">
+                    <div class="font-semibold text-primary-green text-sm">${section.section}</div>
+                    <div class="text-xs text-medium-green mt-1">${section.description}</div>
+                    ${section.required ? '<div class="text-xs text-red-600 mt-1">Required</div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function loadQuickVocabulary(mode) {
+            const container = document.getElementById('quickVocabulary');
+            let relevantCategories = [];
+            
+            switch(mode) {
+                case 'patient-chart':
+                    relevantCategories = ['assessment-terms', 'vital-signs'];
+                    break;
+                case 'incident-report':
+                    relevantCategories = ['assessment-terms', 'wound-care'];
+                    break;
+                case 'care-plan':
+                    relevantCategories = ['assessment-terms', 'medication-terms'];
+                    break;
+                default:
+                    relevantCategories = ['assessment-terms'];
+            }
+            
+            const words = [];
+            relevantCategories.forEach(category => {
+                if (vocabularyBank[category]) {
+                    words.push(...vocabularyBank[category].words.slice(0, 3));
+                }
+            });
+            
+            container.innerHTML = words.map(word => `
+                <div class="word-highlight cursor-pointer p-2 rounded text-xs" onclick="insertWord('${word.word}')" title="${word.definition}">
+                    <strong>${word.word}</strong>
+                </div>
+            `).join('');
+        }
+
+        function loadWritingTips(scenario) {
+            const container = document.getElementById('writingTips');
+            container.innerHTML = scenario.tips.map(tip => `
+                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="text-blue-800 text-xs">💡 ${tip}</div>
+                </div>
+            `).join('');
+        }
+
+        function handleTextInput(e) {
+            gameState.currentText = e.target.value;
+            updateWordCount();
+            updateWritingProgress();
+            
+            // Real-time basic feedback
+            setTimeout(() => {
+                provideRealTimeFeedback();
+            }, 1000);
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('writingEditor').value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            
+            document.getElementById('wordCount').textContent = words;
+            document.getElementById('charCount').textContent = chars;
+        }
+
+        function updateWritingProgress() {
+            const text = document.getElementById('writingEditor').value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            
+            // Estimate progress based on word count (assuming 100-200 words for completion)
+            const targetWords = gameState.currentWritingMode === 'handoff-report' ? 50 : 150;
+            const progress = Math.min((words / targetWords) * 100, 100);
+            
+            document.getElementById('writingProgress').textContent = `${Math.round(progress)}%`;
+        }
+
+        function provideRealTimeFeedback() {
+            const text = document.getElementById('writingEditor').value;
+            const feedback = document.getElementById('realTimeFeedback');
+            
+            if (!text.trim()) {
+                feedback.innerHTML = '';
+                return;
+            }
+            
+            const issues = [];
+            
+            // Check for common issues
+            if (text.includes('very') || text.includes('really') || text.includes('quite')) {
+                issues.push({
+                    type: 'style',
+                    message: 'Consider removing unnecessary qualifiers like "very", "really", "quite" for more concise writing.'
+                });
+            }
+            
+            if (text.includes('I think') || text.includes('I believe') || text.includes('maybe')) {
+                issues.push({
+                    type: 'objectivity',
+                    message: 'Use objective language. Avoid phrases like "I think" or "maybe" in clinical documentation.'
+                });
+            }
+            
+            // Check for passive voice
+            const passiveIndicators = ['was given', 'was administered', 'was observed'];
+            if (passiveIndicators.some(indicator => text.toLowerCase().includes(indicator))) {
+                issues.push({
+                    type: 'voice',
+                    message: 'Consider using active voice for clearer, more direct communication.'
+                });
+            }
+            
+            feedback.innerHTML = issues.map(issue => `
+                <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div class="text-yellow-800 text-sm">
+                        <strong>${issue.type.charAt(0).toUpperCase() + issue.type.slice(1)}:</strong> ${issue.message}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkWriting() {
+            const text = document.getElementById('writingEditor').value;
+            if (!text.trim()) {
+                showNotification('Please write some text before checking.', 'warning');
+                return;
+            }
+            
+            // Comprehensive writing analysis with grammar checking
+            const analysis = analyzeWriting(text);
+            const grammarCheck = performGrammarCheck(text);
+            const expressionCheck = checkExpressions(text);
+            
+            displayComprehensiveAnalysis(analysis, grammarCheck, expressionCheck);
+            
+            showNotification('Complete grammar and style analysis finished!');
+        }
+
+        function analyzeWriting(text) {
+            const words = text.trim().split(/\s+/);
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            // Calculate various metrics
+            const avgWordsPerSentence = words.length / sentences.length;
+            const longSentences = sentences.filter(s => s.trim().split(/\s+/).length > 20).length;
+            
+            // Check for medical terminology
+            const medicalTerms = [];
+            Object.values(vocabularyBank).forEach(category => {
+                category.words.forEach(wordObj => {
+                    if (text.toLowerCase().includes(wordObj.word.toLowerCase())) {
+                        medicalTerms.push(wordObj.word);
+                    }
+                });
+            });
+            
+            // Tense analysis
+            const pastTenseWords = ['administered', 'observed', 'noted', 'reported', 'completed'];
+            const presentTenseWords = ['appears', 'demonstrates', 'exhibits', 'shows'];
+            const futureWords = ['will', 'plan', 'scheduled'];
+            
+            const pastTenseCount = pastTenseWords.filter(word => text.toLowerCase().includes(word)).length;
+            const presentTenseCount = presentTenseWords.filter(word => text.toLowerCase().includes(word)).length;
+            const futureCount = futureWords.filter(word => text.toLowerCase().includes(word)).length;
+            
+            return {
+                wordCount: words.length,
+                sentenceCount: sentences.length,
+                avgWordsPerSentence: avgWordsPerSentence,
+                longSentences: longSentences,
+                medicalTerms: medicalTerms,
+                tenseAnalysis: {
+                    past: pastTenseCount,
+                    present: presentTenseCount,
+                    future: futureCount
+                },
+                readabilityScore: calculateReadabilityScore(text),
+                clarityScore: calculateClarityScore(text),
+                grammarScore: calculateGrammarScore(text),
+                terminologyScore: (medicalTerms.length / words.length) * 100 * 10 // Boost medical term usage
+            };
+        }
+
+        function calculateReadabilityScore(text) {
+            // Simplified readability calculation
+            const words = text.trim().split(/\s+/).length;
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+            const avgWordsPerSentence = words / sentences;
+            
+            // Prefer shorter sentences for clinical writing
+            if (avgWordsPerSentence <= 15) return 95;
+            if (avgWordsPerSentence <= 20) return 85;
+            if (avgWordsPerSentence <= 25) return 75;
+            return 65;
+        }
+
+        function calculateClarityScore(text) {
+            let score = 80; // Base score
+            
+            // Deduct for unclear language
+            if (text.includes('very') || text.includes('really')) score -= 10;
+            if (text.includes('I think') || text.includes('maybe')) score -= 15;
+            if (text.includes('kind of') || text.includes('sort of')) score -= 10;
+            
+            // Add for clear, specific language
+            if (text.includes('specifically') || text.includes('exactly')) score += 5;
+            if (/\d+/.test(text)) score += 10; // Contains numbers/measurements
+            
+            return Math.max(0, Math.min(100, score));
+        }
+
+        function calculateGrammarScore(text) {
+            let score = 90; // Base score
+            
+            // Simple grammar checks
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            sentences.forEach(sentence => {
+                const trimmed = sentence.trim();
+                if (trimmed.length > 0) {
+                    // Check capitalization
+                    if (trimmed[0] !== trimmed[0].toUpperCase()) score -= 5;
+                    
+                    // Check for run-on sentences
+                    if (trimmed.split(/\s+/).length > 30) score -= 10;
+                }
+            });
+            
+            return Math.max(0, Math.min(100, score));
+        }
+
+        function performGrammarCheck(text) {
+            const errors = [];
+            const suggestions = [];
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            // Common grammar patterns for clinical writing
+            const grammarRules = [
+                {
+                    pattern: /\b(was|were)\s+(given|administered|observed|noted)\b/gi,
+                    type: 'passive_voice',
+                    message: 'Consider using active voice for clearer communication',
+                    suggestion: 'Replace with active voice (e.g., "Nurse administered" instead of "was administered")'
+                },
+                {
+                    pattern: /\b(very|really|quite|extremely|totally)\s+/gi,
+                    type: 'unnecessary_qualifier',
+                    message: 'Remove unnecessary qualifiers for more concise writing',
+                    suggestion: 'Delete qualifying words that don\'t add clinical value'
+                },
+                {
+                    pattern: /\b(I think|I believe|I feel|maybe|perhaps|possibly)\b/gi,
+                    type: 'subjective_language',
+                    message: 'Use objective language in clinical documentation',
+                    suggestion: 'Replace with factual observations or remove entirely'
+                },
+                {
+                    pattern: /\b(a lot of|lots of|tons of|bunch of)\b/gi,
+                    type: 'informal_language',
+                    message: 'Use precise medical terminology',
+                    suggestion: 'Replace with specific quantities or clinical terms'
+                },
+                {
+                    pattern: /\b(good|bad|nice|okay|fine)\b/gi,
+                    type: 'vague_descriptors',
+                    message: 'Use specific clinical descriptors',
+                    suggestion: 'Replace with precise medical terminology'
+                },
+                {
+                    pattern: /\b(will|shall)\s+(be|have|do)\s+\w+ing\b/gi,
+                    type: 'future_continuous',
+                    message: 'Consider simpler future tense for clarity',
+                    suggestion: 'Use simple future tense (e.g., "will monitor" instead of "will be monitoring")'
+                },
+                {
+                    pattern: /\b\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\s+\w+\b/g,
+                    type: 'run_on_sentence',
+                    message: 'Sentence may be too long for clinical documentation',
+                    suggestion: 'Break into shorter, clearer sentences'
+                },
+                {
+                    pattern: /\b(he|she|they)\b/gi,
+                    type: 'pronoun_usage',
+                    message: 'Consider using "patient" for clarity in clinical notes',
+                    suggestion: 'Replace pronouns with "patient" or patient name for clarity'
+                }
+            ];
+            
+            // Subject-verb agreement patterns
+            const subjectVerbRules = [
+                {
+                    pattern: /\b(patient|nurse|doctor)\s+(are|were)\b/gi,
+                    type: 'subject_verb_agreement',
+                    message: 'Subject-verb disagreement detected',
+                    suggestion: 'Use "is/was" with singular subjects'
+                },
+                {
+                    pattern: /\b(patients|nurses|doctors)\s+(is|was)\b/gi,
+                    type: 'subject_verb_agreement',
+                    message: 'Subject-verb disagreement detected',
+                    suggestion: 'Use "are/were" with plural subjects'
+                }
+            ];
+            
+            // Check each rule against the text
+            [...grammarRules, ...subjectVerbRules].forEach(rule => {
+                let match;
+                while ((match = rule.pattern.exec(text)) !== null) {
+                    errors.push({
+                        type: rule.type,
+                        message: rule.message,
+                        suggestion: rule.suggestion,
+                        text: match[0],
+                        position: match.index,
+                        length: match[0].length
+                    });
+                }
+                rule.pattern.lastIndex = 0; // Reset regex
+            });
+            
+            // Check punctuation
+            sentences.forEach((sentence, index) => {
+                const trimmed = sentence.trim();
+                if (trimmed.length > 0) {
+                    // Check capitalization
+                    if (trimmed[0] !== trimmed[0].toUpperCase()) {
+                        errors.push({
+                            type: 'capitalization',
+                            message: 'Sentence should start with capital letter',
+                            suggestion: 'Capitalize the first letter',
+                            text: trimmed.substring(0, 10) + '...',
+                            position: text.indexOf(trimmed),
+                            length: 1
+                        });
+                    }
+                    
+                    // Check for double spaces
+                    if (trimmed.includes('  ')) {
+                        errors.push({
+                            type: 'spacing',
+                            message: 'Multiple spaces detected',
+                            suggestion: 'Use single spaces between words',
+                            text: 'Multiple spaces',
+                            position: text.indexOf('  '),
+                            length: 2
+                        });
+                    }
+                }
+            });
+            
+            return {
+                errors: errors,
+                errorCount: errors.length,
+                suggestions: suggestions,
+                score: Math.max(0, 100 - (errors.length * 5))
+            };
+        }
+
+        function checkExpressions(text) {
+            const improvements = [];
+            const clinicalExpressions = [
+                {
+                    pattern: /\bpain\s+level\s+(\d+)\/10\b/gi,
+                    type: 'good_expression',
+                    message: 'Excellent use of standardized pain scale'
+                },
+                {
+                    pattern: /\bvital\s+signs?:?\s*(bp|blood\s+pressure|hr|heart\s+rate|rr|respiratory\s+rate|temp|temperature)/gi,
+                    type: 'good_expression',
+                    message: 'Good documentation of vital signs'
+                },
+                {
+                    pattern: /\b(alert\s+and\s+oriented\s+x[1-4]|a&o\s+x[1-4])\b/gi,
+                    type: 'good_expression',
+                    message: 'Proper neurological assessment notation'
+                },
+                {
+                    pattern: /\b(clean,?\s+dry,?\s+(and\s+)?intact|cdi)\b/gi,
+                    type: 'good_expression',
+                    message: 'Standard wound assessment terminology'
+                }
+            ];
+            
+            const improvementSuggestions = [
+                {
+                    pattern: /\bhurts?\b/gi,
+                    replacement: 'reports pain',
+                    type: 'clinical_terminology',
+                    message: 'Use more clinical language for pain documentation'
+                },
+                {
+                    pattern: /\bfeels?\s+(good|bad|okay|fine)\b/gi,
+                    replacement: 'appears comfortable/reports comfort level',
+                    type: 'clinical_terminology',
+                    message: 'Use objective clinical observations'
+                },
+                {
+                    pattern: /\bwalked?\b/gi,
+                    replacement: 'ambulated',
+                    type: 'clinical_terminology',
+                    message: 'Use clinical terminology for mobility'
+                },
+                {
+                    pattern: /\blistened?\s+to\b/gi,
+                    replacement: 'auscultated',
+                    type: 'clinical_terminology',
+                    message: 'Use proper clinical assessment terms'
+                },
+                {
+                    pattern: /\bfelt\s+(for|around)\b/gi,
+                    replacement: 'palpated',
+                    type: 'clinical_terminology',
+                    message: 'Use clinical examination terminology'
+                },
+                {
+                    pattern: /\blooked?\s+at\b/gi,
+                    replacement: 'inspected/observed',
+                    type: 'clinical_terminology',
+                    message: 'Use clinical assessment terminology'
+                },
+                {
+                    pattern: /\bshot\b/gi,
+                    replacement: 'injection',
+                    type: 'clinical_terminology',
+                    message: 'Use formal medical terminology'
+                },
+                {
+                    pattern: /\bmeds?\b/gi,
+                    replacement: 'medications',
+                    type: 'clinical_terminology',
+                    message: 'Use complete medical terms in documentation'
+                }
+            ];
+            
+            // Check for good expressions
+            clinicalExpressions.forEach(expr => {
+                const matches = text.match(expr.pattern);
+                if (matches) {
+                    improvements.push({
+                        type: expr.type,
+                        message: expr.message,
+                        count: matches.length
+                    });
+                }
+            });
+            
+            // Check for improvement opportunities
+            const suggestions = [];
+            improvementSuggestions.forEach(suggestion => {
+                let match;
+                while ((match = suggestion.pattern.exec(text)) !== null) {
+                    suggestions.push({
+                        type: suggestion.type,
+                        message: suggestion.message,
+                        original: match[0],
+                        replacement: suggestion.replacement,
+                        position: match.index,
+                        length: match[0].length
+                    });
+                }
+                suggestion.pattern.lastIndex = 0; // Reset regex
+            });
+            
+            return {
+                goodExpressions: improvements,
+                suggestions: suggestions,
+                clinicalTerminologyScore: Math.max(0, 100 - (suggestions.length * 8))
+            };
+        }
+
+        function displayComprehensiveAnalysis(analysis, grammarCheck, expressionCheck) {
+            const feedback = document.getElementById('realTimeFeedback');
+            
+            feedback.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Overall Analysis -->
+                    <div class="bg-white p-4 rounded-lg border-2 border-primary-gold">
+                        <h4 class="font-bold text-primary-green mb-3">📊 Complete Writing Analysis</h4>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-primary-gold">${analysis.wordCount}</div>
+                                <div class="text-xs text-gray-600">Words</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-primary-gold">${analysis.sentenceCount}</div>
+                                <div class="text-xs text-gray-600">Sentences</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-primary-gold">${Math.round(analysis.avgWordsPerSentence)}</div>
+                                <div class="text-xs text-gray-600">Avg Words/Sentence</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-primary-gold">${grammarCheck.errorCount}</div>
+                                <div class="text-xs text-gray-600">Grammar Issues</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary-gold">${Math.round(analysis.readabilityScore)}%</div>
+                                <div class="text-xs text-gray-600">Readability</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary-gold">${Math.round(grammarCheck.score)}%</div>
+                                <div class="text-xs text-gray-600">Grammar</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary-gold">${Math.round(expressionCheck.clinicalTerminologyScore)}%</div>
+                                <div class="text-xs text-gray-600">Clinical Terms</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary-gold">${analysis.medicalTerms.length}</div>
+                                <div class="text-xs text-gray-600">Medical Terms</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grammar Issues -->
+                    ${grammarCheck.errors.length > 0 ? `
+                    <div class="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+                        <h5 class="font-bold text-red-800 mb-3">🔍 Grammar & Style Issues (${grammarCheck.errors.length})</h5>
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            ${grammarCheck.errors.map(error => `
+                                <div class="bg-white p-3 rounded border-l-4 border-red-400">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="font-semibold text-red-700 text-sm">${error.type.replace(/_/g, ' ').toUpperCase()}</div>
+                                            <div class="text-red-600 text-sm mt-1">"${error.text}"</div>
+                                            <div class="text-gray-700 text-xs mt-1">${error.message}</div>
+                                            <div class="text-green-700 text-xs mt-2">💡 ${error.suggestion}</div>
+                                        </div>
+                                        <button onclick="applyGrammarFix('${error.position}', '${error.length}', '${error.type}')" 
+                                                class="ml-3 px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
+                                            Fix
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : `
+                    <div class="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                        <h5 class="font-bold text-green-800 mb-2">✅ Grammar Check Complete</h5>
+                        <div class="text-green-700 text-sm">No grammar issues detected! Excellent work.</div>
+                    </div>
+                    `}
+
+                    <!-- Expression Improvements -->
+                    ${expressionCheck.suggestions.length > 0 ? `
+                    <div class="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                        <h5 class="font-bold text-blue-800 mb-3">💡 Clinical Expression Improvements (${expressionCheck.suggestions.length})</h5>
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            ${expressionCheck.suggestions.map(suggestion => `
+                                <div class="bg-white p-3 rounded border-l-4 border-blue-400">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="font-semibold text-blue-700 text-sm">${suggestion.type.replace(/_/g, ' ').toUpperCase()}</div>
+                                            <div class="text-blue-600 text-sm mt-1">
+                                                "${suggestion.original}" → "${suggestion.replacement}"
+                                            </div>
+                                            <div class="text-gray-700 text-xs mt-1">${suggestion.message}</div>
+                                        </div>
+                                        <button onclick="applyExpressionFix('${suggestion.position}', '${suggestion.length}', '${suggestion.replacement.replace(/'/g, "\\'")}')" 
+                                                class="ml-3 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors">
+                                            Apply
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Good Expressions Found -->
+                    ${expressionCheck.goodExpressions.length > 0 ? `
+                    <div class="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                        <h5 class="font-bold text-green-800 mb-3">🌟 Excellent Clinical Expressions Found</h5>
+                        <div class="space-y-2">
+                            ${expressionCheck.goodExpressions.map(expr => `
+                                <div class="bg-white p-2 rounded border-l-4 border-green-400">
+                                    <div class="text-green-700 text-sm">✅ ${expr.message}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Medical Terms Used -->
+                    ${analysis.medicalTerms.length > 0 ? `
+                    <div class="bg-primary-gold bg-opacity-10 p-4 rounded-lg border-2 border-primary-gold">
+                        <h5 class="font-bold text-primary-green mb-3">📚 Medical Terminology Used (${analysis.medicalTerms.length})</h5>
+                        <div class="flex flex-wrap gap-2">
+                            ${analysis.medicalTerms.map(term => `
+                                <span class="word-highlight text-sm px-3 py-1">${term}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Quick Actions -->
+                    <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                        <h5 class="font-bold text-gray-800 mb-3">⚡ Quick Actions</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="fixAllGrammarIssues()" class="px-3 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors">
+                                Fix All Grammar Issues
+                            </button>
+                            <button onclick="improveAllExpressions()" class="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
+                                Improve All Expressions
+                            </button>
+                            <button onclick="addMedicalTerms()" class="px-3 py-2 bg-primary-gold text-white text-sm rounded hover:bg-medium-gold transition-colors">
+                                Suggest Medical Terms
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitWriting() {
+            const text = document.getElementById('writingEditor').value;
+            if (!text.trim()) {
+                showNotification('Please write some text before submitting.', 'warning');
+                return;
+            }
+            
+            // Analyze the writing
+            const analysis = analyzeWriting(text);
+            
+            // Calculate final scores
+            const scores = {
+                clarity: analysis.clarityScore,
+                grammar: analysis.grammarScore,
+                terminology: Math.min(100, analysis.terminologyScore),
+                structure: calculateStructureScore(text)
+            };
+            
+            const finalScore = (scores.clarity + scores.grammar + scores.terminology + scores.structure) / 4;
+            
+            // Calculate XP earned
+            const baseXP = getBaseXP(gameState.currentWritingMode);
+            const bonusXP = Math.round((finalScore / 100) * baseXP);
+            const totalXP = baseXP + bonusXP;
+            
+            // Update session
+            gameState.currentSession.text = text;
+            gameState.currentSession.scores = scores;
+            gameState.currentSession.finalScore = finalScore;
+            gameState.currentSession.xpEarned = totalXP;
+            gameState.currentSession.analysis = analysis;
+            
+            // Update player stats
+            updatePlayerStats(finalScore, totalXP, text);
+            
+            // Check for achievements
+            checkAchievements(finalScore, analysis);
+            
+            // Show results
+            showResults();
+            
+            showNotification(`Writing submitted! You earned ${totalXP} XP!`, 'success');
+        }
+
+        function calculateStructureScore(text) {
+            const template = writingTemplates[gameState.currentWritingMode];
+            let score = 70; // Base score
+            
+            // Check if required sections are present
+            template.structure.forEach(section => {
+                if (section.required) {
+                    const sectionKeywords = section.section.toLowerCase().split(' ');
+                    const hasSection = sectionKeywords.some(keyword => 
+                        text.toLowerCase().includes(keyword)
+                    );
+                    if (hasSection) score += 10;
+                }
+            });
+            
+            return Math.min(100, score);
+        }
+
+        function getBaseXP(mode) {
+            const xpMap = {
+                'patient-chart': 25,
+                'incident-report': 35,
+                'care-plan': 30,
+                'discharge-summary': 40,
+                'handoff-report': 20,
+                'free-practice': 15
+            };
+            return xpMap[mode] || 20;
+        }
+
+        function updatePlayerStats(finalScore, xpEarned, text) {
+            const words = text.trim().split(/\s+/).length;
+            
+            // Update basic stats
+            gameState.player.totalDocuments++;
+            gameState.player.totalWords += words;
+            gameState.player.xp += xpEarned;
+            
+            // Update average score
+            const totalScore = (gameState.player.averageScore * (gameState.player.totalDocuments - 1)) + finalScore;
+            gameState.player.averageScore = totalScore / gameState.player.totalDocuments;
+            
+            // Check for perfect score
+            if (finalScore >= 95) {
+                gameState.player.perfectScores++;
+            }
+            
+            // Update streak
+            const today = new Date().toDateString();
+            if (gameState.player.lastPlayDate !== today) {
+                gameState.player.streak++;
+                gameState.player.lastPlayDate = today;
+            }
+            
+            // Check for level up
+            checkLevelUp();
+            
+            saveGameState();
+        }
+
+        function checkLevelUp() {
+            const currentLevel = gameState.player.level;
+            const newLevel = calculateLevel(gameState.player.xp);
+            
+            if (newLevel > currentLevel) {
+                gameState.player.level = newLevel;
+                showLevelUpNotification(newLevel);
+                
+                // Award level up achievement
+                if (newLevel === 5) {
+                    awardAchievement('level_5');
+                }
+            }
+        }
+
+        function calculateLevel(xp) {
+            for (let i = 0; i < gameState.xpRequirements.length; i++) {
+                if (xp < gameState.xpRequirements[i]) {
+                    return i + 1;
+                }
+            }
+            return gameState.xpRequirements.length + 1;
+        }
+
+        function showLevelUpNotification(level) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary-gold text-white p-8 rounded-xl shadow-xl z-50 text-center';
+            notification.innerHTML = `
+                <div class="text-6xl mb-4">🎉</div>
+                <div class="text-2xl font-bold mb-2">Level Up!</div>
+                <div class="text-lg">You've reached Level ${level}!</div>
+                <div class="text-sm mt-2 opacity-90">Keep up the excellent work!</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function checkAchievements(finalScore, analysis) {
+            // First document
+            if (gameState.player.totalDocuments === 1) {
+                awardAchievement('first_document');
+            }
+            
+            // Perfect score
+            if (finalScore >= 95) {
+                awardAchievement('perfect_score');
+            }
+            
+            // Streak achievements
+            if (gameState.player.streak === 3) {
+                awardAchievement('streak_3');
+            } else if (gameState.player.streak === 7) {
+                awardAchievement('streak_7');
+            }
+            
+            // Grammar master
+            if (analysis.grammarScore >= 95) {
+                const grammarCount = gameState.achievements.filter(a => a.id === 'grammar_master').length;
+                if (grammarCount >= 4) { // This would be the 5th time
+                    awardAchievement('grammar_master');
+                }
+            }
+            
+            // Mode-specific achievements
+            const modeCount = gameState.achievements.filter(a => a.mode === gameState.currentWritingMode).length;
+            if (gameState.currentWritingMode === 'incident-report' && modeCount >= 9) {
+                awardAchievement('incident_specialist');
+            } else if (gameState.currentWritingMode === 'care-plan' && modeCount >= 14) {
+                awardAchievement('care_planner');
+            }
+        }
+
+        function awardAchievement(achievementId) {
+            // Check if already earned
+            if (gameState.achievements.some(a => a.id === achievementId)) {
+                return;
+            }
+            
+            const achievement = achievementDefinitions.find(a => a.id === achievementId);
+            if (!achievement) return;
+            
+            // Add to achievements
+            gameState.achievements.push({
+                id: achievementId,
+                earnedAt: new Date(),
+                mode: gameState.currentWritingMode
+            });
+            
+            // Award XP
+            gameState.player.xp += achievement.xp;
+            
+            // Show achievement notification
+            showAchievementNotification(achievement);
+            
+            saveGameState();
+        }
+
+        function showAchievementNotification(achievement) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-primary-gold text-white p-6 rounded-xl shadow-xl z-50 max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl">${achievement.icon}</div>
+                    <div>
+                        <div class="font-bold">Achievement Unlocked!</div>
+                        <div class="text-sm">${achievement.name}</div>
+                        <div class="text-xs opacity-90">${achievement.description}</div>
+                        <div class="text-xs mt-1">+${achievement.xp} XP</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        function showResults() {
+            // Hide writing interface, show results
+            document.getElementById('writingInterface').classList.add('hidden');
+            document.getElementById('resultsInterface').classList.remove('hidden');
+            
+            const session = gameState.currentSession;
+            
+            // Update results UI
+            document.getElementById('finalScore').textContent = `${Math.round(session.finalScore)}%`;
+            document.getElementById('xpGained').textContent = `+${session.xpEarned} XP`;
+            
+            // Update score breakdown
+            updateScoreBreakdown(session.scores);
+            
+            // Generate feedback
+            generateDetailedFeedback(session);
+            
+            // Update UI with new stats
+            updateUI();
+        }
+
+        function updateScoreBreakdown(scores) {
+            const criteria = ['clarity', 'grammar', 'terminology', 'structure'];
+            
+            criteria.forEach(criterion => {
+                const score = Math.round(scores[criterion]);
+                const percentage = score;
+                
+                document.getElementById(`${criterion}Score`).textContent = `${score}%`;
+                document.getElementById(`${criterion}Bar`).style.width = `${percentage}%`;
+            });
+        }
+
+        function generateDetailedFeedback(session) {
+            const strengths = [];
+            const improvements = [];
+            const vocabularySuggestions = [];
+            const nextSteps = [];
+            
+            // Generate strengths based on scores
+            if (session.scores.clarity >= 85) {
+                strengths.push('Excellent clarity and conciseness in your writing');
+            }
+            if (session.scores.grammar >= 90) {
+                strengths.push('Strong grammar and proper tense usage');
+            }
+            if (session.scores.terminology >= 80) {
+                strengths.push('Good use of appropriate medical terminology');
+            }
+            if (session.scores.structure >= 85) {
+                strengths.push('Well-organized structure following template guidelines');
+            }
+            
+            // Generate improvements
+            if (session.scores.clarity < 80) {
+                improvements.push('Focus on more concise and direct language');
+                nextSteps.push('Practice eliminating unnecessary words and qualifiers');
+            }
+            if (session.scores.grammar < 85) {
+                improvements.push('Review grammar rules and tense consistency');
+                nextSteps.push('Complete grammar-focused exercises');
+            }
+            if (session.scores.terminology < 75) {
+                improvements.push('Incorporate more precise medical terminology');
+                vocabularySuggestions.push('Review vocabulary bank for your writing mode');
+            }
+            if (session.scores.structure < 80) {
+                improvements.push('Follow template structure more closely');
+                nextSteps.push('Study template guides before writing');
+            }
+            
+            // Display feedback
+            displayFeedbackSections(strengths, improvements, vocabularySuggestions, nextSteps);
+            
+            // Create annotated text
+            createAnnotatedText(session.text, session.analysis);
+        }
+
+        function displayFeedbackSections(strengths, improvements, vocabularySuggestions, nextSteps) {
+            // Strengths
+            const strengthsContainer = document.getElementById('strengthsList');
+            if (strengths.length === 0) {
+                strengthsContainer.innerHTML = '<div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">Keep practicing to develop your strengths!</div>';
+            } else {
+                strengthsContainer.innerHTML = strengths.map(strength => `
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">✅ ${strength}</div>
+                `).join('');
+            }
+            
+            // Improvements
+            const improvementsContainer = document.getElementById('improvementsList');
+            if (improvements.length === 0) {
+                improvementsContainer.innerHTML = '<div class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">Excellent work! Continue practicing to maintain your skills.</div>';
+            } else {
+                improvementsContainer.innerHTML = improvements.map(improvement => `
+                    <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-sm">🎯 ${improvement}</div>
+                `).join('');
+            }
+            
+            // Vocabulary suggestions
+            const vocabContainer = document.getElementById('vocabularySuggestions');
+            if (vocabularySuggestions.length === 0) {
+                vocabContainer.innerHTML = '<div class="text-gray-500 text-sm">Great vocabulary usage! Keep expanding your medical terminology.</div>';
+            } else {
+                vocabContainer.innerHTML = vocabularySuggestions.map(suggestion => `
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">📚 ${suggestion}</div>
+                `).join('');
+            }
+            
+            // Next steps
+            const stepsContainer = document.getElementById('nextSteps');
+            if (nextSteps.length === 0) {
+                nextSteps.push('Continue practicing with different writing modes');
+                nextSteps.push('Try the daily challenge for bonus XP');
+                nextSteps.push('Explore advanced vocabulary in the vocabulary bank');
+            }
+            
+            stepsContainer.innerHTML = nextSteps.map(step => `
+                <div class="p-3 bg-primary-gold bg-opacity-10 border border-primary-gold rounded-lg text-primary-green text-sm">🎯 ${step}</div>
+            `).join('');
+        }
+
+        function createAnnotatedText(text, analysis) {
+            const container = document.getElementById('annotatedText');
+            
+            // Simple annotation - highlight medical terms
+            let annotatedText = text;
+            
+            analysis.medicalTerms.forEach(term => {
+                const regex = new RegExp(`\\b${term}\\b`, 'gi');
+                annotatedText = annotatedText.replace(regex, `<span class="word-highlight" title="Medical term: ${term}">$&</span>`);
+            });
+            
+            // Highlight potential issues
+            const issues = ['very', 'really', 'quite', 'I think', 'maybe'];
+            issues.forEach(issue => {
+                const regex = new RegExp(`\\b${issue}\\b`, 'gi');
+                annotatedText = annotatedText.replace(regex, `<span class="error-highlight" title="Consider removing or replacing">$&</span>`);
+            });
+            
+            container.innerHTML = annotatedText;
+        }
+
+        // Modal functions
+        function openVocabularyBank() {
+            document.getElementById('vocabularyBankModal').classList.remove('hidden');
+            document.getElementById('vocabularyBankModal').classList.add('flex');
+            loadVocabularyBank();
+        }
+
+        function closeVocabularyBank() {
+            document.getElementById('vocabularyBankModal').classList.add('hidden');
+            document.getElementById('vocabularyBankModal').classList.remove('flex');
+        }
+
+        function loadVocabularyBank() {
+            const container = document.getElementById('vocabularyCategories');
+            
+            container.innerHTML = Object.entries(vocabularyBank).map(([categoryId, category]) => `
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-lg font-bold text-primary-green mb-4">${category.title}</h4>
+                    <div class="space-y-3">
+                        ${category.words.map(word => `
+                            <div class="p-3 bg-pale-gold rounded-lg border-l-4 border-primary-gold">
+                                <div class="font-semibold text-primary-green">${word.word}</div>
+                                <div class="text-sm text-medium-green mt-1">${word.definition}</div>
+                                <div class="text-xs text-gray-600 mt-2 italic">"${word.example}"</div>
+                                <button onclick="insertWord('${word.word}')" class="mt-2 text-xs bg-primary-gold text-white px-2 py-1 rounded hover:bg-medium-gold transition-colors">
+                                    Insert Word
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function insertWord(word) {
+            const editor = document.getElementById('writingEditor');
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            
+            editor.value = textBefore + word + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + word.length, cursorPos + word.length);
+            
+            handleTextInput({ target: editor });
+            showNotification(`"${word}" inserted into your text.`);
+        }
+
+        function openTemplateGuide() {
+            document.getElementById('templateGuideModal').classList.remove('hidden');
+            document.getElementById('templateGuideModal').classList.add('flex');
+            loadTemplateGuide();
+        }
+
+        function closeTemplateGuide() {
+            document.getElementById('templateGuideModal').classList.add('hidden');
+            document.getElementById('templateGuideModal').classList.remove('flex');
+        }
+
+        function loadTemplateGuide() {
+            const container = document.getElementById('templateGuideContent');
+            const template = writingTemplates[gameState.currentWritingMode];
+            
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="text-xl font-bold text-primary-green mb-4">${template.title} Template Guide</h4>
+                    
+                    <div class="space-y-6">
+                        ${template.structure.map(section => `
+                            <div class="border-l-4 border-primary-gold pl-4">
+                                <h5 class="font-bold text-primary-green text-lg">${section.section}</h5>
+                                <p class="text-gray-700 mt-2">${section.description}</p>
+                                ${section.required ? '<div class="text-red-600 text-sm mt-1 font-semibold">Required Section</div>' : ''}
+                                
+                                <div class="mt-3 p-3 bg-pale-gold rounded-lg">
+                                    <div class="text-sm font-semibold text-primary-green mb-2">Example:</div>
+                                    <div class="text-sm text-gray-700 italic">
+                                        ${getExampleForSection(section.section, gameState.currentWritingMode)}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h5 class="font-bold text-blue-800 mb-2">💡 Pro Tips:</h5>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            ${getProTips(gameState.currentWritingMode).map(tip => `<li>• ${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getExampleForSection(section, mode) {
+            const examples = {
+                'patient-chart': {
+                    'Subjective': 'Patient reports pain level 6/10 at surgical site, describes as "sharp and constant." Denies nausea or dizziness.',
+                    'Objective': 'Vital signs: BP 128/82, HR 76, RR 18, Temp 98.4°F. Incision site clean, dry, and intact. Patient ambulating with steady gait.',
+                    'Assessment': 'Post-operative pain management adequate. Wound healing appropriately without signs of infection.',
+                    'Plan': 'Continue current pain medication regimen. Monitor wound site. Patient education on activity restrictions.'
+                },
+                'incident-report': {
+                    'Date/Time': 'March 15, 2024 at 14:30',
+                    'Location': 'Patient room 302, Medical-Surgical Unit',
+                    'Description': 'Patient found on floor beside bed. Patient states "I was trying to get to the bathroom and felt dizzy."',
+                    'Actions Taken': 'Assisted patient back to bed, completed neurological assessment, vital signs obtained.',
+                    'Outcome': 'No apparent injuries. Patient alert and oriented. Physician notified and examined patient.'
+                }
+            };
+            
+            return examples[mode]?.[section] || 'Example content for this section would go here.';
+        }
+
+        function getProTips(mode) {
+            const tips = {
+                'patient-chart': [
+                    'Use past tense for completed actions and assessments',
+                    'Include specific measurements and objective observations',
+                    'Avoid subjective interpretations - stick to facts',
+                    'Use standard medical abbreviations appropriately'
+                ],
+                'incident-report': [
+                    'Write in chronological order',
+                    'Use objective, factual language only',
+                    'Include exact times and locations',
+                    'Avoid speculation about causes',
+                    'Document all actions taken immediately'
+                ],
+                'care-plan': [
+                    'Use SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)',
+                    'Base interventions on evidence-based practice',
+                    'Include both independent and collaborative interventions',
+                    'Write clear evaluation criteria'
+                ]
+            };
+            
+            return tips[mode] || [
+                'Use clear, concise language',
+                'Follow the template structure',
+                'Include relevant details',
+                'Proofread for accuracy'
+            ];
+        }
+
+        function openAchievements() {
+            document.getElementById('achievementsModal').classList.remove('hidden');
+            document.getElementById('achievementsModal').classList.add('flex');
+            loadAchievements();
+        }
+
+        function closeAchievements() {
+            document.getElementById('achievementsModal').classList.add('hidden');
+            document.getElementById('achievementsModal').classList.remove('flex');
+        }
+
+        function loadAchievements() {
+            const container = document.getElementById('achievementsGrid');
+            
+            container.innerHTML = achievementDefinitions.map(achievement => {
+                const earned = gameState.achievements.some(a => a.id === achievement.id);
+                const earnedData = gameState.achievements.find(a => a.id === achievement.id);
+                
+                return `
+                    <div class="p-4 rounded-xl border-2 ${earned ? 'bg-primary-gold bg-opacity-10 border-primary-gold' : 'bg-gray-100 border-gray-300'} text-center">
+                        <div class="text-4xl mb-2 ${earned ? '' : 'grayscale opacity-50'}">${achievement.icon}</div>
+                        <div class="font-bold text-primary-green ${earned ? '' : 'text-gray-500'}">${achievement.name}</div>
+                        <div class="text-sm text-gray-600 mt-1">${achievement.description}</div>
+                        <div class="text-xs text-primary-gold mt-2">+${achievement.xp} XP</div>
+                        ${earned ? `<div class="text-xs text-green-600 mt-1">Earned ${new Date(earnedData.earnedAt).toLocaleDateString()}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Tense control
+        function selectTense(tense) {
+            // Update UI
+            document.querySelectorAll('.tense-btn').forEach(btn => {
+                btn.classList.remove('border-primary-gold', 'bg-pale-gold');
+                btn.classList.add('border-gray-200');
+            });
+            
+            const selectedBtn = document.querySelector(`[data-tense="${tense}"]`);
+            selectedBtn.classList.remove('border-gray-200');
+            selectedBtn.classList.add('border-primary-gold', 'bg-pale-gold');
+            
+            // Provide tense-specific guidance
+            showTenseGuidance(tense);
+        }
+
+        function showTenseGuidance(tense) {
+            const guidance = {
+                'past': 'Use past tense for completed actions: "administered," "observed," "completed," "reported"',
+                'present': 'Use present tense for current conditions: "appears," "demonstrates," "exhibits," "shows"',
+                'future': 'Use future tense for planned actions: "will monitor," "plan to," "scheduled for"'
+            };
+            
+            showNotification(guidance[tense], 'info');
+        }
+
+        // Daily challenge
+        function generateDailyChallenge() {
+            const challenges = [
+                {
+                    text: 'Write a concise incident report using past tense verbs',
+                    mode: 'incident-report',
+                    bonus: 50
+                },
+                {
+                    text: 'Create a patient chart entry with at least 5 medical terms',
+                    mode: 'patient-chart',
+                    bonus: 40
+                },
+                {
+                    text: 'Write a discharge summary under 150 words',
+                    mode: 'discharge-summary',
+                    bonus: 60
+                },
+                {
+                    text: 'Complete a SBAR handoff report in under 100 words',
+                    mode: 'handoff-report',
+                    bonus: 35
+                }
+            ];
+            
+            const today = new Date().toDateString();
+            const savedChallenge = localStorage.getItem('daily_challenge_date');
+            
+            if (savedChallenge !== today) {
+                // Generate new challenge
+                const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+                gameState.dailyChallenge = {
+                    ...challenge,
+                    date: today,
+                    completed: false
+                };
+                
+                localStorage.setItem('daily_challenge', JSON.stringify(gameState.dailyChallenge));
+                localStorage.setItem('daily_challenge_date', today);
+            } else {
+                // Load existing challenge
+                const saved = localStorage.getItem('daily_challenge');
+                if (saved) {
+                    gameState.dailyChallenge = JSON.parse(saved);
+                }
+            }
+            
+            if (gameState.dailyChallenge) {
+                document.getElementById('dailyChallengeText').textContent = gameState.dailyChallenge.text;
+            }
+        }
+
+        function updateChallengeTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const timeLeft = tomorrow - now;
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            document.getElementById('challengeTimer').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startDailyChallenge() {
+            if (gameState.dailyChallenge && !gameState.dailyChallenge.completed) {
+                selectWritingMode(gameState.dailyChallenge.mode);
+                showNotification('Daily challenge started! Complete it for bonus XP!');
+            } else {
+                showNotification('Daily challenge already completed! Come back tomorrow for a new one.');
+            }
+        }
+
+        // Export functions
+        function exportToDocx() {
+            const text = document.getElementById('writingEditor').value;
+            if (!text.trim()) {
+                showNotification('Please write some text before exporting.', 'warning');
+                return;
+            }
+            
+            createDocxFile(text, `${gameState.currentWritingMode}_practice_${new Date().toISOString().split('T')[0]}.docx`);
+        }
+
+        function exportResultsToDocx() {
+            const session = gameState.currentSession;
+            const content = generateResultsContent(session);
+            
+            createDocxFile(content, `writing_assessment_results_${new Date().toISOString().split('T')[0]}.docx`);
+        }
+
+        function createDocxFile(content, filename) {
+            try {
+                const doc = new docx.Document({
+                    sections: [{
+                        properties: {},
+                        children: [
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "NurseWrite Pro - Clinical Writing Practice",
+                                        bold: true,
+                                        size: 32
+                                    })
+                                ],
+                                spacing: { after: 400 }
+                            }),
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: `Generated on: ${new Date().toLocaleDateString()}`,
+                                        italics: true
+                                    })
+                                ],
+                                spacing: { after: 400 }
+                            }),
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: content
+                                    })
+                                ]
+                            })
+                        ]
+                    }]
+                });
+                
+                docx.Packer.toBlob(doc).then(blob => {
+                    saveAs(blob, filename);
+                    showNotification('Document exported successfully!');
+                });
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Export failed. Please try again.', 'error');
+            }
+        }
+
+        function generateResultsContent(session) {
+            return `
+WRITING ASSESSMENT RESULTS
+
+Mode: ${writingTemplates[session.mode].title}
+Date: ${new Date(session.startTime).toLocaleDateString()}
+Final Score: ${Math.round(session.finalScore)}%
+
+SCORE BREAKDOWN:
+- Clarity & Conciseness: ${Math.round(session.scores.clarity)}%
+- Grammar & Tense Usage: ${Math.round(session.scores.grammar)}%
+- Medical Terminology: ${Math.round(session.scores.terminology)}%
+- Structure & Organization: ${Math.round(session.scores.structure)}%
+
+XP EARNED: ${session.xpEarned}
+
+ORIGINAL TEXT:
+${session.text}
+
+ANALYSIS:
+Word Count: ${session.analysis.wordCount}
+Sentences: ${session.analysis.sentenceCount}
+Average Words per Sentence: ${Math.round(session.analysis.avgWordsPerSentence)}
+Medical Terms Used: ${session.analysis.medicalTerms.join(', ')}
+
+This assessment was generated by NurseWrite Pro - Clinical Writing Practice App.
+            `.trim();
+        }
+
+        // Grammar and Expression Correction Functions
+        function applyGrammarFix(position, length, errorType) {
+            const editor = document.getElementById('writingEditor');
+            const text = editor.value;
+            const pos = parseInt(position);
+            const len = parseInt(length);
+            
+            const beforeText = text.substring(0, pos);
+            const errorText = text.substring(pos, pos + len);
+            const afterText = text.substring(pos + len);
+            
+            let replacement = '';
+            
+            // Apply specific fixes based on error type
+            switch(errorType) {
+                case 'passive_voice':
+                    replacement = convertToActiveVoice(errorText);
+                    break;
+                case 'unnecessary_qualifier':
+                    replacement = removeQualifier(errorText);
+                    break;
+                case 'subjective_language':
+                    replacement = makeObjective(errorText);
+                    break;
+                case 'informal_language':
+                    replacement = makeFormal(errorText);
+                    break;
+                case 'vague_descriptors':
+                    replacement = makeSpecific(errorText);
+                    break;
+                case 'capitalization':
+                    replacement = errorText.charAt(0).toUpperCase() + errorText.slice(1);
+                    break;
+                case 'spacing':
+                    replacement = errorText.replace(/\s+/g, ' ');
+                    break;
+                case 'subject_verb_agreement':
+                    replacement = fixSubjectVerbAgreement(errorText);
+                    break;
+                default:
+                    replacement = errorText;
+            }
+            
+            editor.value = beforeText + replacement + afterText;
+            editor.focus();
+            
+            // Re-run analysis
+            setTimeout(() => {
+                checkWriting();
+            }, 500);
+            
+            showNotification('Grammar correction applied!');
+        }
+
+        function applyExpressionFix(position, length, replacement) {
+            const editor = document.getElementById('writingEditor');
+            const text = editor.value;
+            const pos = parseInt(position);
+            const len = parseInt(length);
+            
+            const beforeText = text.substring(0, pos);
+            const afterText = text.substring(pos + len);
+            
+            editor.value = beforeText + replacement + afterText;
+            editor.focus();
+            
+            // Re-run analysis
+            setTimeout(() => {
+                checkWriting();
+            }, 500);
+            
+            showNotification('Expression improvement applied!');
+        }
+
+        function convertToActiveVoice(text) {
+            const conversions = {
+                'was given': 'received',
+                'was administered': 'received',
+                'was observed': 'exhibited',
+                'was noted': 'showed',
+                'were given': 'received',
+                'were administered': 'received',
+                'were observed': 'exhibited',
+                'were noted': 'showed'
+            };
+            
+            let result = text.toLowerCase();
+            for (const [passive, active] of Object.entries(conversions)) {
+                if (result.includes(passive)) {
+                    result = result.replace(passive, `patient ${active}`);
+                    break;
+                }
+            }
+            
+            return result;
+        }
+
+        function removeQualifier(text) {
+            const qualifiers = ['very ', 'really ', 'quite ', 'extremely ', 'totally '];
+            let result = text;
+            
+            qualifiers.forEach(qualifier => {
+                result = result.replace(new RegExp(qualifier, 'gi'), '');
+            });
+            
+            return result.trim();
+        }
+
+        function makeObjective(text) {
+            const replacements = {
+                'I think': 'Assessment indicates',
+                'I believe': 'Clinical findings suggest',
+                'I feel': 'Observation shows',
+                'maybe': 'possibly',
+                'perhaps': 'potentially'
+            };
+            
+            let result = text;
+            for (const [subjective, objective] of Object.entries(replacements)) {
+                result = result.replace(new RegExp(subjective, 'gi'), objective);
+            }
+            
+            return result;
+        }
+
+        function makeFormal(text) {
+            const replacements = {
+                'a lot of': 'multiple',
+                'lots of': 'numerous',
+                'tons of': 'extensive',
+                'bunch of': 'several'
+            };
+            
+            let result = text;
+            for (const [informal, formal] of Object.entries(replacements)) {
+                result = result.replace(new RegExp(informal, 'gi'), formal);
+            }
+            
+            return result;
+        }
+
+        function makeSpecific(text) {
+            const replacements = {
+                'good': 'stable',
+                'bad': 'concerning',
+                'nice': 'appropriate',
+                'okay': 'acceptable',
+                'fine': 'stable'
+            };
+            
+            let result = text;
+            for (const [vague, specific] of Object.entries(replacements)) {
+                result = result.replace(new RegExp(`\\b${vague}\\b`, 'gi'), specific);
+            }
+            
+            return result;
+        }
+
+        function fixSubjectVerbAgreement(text) {
+            const fixes = {
+                'patient are': 'patient is',
+                'patient were': 'patient was',
+                'nurse are': 'nurse is',
+                'nurse were': 'nurse was',
+                'patients is': 'patients are',
+                'patients was': 'patients were',
+                'nurses is': 'nurses are',
+                'nurses was': 'nurses were'
+            };
+            
+            let result = text;
+            for (const [incorrect, correct] of Object.entries(fixes)) {
+                result = result.replace(new RegExp(incorrect, 'gi'), correct);
+            }
+            
+            return result;
+        }
+
+        function fixAllGrammarIssues() {
+            const text = document.getElementById('writingEditor').value;
+            const grammarCheck = performGrammarCheck(text);
+            
+            if (grammarCheck.errors.length === 0) {
+                showNotification('No grammar issues to fix!');
+                return;
+            }
+            
+            let correctedText = text;
+            
+            // Sort errors by position (descending) to avoid position shifts
+            const sortedErrors = grammarCheck.errors.sort((a, b) => b.position - a.position);
+            
+            sortedErrors.forEach(error => {
+                const beforeText = correctedText.substring(0, error.position);
+                const errorText = correctedText.substring(error.position, error.position + error.length);
+                const afterText = correctedText.substring(error.position + error.length);
+                
+                let replacement = '';
+                switch(error.type) {
+                    case 'passive_voice':
+                        replacement = convertToActiveVoice(errorText);
+                        break;
+                    case 'unnecessary_qualifier':
+                        replacement = removeQualifier(errorText);
+                        break;
+                    case 'subjective_language':
+                        replacement = makeObjective(errorText);
+                        break;
+                    case 'informal_language':
+                        replacement = makeFormal(errorText);
+                        break;
+                    case 'vague_descriptors':
+                        replacement = makeSpecific(errorText);
+                        break;
+                    case 'capitalization':
+                        replacement = errorText.charAt(0).toUpperCase() + errorText.slice(1);
+                        break;
+                    case 'spacing':
+                        replacement = errorText.replace(/\s+/g, ' ');
+                        break;
+                    case 'subject_verb_agreement':
+                        replacement = fixSubjectVerbAgreement(errorText);
+                        break;
+                    default:
+                        replacement = errorText;
+                }
+                
+                correctedText = beforeText + replacement + afterText;
+            });
+            
+            document.getElementById('writingEditor').value = correctedText;
+            
+            // Re-run analysis
+            setTimeout(() => {
+                checkWriting();
+            }, 500);
+            
+            showNotification(`Fixed ${grammarCheck.errors.length} grammar issues!`);
+        }
+
+        function improveAllExpressions() {
+            const text = document.getElementById('writingEditor').value;
+            const expressionCheck = checkExpressions(text);
+            
+            if (expressionCheck.suggestions.length === 0) {
+                showNotification('No expression improvements available!');
+                return;
+            }
+            
+            let improvedText = text;
+            
+            // Sort suggestions by position (descending) to avoid position shifts
+            const sortedSuggestions = expressionCheck.suggestions.sort((a, b) => b.position - a.position);
+            
+            sortedSuggestions.forEach(suggestion => {
+                const beforeText = improvedText.substring(0, suggestion.position);
+                const afterText = improvedText.substring(suggestion.position + suggestion.length);
+                
+                improvedText = beforeText + suggestion.replacement + afterText;
+            });
+            
+            document.getElementById('writingEditor').value = improvedText;
+            
+            // Re-run analysis
+            setTimeout(() => {
+                checkWriting();
+            }, 500);
+            
+            showNotification(`Applied ${expressionCheck.suggestions.length} expression improvements!`);
+        }
+
+        function addMedicalTerms() {
+            const text = document.getElementById('writingEditor').value.toLowerCase();
+            const suggestions = [];
+            
+            // Suggest medical terms based on context
+            const contextSuggestions = [
+                {
+                    context: ['pain', 'hurt', 'ache'],
+                    suggestions: ['analgesic', 'discomfort', 'pain scale', 'pain management']
+                },
+                {
+                    context: ['walk', 'move'],
+                    suggestions: ['ambulate', 'mobility', 'gait', 'transfer']
+                },
+                {
+                    context: ['listen', 'hear'],
+                    suggestions: ['auscultate', 'breath sounds', 'heart sounds']
+                },
+                {
+                    context: ['feel', 'touch'],
+                    suggestions: ['palpate', 'assess', 'examine']
+                },
+                {
+                    context: ['look', 'see'],
+                    suggestions: ['inspect', 'observe', 'visualize']
+                },
+                {
+                    context: ['temperature', 'fever'],
+                    suggestions: ['afebrile', 'febrile', 'pyrexia', 'hypothermia']
+                },
+                {
+                    context: ['breathing', 'breath'],
+                    suggestions: ['respiratory', 'dyspnea', 'tachypnea', 'bradypnea']
+                }
+            ];
+            
+            contextSuggestions.forEach(item => {
+                const hasContext = item.context.some(word => text.includes(word));
+                if (hasContext) {
+                    suggestions.push(...item.suggestions);
+                }
+            });
+            
+            if (suggestions.length === 0) {
+                showNotification('No specific medical term suggestions for current content.');
+                return;
+            }
+            
+            // Remove duplicates
+            const uniqueSuggestions = [...new Set(suggestions)];
+            
+            // Show suggestions in a popup
+            const popup = document.createElement('div');
+            popup.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-xl z-50 max-w-md';
+            popup.innerHTML = `
+                <h4 class="text-lg font-bold text-primary-green mb-4">💡 Suggested Medical Terms</h4>
+                <div class="space-y-2 mb-4">
+                    ${uniqueSuggestions.slice(0, 8).map(term => `
+                        <button onclick="insertMedicalTerm('${term}'); this.parentElement.parentElement.parentElement.remove();" 
+                                class="block w-full text-left p-2 bg-pale-gold hover:bg-light-gold rounded border border-primary-gold transition-colors">
+                            ${term}
+                        </button>
+                    `).join('')}
+                </div>
+                <button onclick="this.parentElement.remove()" class="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors">
+                    Close
+                </button>
+            `;
+            
+            document.body.appendChild(popup);
+        }
+
+        function insertMedicalTerm(term) {
+            const editor = document.getElementById('writingEditor');
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(cursorPos);
+            
+            editor.value = textBefore + term + textAfter;
+            editor.focus();
+            editor.setSelectionRange(cursorPos + term.length, cursorPos + term.length);
+            
+            handleTextInput({ target: editor });
+            showNotification(`"${term}" added to your text.`);
+        }
+
+        // Voice Recognition Functions
+        function initializeVoiceRecognition() {
+            // Check if browser supports speech recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                gameState.voiceRecognition.recognition = new SpeechRecognition();
+                gameState.voiceRecognition.isSupported = true;
+                
+                // Configure speech recognition
+                const recognition = gameState.voiceRecognition.recognition;
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                recognition.maxAlternatives = 1;
+                
+                // Event handlers
+                recognition.onstart = function() {
+                    gameState.voiceRecognition.isRecording = true;
+                    updateVoiceUI();
+                    showNotification('Voice recording started. Speak clearly into your microphone.');
+                };
+                
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    let finalTranscript = gameState.voiceRecognition.finalTranscript;
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    gameState.voiceRecognition.currentTranscript = interimTranscript;
+                    gameState.voiceRecognition.finalTranscript = finalTranscript;
+                    
+                    // Update the text editor with transcribed text
+                    updateEditorWithVoiceText(finalTranscript, interimTranscript);
+                    
+                    // Update status
+                    if (interimTranscript) {
+                        document.getElementById('voiceStatusText').textContent = `Listening... "${interimTranscript}"`;
+                    } else {
+                        document.getElementById('voiceStatusText').textContent = 'Listening...';
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    let errorMessage = 'Voice recognition error occurred.';
+                    
+                    switch(event.error) {
+                        case 'no-speech':
+                            errorMessage = 'No speech detected. Please try speaking again.';
+                            break;
+                        case 'audio-capture':
+                            errorMessage = 'Microphone not accessible. Please check permissions.';
+                            break;
+                        case 'not-allowed':
+                            errorMessage = 'Microphone permission denied. Please allow microphone access.';
+                            break;
+                        case 'network':
+                            errorMessage = 'Network error occurred during voice recognition.';
+                            break;
+                    }
+                    
+                    showNotification(errorMessage, 'error');
+                    stopVoiceRecording();
+                };
+                
+                recognition.onend = function() {
+                    gameState.voiceRecognition.isRecording = false;
+                    updateVoiceUI();
+                    
+                    // Apply clinical language improvements to transcribed text
+                    if (gameState.voiceRecognition.finalTranscript.trim()) {
+                        applyClinicalLanguageCorrections();
+                        showNotification('Voice input completed. Text has been processed for clinical accuracy.');
+                    }
+                };
+                
+            } else {
+                gameState.voiceRecognition.isSupported = false;
+                // Hide voice button if not supported
+                document.getElementById('voiceRecordBtn').style.display = 'none';
+                console.log('Speech recognition not supported in this browser');
+            }
+        }
+        
+        function toggleVoiceRecording() {
+            if (!gameState.voiceRecognition.isSupported) {
+                showNotification('Voice recognition is not supported in your browser.', 'error');
+                return;
+            }
+            
+            if (gameState.voiceRecognition.isRecording) {
+                stopVoiceRecording();
+            } else {
+                startVoiceRecording();
+            }
+        }
+        
+        function startVoiceRecording() {
+            if (!gameState.voiceRecognition.isSupported) return;
+            
+            // Reset transcripts
+            gameState.voiceRecognition.currentTranscript = '';
+            gameState.voiceRecognition.finalTranscript = document.getElementById('writingEditor').value;
+            
+            try {
+                gameState.voiceRecognition.recognition.start();
+            } catch (error) {
+                console.error('Error starting voice recognition:', error);
+                showNotification('Could not start voice recording. Please try again.', 'error');
+            }
+        }
+        
+        function stopVoiceRecording() {
+            if (!gameState.voiceRecognition.isSupported) return;
+            
+            if (gameState.voiceRecognition.recognition && gameState.voiceRecognition.isRecording) {
+                gameState.voiceRecognition.recognition.stop();
+            }
+        }
+        
+        function updateVoiceUI() {
+            const voiceBtn = document.getElementById('voiceRecordBtn');
+            const voiceIcon = document.getElementById('voiceIcon');
+            const voiceText = document.getElementById('voiceText');
+            const voiceStatus = document.getElementById('voiceStatus');
+            
+            if (gameState.voiceRecognition.isRecording) {
+                voiceBtn.classList.add('voice-recording');
+                voiceIcon.textContent = '⏹️';
+                voiceText.textContent = 'Stop Recording';
+                voiceStatus.classList.remove('hidden');
+            } else {
+                voiceBtn.classList.remove('voice-recording');
+                voiceIcon.textContent = '🎤';
+                voiceText.textContent = 'Voice Input';
+                voiceStatus.classList.add('hidden');
+            }
+        }
+        
+        function updateEditorWithVoiceText(finalText, interimText) {
+            const editor = document.getElementById('writingEditor');
+            const displayText = finalText + interimText;
+            
+            // Only update if the text has actually changed to avoid cursor jumping
+            if (editor.value !== displayText) {
+                const cursorPos = editor.selectionStart;
+                editor.value = displayText;
+                
+                // Try to maintain cursor position
+                const newCursorPos = Math.min(cursorPos, displayText.length);
+                editor.setSelectionRange(newCursorPos, newCursorPos);
+                
+                // Trigger input event to update word count and feedback
+                handleTextInput({ target: editor });
+            }
+        }
+        
+        function applyClinicalLanguageCorrections() {
+            const editor = document.getElementById('writingEditor');
+            let text = editor.value;
+            
+            // Common speech-to-text corrections for clinical language
+            const corrections = [
+                // Medical terminology corrections
+                { pattern: /\bpatient says\b/gi, replacement: 'patient reports' },
+                { pattern: /\bpatient tells me\b/gi, replacement: 'patient states' },
+                { pattern: /\bpatient mentions\b/gi, replacement: 'patient reports' },
+                { pattern: /\bI gave\b/gi, replacement: 'administered' },
+                { pattern: /\bI listened to\b/gi, replacement: 'auscultated' },
+                { pattern: /\bI felt\b/gi, replacement: 'palpated' },
+                { pattern: /\bI looked at\b/gi, replacement: 'inspected' },
+                { pattern: /\bI checked\b/gi, replacement: 'assessed' },
+                
+                // Vital signs corrections
+                { pattern: /\bblood pressure\b/gi, replacement: 'BP' },
+                { pattern: /\bheart rate\b/gi, replacement: 'HR' },
+                { pattern: /\brespiratory rate\b/gi, replacement: 'RR' },
+                { pattern: /\btemperature\b/gi, replacement: 'temp' },
+                
+                // Common clinical phrases
+                { pattern: /\bwalked\b/gi, replacement: 'ambulated' },
+                { pattern: /\bwalking\b/gi, replacement: 'ambulating' },
+                { pattern: /\bhurts\b/gi, replacement: 'reports pain' },
+                { pattern: /\bfeels good\b/gi, replacement: 'appears comfortable' },
+                { pattern: /\bfeels bad\b/gi, replacement: 'appears uncomfortable' },
+                { pattern: /\blooks good\b/gi, replacement: 'appears stable' },
+                { pattern: /\blooks bad\b/gi, replacement: 'appears distressed' },
+                
+                // Medication corrections
+                { pattern: /\bmedicine\b/gi, replacement: 'medication' },
+                { pattern: /\bmeds\b/gi, replacement: 'medications' },
+                { pattern: /\bshot\b/gi, replacement: 'injection' },
+                { pattern: /\bpill\b/gi, replacement: 'tablet' },
+                
+                // Professional language
+                { pattern: /\bokay\b/gi, replacement: 'stable' },
+                { pattern: /\bfine\b/gi, replacement: 'stable' },
+                { pattern: /\bgood\b/gi, replacement: 'appropriate' },
+                { pattern: /\bbad\b/gi, replacement: 'concerning' },
+                
+                // Punctuation and formatting
+                { pattern: /\s+/g, replacement: ' ' }, // Multiple spaces to single space
+                { pattern: /\s+\./g, replacement: '.' }, // Space before period
+                { pattern: /\s+,/g, replacement: ',' }, // Space before comma
+            ];
+            
+            // Apply corrections
+            corrections.forEach(correction => {
+                text = text.replace(correction.pattern, correction.replacement);
+            });
+            
+            // Capitalize first letter of sentences
+            text = text.replace(/(^|\. )([a-z])/g, function(match, p1, p2) {
+                return p1 + p2.toUpperCase();
+            });
+            
+            // Update editor if changes were made
+            if (text !== editor.value) {
+                editor.value = text;
+                handleTextInput({ target: editor });
+                
+                // Show notification about corrections
+                showNotification('Voice input processed and improved for clinical documentation.', 'info');
+            }
+        }
+
+        // Utility functions
+        function showDashboard() {
+            gameState.currentMode = 'dashboard';
+            
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('writingInterface').classList.add('hidden');
+            document.getElementById('resultsInterface').classList.add('hidden');
+            
+            updateUI();
+        }
+
+        function saveProgress() {
+            const text = document.getElementById('writingEditor').value;
+            localStorage.setItem(`writing_progress_${gameState.currentWritingMode}`, text);
+            showNotification('Progress saved!');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-40 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' : 
+                type === 'warning' ? 'bg-yellow-600 text-white' : 
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98735953b0b1b9fb',t:'MTc1OTIzMTQxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
