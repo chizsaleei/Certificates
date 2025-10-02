@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoundsPro - Medical Rounds Planner</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2419 0%, #1a4d2e 50%, #2d5a3d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700, #ffffff, #daa520);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: #e0e0e0;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .rounds-section {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar-card {
+            background: rgba(45, 90, 61, 0.6);
+            border-radius: 12px;
+            padding: 18px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .action-btn, .primary-btn, .secondary-btn, .danger-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0f2419;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover, .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.4);
+            background: linear-gradient(45deg, #b8941c, #e6c200);
+        }
+
+        .secondary-btn {
+            background: rgba(45, 90, 61, 0.8);
+            color: #ffd700;
+            border: 1px solid rgba(218, 165, 32, 0.5);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(45, 90, 61, 1);
+            transform: translateY(-2px);
+        }
+
+        .danger-btn {
+            background: linear-gradient(45deg, #d32f2f, #f44336);
+            color: white;
+        }
+
+        .danger-btn:hover {
+            background: linear-gradient(45deg, #b71c1c, #d32f2f);
+            transform: translateY(-2px);
+        }
+
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8a80);
+            color: white;
+            animation: pulse-glow 2s infinite;
+            font-size: 1rem;
+            padding: 14px 20px;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.8); }
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px;
+            background: rgba(45, 90, 61, 0.6);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+            background: rgba(45, 90, 61, 0.8);
+        }
+
+        .patient-card {
+            background: rgba(45, 90, 61, 0.4);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(218, 165, 32, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .patient-card:hover {
+            background: rgba(45, 90, 61, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(218, 165, 32, 0.4);
+        }
+
+        .patient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .patient-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #ffd700;
+            margin-bottom: 6px;
+        }
+
+        .patient-info {
+            color: #e0e0e0;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin: 10px 0;
+            background: rgba(15, 36, 25, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .vital-item {
+            text-align: center;
+            padding: 6px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .vital-label {
+            font-size: 0.7rem;
+            color: #ffd700;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .vital-value {
+            font-size: 0.9rem;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .priority-flag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .priority-critical {
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .priority-high {
+            background: rgba(255, 152, 0, 0.9);
+            color: white;
+        }
+
+        .priority-medium {
+            background: rgba(255, 193, 7, 0.9);
+            color: #0f2419;
+        }
+
+        .priority-low {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+        }
+
+        .priority-stable {
+            background: rgba(96, 125, 139, 0.9);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .timer-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 8px 12px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0f2419;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .timer-btn.active {
+            background: #ff6b6b;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .voice-btn {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-btn.recording {
+            background: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(45, 90, 61, 0.95);
+            margin: 2% auto;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            border: 2px solid #daa520;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: rgba(15, 36, 25, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(218, 165, 32, 0.3);
+            border-color: #daa520;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #e0e0e0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            background: rgba(102, 187, 106, 0.95);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .motivational-message {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .motivational-text {
+            color: #ffd700;
+            font-style: italic;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-row .form-input {
+            flex: 1;
+        }
+
+        .time-slot {
+            background: rgba(15, 36, 25, 0.4);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .time-slot.blocked {
+            background: rgba(218, 165, 32, 0.2);
+            border-color: #daa520;
+        }
+
+        .notes-section {
+            background: rgba(15, 36, 25, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            border-left: 4px solid #daa520;
+        }
+
+        .notes-label {
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .notes-content {
+            color: #e0e0e0;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+            
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-display {
+                font-size: 1.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .vitals-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 6px 12px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .offline-indicator.online {
+            background: rgba(102, 187, 106, 0.9);
+        }
+
+        .hipaa-notice {
+            background: rgba(218, 165, 32, 0.1);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #ffd700;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🏥 RoundsPro</h1>
+            <div class="header-subtitle">Medical Rounds Planner & Patient Management</div>
+            <div style="margin-top: 15px;">
+                <button class="action-btn" onclick="exportToPDF()" style="margin: 0 5px;">📄 Export PDF</button>
+                <button class="action-btn" onclick="backupData()" style="margin: 0 5px;">💾 Backup</button>
+                <button class="action-btn" onclick="importData()" style="margin: 0 5px;">📥 Import</button>
+            </div>
+            <div class="hipaa-notice">
+                🔒 HIPAA-Compliant: All patient data stored locally on your device. No cloud transmission.
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="section-title">
+                <span>⚡</span> Quick Actions
+            </div>
+            <div class="action-grid">
+                <button class="action-btn" onclick="openPatientModal()">👤 Add Patient</button>
+                <button class="action-btn" onclick="blockTimeSlot()">⏰ Block Time</button>
+                <button class="do-it-now-btn" onclick="doItNow()">🚀 Do It Now</button>
+                <button class="action-btn" onclick="openRoundsModal()">🔄 Plan Rounds</button>
+            </div>
+            
+            <div class="form-row">
+                <input type="text" class="form-input" id="quickNoteInput" placeholder="Quick patient note or reminder..." aria-label="Quick note input">
+                <button class="voice-btn" onclick="startVoiceInput('quickNoteInput')" aria-label="Voice input">🎤</button>
+                <button class="action-btn" onclick="addQuickNote()">Add</button>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <div class="rounds-section">
+                <div class="section-title">
+                    <span>👥</span> Patient List
+                    <div style="margin-left: auto;">
+                        <select class="form-select" id="priorityFilter" onchange="filterPatients()" style="width: auto; margin-right: 10px;">
+                            <option value="all">All Priorities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                            <option value="stable">Stable</option>
+                        </select>
+                        <select class="form-select" id="locationFilter" onchange="filterPatients()" style="width: auto;">
+                            <option value="all">All Locations</option>
+                            <option value="icu">ICU</option>
+                            <option value="ward">Ward</option>
+                            <option value="er">Emergency</option>
+                            <option value="surgery">Surgery</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="patientsList">
+                    <!-- Patients will be populated here -->
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <!-- Focus Timer -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>⏱️</span> Focus Timer
+                    </div>
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                        <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                        <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Daily Action Prompts -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>📅</span> Daily Rounds
+                    </div>
+                    <div id="dailyPrompts">
+                        <!-- Daily prompts will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Motivational Message -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>💪</span> Motivation
+                        <div style="margin-left: auto; display: flex; gap: 4px;">
+                            <button class="secondary-btn" onclick="rotateMotivationalMessage()" style="padding: 4px 8px; font-size: 0.75rem;" title="Next message">🔄</button>
+                            <button class="secondary-btn" onclick="openMotivationModal()" style="padding: 4px 8px; font-size: 0.75rem;">Edit</button>
+                        </div>
+                    </div>
+                    <div class="motivational-message">
+                        <div class="motivational-text" id="motivationalText">
+                            Excellence in patient care starts with organized rounds.
+                        </div>
+                        <div style="text-align: center; margin-top: 8px;">
+                            <small style="color: #e0e0e0; font-size: 0.7rem;" id="motivationStatus">Auto-rotating every 3 minutes</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics -->
+                <div class="sidebar-card">
+                    <div class="section-title">
+                        <span>📊</span> Analytics
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPatients">0</div>
+                            <div class="stat-label">Total Patients</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="criticalPatients">0</div>
+                            <div class="stat-label">Critical</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="roundsStreak">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completedRounds">0</div>
+                            <div class="stat-label">Rounds Done</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="patientModalTitle">Add New Patient</h3>
+                <span class="close" onclick="closePatientModal()">&times;</span>
+            </div>
+            
+            <div id="patientModalContent">
+                <div class="form-row">
+                    <input type="text" class="form-input" id="patientName" placeholder="Patient Name/ID..." required>
+                    <button class="voice-btn" onclick="startVoiceInput('patientName')" aria-label="Voice input for name">🎤</button>
+                </div>
+                
+                <div class="form-row">
+                    <input type="text" class="form-input" id="patientRoom" placeholder="Room/Bed Number..." style="flex: 1;">
+                    <select class="form-select" id="patientLocation" style="flex: 1;">
+                        <option value="icu">ICU</option>
+                        <option value="ward">Ward</option>
+                        <option value="er">Emergency</option>
+                        <option value="surgery">Surgery</option>
+                    </select>
+                    <select class="form-select" id="patientPriority" style="flex: 1;">
+                        <option value="stable">Stable</option>
+                        <option value="low">Low Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="high">High Priority</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <input type="text" class="form-input" id="patientDiagnosis" placeholder="Primary Diagnosis..." style="flex: 2;">
+                    <input type="number" class="form-input" id="patientAge" placeholder="Age" style="flex: 1;">
+                </div>
+                
+                <!-- Vitals Section -->
+                <div style="margin: 20px 0;">
+                    <label class="notes-label">Vital Signs:</label>
+                    <div class="vitals-grid">
+                        <div>
+                            <input type="text" class="form-input" id="vitalBP" placeholder="BP" style="text-align: center;">
+                            <div class="vital-label">Blood Pressure</div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-input" id="vitalHR" placeholder="HR" style="text-align: center;">
+                            <div class="vital-label">Heart Rate</div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-input" id="vitalTemp" placeholder="Temp" style="text-align: center;">
+                            <div class="vital-label">Temperature</div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-input" id="vitalResp" placeholder="RR" style="text-align: center;">
+                            <div class="vital-label">Respiratory</div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-input" id="vitalO2" placeholder="O2" style="text-align: center;">
+                            <div class="vital-label">Oxygen Sat</div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-input" id="vitalPain" placeholder="Pain" style="text-align: center;">
+                            <div class="vital-label">Pain Scale</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <label class="notes-label">Clinical Notes:</label>
+                    <div style="display: flex; gap: 8px; align-items: flex-start;">
+                        <textarea class="form-textarea" id="patientNotes" rows="4" placeholder="Assessment, plan, concerns, medications..."></textarea>
+                        <button class="voice-btn" onclick="startVoiceInput('patientNotes')" aria-label="Voice input for notes">🎤</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="primary-btn" onclick="savePatient()" style="flex: 1;">💾 Save Patient</button>
+                    <button class="secondary-btn" onclick="closePatientModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rounds Planning Modal -->
+    <div id="roundsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Plan Rounds Schedule</h3>
+                <span class="close" onclick="closeRoundsModal()">&times;</span>
+            </div>
+            
+            <div id="timeSlots">
+                <!-- Time slots will be populated here -->
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="primary-btn" onclick="saveRoundsSchedule()">📅 Save Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivation Modal -->
+    <div id="motivationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Motivational Messages</h3>
+                <span class="close" onclick="closeMotivationModal()">&times;</span>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label class="notes-label">Custom Message:</label>
+                <textarea class="form-textarea" id="customMotivation" rows="3" placeholder="Enter your motivational message..."></textarea>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label class="notes-label">Preset Messages:</label>
+                <div id="presetMessages">
+                    <!-- Preset messages will be populated here -->
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button class="primary-btn" onclick="saveMotivation()">💾 Save Custom</button>
+                <button class="secondary-btn" onclick="resetToPresetRotation(); closeMotivationModal();">🔄 Use Auto-Rotate</button>
+                <button class="secondary-btn" onclick="closeMotivationModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let patients = [];
+        let currentPatient = null;
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let roundsStreak = 0;
+        let completedRounds = 0;
+        let customMotivationalMessage = "Excellence in patient care starts with organized rounds.";
+        let timeSlots = [];
+
+        // Daily action prompts for medical rounds
+        const dailyPrompts = [
+            "Review critical patients first",
+            "Check overnight events",
+            "Update care plans",
+            "Review lab results",
+            "Assess pain levels",
+            "Medication reconciliation",
+            "Discharge planning review",
+            "Family communication"
+        ];
+
+        // Motivational messages for healthcare professionals
+        const presetMotivations = [
+            "Excellence in patient care starts with organized rounds.",
+            "Every patient interaction makes a difference.",
+            "Your clinical expertise saves lives every day.",
+            "Thorough rounds lead to better outcomes.",
+            "You are the cornerstone of patient safety.",
+            "Compassionate care begins with attention to detail.",
+            "Your dedication to healing inspires others.",
+            "Quality rounds reflect quality medicine.",
+            "Patient advocacy is your highest calling.",
+            "Every assessment contributes to recovery.",
+            "Your clinical judgment guides healing.",
+            "Systematic care prevents complications.",
+            "You make the complex simple for patients.",
+            "Excellence is not an act, but a habit.",
+            "Your rounds create ripples of healing.",
+            "Professional growth comes through patient care.",
+            "Every day brings new opportunities to heal.",
+            "Your expertise transforms lives."
+        ];
+        
+        let currentMotivationIndex = 0;
+        let isUsingCustomMotivation = false;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            renderPatients();
+            renderDailyPrompts();
+            renderPresetMotivations();
+            generateTimeSlots();
+            checkOnlineStatus();
+            
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Initialize with sample data if empty
+            if (patients.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Initialize motivational message rotation
+            initializeMotivationalRotation();
+            
+            // Rotate motivational message every 3 minutes (180000ms)
+            setInterval(rotateMotivationalMessage, 180000);
+        });
+
+        function initializeSampleData() {
+            patients = [
+                {
+                    id: 1,
+                    name: 'John Smith',
+                    room: '302A',
+                    location: 'icu',
+                    priority: 'critical',
+                    diagnosis: 'Post-operative complications',
+                    age: 68,
+                    vitals: {
+                        bp: '160/95',
+                        hr: '110',
+                        temp: '101.2°F',
+                        resp: '22',
+                        o2: '94%',
+                        pain: '7/10'
+                    },
+                    notes: 'Requires close monitoring. Pain management protocol initiated. Family updated.',
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                    updatedAt: new Date(Date.now() - 30 * 60 * 1000)
+                },
+                {
+                    id: 2,
+                    name: 'Maria Garcia',
+                    room: '215B',
+                    location: 'ward',
+                    priority: 'high',
+                    diagnosis: 'Pneumonia',
+                    age: 45,
+                    vitals: {
+                        bp: '130/80',
+                        hr: '95',
+                        temp: '100.1°F',
+                        resp: '18',
+                        o2: '96%',
+                        pain: '3/10'
+                    },
+                    notes: 'Responding well to antibiotics. Chest X-ray improvement noted.',
+                    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
+                    updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000)
+                },
+                {
+                    id: 3,
+                    name: 'Robert Johnson',
+                    room: '108C',
+                    location: 'ward',
+                    priority: 'medium',
+                    diagnosis: 'Diabetes management',
+                    age: 72,
+                    vitals: {
+                        bp: '140/85',
+                        hr: '78',
+                        temp: '98.6°F',
+                        resp: '16',
+                        o2: '98%',
+                        pain: '2/10'
+                    },
+                    notes: 'Blood glucose levels stabilizing. Discharge planning in progress.',
+                    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+                    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
+                }
+            ];
+            
+            updateStats();
+            renderPatients();
+        }
+
+        // Patient management
+        function addQuickNote() {
+            const input = document.getElementById('quickNoteInput');
+            const content = input.value.trim();
+            
+            if (!content) {
+                showNotification('Please enter a note', 'error');
+                return;
+            }
+            
+            const patient = {
+                id: Date.now(),
+                name: content.substring(0, 30) + (content.length > 30 ? '...' : ''),
+                room: 'TBD',
+                location: 'ward',
+                priority: 'medium',
+                diagnosis: 'Quick note',
+                age: '',
+                vitals: {},
+                notes: content,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            patients.unshift(patient);
+            input.value = '';
+            
+            updateStats();
+            renderPatients();
+            saveData();
+            showNotification('📝 Quick patient note added!');
+        }
+
+        function openPatientModal(patientId = null) {
+            currentPatient = patientId ? patients.find(p => p.id === patientId) : null;
+            
+            if (currentPatient) {
+                document.getElementById('patientModalTitle').textContent = 'Edit Patient';
+                populatePatientForm();
+            } else {
+                document.getElementById('patientModalTitle').textContent = 'Add New Patient';
+                clearPatientForm();
+            }
+            
+            document.getElementById('patientModal').style.display = 'block';
+            document.getElementById('patientName').focus();
+        }
+
+        function populatePatientForm() {
+            if (!currentPatient) return;
+            
+            document.getElementById('patientName').value = currentPatient.name;
+            document.getElementById('patientRoom').value = currentPatient.room;
+            document.getElementById('patientLocation').value = currentPatient.location;
+            document.getElementById('patientPriority').value = currentPatient.priority;
+            document.getElementById('patientDiagnosis').value = currentPatient.diagnosis;
+            document.getElementById('patientAge').value = currentPatient.age;
+            document.getElementById('patientNotes').value = currentPatient.notes;
+            
+            // Populate vitals
+            if (currentPatient.vitals) {
+                document.getElementById('vitalBP').value = currentPatient.vitals.bp || '';
+                document.getElementById('vitalHR').value = currentPatient.vitals.hr || '';
+                document.getElementById('vitalTemp').value = currentPatient.vitals.temp || '';
+                document.getElementById('vitalResp').value = currentPatient.vitals.resp || '';
+                document.getElementById('vitalO2').value = currentPatient.vitals.o2 || '';
+                document.getElementById('vitalPain').value = currentPatient.vitals.pain || '';
+            }
+        }
+
+        function savePatient() {
+            const name = document.getElementById('patientName').value.trim();
+            const room = document.getElementById('patientRoom').value.trim();
+            const location = document.getElementById('patientLocation').value;
+            const priority = document.getElementById('patientPriority').value;
+            const diagnosis = document.getElementById('patientDiagnosis').value.trim();
+            const age = document.getElementById('patientAge').value;
+            const notes = document.getElementById('patientNotes').value.trim();
+            
+            if (!name) {
+                showNotification('Please enter patient name/ID', 'error');
+                return;
+            }
+            
+            // Collect vitals
+            const vitals = {
+                bp: document.getElementById('vitalBP').value.trim(),
+                hr: document.getElementById('vitalHR').value.trim(),
+                temp: document.getElementById('vitalTemp').value.trim(),
+                resp: document.getElementById('vitalResp').value.trim(),
+                o2: document.getElementById('vitalO2').value.trim(),
+                pain: document.getElementById('vitalPain').value.trim()
+            };
+            
+            const patientData = {
+                name,
+                room,
+                location,
+                priority,
+                diagnosis,
+                age,
+                vitals,
+                notes,
+                updatedAt: new Date()
+            };
+            
+            if (currentPatient) {
+                // Update existing patient
+                Object.assign(currentPatient, patientData);
+                showNotification('👤 Patient updated successfully!');
+            } else {
+                // Create new patient
+                const newPatient = {
+                    id: Date.now(),
+                    ...patientData,
+                    createdAt: new Date()
+                };
+                patients.unshift(newPatient);
+                showNotification('👤 Patient added to rounds!');
+            }
+            
+            closePatientModal();
+            updateStats();
+            renderPatients();
+            saveData();
+        }
+
+        function clearPatientForm() {
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientRoom').value = '';
+            document.getElementById('patientLocation').value = 'ward';
+            document.getElementById('patientPriority').value = 'medium';
+            document.getElementById('patientDiagnosis').value = '';
+            document.getElementById('patientAge').value = '';
+            document.getElementById('patientNotes').value = '';
+            
+            // Clear vitals
+            document.getElementById('vitalBP').value = '';
+            document.getElementById('vitalHR').value = '';
+            document.getElementById('vitalTemp').value = '';
+            document.getElementById('vitalResp').value = '';
+            document.getElementById('vitalO2').value = '';
+            document.getElementById('vitalPain').value = '';
+        }
+
+        function closePatientModal() {
+            document.getElementById('patientModal').style.display = 'none';
+            currentPatient = null;
+        }
+
+        function deletePatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (confirm(`Are you sure you want to remove "${patient.name}" from rounds?`)) {
+                patients = patients.filter(p => p.id !== patientId);
+                renderPatients();
+                updateStats();
+                saveData();
+                showNotification('Patient removed from rounds 🗑️');
+            }
+        }
+
+        function renderPatients() {
+            const container = document.getElementById('patientsList');
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+            
+            let filteredPatients = patients;
+            
+            if (priorityFilter !== 'all') {
+                filteredPatients = filteredPatients.filter(patient => patient.priority === priorityFilter);
+            }
+            
+            if (locationFilter !== 'all') {
+                filteredPatients = filteredPatients.filter(patient => patient.location === locationFilter);
+            }
+            
+            if (filteredPatients.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #e0e0e0;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 15px;">👥</span>
+                        <h3>No patients found</h3>
+                        <p>Add patients to start planning your rounds!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort patients by priority (critical first)
+            const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3, stable: 4 };
+            const sortedPatients = [...filteredPatients].sort((a, b) => 
+                priorityOrder[a.priority] - priorityOrder[b.priority]
+            );
+            
+            container.innerHTML = sortedPatients.map(patient => createPatientCard(patient)).join('');
+        }
+
+        function createPatientCard(patient) {
+            const locationIcons = {
+                icu: '🏥',
+                ward: '🛏️',
+                er: '🚨',
+                surgery: '⚕️'
+            };
+            
+            const priorityClass = `priority-${patient.priority}`;
+            
+            return `
+                <div class="patient-card">
+                    <div class="priority-flag ${priorityClass}">${patient.priority}</div>
+                    <div class="patient-header">
+                        <div>
+                            <div class="patient-name">${patient.name}</div>
+                            <div class="patient-info">
+                                <span>${locationIcons[patient.location]} ${patient.room}</span>
+                                <span>📋 ${patient.diagnosis}</span>
+                                ${patient.age ? `<span>👤 ${patient.age}y</span>` : ''}
+                                <span>🕒 ${new Date(patient.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${renderVitalsSnapshot(patient.vitals)}
+                    
+                    ${patient.notes ? `
+                        <div class="notes-section">
+                            <div class="notes-label">Clinical Notes</div>
+                            <div class="notes-content">${patient.notes}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
+                        <button class="secondary-btn" onclick="openPatientModal(${patient.id})" style="padding: 6px 10px; font-size: 0.8rem;">✏️ Edit</button>
+                        <button class="secondary-btn" onclick="duplicatePatient(${patient.id})" style="padding: 6px 10px; font-size: 0.8rem;">📋 Copy</button>
+                        <button class="secondary-btn" onclick="markRoundComplete(${patient.id})" style="padding: 6px 10px; font-size: 0.8rem;">✅ Round Done</button>
+                        <button class="danger-btn" onclick="deletePatient(${patient.id})" style="padding: 6px 10px; font-size: 0.8rem;">🗑️ Remove</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderVitalsSnapshot(vitals) {
+            if (!vitals || Object.keys(vitals).length === 0) return '';
+            
+            const vitalEntries = Object.entries(vitals).filter(([key, value]) => value && value.trim());
+            if (vitalEntries.length === 0) return '';
+            
+            const vitalLabels = {
+                bp: 'BP',
+                hr: 'HR',
+                temp: 'Temp',
+                resp: 'RR',
+                o2: 'O2',
+                pain: 'Pain'
+            };
+            
+            return `
+                <div class="vitals-grid">
+                    ${vitalEntries.map(([key, value]) => `
+                        <div class="vital-item">
+                            <div class="vital-label">${vitalLabels[key]}</div>
+                            <div class="vital-value">${value}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function duplicatePatient(patientId) {
+            const originalPatient = patients.find(p => p.id === patientId);
+            if (originalPatient) {
+                const duplicatedPatient = {
+                    ...originalPatient,
+                    id: Date.now(),
+                    name: `Copy of ${originalPatient.name}`,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                
+                patients.unshift(duplicatedPatient);
+                renderPatients();
+                updateStats();
+                saveData();
+                showNotification('📋 Patient duplicated!');
+            }
+        }
+
+        function markRoundComplete(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                completedRounds++;
+                updateStats();
+                saveData();
+                showNotification(`✅ Round completed for ${patient.name}!`);
+            }
+        }
+
+        function filterPatients() {
+            renderPatients();
+        }
+
+        // Time slot management
+        function generateTimeSlots() {
+            timeSlots = [];
+            for (let hour = 6; hour <= 22; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    timeSlots.push({
+                        time: timeString,
+                        blocked: false,
+                        patient: null,
+                        notes: ''
+                    });
+                }
+            }
+        }
+
+        function blockTimeSlot() {
+            openRoundsModal();
+        }
+
+        function openRoundsModal() {
+            renderTimeSlots();
+            document.getElementById('roundsModal').style.display = 'block';
+        }
+
+        function closeRoundsModal() {
+            document.getElementById('roundsModal').style.display = 'none';
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <label class="notes-label">Schedule Rounds:</label>
+                    <p style="color: #e0e0e0; font-size: 0.9rem;">Click time slots to block them for rounds or add patient assignments.</p>
+                </div>
+                ${timeSlots.map((slot, index) => `
+                    <div class="time-slot ${slot.blocked ? 'blocked' : ''}" onclick="toggleTimeSlot(${index})">
+                        <div>
+                            <strong>${slot.time}</strong>
+                            ${slot.patient ? ` - ${slot.patient}` : ''}
+                            ${slot.notes ? ` (${slot.notes})` : ''}
+                        </div>
+                        <div>
+                            ${slot.blocked ? '🔒 Blocked' : '⏰ Available'}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function toggleTimeSlot(index) {
+            const slot = timeSlots[index];
+            if (slot.blocked) {
+                slot.blocked = false;
+                slot.patient = null;
+                slot.notes = '';
+            } else {
+                const patientName = prompt('Assign patient (optional):');
+                const notes = prompt('Notes (optional):');
+                slot.blocked = true;
+                slot.patient = patientName || null;
+                slot.notes = notes || '';
+            }
+            renderTimeSlots();
+        }
+
+        function saveRoundsSchedule() {
+            saveData();
+            closeRoundsModal();
+            showNotification('📅 Rounds schedule saved!');
+        }
+
+        // Daily prompts
+        function renderDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const todayPrompts = dailyPrompts.slice(0, 4); // Show 4 prompts per day
+            
+            container.innerHTML = todayPrompts.map((prompt, index) => `
+                <div class="time-slot" onclick="completePrompt(${index})" style="cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 20px; height: 20px; border: 2px solid #daa520; border-radius: 4px; display: flex; align-items: center; justify-content: center;" id="prompt-${index}">
+                            <span style="display: none; color: #daa520;">✓</span>
+                        </div>
+                        <span>${prompt}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(promptIndex) {
+            const checkbox = document.getElementById(`prompt-${promptIndex}`);
+            const checkmark = checkbox.querySelector('span');
+            
+            if (!checkbox.style.backgroundColor) {
+                checkbox.style.backgroundColor = '#daa520';
+                checkmark.style.display = 'block';
+                showNotification('✅ Daily prompt completed!');
+            }
+        }
+
+        // Motivational messages
+        function openMotivationModal() {
+            document.getElementById('customMotivation').value = customMotivationalMessage;
+            document.getElementById('motivationModal').style.display = 'block';
+        }
+
+        function closeMotivationModal() {
+            document.getElementById('motivationModal').style.display = 'none';
+        }
+
+        function renderPresetMotivations() {
+            const container = document.getElementById('presetMessages');
+            container.innerHTML = presetMotivations.map((message, index) => `
+                <div class="time-slot" onclick="selectPresetMotivation('${message}')" style="cursor: pointer;">
+                    <span>${message}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectPresetMotivation(message) {
+            document.getElementById('customMotivation').value = message;
+        }
+
+        function saveMotivation() {
+            const newMessage = document.getElementById('customMotivation').value.trim();
+            if (newMessage) {
+                customMotivationalMessage = newMessage;
+                isUsingCustomMotivation = true;
+                document.getElementById('motivationalText').textContent = newMessage;
+                document.getElementById('motivationStatus').textContent = 'Custom message';
+                saveData();
+                showNotification('💪 Custom motivational message saved!');
+            }
+            closeMotivationModal();
+        }
+
+        function initializeMotivationalRotation() {
+            if (customMotivationalMessage && customMotivationalMessage !== "Excellence in patient care starts with organized rounds.") {
+                isUsingCustomMotivation = true;
+                document.getElementById('motivationalText').textContent = customMotivationalMessage;
+                document.getElementById('motivationStatus').textContent = 'Custom message';
+            } else {
+                isUsingCustomMotivation = false;
+                currentMotivationIndex = Math.floor(Math.random() * presetMotivations.length);
+                document.getElementById('motivationalText').textContent = presetMotivations[currentMotivationIndex];
+                document.getElementById('motivationStatus').textContent = 'Auto-rotating every 3 minutes';
+            }
+        }
+
+        function rotateMotivationalMessage() {
+            if (!isUsingCustomMotivation) {
+                currentMotivationIndex = (currentMotivationIndex + 1) % presetMotivations.length;
+                const messageElement = document.getElementById('motivationalText');
+                
+                messageElement.style.opacity = '0.5';
+                messageElement.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    messageElement.textContent = presetMotivations[currentMotivationIndex];
+                    messageElement.style.opacity = '1';
+                    messageElement.style.transform = 'scale(1)';
+                }, 300);
+                
+                if (Math.random() < 0.2) {
+                    showNotification('💪 New motivation loaded!');
+                }
+            }
+        }
+
+        function resetToPresetRotation() {
+            isUsingCustomMotivation = false;
+            currentMotivationIndex = Math.floor(Math.random() * presetMotivations.length);
+            document.getElementById('motivationalText').textContent = presetMotivations[currentMotivationIndex];
+            document.getElementById('motivationStatus').textContent = 'Auto-rotating every 3 minutes';
+            saveData();
+            showNotification('🔄 Switched to auto-rotating motivational messages!');
+        }
+
+        // Focus Timer with medical alert sound
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('⏱️ Focus session started! Time for focused rounds.');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused ⏸️');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset 🔄');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            
+            // Create medical alert sound
+            playMedicalAlert();
+            
+            resetTimer();
+            showNotification('🎉 Focus session complete! Time for a break or continue rounds!');
+            
+            if (Notification.permission === 'granted') {
+                new Notification('⏱️ Medical Focus Timer Complete!', {
+                    body: 'Great job! Time to take a break or continue with patient rounds.',
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏥</text></svg>'
+                });
+            }
+        }
+
+        function playMedicalAlert() {
+            // Create a medical-style beep sound using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create three beeps
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    }, i * 400);
+                }
+            } catch (error) {
+                console.log('Audio not available');
+            }
+        }
+
+        // Do It Now feature
+        function doItNow() {
+            const actions = [
+                "Check critical patients first",
+                "Review overnight events",
+                "Update that pending note",
+                "Call family for updates",
+                "Review lab results",
+                "Check medication orders",
+                "Complete discharge planning",
+                "Assess pain levels"
+            ];
+            
+            const randomAction = actions[Math.floor(Math.random() * actions.length)];
+            showNotification(`🚀 Do It Now: ${randomAction}`, 'action');
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const totalPatients = patients.length;
+            const criticalPatients = patients.filter(p => p.priority === 'critical').length;
+            const streakValue = calculateStreak();
+            
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('criticalPatients').textContent = criticalPatients;
+            document.getElementById('roundsStreak').textContent = streakValue;
+            document.getElementById('completedRounds').textContent = completedRounds;
+            
+            roundsStreak = streakValue;
+        }
+
+        function calculateStreak() {
+            if (patients.length === 0) return 0;
+            
+            const sortedPatients = [...patients].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+            
+            let streak = 0;
+            let currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            
+            for (let patient of sortedPatients) {
+                const patientDate = new Date(patient.createdAt);
+                patientDate.setHours(0, 0, 0, 0);
+                
+                const diffTime = currentDate - patientDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays <= streak + 1) {
+                    if (diffDays === streak) {
+                        streak++;
+                        currentDate.setDate(currentDate.getDate() - 1);
+                    }
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        // Data management (HIPAA-compliant)
+        function saveData() {
+            const data = {
+                patients: patients,
+                timeSlots: timeSlots,
+                roundsStreak: roundsStreak,
+                completedRounds: completedRounds,
+                customMotivationalMessage: customMotivationalMessage,
+                isUsingCustomMotivation: isUsingCustomMotivation,
+                currentMotivationIndex: currentMotivationIndex,
+                lastSaved: new Date().toISOString()
+            };
+            
+            localStorage.setItem('roundsPro_data', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('roundsPro_data');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                patients = data.patients || [];
+                timeSlots = data.timeSlots || [];
+                roundsStreak = data.roundsStreak || 0;
+                completedRounds = data.completedRounds || 0;
+                customMotivationalMessage = data.customMotivationalMessage || "Excellence in patient care starts with organized rounds.";
+                isUsingCustomMotivation = data.isUsingCustomMotivation || false;
+                currentMotivationIndex = data.currentMotivationIndex || 0;
+            }
+        }
+
+        function exportToPDF() {
+            const totalPatients = patients.length;
+            const criticalPatients = patients.filter(p => p.priority === 'critical').length;
+            const streakValue = calculateStreak();
+            
+            const content = `
+ROUNDS PLANNER REPORT
+Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+
+SUMMARY
+=======
+Total Patients: ${totalPatients}
+Critical Patients: ${criticalPatients}
+Rounds Streak: ${streakValue} days
+Completed Rounds: ${completedRounds}
+
+PATIENT LIST
+============
+${patients.map(patient => `
+👤 ${patient.name} - Room ${patient.room}
+   Priority: ${patient.priority.toUpperCase()}
+   Location: ${patient.location.toUpperCase()}
+   Diagnosis: ${patient.diagnosis}
+   ${patient.age ? `Age: ${patient.age}` : ''}
+   
+   VITALS:
+   ${Object.entries(patient.vitals || {}).filter(([k,v]) => v).map(([key, value]) => `   ${key.toUpperCase()}: ${value}`).join('\n')}
+   
+   NOTES: ${patient.notes || 'No notes'}
+   Last Updated: ${new Date(patient.updatedAt).toLocaleString()}
+`).join('\n')}
+
+PATIENTS BY PRIORITY
+===================
+${Object.entries(
+    patients.reduce((acc, patient) => {
+        acc[patient.priority] = (acc[patient.priority] || 0) + 1;
+        return acc;
+    }, {})
+).map(([priority, count]) => `${priority.toUpperCase()}: ${count} patients`).join('\n')}
+
+PATIENTS BY LOCATION
+===================
+${Object.entries(
+    patients.reduce((acc, patient) => {
+        acc[patient.location] = (acc[patient.location] || 0) + 1;
+        return acc;
+    }, {})
+).map(([location, count]) => `${location.toUpperCase()}: ${count} patients`).join('\n')}
+
+SCHEDULED TIME SLOTS
+===================
+${timeSlots.filter(slot => slot.blocked).map(slot => 
+    `${slot.time} - ${slot.patient || 'Blocked'} ${slot.notes ? `(${slot.notes})` : ''}`
+).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rounds-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('📄 Rounds report exported!');
+        }
+
+        function backupData() {
+            const data = {
+                patients: patients,
+                timeSlots: timeSlots,
+                roundsStreak: roundsStreak,
+                completedRounds: completedRounds,
+                customMotivationalMessage: customMotivationalMessage,
+                exportDate: new Date().toISOString(),
+                version: "1.0"
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rounds-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('💾 Data backed up securely!');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        patients = data.patients || [];
+                        timeSlots = data.timeSlots || [];
+                        roundsStreak = data.roundsStreak || 0;
+                        completedRounds = data.completedRounds || 0;
+                        customMotivationalMessage = data.customMotivationalMessage || "Excellence in patient care starts with organized rounds.";
+                        
+                        renderPatients();
+                        updateStats();
+                        document.getElementById('motivationalText').textContent = customMotivationalMessage;
+                        saveData();
+                        showNotification('📥 Data imported successfully!');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode - Patient Data Secure Locally';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            switch(type) {
+                case 'error':
+                    notification.style.background = 'rgba(255, 107, 107, 0.95)';
+                    break;
+                case 'action':
+                    notification.style.background = 'rgba(255, 152, 0, 0.95)';
+                    break;
+                default:
+                    notification.style.background = 'rgba(102, 187, 106, 0.95)';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const modals = ['patientModal', 'roundsModal', 'motivationModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        openPatientModal();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('💾 Data saved manually');
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        exportToPDF();
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        backupData();
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        blockTimeSlot();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9871fa4775e8bc4b',t:'MTc1OTIxNzAzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
