@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation English Builder - Master Your Story</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3d2e 0%, #2d5a3d 100%);
+            color: #f4f1e8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+        }
+
+        .header h1 {
+            color: #d4af37;
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.2rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(26, 61, 46, 0.8);
+            border-radius: 12px;
+            padding: 8px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            background: transparent;
+            border: none;
+            color: #f4f1e8;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .nav-tab.active {
+            background: #d4af37;
+            color: #1a3d2e;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(26, 61, 46, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: #1a3d2e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4af37;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            background: rgba(26, 61, 46, 0.8);
+            color: #f4f1e8;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .story-builder {
+            display: grid;
+            gap: 20px;
+        }
+
+        .story-part {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+            position: relative;
+        }
+
+        .story-part h4 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .part-number {
+            background: #d4af37;
+            color: #1a3d2e;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .story-guidance {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .guidance-title {
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            text-align: center;
+            color: #d4af37;
+            font-weight: bold;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(26, 61, 46, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37 0%, #b8941f 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a3d2e;
+            font-weight: bold;
+        }
+
+        .speaker-notes {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #d4af37;
+        }
+
+        .notes-section {
+            margin-bottom: 15px;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a3d2e;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid #d4af37;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .recording-indicator {
+            width: 12px;
+            height: 12px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .vocabulary-word {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #d4af37;
+            position: relative;
+        }
+
+        .word-term {
+            font-weight: bold;
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+
+        .word-definition {
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .word-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .word-actions button {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .word-actions button:hover {
+            background: #d4af37;
+            color: #1a3d2e;
+        }
+
+        .review-card {
+            background: rgba(45, 90, 61, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #d4af37;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .review-term {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .review-definition {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .review-definition.show {
+            display: block;
+        }
+
+        .review-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .difficulty-easy {
+            background: #22c55e;
+            color: white;
+        }
+
+        .difficulty-medium {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .difficulty-hard {
+            background: #ef4444;
+            color: white;
+        }
+
+        .custom-input-form {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-row .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 4s ease-in-out;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.8);
+        }
+
+        .presentation-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .presentation-item {
+            background: rgba(45, 90, 61, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .presentation-item h4 {
+            color: #d4af37;
+            margin: 0 0 10px 0;
+        }
+
+        .presentation-meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .story-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(45, 90, 61, 0.8);
+            border-radius: 10px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+
+        .current-part-indicator {
+            background: #d4af37;
+            color: #1a3d2e;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .timer-display {
+                font-size: 3rem;
+            }
+
+            .story-flow {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Presentation English Builder</h1>
+            <p>Master the art of compelling storytelling in 5 powerful parts</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('builder')">Story Builder</button>
+            <button class="nav-tab" onclick="showTab('speaker')">Speaker Mode</button>
+            <button class="nav-tab" onclick="showTab('library')">Library</button>
+            <button class="nav-tab" onclick="showTab('vocabulary')">Vocabulary</button>
+            <button class="nav-tab" onclick="showTab('breathing')">Focus Reset</button>
+            <button class="nav-tab" onclick="showTab('analytics')">Analytics</button>
+            <button class="nav-tab" onclick="showTab('settings')">Settings</button>
+        </div>
+
+        <!-- Story Builder Tab -->
+        <div id="builder" class="tab-content active">
+            <div class="card">
+                <h3>📖 Create Your Compelling Story</h3>
+                <div class="input-group">
+                    <label>Presentation Title:</label>
+                    <input type="text" id="presentationTitle" placeholder="Enter your presentation title...">
+                </div>
+                <div class="voice-controls">
+                    <button class="btn btn-secondary" onclick="startVoiceInput('presentationTitle')">🎤 Voice Input</button>
+                    <button class="btn btn-secondary" onclick="quickAddStory()">⚡ Quick Template</button>
+                    <div id="recordingIndicator" class="recording-indicator" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Story Flow Overview</h3>
+                <div class="story-flow">
+                    <div class="flow-step">
+                        <div class="part-number">1</div>
+                        <div>Hook</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="part-number">2</div>
+                        <div>Context</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="part-number">3</div>
+                        <div>Challenge</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="part-number">4</div>
+                        <div>Solution</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="part-number">5</div>
+                        <div>Action</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-builder">
+                <!-- Part 1: Hook -->
+                <div class="story-part">
+                    <h4><span class="part-number">1</span> The Hook - Grab Attention</h4>
+                    <div class="story-guidance">
+                        <div class="guidance-title">🎣 Hook Strategies:</div>
+                        <p>Start with a surprising statistic, provocative question, compelling story, or bold statement that immediately captures your audience's attention.</p>
+                        <p><strong>Examples:</strong> "What if I told you...", "Imagine this scenario...", "85% of people believe..."</p>
+                    </div>
+                    <div class="input-group">
+                        <label>Your Opening Hook:</label>
+                        <textarea id="hookText" rows="4" placeholder="Write your attention-grabbing opening..."></textarea>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="btn btn-secondary btn-small" onclick="startVoiceInput('hookText')">🎤 Voice</button>
+                        <button class="btn btn-secondary btn-small" onclick="generateHookSuggestion()">💡 Hook Ideas</button>
+                    </div>
+                </div>
+
+                <!-- Part 2: Context -->
+                <div class="story-part">
+                    <h4><span class="part-number">2</span> Context - Set the Stage</h4>
+                    <div class="story-guidance">
+                        <div class="guidance-title">🎭 Context Elements:</div>
+                        <p>Provide background information, establish relevance, and help your audience understand why this matters to them.</p>
+                        <p><strong>Transitions:</strong> "To understand why this matters...", "Let me paint the picture...", "Here's the situation..."</p>
+                    </div>
+                    <div class="input-group">
+                        <label>Background & Context:</label>
+                        <textarea id="contextText" rows="4" placeholder="Provide the necessary background and context..."></textarea>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="btn btn-secondary btn-small" onclick="startVoiceInput('contextText')">🎤 Voice</button>
+                        <button class="btn btn-secondary btn-small" onclick="generateContextSuggestion()">💡 Context Ideas</button>
+                    </div>
+                </div>
+
+                <!-- Part 3: Challenge -->
+                <div class="story-part">
+                    <h4><span class="part-number">3</span> Challenge - Present the Problem</h4>
+                    <div class="story-guidance">
+                        <div class="guidance-title">⚡ Challenge Framework:</div>
+                        <p>Identify the core problem, obstacle, or opportunity. Make it relatable and urgent for your audience.</p>
+                        <p><strong>Proof Points:</strong> Use data, examples, testimonials, or case studies to validate the challenge.</p>
+                    </div>
+                    <div class="input-group">
+                        <label>The Challenge/Problem:</label>
+                        <textarea id="challengeText" rows="4" placeholder="Describe the main challenge or problem..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Supporting Proof:</label>
+                        <textarea id="proofText" rows="3" placeholder="Add data, examples, or evidence that supports this challenge..."></textarea>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="btn btn-secondary btn-small" onclick="startVoiceInput('challengeText')">🎤 Voice</button>
+                        <button class="btn btn-secondary btn-small" onclick="generateChallengeSuggestion()">💡 Challenge Ideas</button>
+                    </div>
+                </div>
+
+                <!-- Part 4: Solution -->
+                <div class="story-part">
+                    <h4><span class="part-number">4</span> Solution - Provide the Answer</h4>
+                    <div class="story-guidance">
+                        <div class="guidance-title">💡 Solution Structure:</div>
+                        <p>Present your solution clearly and compellingly. Show how it addresses the challenge and benefits the audience.</p>
+                        <p><strong>Transitions:</strong> "Here's how we solve this...", "The answer lies in...", "What if I told you there's a way..."</p>
+                    </div>
+                    <div class="input-group">
+                        <label>Your Solution:</label>
+                        <textarea id="solutionText" rows="4" placeholder="Present your solution or key message..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Benefits & Proof:</label>
+                        <textarea id="benefitsText" rows="3" placeholder="Explain the benefits and provide supporting evidence..."></textarea>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="btn btn-secondary btn-small" onclick="startVoiceInput('solutionText')">🎤 Voice</button>
+                        <button class="btn btn-secondary btn-small" onclick="generateSolutionSuggestion()">💡 Solution Ideas</button>
+                    </div>
+                </div>
+
+                <!-- Part 5: Call to Action -->
+                <div class="story-part">
+                    <h4><span class="part-number">5</span> Call to Action - Drive Results</h4>
+                    <div class="story-guidance">
+                        <div class="guidance-title">🚀 Action Elements:</div>
+                        <p>End with a clear, specific call to action. Tell your audience exactly what you want them to do next.</p>
+                        <p><strong>Action Phrases:</strong> "I challenge you to...", "Your next step is...", "Join me in...", "Start today by..."</p>
+                    </div>
+                    <div class="input-group">
+                        <label>Call to Action:</label>
+                        <textarea id="actionText" rows="4" placeholder="What specific action do you want your audience to take?"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Closing Statement:</label>
+                        <textarea id="closingText" rows="3" placeholder="End with a memorable closing statement..."></textarea>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="btn btn-secondary btn-small" onclick="startVoiceInput('actionText')">🎤 Voice</button>
+                        <button class="btn btn-secondary btn-small" onclick="generateActionSuggestion()">💡 Action Ideas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="text-align: center;">
+                    <button class="btn" onclick="generateSpeakerNotes()">📝 Generate Speaker Notes</button>
+                    <button class="btn btn-secondary" onclick="savePresentation()">💾 Save Presentation</button>
+                    <button class="btn btn-secondary" onclick="previewStory()">👁️ Preview Story</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Speaker Mode Tab -->
+        <div id="speaker" class="tab-content">
+            <div class="card">
+                <h3>🎤 Speaker Mode</h3>
+                <div class="current-part-indicator" id="currentPartIndicator">Part 1: Hook</div>
+                <div class="timer-display" id="speakerTimer">0:00</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="speakerProgress" style="width: 0%">0%</div>
+                </div>
+                <div class="timer-controls">
+                    <button class="btn" onclick="startSpeaking()">▶️ Start Speaking</button>
+                    <button class="btn btn-secondary" onclick="pauseSpeaking()">⏸️ Pause</button>
+                    <button class="btn btn-secondary" onclick="nextPart()">⏭️ Next Part</button>
+                    <button class="btn btn-secondary" onclick="resetSpeaker()">🔄 Reset</button>
+                    <button class="btn btn-secondary" onclick="recordSpeech()">🎤 Record</button>
+                </div>
+            </div>
+
+            <div class="speaker-notes" id="speakerNotesDisplay">
+                <div class="notes-section">
+                    <div class="notes-title">🎯 Current Section: Hook</div>
+                    <p id="currentNotes">Start with your attention-grabbing hook. Speak with confidence and energy to immediately engage your audience.</p>
+                </div>
+                <div class="notes-section">
+                    <div class="notes-title">🔄 Transition to Next:</div>
+                    <p id="transitionNotes">"Now that I have your attention, let me set the stage..."</p>
+                </div>
+                <div class="notes-section">
+                    <div class="notes-title">⏱️ Timing Guide:</div>
+                    <p id="timingNotes">Hook: 30-60 seconds. Keep it punchy and impactful.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Speaking Progress</h3>
+                <div class="story-flow">
+                    <div class="flow-step" id="part1Status">
+                        <div class="part-number">1</div>
+                        <div>Hook</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">Not Started</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step" id="part2Status">
+                        <div class="part-number">2</div>
+                        <div>Context</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">Pending</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step" id="part3Status">
+                        <div class="part-number">3</div>
+                        <div>Challenge</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">Pending</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step" id="part4Status">
+                        <div class="part-number">4</div>
+                        <div>Solution</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">Pending</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step" id="part5Status">
+                        <div class="part-number">5</div>
+                        <div>Action</div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Library Tab -->
+        <div id="library" class="tab-content">
+            <div class="card">
+                <h3>📚 Presentation Library</h3>
+                <div class="presentation-list" id="presentationList">
+                    <div class="presentation-item">
+                        <h4>Digital Transformation Strategy</h4>
+                        <div class="presentation-meta">Created: 2024-01-15 | Last presented: 2024-01-20 | Duration: 18:30</div>
+                        <p>A compelling story about leading organizational change through digital innovation...</p>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-small" onclick="editPresentation(0)">✏️ Edit</button>
+                            <button class="btn btn-secondary btn-small" onclick="presentStory(0)">🎤 Present</button>
+                            <button class="btn btn-secondary btn-small" onclick="duplicatePresentation(0)">📋 Duplicate</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePresentation(0)">🗑️ Delete</button>
+                        </div>
+                    </div>
+                    
+                    <div class="presentation-item">
+                        <h4>Team Leadership Excellence</h4>
+                        <div class="presentation-meta">Created: 2024-01-10 | Last presented: 2024-01-18 | Duration: 22:15</div>
+                        <p>Building high-performance teams through authentic leadership and clear communication...</p>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-small" onclick="editPresentation(1)">✏️ Edit</button>
+                            <button class="btn btn-secondary btn-small" onclick="presentStory(1)">🎤 Present</button>
+                            <button class="btn btn-secondary btn-small" onclick="duplicatePresentation(1)">📋 Duplicate</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePresentation(1)">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary Tab -->
+        <div id="vocabulary" class="tab-content">
+            <div class="card">
+                <h3>📖 Advanced Presentation Vocabulary</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn" onclick="generateVocabulary()">🎲 Generate New Terms</button>
+                    <button class="btn btn-secondary" onclick="showAddVocabulary()">➕ Add Custom Term</button>
+                    <button class="btn btn-secondary" onclick="reviewVocabulary()">📚 Review Mode</button>
+                </div>
+                <div id="vocabularyList"></div>
+            </div>
+
+            <div class="card">
+                <h3>💬 Power Phrases & Transitions</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn" onclick="loadPhrases()">🎲 Generate New Phrases</button>
+                    <button class="btn btn-secondary" onclick="showAddPhrase()">➕ Add Custom Phrase</button>
+                    <button class="btn btn-secondary" onclick="reviewPhrases()">📚 Review Mode</button>
+                </div>
+                <div id="phrasesList"></div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 My Custom Collection</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="showMyVocabulary()">📖 My Vocabulary</button>
+                    <button class="btn btn-secondary" onclick="showMyPhrases()">💬 My Phrases</button>
+                    <button class="btn btn-secondary" onclick="exportCustomCollection()">📄 Export Collection</button>
+                </div>
+                <div id="customCollection"></div>
+            </div>
+        </div>
+
+        <!-- Breathing Tab -->
+        <div id="breathing" class="tab-content">
+            <div class="card">
+                <h3>🧘 25-Minute Focus Reset</h3>
+                <div class="breathing-circle" id="breathingCircle">
+                    <span id="breathingText">Ready to begin</span>
+                </div>
+                <div class="timer-display" id="breathingTimer">25:00</div>
+                <div style="text-align: center;">
+                    <button class="btn" onclick="startBreathing()">Start Session</button>
+                    <button class="btn btn-secondary" onclick="pauseBreathing()">Pause</button>
+                    <button class="btn btn-secondary" onclick="resetBreathing()">Reset</button>
+                </div>
+                <div id="motivationalMessage" style="text-align: center; margin-top: 20px; font-style: italic; color: #d4af37;"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h3>📊 Presentation Analytics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="streakCount">15</div>
+                        <div>Day Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="presentationsCreated">12</div>
+                        <div>Presentations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="speakingTime">38.5</div>
+                        <div>Hours Speaking</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgDuration">19:45</div>
+                        <div>Avg Duration</div>
+                    </div>
+                </div>
+                
+                <h4 style="color: #d4af37;">Weekly Progress</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 92%">92%</div>
+                </div>
+                <p>92% of weekly speaking goal completed</p>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn" onclick="exportAnalytics()">📄 Export Report</button>
+                    <button class="btn btn-secondary" onclick="backupData()">💾 Backup Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h3>⚙️ App Settings</h3>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="offlineMode" checked> Enable Offline Mode
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="autoSync" checked> Auto-sync when online
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="motivationalPopups" checked> Show motivational messages
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>Default Presentation Duration (minutes):</label>
+                    <input type="number" id="defaultDuration" value="20" min="5" max="60">
+                </div>
+                <button class="btn" onclick="saveSettings()">Save Settings</button>
+            </div>
+
+            <div class="card">
+                <h3>🎤 Recording Settings</h3>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="saveRecordings" checked> Save speech recordings
+                    </label>
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="saveTranscripts" checked> Save transcripts
+                    </label>
+                </div>
+                <button class="btn btn-secondary" onclick="viewRecordings()">📁 View Recordings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Modal Title</h3>
+            <div id="modalBody">Modal content goes here</div>
+            <button class="btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let currentPart = 1;
+        let speakerTimer = null;
+        let speakerTimeElapsed = 0;
+        let isSpeaking = false;
+        let isRecording = false;
+        let breathingTimer = null;
+        let breathingTimeLeft = 1500; // 25 minutes
+        let isBreathing = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        
+        // Custom vocabulary and phrases
+        let customVocabulary = [];
+        let customPhrases = [];
+        let reviewMode = false;
+        let currentReviewIndex = 0;
+        let reviewItems = [];
+
+        // Presentation Vocabulary Bank
+        const presentationVocabulary = [
+            { term: "Compelling", definition: "Evoking interest, attention, or admiration in a powerfully irresistible way" },
+            { term: "Articulate", definition: "Having or showing the ability to speak fluently and coherently" },
+            { term: "Persuasive", definition: "Good at persuading someone to do or believe something through reasoning" },
+            { term: "Engaging", definition: "Charming and attractive; capturing and holding attention" },
+            { term: "Impactful", definition: "Having a strong effect or influence; making a significant impression" },
+            { term: "Authentic", definition: "Genuine, real, and true to one's own personality and values" },
+            { term: "Resonant", definition: "Evoking deep emotional response; having lasting impact" },
+            { term: "Credible", definition: "Able to be believed; convincing and trustworthy" },
+            { term: "Dynamic", definition: "Characterized by constant change, activity, or progress" },
+            { term: "Influential", definition: "Having great influence on someone or something" }
+        ];
+
+        // Power Phrases and Transitions
+        const powerPhrases = [
+            "Let me paint you a picture...",
+            "Imagine for a moment that...",
+            "What if I told you...",
+            "Here's the thing that changed everything...",
+            "The turning point came when...",
+            "This is where it gets interesting...",
+            "But here's what most people don't realize...",
+            "The evidence is overwhelming...",
+            "I challenge you to consider...",
+            "Your next step is crystal clear..."
+        ];
+
+        // Motivational Messages
+        const motivationalMessages = [
+            "Great speakers are made, not born. Keep practicing! 🎯",
+            "Every master was once a disaster. Your progress is inspiring! 💪",
+            "Confidence comes from preparation. You're building both! 🌟",
+            "Your story has the power to change minds and hearts! 🎤",
+            "Authentic communication creates lasting connections! 🌍",
+            "The best presentations feel like conversations! 🚪",
+            "Your unique perspective is your greatest strength! ⭐",
+            "Practice makes progress, and progress makes impact! 📚"
+        ];
+
+        // Story Part Templates
+        const storyTemplates = {
+            hook: [
+                "What if I told you that in the next 20 minutes, you'll discover...",
+                "Raise your hand if you've ever experienced...",
+                "85% of professionals struggle with this exact challenge...",
+                "Picture this scenario..."
+            ],
+            context: [
+                "To understand why this matters, let me set the stage...",
+                "Here's the situation we're all facing...",
+                "The landscape has changed dramatically...",
+                "Let me paint the current picture..."
+            ],
+            challenge: [
+                "But here's the problem we're all wrestling with...",
+                "The challenge becomes clear when we look at...",
+                "This is where things get complicated...",
+                "The obstacle standing in our way is..."
+            ],
+            solution: [
+                "Here's how we solve this once and for all...",
+                "The breakthrough came when we realized...",
+                "What if I told you there's a better way...",
+                "The solution is simpler than you think..."
+            ],
+            action: [
+                "I challenge you to take one specific action...",
+                "Your next step is to...",
+                "Join me in making this change by...",
+                "Start today by doing this one thing..."
+            ]
+        };
+
+        // Speaker Notes Templates
+        const speakerNotes = {
+            1: {
+                title: "Hook - Grab Attention",
+                notes: "Start with energy and confidence. Make eye contact. Use your hook to immediately engage the audience.",
+                transition: "Now that I have your attention, let me set the stage...",
+                timing: "30-60 seconds. Keep it punchy and memorable."
+            },
+            2: {
+                title: "Context - Set the Stage",
+                notes: "Provide necessary background. Help audience understand relevance. Build connection.",
+                transition: "This brings us to the heart of the matter...",
+                timing: "2-3 minutes. Establish credibility and relevance."
+            },
+            3: {
+                title: "Challenge - Present the Problem",
+                notes: "Make the problem real and urgent. Use proof points. Create emotional connection.",
+                transition: "But here's the good news - there is a solution...",
+                timing: "3-4 minutes. Build tension and urgency."
+            },
+            4: {
+                title: "Solution - Provide the Answer",
+                notes: "Present your solution clearly. Show benefits. Use evidence and examples.",
+                transition: "Now, here's what I need you to do...",
+                timing: "5-7 minutes. This is your main content."
+            },
+            5: {
+                title: "Action - Drive Results",
+                notes: "Be specific and clear. Create urgency. End with impact. Make it memorable.",
+                transition: "Thank you. Let's make this happen together.",
+                timing: "2-3 minutes. Strong, clear call to action."
+            }
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomData();
+            generateVocabulary();
+            loadPhrases();
+            loadSettings();
+            showRandomMotivation();
+            updateSpeakerNotes();
+            
+            // Show motivational message every 15 minutes
+            setInterval(showRandomMotivation, 900000);
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Story Builder Functions
+        function quickAddStory() {
+            const templates = {
+                hook: "What if I told you that in the next 20 minutes, you'll discover a strategy that could transform your approach to...",
+                context: "In today's rapidly changing business environment, leaders are facing unprecedented challenges...",
+                challenge: "The problem is that traditional methods are no longer effective, leaving teams struggling with...",
+                proof: "Recent studies show that 73% of organizations experience this exact issue, resulting in...",
+                solution: "The breakthrough solution involves a three-step approach that addresses the root cause by...",
+                benefits: "This approach delivers measurable results: increased efficiency, improved team morale, and...",
+                action: "I challenge you to implement this strategy starting tomorrow by taking these specific steps...",
+                closing: "Together, we can transform challenges into opportunities and create lasting positive change."
+            };
+            
+            document.getElementById('hookText').value = templates.hook;
+            document.getElementById('contextText').value = templates.context;
+            document.getElementById('challengeText').value = templates.challenge;
+            document.getElementById('proofText').value = templates.proof;
+            document.getElementById('solutionText').value = templates.solution;
+            document.getElementById('benefitsText').value = templates.benefits;
+            document.getElementById('actionText').value = templates.action;
+            document.getElementById('closingText').value = templates.closing;
+        }
+
+        function generateHookSuggestion() {
+            const suggestions = storyTemplates.hook;
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const textArea = document.getElementById('hookText');
+            
+            if (textArea.value.trim() === '') {
+                textArea.value = randomSuggestion;
+            } else {
+                textArea.value += ' ' + randomSuggestion;
+            }
+        }
+
+        function generateContextSuggestion() {
+            const suggestions = storyTemplates.context;
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const textArea = document.getElementById('contextText');
+            
+            if (textArea.value.trim() === '') {
+                textArea.value = randomSuggestion;
+            } else {
+                textArea.value += ' ' + randomSuggestion;
+            }
+        }
+
+        function generateChallengeSuggestion() {
+            const suggestions = storyTemplates.challenge;
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const textArea = document.getElementById('challengeText');
+            
+            if (textArea.value.trim() === '') {
+                textArea.value = randomSuggestion;
+            } else {
+                textArea.value += ' ' + randomSuggestion;
+            }
+        }
+
+        function generateSolutionSuggestion() {
+            const suggestions = storyTemplates.solution;
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const textArea = document.getElementById('solutionText');
+            
+            if (textArea.value.trim() === '') {
+                textArea.value = randomSuggestion;
+            } else {
+                textArea.value += ' ' + randomSuggestion;
+            }
+        }
+
+        function generateActionSuggestion() {
+            const suggestions = storyTemplates.action;
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const textArea = document.getElementById('actionText');
+            
+            if (textArea.value.trim() === '') {
+                textArea.value = randomSuggestion;
+            } else {
+                textArea.value += ' ' + randomSuggestion;
+            }
+        }
+
+        function generateSpeakerNotes() {
+            showTab('speaker');
+            updateSpeakerNotes();
+            alert('Speaker notes generated! Navigate to Speaker Mode to use them during your presentation.');
+        }
+
+        function savePresentation() {
+            const title = document.getElementById('presentationTitle').value;
+            const hook = document.getElementById('hookText').value;
+            const context = document.getElementById('contextText').value;
+            const challenge = document.getElementById('challengeText').value;
+            const proof = document.getElementById('proofText').value;
+            const solution = document.getElementById('solutionText').value;
+            const benefits = document.getElementById('benefitsText').value;
+            const action = document.getElementById('actionText').value;
+            const closing = document.getElementById('closingText').value;
+            
+            if (!title || !hook || !context || !challenge || !solution || !action) {
+                alert('Please fill in all required sections before saving.');
+                return;
+            }
+            
+            const presentation = {
+                title,
+                hook,
+                context,
+                challenge,
+                proof,
+                solution,
+                benefits,
+                action,
+                closing,
+                created: new Date().toISOString(),
+                lastPresented: null
+            };
+            
+            // In a real app, this would save to localStorage or server
+            alert('Presentation saved successfully!');
+        }
+
+        function previewStory() {
+            const title = document.getElementById('presentationTitle').value || 'Untitled Presentation';
+            const hook = document.getElementById('hookText').value;
+            const context = document.getElementById('contextText').value;
+            const challenge = document.getElementById('challengeText').value;
+            const solution = document.getElementById('solutionText').value;
+            const action = document.getElementById('actionText').value;
+            
+            showModal('Story Preview', `
+                <h4>${title}</h4>
+                <div style="margin: 20px 0;">
+                    <h5 style="color: #d4af37;">🎣 1. Hook</h5>
+                    <p>${hook || 'Not yet defined'}</p>
+                    
+                    <h5 style="color: #d4af37;">🎭 2. Context</h5>
+                    <p>${context || 'Not yet defined'}</p>
+                    
+                    <h5 style="color: #d4af37;">⚡ 3. Challenge</h5>
+                    <p>${challenge || 'Not yet defined'}</p>
+                    
+                    <h5 style="color: #d4af37;">💡 4. Solution</h5>
+                    <p>${solution || 'Not yet defined'}</p>
+                    
+                    <h5 style="color: #d4af37;">🚀 5. Action</h5>
+                    <p>${action || 'Not yet defined'}</p>
+                </div>
+                <p><strong>Estimated Duration:</strong> 15-20 minutes</p>
+            `);
+        }
+
+        // Speaker Mode Functions
+        function startSpeaking() {
+            if (isSpeaking) return;
+            
+            isSpeaking = true;
+            speakerTimer = setInterval(() => {
+                speakerTimeElapsed++;
+                updateSpeakerDisplay();
+            }, 1000);
+            
+            updatePartStatus(currentPart, 'In Progress');
+        }
+
+        function pauseSpeaking() {
+            isSpeaking = false;
+            if (speakerTimer) {
+                clearInterval(speakerTimer);
+                speakerTimer = null;
+            }
+        }
+
+        function nextPart() {
+            if (currentPart < 5) {
+                updatePartStatus(currentPart, 'Completed');
+                currentPart++;
+                updateSpeakerNotes();
+                updatePartStatus(currentPart, 'Current');
+            } else {
+                alert('Congratulations! You\'ve completed your 5-part story presentation!');
+                resetSpeaker();
+            }
+        }
+
+        function resetSpeaker() {
+            isSpeaking = false;
+            speakerTimeElapsed = 0;
+            currentPart = 1;
+            if (speakerTimer) {
+                clearInterval(speakerTimer);
+                speakerTimer = null;
+            }
+            updateSpeakerDisplay();
+            updateSpeakerNotes();
+            resetPartStatuses();
+        }
+
+        function updateSpeakerDisplay() {
+            const minutes = Math.floor(speakerTimeElapsed / 60);
+            const seconds = speakerTimeElapsed % 60;
+            document.getElementById('speakerTimer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const targetDuration = (parseInt(document.getElementById('defaultDuration').value) || 20) * 60;
+            const progress = (speakerTimeElapsed / targetDuration) * 100;
+            const progressFill = document.getElementById('speakerProgress');
+            progressFill.style.width = `${Math.min(progress, 100)}%`;
+            progressFill.textContent = `${Math.round(Math.min(progress, 100))}%`;
+        }
+
+        function updateSpeakerNotes() {
+            const notes = speakerNotes[currentPart];
+            document.getElementById('currentPartIndicator').textContent = `Part ${currentPart}: ${notes.title.split(' - ')[1]}`;
+            document.getElementById('currentNotes').textContent = notes.notes;
+            document.getElementById('transitionNotes').textContent = notes.transition;
+            document.getElementById('timingNotes').textContent = notes.timing;
+        }
+
+        function updatePartStatus(partNum, status) {
+            const statusElement = document.getElementById(`part${partNum}Status`);
+            const statusText = statusElement.querySelector('div:last-child');
+            statusText.textContent = status;
+            
+            if (status === 'Current') {
+                statusElement.style.background = 'rgba(212, 175, 55, 0.2)';
+            } else if (status === 'Completed') {
+                statusElement.style.background = 'rgba(34, 197, 94, 0.2)';
+            } else if (status === 'In Progress') {
+                statusElement.style.background = 'rgba(59, 130, 246, 0.2)';
+            }
+        }
+
+        function resetPartStatuses() {
+            for (let i = 1; i <= 5; i++) {
+                const statusElement = document.getElementById(`part${i}Status`);
+                const statusText = statusElement.querySelector('div:last-child');
+                statusText.textContent = i === 1 ? 'Ready' : 'Pending';
+                statusElement.style.background = '';
+            }
+        }
+
+        function recordSpeech() {
+            startVoiceInput('speech');
+        }
+
+        // Voice Input Functions
+        async function startVoiceInput(targetId) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Voice input is not supported in your browser.');
+                return;
+            }
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    if (targetId === 'speech') {
+                        showModal('Speech Recording', `
+                            <p>🎤 Speech recorded successfully!</p>
+                            <audio controls src="${url}"></audio>
+                            <p><strong>Duration:</strong> ${Math.round(recordedChunks.length / 10)} seconds</p>
+                            <p><strong>Part:</strong> ${currentPart} - ${speakerNotes[currentPart].title}</p>
+                            <p><em>Recording saved for review and analysis.</em></p>
+                        `);
+                    } else {
+                        showModal('Voice Input', `
+                            <p>🎤 Voice input recorded!</p>
+                            <audio controls src="${url}"></audio>
+                            <p><em>In a full implementation, this would be transcribed to text and inserted into the ${targetId} field.</em></p>
+                        `);
+                    }
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                document.getElementById('recordingIndicator').style.display = 'block';
+                
+                setTimeout(() => {
+                    if (isRecording) {
+                        stopRecording();
+                    }
+                }, 120000); // Auto-stop after 2 minutes
+                
+            } catch (error) {
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordingIndicator').style.display = 'none';
+                
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        // Library Functions
+        function editPresentation(index) {
+            alert(`Editing presentation ${index + 1}. In a full implementation, this would load the presentation data into the builder.`);
+            showTab('builder');
+        }
+
+        function presentStory(index) {
+            alert(`Starting presentation ${index + 1}.`);
+            showTab('speaker');
+        }
+
+        function duplicatePresentation(index) {
+            alert(`Presentation ${index + 1} duplicated successfully!`);
+        }
+
+        function deletePresentation(index) {
+            if (confirm('Are you sure you want to delete this presentation?')) {
+                alert(`Presentation ${index + 1} deleted.`);
+            }
+        }
+
+        // Vocabulary Functions
+        function generateVocabulary() {
+            const vocabularyList = document.getElementById('vocabularyList');
+            const shuffled = [...presentationVocabulary].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            vocabularyList.innerHTML = '';
+            selected.forEach((word, index) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'vocabulary-word';
+                wordDiv.innerHTML = `
+                    <div class="word-actions">
+                        <button onclick="addToMyVocabulary('${word.term}', '${word.definition.replace(/'/g, "\\'")}')">💾</button>
+                        <button onclick="practiceWord('${word.term}', '${word.definition.replace(/'/g, "\\'")}')">🎯</button>
+                    </div>
+                    <div class="word-term">${word.term}</div>
+                    <div class="word-definition">${word.definition}</div>
+                `;
+                vocabularyList.appendChild(wordDiv);
+            });
+        }
+
+        function loadPhrases() {
+            const phrasesList = document.getElementById('phrasesList');
+            const shuffled = [...powerPhrases].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            phrasesList.innerHTML = '';
+            selected.forEach((phrase, index) => {
+                const phraseDiv = document.createElement('div');
+                phraseDiv.className = 'vocabulary-word';
+                phraseDiv.innerHTML = `
+                    <div class="word-actions">
+                        <button onclick="addToMyPhrases('${phrase.replace(/'/g, "\\'")}')">💾</button>
+                        <button onclick="practicePhrase('${phrase.replace(/'/g, "\\'")}')">🎯</button>
+                    </div>
+                    <div class="word-definition">"${phrase}"</div>
+                `;
+                phrasesList.appendChild(phraseDiv);
+            });
+        }
+
+        function showAddVocabulary() {
+            const vocabularyList = document.getElementById('vocabularyList');
+            vocabularyList.innerHTML = `
+                <div class="custom-input-form">
+                    <h4 style="color: #d4af37; margin-top: 0;">➕ Add Custom Vocabulary Term</h4>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Term:</label>
+                            <input type="text" id="customTerm" placeholder="Enter vocabulary term...">
+                        </div>
+                        <div class="input-group">
+                            <label>Definition:</label>
+                            <input type="text" id="customDefinition" placeholder="Enter definition...">
+                        </div>
+                        <div>
+                            <button class="btn" onclick="saveCustomVocabulary()">💾 Save</button>
+                            <button class="btn btn-secondary" onclick="generateVocabulary()">❌ Cancel</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Usage Example (optional):</label>
+                        <textarea id="customExample" rows="2" placeholder="Example sentence using this term..."></textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showAddPhrase() {
+            const phrasesList = document.getElementById('phrasesList');
+            phrasesList.innerHTML = `
+                <div class="custom-input-form">
+                    <h4 style="color: #d4af37; margin-top: 0;">➕ Add Custom Phrase</h4>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Phrase/Transition:</label>
+                            <input type="text" id="customPhrase" placeholder="Enter your power phrase...">
+                        </div>
+                        <div>
+                            <button class="btn" onclick="saveCustomPhrase()">💾 Save</button>
+                            <button class="btn btn-secondary" onclick="loadPhrases()">❌ Cancel</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Usage Context:</label>
+                        <select id="phraseContext">
+                            <option value="hook">Hook/Opening</option>
+                            <option value="transition">Transition</option>
+                            <option value="emphasis">Emphasis</option>
+                            <option value="conclusion">Conclusion/CTA</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveCustomVocabulary() {
+            const term = document.getElementById('customTerm').value.trim();
+            const definition = document.getElementById('customDefinition').value.trim();
+            const example = document.getElementById('customExample').value.trim();
+            
+            if (!term || !definition) {
+                alert('Please enter both term and definition.');
+                return;
+            }
+            
+            const newWord = {
+                term,
+                definition,
+                example,
+                dateAdded: new Date().toISOString(),
+                reviewCount: 0,
+                difficulty: 'medium'
+            };
+            
+            customVocabulary.push(newWord);
+            saveCustomData();
+            generateVocabulary();
+            alert('Custom vocabulary term added successfully!');
+        }
+
+        function saveCustomPhrase() {
+            const phrase = document.getElementById('customPhrase').value.trim();
+            const context = document.getElementById('phraseContext').value;
+            
+            if (!phrase) {
+                alert('Please enter a phrase.');
+                return;
+            }
+            
+            const newPhrase = {
+                phrase,
+                context,
+                dateAdded: new Date().toISOString(),
+                reviewCount: 0,
+                difficulty: 'medium'
+            };
+            
+            customPhrases.push(newPhrase);
+            saveCustomData();
+            loadPhrases();
+            alert('Custom phrase added successfully!');
+        }
+
+        function addToMyVocabulary(term, definition) {
+            const existing = customVocabulary.find(w => w.term.toLowerCase() === term.toLowerCase());
+            if (existing) {
+                alert('This term is already in your custom vocabulary!');
+                return;
+            }
+            
+            const newWord = {
+                term,
+                definition,
+                example: '',
+                dateAdded: new Date().toISOString(),
+                reviewCount: 0,
+                difficulty: 'medium'
+            };
+            
+            customVocabulary.push(newWord);
+            saveCustomData();
+            alert(`"${term}" added to your vocabulary collection!`);
+        }
+
+        function addToMyPhrases(phrase) {
+            const existing = customPhrases.find(p => p.phrase.toLowerCase() === phrase.toLowerCase());
+            if (existing) {
+                alert('This phrase is already in your custom collection!');
+                return;
+            }
+            
+            const newPhrase = {
+                phrase,
+                context: 'general',
+                dateAdded: new Date().toISOString(),
+                reviewCount: 0,
+                difficulty: 'medium'
+            };
+            
+            customPhrases.push(newPhrase);
+            saveCustomData();
+            alert(`Phrase added to your collection!`);
+        }
+
+        function practiceWord(term, definition) {
+            showModal('Practice Mode', `
+                <div class="review-card">
+                    <div class="review-term">${term}</div>
+                    <div class="review-definition show">${definition}</div>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn difficulty-easy" onclick="markDifficulty('${term}', 'easy'); closeModal();">😊 Easy</button>
+                        <button class="difficulty-btn difficulty-medium" onclick="markDifficulty('${term}', 'medium'); closeModal();">🤔 Medium</button>
+                        <button class="difficulty-btn difficulty-hard" onclick="markDifficulty('${term}', 'hard'); closeModal();">😰 Hard</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function practicePhrase(phrase) {
+            showModal('Practice Mode', `
+                <div class="review-card">
+                    <div class="review-definition show">"${phrase}"</div>
+                    <p style="margin-top: 20px; opacity: 0.8;">Practice using this phrase in your next presentation!</p>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn difficulty-easy" onclick="markPhraseDifficulty('${phrase.replace(/'/g, "\\'")}', 'easy'); closeModal();">😊 Easy</button>
+                        <button class="difficulty-btn difficulty-medium" onclick="markPhraseDifficulty('${phrase.replace(/'/g, "\\'")}', 'medium'); closeModal();">🤔 Medium</button>
+                        <button class="difficulty-btn difficulty-hard" onclick="markPhraseDifficulty('${phrase.replace(/'/g, "\\'")}', 'hard'); closeModal();">😰 Hard</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function reviewVocabulary() {
+            const allVocab = [...presentationVocabulary, ...customVocabulary];
+            if (allVocab.length === 0) {
+                alert('No vocabulary available for review. Add some custom terms first!');
+                return;
+            }
+            
+            reviewItems = allVocab.sort(() => 0.5 - Math.random());
+            currentReviewIndex = 0;
+            reviewMode = true;
+            showReviewCard();
+        }
+
+        function reviewPhrases() {
+            const allPhrases = [...powerPhrases.map(p => ({phrase: p, context: 'general'})), ...customPhrases];
+            if (allPhrases.length === 0) {
+                alert('No phrases available for review. Add some custom phrases first!');
+                return;
+            }
+            
+            reviewItems = allPhrases.sort(() => 0.5 - Math.random());
+            currentReviewIndex = 0;
+            reviewMode = true;
+            showReviewCard();
+        }
+
+        function showReviewCard() {
+            const item = reviewItems[currentReviewIndex];
+            const isVocab = item.term !== undefined;
+            
+            const vocabularyList = document.getElementById('vocabularyList');
+            const phrasesList = document.getElementById('phrasesList');
+            
+            const content = `
+                <div class="review-card">
+                    <div style="text-align: right; margin-bottom: 10px; opacity: 0.7;">
+                        ${currentReviewIndex + 1} / ${reviewItems.length}
+                    </div>
+                    ${isVocab ? 
+                        `<div class="review-term">${item.term}</div>
+                         <div class="review-definition" id="reviewDefinition">${item.definition}</div>` :
+                        `<div class="review-definition show">"${item.phrase}"</div>
+                         <div style="margin-top: 10px; opacity: 0.7;">Context: ${item.context || 'General'}</div>`
+                    }
+                    <div class="review-controls">
+                        <button class="btn btn-secondary" onclick="showDefinition()">💡 ${isVocab ? 'Show Definition' : 'Practice'}</button>
+                        <button class="btn btn-secondary" onclick="nextReviewItem()">⏭️ Next</button>
+                        <button class="btn" onclick="endReview()">✅ End Review</button>
+                    </div>
+                    ${isVocab ? 
+                        `<div class="difficulty-buttons" style="display: none;" id="difficultyButtons">
+                            <button class="difficulty-btn difficulty-easy" onclick="markReviewDifficulty('easy')">😊 Easy</button>
+                            <button class="difficulty-btn difficulty-medium" onclick="markReviewDifficulty('medium')">🤔 Medium</button>
+                            <button class="difficulty-btn difficulty-hard" onclick="markReviewDifficulty('hard')">😰 Hard</button>
+                        </div>` : ''
+                    }
+                </div>
+            `;
+            
+            if (isVocab) {
+                vocabularyList.innerHTML = content;
+                phrasesList.innerHTML = '';
+            } else {
+                phrasesList.innerHTML = content;
+                vocabularyList.innerHTML = '';
+            }
+        }
+
+        function showDefinition() {
+            const definition = document.getElementById('reviewDefinition');
+            const difficultyButtons = document.getElementById('difficultyButtons');
+            
+            if (definition) {
+                definition.classList.add('show');
+                if (difficultyButtons) {
+                    difficultyButtons.style.display = 'flex';
+                }
+            }
+        }
+
+        function nextReviewItem() {
+            currentReviewIndex++;
+            if (currentReviewIndex >= reviewItems.length) {
+                endReview();
+                return;
+            }
+            showReviewCard();
+        }
+
+        function endReview() {
+            reviewMode = false;
+            generateVocabulary();
+            loadPhrases();
+            alert(`Review completed! You reviewed ${reviewItems.length} items.`);
+        }
+
+        function markReviewDifficulty(difficulty) {
+            const item = reviewItems[currentReviewIndex];
+            if (item.term && customVocabulary.find(w => w.term === item.term)) {
+                const customItem = customVocabulary.find(w => w.term === item.term);
+                customItem.difficulty = difficulty;
+                customItem.reviewCount = (customItem.reviewCount || 0) + 1;
+                saveCustomData();
+            }
+            nextReviewItem();
+        }
+
+        function markDifficulty(term, difficulty) {
+            const customItem = customVocabulary.find(w => w.term === term);
+            if (customItem) {
+                customItem.difficulty = difficulty;
+                customItem.reviewCount = (customItem.reviewCount || 0) + 1;
+                saveCustomData();
+            }
+        }
+
+        function markPhraseDifficulty(phrase, difficulty) {
+            const customItem = customPhrases.find(p => p.phrase === phrase);
+            if (customItem) {
+                customItem.difficulty = difficulty;
+                customItem.reviewCount = (customItem.reviewCount || 0) + 1;
+                saveCustomData();
+            }
+        }
+
+        function showMyVocabulary() {
+            const customCollection = document.getElementById('customCollection');
+            
+            if (customVocabulary.length === 0) {
+                customCollection.innerHTML = '<p style="text-align: center; opacity: 0.7;">No custom vocabulary terms yet. Add some to get started!</p>';
+                return;
+            }
+            
+            customCollection.innerHTML = `
+                <h4 style="color: #d4af37;">📖 My Vocabulary (${customVocabulary.length} terms)</h4>
+                ${customVocabulary.map((word, index) => `
+                    <div class="vocabulary-word">
+                        <div class="word-actions">
+                            <button onclick="editCustomWord(${index})">✏️</button>
+                            <button onclick="deleteCustomWord(${index})">🗑️</button>
+                        </div>
+                        <div class="word-term">${word.term}</div>
+                        <div class="word-definition">${word.definition}</div>
+                        ${word.example ? `<div style="margin-top: 8px; font-style: italic; opacity: 0.8;">Example: ${word.example}</div>` : ''}
+                        <div style="margin-top: 8px; font-size: 0.8rem; opacity: 0.6;">
+                            Added: ${new Date(word.dateAdded).toLocaleDateString()} | 
+                            Reviews: ${word.reviewCount || 0} | 
+                            Difficulty: ${word.difficulty || 'medium'}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function showMyPhrases() {
+            const customCollection = document.getElementById('customCollection');
+            
+            if (customPhrases.length === 0) {
+                customCollection.innerHTML = '<p style="text-align: center; opacity: 0.7;">No custom phrases yet. Add some to get started!</p>';
+                return;
+            }
+            
+            customCollection.innerHTML = `
+                <h4 style="color: #d4af37;">💬 My Phrases (${customPhrases.length} phrases)</h4>
+                ${customPhrases.map((phrase, index) => `
+                    <div class="vocabulary-word">
+                        <div class="word-actions">
+                            <button onclick="editCustomPhrase(${index})">✏️</button>
+                            <button onclick="deleteCustomPhrase(${index})">🗑️</button>
+                        </div>
+                        <div class="word-definition">"${phrase.phrase}"</div>
+                        <div style="margin-top: 8px; font-size: 0.9rem; opacity: 0.8;">Context: ${phrase.context || 'General'}</div>
+                        <div style="margin-top: 8px; font-size: 0.8rem; opacity: 0.6;">
+                            Added: ${new Date(phrase.dateAdded).toLocaleDateString()} | 
+                            Reviews: ${phrase.reviewCount || 0} | 
+                            Difficulty: ${phrase.difficulty || 'medium'}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function editCustomWord(index) {
+            const word = customVocabulary[index];
+            showModal('Edit Vocabulary Term', `
+                <div class="input-group">
+                    <label>Term:</label>
+                    <input type="text" id="editTerm" value="${word.term}">
+                </div>
+                <div class="input-group">
+                    <label>Definition:</label>
+                    <input type="text" id="editDefinition" value="${word.definition}">
+                </div>
+                <div class="input-group">
+                    <label>Example:</label>
+                    <textarea id="editExample" rows="2">${word.example || ''}</textarea>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveEditedWord(${index})">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">❌ Cancel</button>
+                </div>
+            `);
+        }
+
+        function editCustomPhrase(index) {
+            const phrase = customPhrases[index];
+            showModal('Edit Phrase', `
+                <div class="input-group">
+                    <label>Phrase:</label>
+                    <input type="text" id="editPhrase" value="${phrase.phrase}">
+                </div>
+                <div class="input-group">
+                    <label>Context:</label>
+                    <select id="editContext">
+                        <option value="hook" ${phrase.context === 'hook' ? 'selected' : ''}>Hook/Opening</option>
+                        <option value="transition" ${phrase.context === 'transition' ? 'selected' : ''}>Transition</option>
+                        <option value="emphasis" ${phrase.context === 'emphasis' ? 'selected' : ''}>Emphasis</option>
+                        <option value="conclusion" ${phrase.context === 'conclusion' ? 'selected' : ''}>Conclusion/CTA</option>
+                        <option value="general" ${phrase.context === 'general' ? 'selected' : ''}>General</option>
+                    </select>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveEditedPhrase(${index})">💾 Save Changes</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">❌ Cancel</button>
+                </div>
+            `);
+        }
+
+        function saveEditedWord(index) {
+            const term = document.getElementById('editTerm').value.trim();
+            const definition = document.getElementById('editDefinition').value.trim();
+            const example = document.getElementById('editExample').value.trim();
+            
+            if (!term || !definition) {
+                alert('Please enter both term and definition.');
+                return;
+            }
+            
+            customVocabulary[index] = {
+                ...customVocabulary[index],
+                term,
+                definition,
+                example
+            };
+            
+            saveCustomData();
+            showMyVocabulary();
+            closeModal();
+        }
+
+        function saveEditedPhrase(index) {
+            const phrase = document.getElementById('editPhrase').value.trim();
+            const context = document.getElementById('editContext').value;
+            
+            if (!phrase) {
+                alert('Please enter a phrase.');
+                return;
+            }
+            
+            customPhrases[index] = {
+                ...customPhrases[index],
+                phrase,
+                context
+            };
+            
+            saveCustomData();
+            showMyPhrases();
+            closeModal();
+        }
+
+        function deleteCustomWord(index) {
+            if (confirm('Are you sure you want to delete this vocabulary term?')) {
+                customVocabulary.splice(index, 1);
+                saveCustomData();
+                showMyVocabulary();
+            }
+        }
+
+        function deleteCustomPhrase(index) {
+            if (confirm('Are you sure you want to delete this phrase?')) {
+                customPhrases.splice(index, 1);
+                saveCustomData();
+                showMyPhrases();
+            }
+        }
+
+        function exportCustomCollection() {
+            const data = {
+                vocabulary: customVocabulary,
+                phrases: customPhrases,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `my-presentation-vocabulary-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function saveCustomData() {
+            localStorage.setItem('customVocabulary', JSON.stringify(customVocabulary));
+            localStorage.setItem('customPhrases', JSON.stringify(customPhrases));
+        }
+
+        function loadCustomData() {
+            const savedVocab = localStorage.getItem('customVocabulary');
+            const savedPhrases = localStorage.getItem('customPhrases');
+            
+            if (savedVocab) {
+                customVocabulary = JSON.parse(savedVocab);
+            }
+            
+            if (savedPhrases) {
+                customPhrases = JSON.parse(savedPhrases);
+            }
+        }
+
+        // Breathing Exercise Functions
+        function startBreathing() {
+            if (isBreathing) return;
+            
+            isBreathing = true;
+            const circle = document.getElementById('breathingCircle');
+            const text = document.getElementById('breathingText');
+            const timer = document.getElementById('breathingTimer');
+            
+            breathingTimer = setInterval(() => {
+                breathingTimeLeft--;
+                const minutes = Math.floor(breathingTimeLeft / 60);
+                const seconds = breathingTimeLeft % 60;
+                timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (breathingTimeLeft <= 0) {
+                    resetBreathing();
+                    showRandomMotivation();
+                }
+            }, 1000);
+            
+            let breathingCycle = setInterval(() => {
+                if (!isBreathing) {
+                    clearInterval(breathingCycle);
+                    return;
+                }
+                
+                circle.classList.add('inhale');
+                text.textContent = 'Breathe in...';
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    circle.classList.remove('inhale');
+                    circle.classList.add('exhale');
+                    text.textContent = 'Breathe out...';
+                }, 4000);
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    circle.classList.remove('exhale');
+                }, 8000);
+            }, 8000);
+        }
+
+        function pauseBreathing() {
+            isBreathing = false;
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                breathingTimer = null;
+            }
+            document.getElementById('breathingText').textContent = 'Paused';
+        }
+
+        function resetBreathing() {
+            isBreathing = false;
+            breathingTimeLeft = 1500;
+            if (breathingTimer) {
+                clearInterval(breathingTimer);
+                breathingTimer = null;
+            }
+            
+            const circle = document.getElementById('breathingCircle');
+            const text = document.getElementById('breathingText');
+            const timer = document.getElementById('breathingTimer');
+            
+            circle.classList.remove('inhale', 'exhale');
+            text.textContent = 'Ready to begin';
+            timer.textContent = '25:00';
+        }
+
+        // Utility Functions
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function showRandomMotivation() {
+            if (!document.getElementById('motivationalPopups')?.checked) return;
+            
+            const message = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('motivationalMessage').textContent = message;
+            
+            setTimeout(() => {
+                document.getElementById('motivationalMessage').textContent = '';
+            }, 5000);
+        }
+
+        // Settings and Data Management
+        function saveSettings() {
+            const settings = {
+                offlineMode: document.getElementById('offlineMode').checked,
+                autoSync: document.getElementById('autoSync').checked,
+                motivationalPopups: document.getElementById('motivationalPopups').checked,
+                defaultDuration: document.getElementById('defaultDuration').value,
+                saveRecordings: document.getElementById('saveRecordings').checked,
+                saveTranscripts: document.getElementById('saveTranscripts').checked
+            };
+            
+            localStorage.setItem('presentationBuilderSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('presentationBuilderSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('offlineMode').checked = settings.offlineMode ?? true;
+                document.getElementById('autoSync').checked = settings.autoSync ?? true;
+                document.getElementById('motivationalPopups').checked = settings.motivationalPopups ?? true;
+                document.getElementById('defaultDuration').value = settings.defaultDuration ?? 20;
+                document.getElementById('saveRecordings').checked = settings.saveRecordings ?? true;
+                document.getElementById('saveTranscripts').checked = settings.saveTranscripts ?? true;
+            }
+        }
+
+        function exportAnalytics() {
+            showModal('Analytics Export', `
+                <p>📊 Presentation Analytics Report</p>
+                <p><strong>Speaking Streak:</strong> 15 days</p>
+                <p><strong>Total Presentations:</strong> 12</p>
+                <p><strong>Speaking Time:</strong> 38.5 hours</p>
+                <p><strong>Average Duration:</strong> 19:45</p>
+                <p><strong>Most Used Hook Type:</strong> Question-based</p>
+                <p><strong>Strongest Section:</strong> Solution presentation</p>
+                <p><strong>Areas for Growth:</strong> Call-to-action clarity</p>
+                <p><em>In a full implementation, this would generate a detailed PDF report.</em></p>
+            `);
+        }
+
+        function backupData() {
+            const data = {
+                presentations: [], // Would contain saved presentations
+                settings: JSON.parse(localStorage.getItem('presentationBuilderSettings') || '{}'),
+                analytics: {
+                    streak: 15,
+                    totalPresentations: 12,
+                    speakingTime: 38.5
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `presentation-builder-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function viewRecordings() {
+            showModal('Saved Recordings', `
+                <p>🎤 Recording Library</p>
+                <div style="margin: 15px 0;">
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Digital Transformation Hook - 1:45 - 2024-01-20
+                    </div>
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Leadership Full Presentation - 22:15 - 2024-01-18
+                    </div>
+                    <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 5px; margin: 5px 0;">
+                        🎤 Call to Action Practice - 2:30 - 2024-01-17
+                    </div>
+                </div>
+                <p><em>In a full implementation, recordings would be playable with transcript viewing options.</em></p>
+            `);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Auto-stop recording when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            if (isRecording && !e.target.closest('.voice-controls')) {
+                stopRecording();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988192495488fee5',t:'MTc1OTM4MDU0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
