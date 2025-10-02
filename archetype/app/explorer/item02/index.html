@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdventureTracker - Structured Exploration Planning</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1b0d 0%, #1a2e1a 50%, #2d4a2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #daa520;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2d4a2d;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(218, 165, 32, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .adventure-card {
+            background: rgba(45, 74, 45, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #daa520;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .adventure-card:hover {
+            background: rgba(45, 74, 45, 0.8);
+            transform: translateX(5px);
+        }
+
+        .adventure-card.completed {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+            opacity: 0.7;
+        }
+
+        .adventure-card.swiping {
+            transform: translateX(-100px);
+        }
+
+        .adventure-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .adventure-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .adventure-category {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .adventure-progress {
+            background: rgba(26, 46, 26, 0.8);
+            border-radius: 10px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            transition: width 0.3s ease;
+        }
+
+        .checkpoint-list {
+            margin: 10px 0;
+        }
+
+        .checkpoint-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .checkpoint-status {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #daa520;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .checkpoint-status.completed {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .checkpoint-status.current {
+            background: #ffd700;
+            border-color: #ffd700;
+            color: #0d1b0d;
+        }
+
+        .adventure-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .adventure-actions .action-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: rgba(218, 165, 32, 0.2);
+            border: 1px solid #daa520;
+            color: #ffd700;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #daa520;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .voice-btn, .add-btn, .action-btn {
+            padding: 12px 16px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover, .add-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .voice-btn.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .do-it-now-btn {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            animation: glow 2s infinite;
+            font-size: 0.9rem;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(244, 67, 54, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(244, 67, 54, 0.8); }
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.8);
+            border: 2px solid #2d4a2d;
+            border-radius: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(218, 165, 32, 0.2);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .checklist-item:hover {
+            background: rgba(26, 46, 26, 0.8);
+        }
+
+        .checklist-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #daa520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background: #daa520;
+            color: #0d1b0d;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            height: 100%;
+            width: 100px;
+            background: #4caf50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: right 0.3s ease;
+        }
+
+        .checklist-item.swiping .swipe-actions {
+            right: 0;
+        }
+
+        .focus-timer {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #daa520, #ffd700);
+            color: #0d1b0d;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-btn.active {
+            background: #f44336;
+            color: white;
+        }
+
+        .checkpoint-tracker {
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2d4a2d;
+        }
+
+        .checkpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkpoint-card {
+            background: rgba(26, 46, 26, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #2d4a2d;
+            transition: all 0.3s ease;
+        }
+
+        .checkpoint-card:hover {
+            background: rgba(26, 46, 26, 1);
+        }
+
+        .checkpoint-card.active {
+            border-color: #ffd700;
+            background: rgba(218, 165, 32, 0.1);
+        }
+
+        .checkpoint-card.completed {
+            border-color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: rgba(26, 46, 26, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #daa520;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            color: #ffd700;
+            margin: 0 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffeb3b;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .motivational-message {
+            background: rgba(218, 165, 32, 0.1);
+            border: 2px solid #daa520;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: rgba(45, 74, 45, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 100px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #daa520;
+            margin-top: 10px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .exploration-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 46, 26, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .balance-meter {
+            width: 200px;
+            height: 10px;
+            background: rgba(45, 74, 45, 0.8);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .balance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f44336 0%, #ffd700 50%, #4caf50 100%);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 5px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        button:focus, input:focus, select:focus, textarea:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline Mode
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🗺️ AdventureTracker</h1>
+            <p>Structured Exploration & Adventure Planning</p>
+        </div>
+
+        <!-- Quick Stats Dashboard -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAdventures">0</div>
+                <div class="stat-label">Active Adventures</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedCheckpoints">0</div>
+                <div class="stat-label">Checkpoints Reached</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="explorationStreak">0</div>
+                <div class="stat-label">Exploration Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="focusTime">0h</div>
+                <div class="stat-label">Focus Time</div>
+            </div>
+        </div>
+
+        <!-- Motivational Message -->
+        <div class="motivational-message" id="motivationalMessage">
+            "Adventure is not outside man; it is within. The greatest adventures begin with a single step into the unknown."
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('adventures')">🏔️ Adventures</button>
+            <button class="nav-tab" onclick="switchTab('create')">🎯 Create</button>
+            <button class="nav-tab" onclick="switchTab('checkpoints')">📍 Checkpoints</button>
+            <button class="nav-tab" onclick="switchTab('focus')">⏱️ Focus</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Adventures Tab -->
+        <div id="adventures" class="tab-content active">
+            <div class="input-group">
+                <input type="text" class="search-bar" id="adventureSearch" placeholder="Search adventures by name, location, or tags..." oninput="filterAdventures()">
+            </div>
+
+            <div class="exploration-balance">
+                <span>Exploration Balance:</span>
+                <div class="balance-meter">
+                    <div class="balance-fill" id="balanceFill" style="width: 50%;"></div>
+                </div>
+                <span id="balanceLabel">Balanced</span>
+            </div>
+
+            <div id="adventuresList"></div>
+
+            <div class="input-group">
+                <input type="text" class="form-input" id="quickAdventure" placeholder="Quick add adventure..." aria-label="Quick adventure">
+                <button class="voice-btn" onclick="startVoiceInput('quickAdventure')" aria-label="Voice input">🎤</button>
+                <button class="add-btn" onclick="quickAddAdventure()">Quick Add</button>
+                <button class="do-it-now-btn" onclick="startRandomAdventure()">🚀 EXPLORE NOW</button>
+            </div>
+        </div>
+
+        <!-- Create Tab -->
+        <div id="create" class="tab-content">
+            <div class="adventure-card">
+                <h3>🏔️ Adventure Planner</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="adventureTitle" placeholder="Adventure title..." aria-label="Adventure title">
+                    <button class="voice-btn" onclick="startVoiceInput('adventureTitle')" aria-label="Voice input">🎤</button>
+                </div>
+                
+                <div class="input-group">
+                    <textarea class="form-textarea" id="adventureDescription" placeholder="Adventure description and goals..." rows="3"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <select class="form-select" id="adventureCategory">
+                        <option value="outdoor">Outdoor Exploration</option>
+                        <option value="urban">Urban Adventure</option>
+                        <option value="cultural">Cultural Discovery</option>
+                        <option value="skill">Skill Learning</option>
+                        <option value="creative">Creative Project</option>
+                        <option value="social">Social Adventure</option>
+                        <option value="fitness">Fitness Challenge</option>
+                        <option value="travel">Travel Expedition</option>
+                    </select>
+                    <select class="form-select" id="adventureDifficulty">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="date" class="form-input" id="adventureStartDate" aria-label="Start date">
+                    <input type="date" class="form-input" id="adventureEndDate" aria-label="End date">
+                    <select class="form-select" id="reminderFreq">
+                        <option value="none">No Reminders</option>
+                        <option value="daily">Daily Check-in</option>
+                        <option value="weekly">Weekly Review</option>
+                        <option value="milestone">Milestone Only</option>
+                    </select>
+                </div>
+                
+                <div class="tags-input" id="adventureTags" onclick="focusTagInput('adventureTagInput')">
+                    <input type="text" id="adventureTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">
+                </div>
+                
+                <h4>📍 Checkpoints & Milestones</h4>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checkpointTitle" placeholder="Checkpoint title..." aria-label="Checkpoint title">
+                    <input type="number" class="form-input" id="checkpointDays" placeholder="Days from start" min="1" aria-label="Days from start">
+                    <button class="add-btn" onclick="addCheckpoint()">Add Checkpoint</button>
+                </div>
+                <div id="checkpointPreview"></div>
+                
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="add-btn" onclick="createAdventure()">🏔️ Create Adventure</button>
+                    <button class="do-it-now-btn" onclick="createAndStart()">⚡ CREATE & START</button>
+                </div>
+            </div>
+
+            <!-- Checklist Template -->
+            <div class="adventure-card">
+                <h3>✅ Adventure Checklist</h3>
+                <div class="input-group">
+                    <input type="text" class="form-input" id="checklistItem" placeholder="Add checklist item..." aria-label="Checklist item">
+                    <button class="add-btn" onclick="addChecklistItem()">Add</button>
+                </div>
+                <div id="checklistPreview"></div>
+            </div>
+        </div>
+
+        <!-- Checkpoints Tab -->
+        <div id="checkpoints" class="tab-content">
+            <div class="checkpoint-tracker">
+                <h3>📍 Timed Checkpoints & Progress</h3>
+                <div class="input-group">
+                    <select class="form-select" id="checkpointAdventureSelector">
+                        <option value="">Select adventure...</option>
+                    </select>
+                    <button class="action-btn" onclick="loadCheckpoints()">Load Checkpoints</button>
+                    <button class="action-btn" onclick="exportProgress()">📄 Export Progress</button>
+                </div>
+                <div class="checkpoint-grid" id="checkpointGrid"></div>
+            </div>
+
+            <div class="adventure-card">
+                <h3>⏰ Productivity Tracking</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>📈 Daily Progress</h4>
+                        <div class="stat-value" id="dailyCheckpoints">0</div>
+                        <div class="stat-label">Checkpoints today</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>🎯 Completion Rate</h4>
+                        <div class="stat-value" id="completionRate">0%</div>
+                        <div class="stat-label">On-time completion</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>⚡ Momentum</h4>
+                        <div class="stat-value" id="momentum">0</div>
+                        <div class="stat-label">Active streaks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Tab -->
+        <div id="focus" class="tab-content">
+            <div class="focus-timer">
+                <h3>🍅 Adventure Planning Session</h3>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="startTimer()" id="startBtn">Start</button>
+                    <button class="timer-btn" onclick="pauseTimer()" id="pauseBtn">Pause</button>
+                    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+                </div>
+                <p style="color: #a0a0a0; margin-top: 15px;">Focus on adventure planning and preparation</p>
+            </div>
+
+            <div class="adventure-card">
+                <h3>💡 Daily Adventure Prompts</h3>
+                <div id="dailyPrompts"></div>
+            </div>
+
+            <div class="adventure-card">
+                <h3>⚖️ Exploration Balance Tracker</h3>
+                <p>Track the balance between structured goals and spontaneous exploration</p>
+                <div class="input-group">
+                    <button class="action-btn" onclick="logStructuredActivity()">📋 Structured Activity</button>
+                    <button class="action-btn" onclick="logSpontaneousActivity()">🎲 Spontaneous Exploration</button>
+                    <button class="action-btn" onclick="resetBalance()">⚖️ Reset Balance</button>
+                </div>
+                <div class="exploration-balance">
+                    <span>Today's Balance:</span>
+                    <div class="balance-meter">
+                        <div class="balance-fill" id="todayBalanceFill" style="width: 50%;"></div>
+                    </div>
+                    <span id="todayBalanceLabel">Balanced</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>🏔️ Adventure Stats</h4>
+                    <div class="stat-value" id="totalAdventuresAnalytics">0</div>
+                    <div class="stat-label">Total adventures</div>
+                    <div class="chart-placeholder">Adventure Timeline</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>🔥 Exploration Streak</h4>
+                    <div class="stat-value" id="explorationStreakAnalytics">0</div>
+                    <div class="stat-label">Days of consistent exploration</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>⚡ Focus Time</h4>
+                    <div class="stat-value" id="totalFocusTimeAnalytics">0h</div>
+                    <div class="stat-label">This month</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>📍 Checkpoint Success</h4>
+                    <div class="stat-value" id="checkpointSuccessRate">0%</div>
+                    <div class="chart-placeholder">Success Rate Trend</div>
+                </div>
+            </div>
+
+            <div class="adventure-card">
+                <h3>📊 Detailed Analytics</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>🎯 Category Breakdown</h4>
+                        <div id="categoryBreakdown"></div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>⏰ Time Distribution</h4>
+                        <div id="timeDistribution"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <button class="action-btn" onclick="exportAnalytics()">📄 Export Report</button>
+                <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
+                <button class="action-btn" onclick="importData()">📥 Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adventure Edit Modal -->
+    <div id="adventureModal" class="modal">
+        <div class="modal-content">
+            <h3 id="adventureModalTitle">Edit Adventure <span class="close" onclick="closeAdventureModal()">&times;</span></h3>
+            <div id="adventureModalContent">
+                <input type="text" class="form-input" id="editAdventureTitle" placeholder="Adventure title...">
+                <textarea class="form-textarea" id="editAdventureDescription" placeholder="Adventure description..." rows="3"></textarea>
+                <select class="form-select" id="editAdventureCategory">
+                    <option value="outdoor">Outdoor Exploration</option>
+                    <option value="urban">Urban Adventure</option>
+                    <option value="cultural">Cultural Discovery</option>
+                    <option value="skill">Skill Learning</option>
+                    <option value="creative">Creative Project</option>
+                    <option value="social">Social Adventure</option>
+                    <option value="fitness">Fitness Challenge</option>
+                    <option value="travel">Travel Expedition</option>
+                </select>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveAdventureEdit()">Save Changes</button>
+                    <button class="action-btn" onclick="completeAdventure()">Mark Complete</button>
+                    <button class="action-btn" onclick="deleteCurrentAdventure()">Delete Adventure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message Builder Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Message Builder <span class="close" onclick="closeMessageModal()">&times;</span></h3>
+            <div id="messageModalContent">
+                <textarea class="form-textarea" id="customMessage" placeholder="Create your motivational message..." rows="4"></textarea>
+                <div class="input-group" style="margin-top: 15px;">
+                    <button class="action-btn" onclick="saveCustomMessage()">Save Message</button>
+                    <button class="action-btn" onclick="generateRandomMessage()">Random Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // Global variables
+        let adventures = [];
+        let currentAdventure = null;
+        let currentChecklist = [];
+        let currentCheckpoints = [];
+        let timerInterval = null;
+        let timerSeconds = 1500; // 25 minutes
+        let isTimerRunning = false;
+        let recognition = null;
+        let totalFocusTime = 0;
+        let explorationStreak = 0;
+        let structuredActivities = 0;
+        let spontaneousActivities = 0;
+
+        // Sample motivational messages
+        const motivationalMessages = [
+            "Adventure is not outside man; it is within. The greatest adventures begin with a single step into the unknown.",
+            "Life is either a daring adventure or nothing at all. Embrace the journey ahead.",
+            "The biggest adventure you can take is to live the life of your dreams.",
+            "Adventure awaits those who dare to explore beyond their comfort zone.",
+            "Every expert was once a beginner. Every pro was once an amateur. Every icon was once an unknown.",
+            "The purpose of life is to live it, to taste experience to the utmost, to reach out eagerly and without fear.",
+            "Adventure is worthwhile in itself. Plan your journey, but embrace the unexpected.",
+            "Exploration is really the essence of the human spirit. Chart your course and set sail.",
+            "The world is a book and those who do not travel read only one page.",
+            "Adventure is calling. Will you answer with courage and curiosity?"
+        ];
+
+        // Daily adventure prompts
+        const adventurePrompts = [
+            "Plan a micro-adventure within 5 miles of your location",
+            "Research a new skill you've always wanted to learn",
+            "Identify three unexplored places in your city",
+            "Design a weekend adventure that combines learning and exploration",
+            "Create a challenge that pushes your comfort zone safely",
+            "Plan an adventure that involves meeting new people",
+            "Research a cultural experience you've never tried",
+            "Design a fitness adventure in a new environment"
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateStats();
+            updateAdventureSelectors();
+            generateDailyPrompts();
+            updateMotivationalMessage();
+            checkOnlineStatus();
+            renderAdventures();
+            updateExplorationBalance();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update online status
+            setInterval(checkOnlineStatus, 5000);
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Initialize with sample data if empty
+            if (adventures.length === 0) {
+                initializeSampleData();
+            }
+            
+            // Update streak
+            updateStreak();
+        });
+
+        function initializeSampleData() {
+            adventures = [
+                {
+                    id: 1,
+                    title: 'Urban Photography Challenge',
+                    description: 'Explore the city through photography, discovering hidden architectural gems and street art',
+                    category: 'urban',
+                    difficulty: 'beginner',
+                    startDate: new Date().toISOString().split('T')[0],
+                    endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    tags: ['photography', 'urban', 'art', 'exploration'],
+                    checkpoints: [
+                        { id: 1, title: 'Research photo spots', days: 1, completed: true, completedAt: new Date() },
+                        { id: 2, title: 'Visit downtown district', days: 3, completed: false },
+                        { id: 3, title: 'Capture 50 unique shots', days: 7, completed: false },
+                        { id: 4, title: 'Create photo story', days: 14, completed: false }
+                    ],
+                    checklist: [
+                        { id: 1, text: 'Pack camera equipment', completed: true },
+                        { id: 2, text: 'Plan route through city', completed: false },
+                        { id: 3, text: 'Research best lighting times', completed: false }
+                    ],
+                    progress: 25,
+                    createdAt: new Date(),
+                    reminders: { frequency: 'daily', lastSent: null },
+                    completed: false
+                },
+                {
+                    id: 2,
+                    title: 'Local Hiking Trail Discovery',
+                    description: 'Explore and document all hiking trails within 30 miles, rating difficulty and scenic value',
+                    category: 'outdoor',
+                    difficulty: 'intermediate',
+                    startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    tags: ['hiking', 'nature', 'fitness', 'documentation'],
+                    checkpoints: [
+                        { id: 1, title: 'Research trail maps', days: 2, completed: false },
+                        { id: 2, title: 'Complete first 3 trails', days: 10, completed: false },
+                        { id: 3, title: 'Document trail conditions', days: 20, completed: false },
+                        { id: 4, title: 'Create trail guide', days: 30, completed: false }
+                    ],
+                    checklist: [],
+                    progress: 0,
+                    createdAt: new Date(),
+                    reminders: { frequency: 'weekly', lastSent: null },
+                    completed: false
+                }
+            ];
+            
+            updateAdventureSelectors();
+            updateStats();
+            renderAdventures();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Adventure management
+        function createAdventure() {
+            const title = document.getElementById('adventureTitle').value.trim();
+            const description = document.getElementById('adventureDescription').value.trim();
+            const category = document.getElementById('adventureCategory').value;
+            const difficulty = document.getElementById('adventureDifficulty').value;
+            const startDate = document.getElementById('adventureStartDate').value;
+            const endDate = document.getElementById('adventureEndDate').value;
+            const reminderFreq = document.getElementById('reminderFreq').value;
+            const tagInput = document.getElementById('adventureTagInput');
+            
+            if (!title || !description || !startDate || !endDate) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const tags = tagInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            const adventure = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                category: category,
+                difficulty: difficulty,
+                startDate: startDate,
+                endDate: endDate,
+                tags: tags,
+                checkpoints: [...currentCheckpoints],
+                checklist: [...currentChecklist],
+                progress: 0,
+                createdAt: new Date(),
+                reminders: { frequency: reminderFreq, lastSent: null },
+                completed: false
+            };
+            
+            adventures.push(adventure);
+            
+            // Clear form
+            clearAdventureForm();
+            
+            updateAdventureSelectors();
+            updateStats();
+            updateStreak();
+            renderAdventures();
+            saveData();
+            showNotification('Adventure created successfully! 🏔️');
+        }
+
+        function createAndStart() {
+            createAdventure();
+            if (adventures.length > 0) {
+                const latestAdventure = adventures[adventures.length - 1];
+                switchTab('adventures');
+                document.querySelector('[onclick="switchTab(\'adventures\')"]').classList.add('active');
+                showNotification(`Adventure "${latestAdventure.title}" is ready to begin! 🚀`);
+            }
+        }
+
+        function quickAddAdventure() {
+            const title = document.getElementById('quickAdventure').value.trim();
+            if (!title) {
+                showNotification('Please enter an adventure title', 'error');
+                return;
+            }
+            
+            const adventure = {
+                id: Date.now(),
+                title: title,
+                description: 'Quick adventure - add details later',
+                category: 'outdoor',
+                difficulty: 'beginner',
+                startDate: new Date().toISOString().split('T')[0],
+                endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                tags: ['quick-add'],
+                checkpoints: [],
+                checklist: [],
+                progress: 0,
+                createdAt: new Date(),
+                reminders: { frequency: 'none', lastSent: null },
+                completed: false
+            };
+            
+            adventures.push(adventure);
+            document.getElementById('quickAdventure').value = '';
+            
+            updateAdventureSelectors();
+            updateStats();
+            renderAdventures();
+            saveData();
+            showNotification('Quick adventure added! 🚀');
+        }
+
+        function startRandomAdventure() {
+            const activeAdventures = adventures.filter(a => !a.completed);
+            if (activeAdventures.length === 0) {
+                showNotification('No active adventures. Create one first!', 'error');
+                return;
+            }
+            
+            const randomAdventure = activeAdventures[Math.floor(Math.random() * activeAdventures.length)];
+            showNotification(`Starting adventure: "${randomAdventure.title}" 🚀`, 'success');
+            
+            // Mark as started and log activity
+            logSpontaneousActivity();
+            updateExplorationBalance();
+        }
+
+        function clearAdventureForm() {
+            document.getElementById('adventureTitle').value = '';
+            document.getElementById('adventureDescription').value = '';
+            document.getElementById('adventureCategory').value = 'outdoor';
+            document.getElementById('adventureDifficulty').value = 'beginner';
+            document.getElementById('adventureStartDate').value = '';
+            document.getElementById('adventureEndDate').value = '';
+            document.getElementById('reminderFreq').value = 'none';
+            document.getElementById('adventureTagInput').value = '';
+            document.getElementById('adventureTags').innerHTML = '<input type="text" id="adventureTagInput" placeholder="Add tags..." style="border: none; background: transparent; color: white; outline: none; flex: 1;">';
+            currentChecklist = [];
+            currentCheckpoints = [];
+            renderChecklistPreview();
+            renderCheckpointPreview();
+        }
+
+        function renderAdventures() {
+            const container = document.getElementById('adventuresList');
+            container.innerHTML = '';
+            
+            const filteredAdventures = filterAdventuresBySearch();
+            
+            if (filteredAdventures.length === 0) {
+                container.innerHTML = '<div class="adventure-card"><p>No adventures found. Create your first adventure to begin exploring!</p></div>';
+                return;
+            }
+            
+            filteredAdventures.forEach(adventure => {
+                const card = createAdventureCard(adventure);
+                container.appendChild(card);
+            });
+        }
+
+        function createAdventureCard(adventure) {
+            const card = document.createElement('div');
+            card.className = `adventure-card ${adventure.completed ? 'completed' : ''}`;
+            
+            const nextCheckpoint = adventure.checkpoints.find(cp => !cp.completed);
+            const completedCheckpoints = adventure.checkpoints.filter(cp => cp.completed).length;
+            const totalCheckpoints = adventure.checkpoints.length;
+            
+            card.innerHTML = `
+                <div class="adventure-header">
+                    <div>
+                        <div class="adventure-title">${adventure.title}</div>
+                        <div class="adventure-category">${adventure.category.toUpperCase()} • ${adventure.difficulty.toUpperCase()}</div>
+                        <div style="color: #a0a0a0; font-size: 0.9rem;">${adventure.description}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #ffd700; font-weight: bold;">${adventure.progress}%</div>
+                        <div style="color: #a0a0a0; font-size: 0.8rem;">${completedCheckpoints}/${totalCheckpoints} checkpoints</div>
+                    </div>
+                </div>
+                
+                <div class="adventure-progress">
+                    <div class="progress-bar" style="width: ${adventure.progress}%;"></div>
+                </div>
+                
+                ${nextCheckpoint ? `
+                    <div style="background: rgba(218, 165, 32, 0.1); padding: 8px; border-radius: 6px; margin: 10px 0;">
+                        <strong>Next Checkpoint:</strong> ${nextCheckpoint.title}
+                        <div style="font-size: 0.8rem; color: #a0a0a0;">Day ${nextCheckpoint.days}</div>
+                    </div>
+                ` : ''}
+                
+                <div class="checkpoint-list">
+                    ${adventure.checkpoints.slice(0, 3).map(checkpoint => `
+                        <div class="checkpoint-item">
+                            <div class="checkpoint-status ${checkpoint.completed ? 'completed' : (checkpoint === nextCheckpoint ? 'current' : '')}">
+                                ${checkpoint.completed ? '✓' : (checkpoint === nextCheckpoint ? '●' : '○')}
+                            </div>
+                            <span>${checkpoint.title}</span>
+                        </div>
+                    `).join('')}
+                    ${adventure.checkpoints.length > 3 ? `<div style="color: #a0a0a0; font-size: 0.8rem;">+${adventure.checkpoints.length - 3} more checkpoints</div>` : ''}
+                </div>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0;">
+                    ${adventure.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                
+                <div class="adventure-actions">
+                    <button class="action-btn" onclick="editAdventure(${adventure.id})">✏️ Edit</button>
+                    <button class="action-btn" onclick="viewCheckpoints(${adventure.id})">📍 Checkpoints</button>
+                    ${!adventure.completed ? `
+                        <button class="action-btn" onclick="markCheckpointComplete(${adventure.id})">✅ Complete Next</button>
+                        <button class="do-it-now-btn" onclick="startAdventure(${adventure.id})">🚀 START</button>
+                    ` : `
+                        <button class="action-btn" onclick="archiveAdventure(${adventure.id})">📦 Archive</button>
+                    `}
+                    <button class="action-btn" onclick="deleteAdventure(${adventure.id})" style="background: rgba(244, 67, 54, 0.2); border-color: #f44336; color: #ff6b6b;">🗑️ Delete</button>
+                </div>
+                
+                <div class="swipe-actions">
+                    ✅ Complete
+                </div>
+            `;
+            
+            // Add swipe functionality
+            let startX = 0;
+            let currentX = 0;
+            let isSwiping = false;
+            
+            card.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isSwiping = true;
+            });
+            
+            card.addEventListener('touchmove', (e) => {
+                if (!isSwiping) return;
+                currentX = e.touches[0].clientX;
+                const diffX = startX - currentX;
+                
+                if (diffX > 50) {
+                    card.classList.add('swiping');
+                } else {
+                    card.classList.remove('swiping');
+                }
+            });
+            
+            card.addEventListener('touchend', (e) => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                
+                const diffX = startX - currentX;
+                if (diffX > 100) {
+                    markCheckpointComplete(adventure.id);
+                }
+                card.classList.remove('swiping');
+            });
+            
+            return card;
+        }
+
+        function filterAdventures() {
+            renderAdventures();
+        }
+
+        function filterAdventuresBySearch() {
+            const searchTerm = document.getElementById('adventureSearch').value.toLowerCase();
+            if (!searchTerm) return adventures;
+            
+            return adventures.filter(adventure => 
+                adventure.title.toLowerCase().includes(searchTerm) ||
+                adventure.description.toLowerCase().includes(searchTerm) ||
+                adventure.category.toLowerCase().includes(searchTerm) ||
+                adventure.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        function editAdventure(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            currentAdventure = adventure;
+            document.getElementById('editAdventureTitle').value = adventure.title;
+            document.getElementById('editAdventureDescription').value = adventure.description;
+            document.getElementById('editAdventureCategory').value = adventure.category;
+            document.getElementById('adventureModal').style.display = 'block';
+        }
+
+        function saveAdventureEdit() {
+            if (!currentAdventure) return;
+            
+            currentAdventure.title = document.getElementById('editAdventureTitle').value;
+            currentAdventure.description = document.getElementById('editAdventureDescription').value;
+            currentAdventure.category = document.getElementById('editAdventureCategory').value;
+            
+            renderAdventures();
+            closeAdventureModal();
+            saveData();
+            showNotification('Adventure updated! ✏️');
+        }
+
+        function completeAdventure() {
+            if (!currentAdventure) return;
+            
+            currentAdventure.completed = true;
+            currentAdventure.progress = 100;
+            currentAdventure.completedAt = new Date();
+            
+            renderAdventures();
+            closeAdventureModal();
+            updateStats();
+            saveData();
+            showNotification('🎉 Adventure completed! Excellent exploration!');
+        }
+
+        function deleteCurrentAdventure() {
+            if (!currentAdventure) return;
+            
+            if (confirm('Are you sure you want to delete this adventure?')) {
+                adventures = adventures.filter(a => a.id !== currentAdventure.id);
+                renderAdventures();
+                closeAdventureModal();
+                updateStats();
+                updateAdventureSelectors();
+                saveData();
+                showNotification('Adventure deleted');
+            }
+        }
+
+        function startAdventure(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            showNotification(`Starting adventure: "${adventure.title}" 🚀`);
+            logStructuredActivity();
+            updateExplorationBalance();
+        }
+
+        function markCheckpointComplete(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            const nextCheckpoint = adventure.checkpoints.find(cp => !cp.completed);
+            if (!nextCheckpoint) {
+                showNotification('All checkpoints completed!', 'success');
+                return;
+            }
+            
+            nextCheckpoint.completed = true;
+            nextCheckpoint.completedAt = new Date();
+            
+            // Update progress
+            const completedCount = adventure.checkpoints.filter(cp => cp.completed).length;
+            adventure.progress = Math.round((completedCount / adventure.checkpoints.length) * 100);
+            
+            // Check if adventure is complete
+            if (completedCount === adventure.checkpoints.length) {
+                adventure.completed = true;
+                showNotification(`🎉 Adventure "${adventure.title}" completed!`);
+            } else {
+                showNotification(`Checkpoint "${nextCheckpoint.title}" completed! 📍`);
+            }
+            
+            renderAdventures();
+            updateStats();
+            saveData();
+        }
+
+        function viewCheckpoints(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            switchTab('checkpoints');
+            document.querySelector('[onclick="switchTab(\'checkpoints\')"]').classList.add('active');
+            document.getElementById('checkpointAdventureSelector').value = adventureId;
+            loadCheckpoints();
+        }
+
+        function archiveAdventure(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            adventure.archived = true;
+            renderAdventures();
+            saveData();
+            showNotification('Adventure archived 📦');
+        }
+
+        function deleteAdventure(adventureId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            if (!adventure) return;
+            
+            const confirmMessage = adventure.completed ? 
+                `Are you sure you want to delete the completed adventure "${adventure.title}"?` :
+                `Are you sure you want to delete "${adventure.title}"? This action cannot be undone.`;
+            
+            if (confirm(confirmMessage)) {
+                adventures = adventures.filter(a => a.id !== adventureId);
+                renderAdventures();
+                updateStats();
+                updateAdventureSelectors();
+                saveData();
+                showNotification(`Adventure "${adventure.title}" deleted 🗑️`);
+            }
+        }
+
+        // Checkpoint management
+        function addCheckpoint() {
+            const title = document.getElementById('checkpointTitle').value.trim();
+            const days = parseInt(document.getElementById('checkpointDays').value);
+            
+            if (!title || !days) {
+                showNotification('Please enter checkpoint title and days', 'error');
+                return;
+            }
+            
+            const checkpoint = {
+                id: Date.now(),
+                title: title,
+                days: days,
+                completed: false
+            };
+            
+            currentCheckpoints.push(checkpoint);
+            currentCheckpoints.sort((a, b) => a.days - b.days);
+            
+            document.getElementById('checkpointTitle').value = '';
+            document.getElementById('checkpointDays').value = '';
+            
+            renderCheckpointPreview();
+            showNotification('Checkpoint added! 📍');
+        }
+
+        function renderCheckpointPreview() {
+            const container = document.getElementById('checkpointPreview');
+            container.innerHTML = '';
+            
+            currentCheckpoints.forEach((checkpoint, index) => {
+                const element = document.createElement('div');
+                element.className = 'checkpoint-item';
+                element.innerHTML = `
+                    <div class="checkpoint-status">📍</div>
+                    <span>Day ${checkpoint.days}: ${checkpoint.title}</span>
+                    <button class="action-btn" onclick="removeCheckpoint(${index})" style="margin-left: auto; padding: 4px 8px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeCheckpoint(index) {
+            currentCheckpoints.splice(index, 1);
+            renderCheckpointPreview();
+        }
+
+        function loadCheckpoints() {
+            const adventureId = parseInt(document.getElementById('checkpointAdventureSelector').value);
+            const adventure = adventures.find(a => a.id === adventureId);
+            
+            if (!adventure) {
+                showNotification('Please select an adventure', 'error');
+                return;
+            }
+            
+            const container = document.getElementById('checkpointGrid');
+            container.innerHTML = '';
+            
+            adventure.checkpoints.forEach(checkpoint => {
+                const card = document.createElement('div');
+                card.className = `checkpoint-card ${checkpoint.completed ? 'completed' : ''}`;
+                
+                const startDate = new Date(adventure.startDate);
+                const checkpointDate = new Date(startDate.getTime() + checkpoint.days * 24 * 60 * 60 * 1000);
+                const today = new Date();
+                const isActive = !checkpoint.completed && checkpointDate <= today;
+                
+                if (isActive) card.classList.add('active');
+                
+                card.innerHTML = `
+                    <h4>${checkpoint.title}</h4>
+                    <div style="color: #a0a0a0; font-size: 0.9rem;">Day ${checkpoint.days}</div>
+                    <div style="color: #a0a0a0; font-size: 0.8rem;">${checkpointDate.toLocaleDateString()}</div>
+                    ${checkpoint.completed ? `
+                        <div style="color: #4caf50; font-size: 0.8rem; margin-top: 5px;">
+                            ✅ Completed ${new Date(checkpoint.completedAt).toLocaleDateString()}
+                        </div>
+                    ` : isActive ? `
+                        <button class="action-btn" onclick="completeCheckpoint(${adventure.id}, ${checkpoint.id})" style="margin-top: 10px;">
+                            ✅ Complete Now
+                        </button>
+                    ` : `
+                        <div style="color: #ffd700; font-size: 0.8rem; margin-top: 5px;">
+                            ⏳ Upcoming
+                        </div>
+                    `}
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            updateCheckpointStats(adventure);
+        }
+
+        function completeCheckpoint(adventureId, checkpointId) {
+            const adventure = adventures.find(a => a.id === adventureId);
+            const checkpoint = adventure.checkpoints.find(cp => cp.id === checkpointId);
+            
+            if (!checkpoint) return;
+            
+            checkpoint.completed = true;
+            checkpoint.completedAt = new Date();
+            
+            // Update progress
+            const completedCount = adventure.checkpoints.filter(cp => cp.completed).length;
+            adventure.progress = Math.round((completedCount / adventure.checkpoints.length) * 100);
+            
+            loadCheckpoints();
+            renderAdventures();
+            updateStats();
+            saveData();
+            showNotification(`Checkpoint "${checkpoint.title}" completed! 📍`);
+        }
+
+        function updateCheckpointStats(adventure) {
+            const today = new Date().toDateString();
+            const todayCheckpoints = adventure.checkpoints.filter(cp => 
+                cp.completed && new Date(cp.completedAt).toDateString() === today
+            ).length;
+            
+            document.getElementById('dailyCheckpoints').textContent = todayCheckpoints;
+            
+            const completedOnTime = adventure.checkpoints.filter(cp => {
+                if (!cp.completed) return false;
+                const startDate = new Date(adventure.startDate);
+                const expectedDate = new Date(startDate.getTime() + cp.days * 24 * 60 * 60 * 1000);
+                return new Date(cp.completedAt) <= expectedDate;
+            }).length;
+            
+            const completionRate = adventure.checkpoints.length > 0 ? 
+                Math.round((completedOnTime / adventure.checkpoints.length) * 100) : 0;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+            
+            const activeStreaks = adventures.filter(a => !a.completed && a.checkpoints.some(cp => cp.completed)).length;
+            document.getElementById('momentum').textContent = activeStreaks;
+        }
+
+        function exportProgress() {
+            const adventureId = parseInt(document.getElementById('checkpointAdventureSelector').value);
+            const adventure = adventures.find(a => a.id === adventureId);
+            
+            if (!adventure) {
+                showNotification('Please select an adventure', 'error');
+                return;
+            }
+            
+            const content = `
+Adventure Progress Report: ${adventure.title}
+Generated: ${new Date().toLocaleDateString()}
+
+OVERVIEW
+========
+Category: ${adventure.category}
+Difficulty: ${adventure.difficulty}
+Progress: ${adventure.progress}%
+Start Date: ${adventure.startDate}
+End Date: ${adventure.endDate}
+
+CHECKPOINTS
+===========
+${adventure.checkpoints.map(cp => `
+${cp.completed ? '✅' : '⏳'} Day ${cp.days}: ${cp.title}
+${cp.completed ? `   Completed: ${new Date(cp.completedAt).toLocaleDateString()}` : '   Status: Pending'}
+`).join('')}
+
+CHECKLIST
+=========
+${adventure.checklist.map(item => `${item.completed ? '✅' : '☐'} ${item.text}`).join('\n')}
+
+TAGS
+====
+${adventure.tags.join(', ')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${adventure.title.replace(/[^a-zA-Z0-9]/g, '_')}_progress.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Progress report exported! 📄');
+        }
+
+        // Checklist management
+        function addChecklistItem() {
+            const input = document.getElementById('checklistItem');
+            const text = input.value.trim();
+            
+            if (text) {
+                currentChecklist.push({
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                });
+                
+                input.value = '';
+                renderChecklistPreview();
+                showNotification('Checklist item added ✅');
+            }
+        }
+
+        function renderChecklistPreview() {
+            const container = document.getElementById('checklistPreview');
+            container.innerHTML = '';
+            
+            currentChecklist.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = 'checklist-item';
+                element.innerHTML = `
+                    <div class="checkbox">✓</div>
+                    <span>${item.text}</span>
+                    <button class="action-btn" onclick="removeChecklistItem(${index})" style="margin-left: auto; padding: 4px 8px;">✕</button>
+                `;
+                container.appendChild(element);
+            });
+        }
+
+        function removeChecklistItem(index) {
+            currentChecklist.splice(index, 1);
+            renderChecklistPreview();
+        }
+
+        // Focus timer
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').classList.add('active');
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        completeTimer();
+                    }
+                }, 1000);
+                
+                showNotification('Adventure planning session started! 🍅');
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').classList.remove('active');
+                showNotification('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 1500; // 25 minutes
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').classList.remove('active');
+            showNotification('Timer reset');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function completeTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            totalFocusTime += 25;
+            
+            resetTimer();
+            showNotification('🎉 Adventure planning session complete! Great focus!');
+            updateStats();
+            saveData();
+        }
+
+        // Exploration balance tracking
+        function logStructuredActivity() {
+            structuredActivities++;
+            updateExplorationBalance();
+            saveData();
+            showNotification('Structured activity logged! 📋');
+        }
+
+        function logSpontaneousActivity() {
+            spontaneousActivities++;
+            updateExplorationBalance();
+            saveData();
+            showNotification('Spontaneous exploration logged! 🎲');
+        }
+
+        function resetBalance() {
+            structuredActivities = 0;
+            spontaneousActivities = 0;
+            updateExplorationBalance();
+            saveData();
+            showNotification('Balance reset! ⚖️');
+        }
+
+        function updateExplorationBalance() {
+            const total = structuredActivities + spontaneousActivities;
+            let balancePercentage = 50; // Default balanced
+            let balanceLabel = 'Balanced';
+            
+            if (total > 0) {
+                balancePercentage = (structuredActivities / total) * 100;
+                
+                if (balancePercentage < 30) {
+                    balanceLabel = 'Highly Spontaneous';
+                } else if (balancePercentage < 45) {
+                    balanceLabel = 'Spontaneous';
+                } else if (balancePercentage > 70) {
+                    balanceLabel = 'Highly Structured';
+                } else if (balancePercentage > 55) {
+                    balanceLabel = 'Structured';
+                } else {
+                    balanceLabel = 'Balanced';
+                }
+            }
+            
+            document.getElementById('balanceFill').style.width = balancePercentage + '%';
+            document.getElementById('balanceLabel').textContent = balanceLabel;
+            document.getElementById('todayBalanceFill').style.width = balancePercentage + '%';
+            document.getElementById('todayBalanceLabel').textContent = balanceLabel;
+        }
+
+        // Daily prompts
+        function generateDailyPrompts() {
+            const container = document.getElementById('dailyPrompts');
+            const today = new Date().toDateString();
+            const savedDate = localStorage.getItem('dailyPromptsDate');
+            
+            if (savedDate !== today) {
+                // Generate new prompts for today
+                const shuffled = [...adventurePrompts].sort(() => 0.5 - Math.random());
+                const todayPrompts = shuffled.slice(0, 3);
+                
+                localStorage.setItem('dailyPrompts', JSON.stringify(todayPrompts));
+                localStorage.setItem('dailyPromptsDate', today);
+            }
+            
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            
+            container.innerHTML = prompts.map((prompt, index) => `
+                <div class="adventure-card" style="margin-bottom: 10px;">
+                    <div class="adventure-title">💡 ${prompt}</div>
+                    <div class="adventure-actions">
+                        <button class="do-it-now-btn" onclick="completePrompt(${index})">✅ Done</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function completePrompt(index) {
+            const prompts = JSON.parse(localStorage.getItem('dailyPrompts') || '[]');
+            prompts.splice(index, 1);
+            localStorage.setItem('dailyPrompts', JSON.stringify(prompts));
+            
+            generateDailyPrompts();
+            showNotification('Great adventure planning! 🌟');
+            updateStreak();
+        }
+
+        // Motivational messages
+        function updateMotivationalMessage() {
+            const customMessage = localStorage.getItem('customMotivationalMessage');
+            const messageElement = document.getElementById('motivationalMessage');
+            
+            if (customMessage) {
+                messageElement.textContent = customMessage;
+            } else {
+                const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+                messageElement.textContent = randomMessage;
+            }
+            
+            // Add click handler to open message builder
+            messageElement.onclick = () => {
+                document.getElementById('customMessage').value = messageElement.textContent;
+                document.getElementById('messageModal').style.display = 'block';
+            };
+        }
+
+        function saveCustomMessage() {
+            const message = document.getElementById('customMessage').value.trim();
+            if (message) {
+                localStorage.setItem('customMotivationalMessage', message);
+                document.getElementById('motivationalMessage').textContent = message;
+                closeMessageModal();
+                showNotification('Custom message saved! 💬');
+            }
+        }
+
+        function generateRandomMessage() {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            document.getElementById('customMessage').value = randomMessage;
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // Voice input
+        function startVoiceInput(targetId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            const voiceBtn = event.target;
+            voiceBtn.classList.add('recording');
+            voiceBtn.textContent = '🔴';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetId).value = transcript;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice input captured! 🎤');
+            };
+
+            recognition.onerror = function(event) {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                showNotification('Voice recognition error: ' + event.error, 'error');
+            };
+
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+            };
+
+            recognition.start();
+        }
+
+        // Tag input functionality
+        function focusTagInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        // Statistics and analytics
+        function updateStats() {
+            const activeAdventures = adventures.filter(a => !a.completed && !a.archived).length;
+            const totalCheckpoints = adventures.reduce((sum, adventure) => 
+                sum + adventure.checkpoints.filter(cp => cp.completed).length, 0);
+            
+            document.getElementById('totalAdventures').textContent = activeAdventures;
+            document.getElementById('completedCheckpoints').textContent = totalCheckpoints;
+            document.getElementById('explorationStreak').textContent = explorationStreak;
+            document.getElementById('focusTime').textContent = Math.round(totalFocusTime / 60) + 'h';
+            
+            // Analytics tab stats
+            document.getElementById('totalAdventuresAnalytics').textContent = adventures.length;
+            document.getElementById('explorationStreakAnalytics').textContent = explorationStreak;
+            document.getElementById('totalFocusTimeAnalytics').textContent = Math.round(totalFocusTime / 60) + 'h';
+            
+            const totalPossibleCheckpoints = adventures.reduce((sum, adventure) => sum + adventure.checkpoints.length, 0);
+            const successRate = totalPossibleCheckpoints > 0 ? 
+                Math.round((totalCheckpoints / totalPossibleCheckpoints) * 100) : 0;
+            document.getElementById('checkpointSuccessRate').textContent = successRate + '%';
+            
+            updateCategoryBreakdown();
+            updateTimeDistribution();
+        }
+
+        function updateCategoryBreakdown() {
+            const categories = {};
+            adventures.forEach(adventure => {
+                categories[adventure.category] = (categories[adventure.category] || 0) + 1;
+            });
+            
+            const container = document.getElementById('categoryBreakdown');
+            container.innerHTML = Object.entries(categories)
+                .map(([category, count]) => `
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>${category}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('');
+        }
+
+        function updateTimeDistribution() {
+            const container = document.getElementById('timeDistribution');
+            const focusHours = Math.round(totalFocusTime / 60);
+            const explorationHours = (structuredActivities + spontaneousActivities) * 2; // Estimate 2h per activity
+            
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                    <span>Focus Time</span>
+                    <span>${focusHours}h</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                    <span>Exploration</span>
+                    <span>${explorationHours}h</span>
+                </div>
+            `;
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastActiveDate');
+            
+            if (lastActive === today) {
+                // Already active today, no change to streak
+                return;
+            }
+            
+            if (lastActive) {
+                const lastDate = new Date(lastActive);
+                const todayDate = new Date(today);
+                const diffTime = todayDate - lastDate;
+                const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    // Consecutive day
+                    explorationStreak++;
+                } else if (diffDays > 1) {
+                    // Streak broken
+                    explorationStreak = 1;
+                }
+            } else {
+                // First time
+                explorationStreak = 1;
+            }
+            
+            localStorage.setItem('lastActiveDate', today);
+            localStorage.setItem('explorationStreak', explorationStreak.toString());
+            updateStats();
+        }
+
+        function updateAdventureSelectors() {
+            const selector = document.getElementById('checkpointAdventureSelector');
+            selector.innerHTML = '<option value="">Select adventure...</option>';
+            
+            adventures.forEach(adventure => {
+                const option = document.createElement('option');
+                option.value = adventure.id;
+                option.textContent = adventure.title;
+                selector.appendChild(option);
+            });
+        }
+
+        // Reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            adventures.forEach(adventure => {
+                if (adventure.reminders.frequency === 'none' || adventure.completed) return;
+                
+                const endDate = new Date(adventure.endDate);
+                const timeDiff = endDate - now;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                
+                let shouldRemind = false;
+                
+                switch(adventure.reminders.frequency) {
+                    case 'daily':
+                        shouldRemind = daysDiff <= 7;
+                        break;
+                    case 'weekly':
+                        shouldRemind = daysDiff <= 14;
+                        break;
+                    case 'milestone':
+                        const nextCheckpoint = adventure.checkpoints.find(cp => !cp.completed);
+                        if (nextCheckpoint) {
+                            const startDate = new Date(adventure.startDate);
+                            const checkpointDate = new Date(startDate.getTime() + nextCheckpoint.days * 24 * 60 * 60 * 1000);
+                            shouldRemind = checkpointDate <= now;
+                        }
+                        break;
+                }
+                
+                if (shouldRemind && (!adventure.reminders.lastSent || 
+                    new Date(adventure.reminders.lastSent).toDateString() !== now.toDateString())) {
+                    
+                    showNotification(`Adventure Reminder: "${adventure.title}" needs attention`, 'reminder');
+                    adventure.reminders.lastSent = now.toISOString();
+                    saveData();
+                }
+            });
+        }
+
+        // Export and backup
+        function exportAnalytics() {
+            const completedAdventures = adventures.filter(a => a.completed);
+            const totalCheckpoints = adventures.reduce((sum, adventure) => 
+                sum + adventure.checkpoints.filter(cp => cp.completed).length, 0);
+            
+            const content = `
+AdventureTracker Analytics Report
+Generated: ${new Date().toLocaleDateString()}
+
+EXPLORATION OVERVIEW
+===================
+Total Adventures: ${adventures.length}
+Completed Adventures: ${completedAdventures.length}
+Active Adventures: ${adventures.filter(a => !a.completed && !a.archived).length}
+Completed Checkpoints: ${totalCheckpoints}
+Current Exploration Streak: ${explorationStreak} days
+Total Focus Time: ${Math.round(totalFocusTime / 60)} hours
+
+EXPLORATION BALANCE
+==================
+Structured Activities: ${structuredActivities}
+Spontaneous Activities: ${spontaneousActivities}
+Balance Ratio: ${structuredActivities}:${spontaneousActivities}
+
+ADVENTURES BY CATEGORY
+=====================
+${Object.entries(adventures.reduce((acc, a) => {
+    acc[a.category] = (acc[a.category] || 0) + 1;
+    return acc;
+}, {})).map(([cat, count]) => `${cat}: ${count}`).join('\n')}
+
+RECENT ADVENTURES
+================
+${adventures.slice(-10).map(a => `🏔️ ${a.title} - ${a.category} - ${a.progress}% complete`).join('\n')}
+            `.trim();
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `adventuretracker-analytics-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Analytics report exported! 📄');
+        }
+
+        function backupData() {
+            const data = {
+                adventures: adventures,
+                totalFocusTime: totalFocusTime,
+                explorationStreak: explorationStreak,
+                structuredActivities: structuredActivities,
+                spontaneousActivities: spontaneousActivities,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `adventuretracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data backed up! 💾');
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Continue?')) {
+                        adventures = data.adventures || [];
+                        totalFocusTime = data.totalFocusTime || 0;
+                        explorationStreak = data.explorationStreak || 0;
+                        structuredActivities = data.structuredActivities || 0;
+                        spontaneousActivities = data.spontaneousActivities || 0;
+                        
+                        updateAdventureSelectors();
+                        renderAdventures();
+                        updateStats();
+                        updateExplorationBalance();
+                        saveData();
+                        showNotification('Data imported successfully! 📥');
+                    }
+                } catch (error) {
+                    showNotification('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('adventureTracker_adventures', JSON.stringify(adventures));
+            localStorage.setItem('adventureTracker_focusTime', totalFocusTime);
+            localStorage.setItem('adventureTracker_streak', explorationStreak);
+            localStorage.setItem('adventureTracker_structured', structuredActivities);
+            localStorage.setItem('adventureTracker_spontaneous', spontaneousActivities);
+        }
+
+        function loadData() {
+            const savedAdventures = localStorage.getItem('adventureTracker_adventures');
+            const savedFocusTime = localStorage.getItem('adventureTracker_focusTime');
+            const savedStreak = localStorage.getItem('adventureTracker_streak');
+            const savedStructured = localStorage.getItem('adventureTracker_structured');
+            const savedSpontaneous = localStorage.getItem('adventureTracker_spontaneous');
+            
+            if (savedAdventures) adventures = JSON.parse(savedAdventures);
+            if (savedFocusTime) totalFocusTime = parseInt(savedFocusTime);
+            if (savedStreak) explorationStreak = parseInt(savedStreak);
+            if (savedStructured) structuredActivities = parseInt(savedStructured);
+            if (savedSpontaneous) spontaneousActivities = parseInt(savedSpontaneous);
+        }
+
+        // Offline functionality
+        function checkOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.textContent = '📡 Online';
+                indicator.classList.add('online');
+                indicator.style.display = 'block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            } else {
+                indicator.textContent = '📡 Offline Mode';
+                indicator.classList.remove('online');
+                indicator.style.display = 'block';
+            }
+        }
+
+        // Modal management
+        function closeAdventureModal() {
+            document.getElementById('adventureModal').style.display = 'none';
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            if (type === 'error') {
+                notification.style.background = 'rgba(244, 67, 54, 0.9)';
+            } else if (type === 'reminder') {
+                notification.style.background = 'rgba(255, 193, 7, 0.9)';
+                notification.style.color = '#1a237e';
+            } else if (type === 'info') {
+                notification.style.background = 'rgba(33, 150, 243, 0.9)';
+                notification.style.color = 'white';
+            } else {
+                notification.style.background = 'rgba(76, 175, 80, 0.9)';
+                notification.style.color = 'white';
+            }
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveData();
+                        showNotification('Data saved manually');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        switchTab('create');
+                        document.querySelector('[onclick="switchTab(\'create\')"]').classList.add('active');
+                        document.getElementById('adventureTitle').focus();
+                        break;
+                    case 'a':
+                        e.preventDefault();
+                        switchTab('adventures');
+                        document.querySelector('[onclick="switchTab(\'adventures\')"]').classList.add('active');
+                        break;
+                }
+            }
+        });
+
+        // Modal close functionality
+        window.onclick = function(event) {
+            const adventureModal = document.getElementById('adventureModal');
+            const messageModal = document.getElementById('messageModal');
+            
+            if (event.target === adventureModal) {
+                closeAdventureModal();
+            }
+            if (event.target === messageModal) {
+                closeMessageModal();
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98715831c7db1072',t:'MTc1OTIxMDM5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
