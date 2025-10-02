@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS SpeakMaster - Speaking Practice App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .prompt-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .recording-area {
+            background: white;
+            border: 3px solid var(--pale-green);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .recording-area.recording {
+            border-color: #dc2626;
+            background: #fef2f2;
+            animation: recordingPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); 
+            }
+            50% { 
+                box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); 
+            }
+        }
+        
+        .record-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+        }
+        
+        .record-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.4);
+        }
+        
+        .record-button.recording {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
+            animation: recordingButtonPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes recordingButtonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .band-heatmap {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .band-criterion {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .band-criterion:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+        }
+        
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .band-4 { color: #dc2626; }
+        .band-5 { color: #ea580c; }
+        .band-6 { color: #d97706; }
+        .band-7 { color: #ca8a04; }
+        .band-8 { color: #65a30d; }
+        .band-9 { color: #16a34a; }
+        
+        .vocabulary-card {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .vocabulary-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        
+        .progress-ring-bg {
+            stroke: var(--pale-green);
+        }
+        
+        .progress-ring-progress {
+            stroke: var(--medium-gold);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .transcript-area {
+            background: #f8fafc;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+        
+        .wave-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .wave-bar {
+            width: 4px;
+            height: 20px;
+            background: #dc2626;
+            border-radius: 2px;
+            animation: waveAnimation 1.5s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes waveAnimation {
+            0%, 100% { height: 8px; }
+            50% { height: 32px; }
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .prompt-card {
+                padding: 16px;
+            }
+            
+            .recording-area {
+                padding: 20px;
+            }
+            
+            .record-button {
+                width: 80px;
+                height: 80px;
+                font-size: 18px;
+            }
+            
+            .band-heatmap {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (prefers-contrast: high) {
+            .prompt-card {
+                border-width: 3px;
+            }
+            
+            .action-button {
+                border: 2px solid white;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎤</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">IELTS SpeakMaster</h1>
+                        <p class="text-accent-green text-sm">Daily Speaking Practice & Band Scoring</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Band Target -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-light-gold" id="bandTarget">7.0</div>
+                        <div class="text-xs text-accent-green">Target Band</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="practiceBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Practice
+                        </button>
+                        <button id="vocabularyBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Vocabulary
+                        </button>
+                        <button id="progressBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Progress
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Daily Challenge -->
+            <div class="prompt-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Today's Challenge</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-medium-green" id="todayDate"></span>
+                        <button id="refreshDailyBtn" class="action-button text-sm px-3 py-1 focus-visible">
+                            🔄 New
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Part 1 -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Part 1</h3>
+                            <span class="text-2xl">💬</span>
+                        </div>
+                        <div class="text-sm text-medium-green mb-3">Introduction & Interview</div>
+                        <div class="text-sm bg-pale-gold p-3 rounded mb-4" id="part1Question">
+                            Loading question...
+                        </div>
+                        <button onclick="startPractice('part1')" class="w-full action-button focus-visible">
+                            Practice Part 1
+                        </button>
+                    </div>
+
+                    <!-- Part 2 -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Part 2</h3>
+                            <span class="text-2xl">📝</span>
+                        </div>
+                        <div class="text-sm text-medium-green mb-3">Long Turn (2 minutes)</div>
+                        <div class="text-sm bg-pale-gold p-3 rounded mb-4" id="part2Topic">
+                            Loading topic...
+                        </div>
+                        <button onclick="startPractice('part2')" class="w-full action-button focus-visible">
+                            Practice Part 2
+                        </button>
+                    </div>
+
+                    <!-- Part 3 -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Part 3</h3>
+                            <span class="text-2xl">🤔</span>
+                        </div>
+                        <div class="text-sm text-medium-green mb-3">Discussion</div>
+                        <div class="text-sm bg-pale-gold p-3 rounded mb-4" id="part3Question">
+                            Loading question...
+                        </div>
+                        <button onclick="startPractice('part3')" class="w-full action-button focus-visible">
+                            Practice Part 3
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="totalPractices">0</div>
+                    <div class="text-sm text-medium-green">Total Practices</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="averageBand">0.0</div>
+                    <div class="text-sm text-medium-green">Average Band</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="thisWeekPractices">0</div>
+                    <div class="text-sm text-medium-green">This Week</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                    <div class="text-sm text-medium-green">Best Streak</div>
+                </div>
+            </div>
+
+            <!-- Recent Practices -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-dark-green">Recent Practices</h3>
+                    <button id="viewAllPracticesBtn" class="text-medium-gold hover:text-dark-gold transition-colors focus-visible">
+                        View All →
+                    </button>
+                </div>
+                
+                <div id="recentPractices" class="space-y-4">
+                    <!-- Recent practices will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice View -->
+        <div id="practiceView" class="hidden space-y-6">
+            <!-- Practice Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green" id="practiceTitle">IELTS Speaking Practice</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <span class="text-sm text-medium-green" id="practiceType">Part 1</span>
+                            <span class="text-sm text-medium-green" id="practiceTimer">00:00</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="savePracticeBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Save Practice
+                        </button>
+                        <button id="exportPracticeBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                        <button id="backToDashboardBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practice Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Practice Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Question/Topic Display -->
+                    <div class="prompt-card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Current Question</h3>
+                            <button id="nextQuestionBtn" class="action-button text-sm px-3 py-1 focus-visible">
+                                Next Question
+                            </button>
+                        </div>
+                        
+                        <div class="text-lg text-dark-green mb-4" id="currentQuestion">
+                            Select a practice type to begin
+                        </div>
+                        
+                        <!-- Part 2 Cue Card -->
+                        <div id="cueCard" class="hidden bg-white p-4 rounded-lg border-2 border-medium-gold">
+                            <h4 class="font-bold text-dark-green mb-2">Cue Card</h4>
+                            <div id="cueCardContent" class="text-sm text-medium-green">
+                                <!-- Cue card content will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Model Scaffold -->
+                        <div class="bg-pale-gold p-4 rounded-lg">
+                            <h4 class="font-bold text-dark-green mb-2">Model Scaffold</h4>
+                            <div id="modelScaffold" class="text-sm text-medium-green">
+                                <!-- Model scaffold will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recording Area -->
+                    <div class="recording-area" id="recordingArea">
+                        <div class="mb-6">
+                            <button id="recordButton" class="record-button focus-visible" aria-label="Start recording">
+                                🎤
+                            </button>
+                        </div>
+                        
+                        <div id="recordingStatus" class="text-lg font-semibold text-gray-600 mb-4">
+                            Ready to record
+                        </div>
+                        
+                        <div id="waveAnimation" class="wave-animation hidden mb-4">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        
+                        <div class="flex justify-center space-x-4">
+                            <button id="playRecordingBtn" class="px-6 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors disabled:opacity-50 focus-visible" disabled>
+                                ▶️ Play
+                            </button>
+                            <button id="clearRecordingBtn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 focus-visible" disabled>
+                                🗑️ Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transcript Area -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-dark-green">Transcript</h3>
+                            <button id="generateTranscriptBtn" class="action-button text-sm px-3 py-1 focus-visible">
+                                Generate Transcript
+                            </button>
+                        </div>
+                        
+                        <div class="transcript-area" id="transcriptArea">
+                            <p class="text-gray-500 text-center">Record your response to generate a transcript</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Band Rubric Heatmap -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Band Score Analysis</h3>
+                        
+                        <div class="band-heatmap">
+                            <div class="band-criterion">
+                                <div class="band-score band-6" id="fluencyScore">6.0</div>
+                                <div class="text-xs text-medium-green">Fluency & Coherence</div>
+                            </div>
+                            
+                            <div class="band-criterion">
+                                <div class="band-score band-6" id="lexicalScore">6.0</div>
+                                <div class="text-xs text-medium-green">Lexical Resource</div>
+                            </div>
+                            
+                            <div class="band-criterion">
+                                <div class="band-score band-6" id="grammarScore">6.0</div>
+                                <div class="text-xs text-medium-green">Grammar Range</div>
+                            </div>
+                            
+                            <div class="band-criterion">
+                                <div class="band-score band-6" id="pronunciationScore">6.0</div>
+                                <div class="text-xs text-medium-green">Pronunciation</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <div class="text-2xl font-bold text-dark-green" id="overallBand">6.0</div>
+                            <div class="text-sm text-medium-green">Overall Band Score</div>
+                        </div>
+                        
+                        <button id="analyzeSpeechBtn" class="w-full action-button mt-4 focus-visible">
+                            Analyze Speech
+                        </button>
+                    </div>
+
+                    <!-- Quick Vocabulary -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Quick Vocabulary</h3>
+                        
+                        <div id="quickVocabulary" class="space-y-2">
+                            <!-- Quick vocabulary will be populated here -->
+                        </div>
+                        
+                        <button id="refreshVocabBtn" class="w-full action-button mt-4 text-sm focus-visible">
+                            🔄 New Words
+                        </button>
+                    </div>
+
+                    <!-- Practice Timer -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green text-center">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Timer</h3>
+                        
+                        <div class="relative inline-block">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring-bg progress-ring-circle" cx="60" cy="60" r="50"></circle>
+                                <circle class="progress-ring-progress progress-ring-circle" cx="60" cy="60" r="50" id="timerProgress"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-xl font-bold text-dark-green" id="timerDisplay">0:00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <button id="startTimerBtn" class="w-full action-button text-sm focus-visible">
+                                Start Timer
+                            </button>
+                            <button id="resetTimerBtn" class="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm focus-visible">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary View -->
+        <div id="vocabularyView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Advanced Vocabulary Bank</h2>
+                    <div class="flex space-x-2">
+                        <button id="addVocabBtn" class="action-button focus-visible">
+                            + Add Word
+                        </button>
+                        <button id="randomVocabBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            🎲 Random
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Vocabulary Categories -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="vocab-category active px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible" data-category="all">
+                        All
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="academic">
+                        Academic
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="descriptive">
+                        Descriptive
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="expressions">
+                        Expressions
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="connectors">
+                        Connectors
+                    </button>
+                </div>
+                
+                <!-- Vocabulary Grid -->
+                <div id="vocabularyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Vocabulary cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress View -->
+        <div id="progressView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Progress Analytics</h2>
+                
+                <!-- Band Target Tracker -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Band Target Progress</h3>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm text-medium-green">Current Average:</span>
+                            <span class="text-xl font-bold text-dark-green" id="currentAverage">6.5</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm text-medium-green">Target Band:</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl font-bold text-dark-green" id="targetDisplay">7.0</span>
+                                <button id="editTargetBtn" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                    ✏️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                            <div class="bg-medium-gold h-4 rounded-full transition-all duration-500" id="targetProgress" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="text-xs text-gray-600 text-center" id="progressText">
+                            Keep practicing to reach your target!
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Weekly Goal</h3>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green mb-2" id="weeklyProgress">3/7</div>
+                            <div class="text-sm text-medium-green mb-4">Practices This Week</div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-accent-green h-3 rounded-full transition-all duration-500" id="weeklyProgressBar" style="width: 43%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalMinutes">0</div>
+                        <div class="text-sm text-medium-green">Total Minutes</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averageLength">0</div>
+                        <div class="text-sm text-medium-green">Avg Length (min)</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="improvementRate">+0.0</div>
+                        <div class="text-sm text-medium-green">Improvement Rate</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="consistencyScore">0%</div>
+                        <div class="text-sm text-medium-green">Consistency</div>
+                    </div>
+                </div>
+
+                <!-- Practice History -->
+                <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Recent Practice History</h3>
+                    
+                    <div id="practiceHistory" class="space-y-3">
+                        <!-- Practice history will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Practice Settings -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Band Target</label>
+                                <select id="bandTargetSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="5.5">5.5</option>
+                                    <option value="6.0">6.0</option>
+                                    <option value="6.5">6.5</option>
+                                    <option value="7.0" selected>7.0</option>
+                                    <option value="7.5">7.5</option>
+                                    <option value="8.0">8.0</option>
+                                    <option value="8.5">8.5</option>
+                                    <option value="9.0">9.0</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Practice Goal</label>
+                                <select id="dailyGoalSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="1" selected>1 practice</option>
+                                    <option value="2">2 practices</option>
+                                    <option value="3">3 practices</option>
+                                    <option value="5">5 practices</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-generate Transcript</label>
+                                <input type="checkbox" id="autoTranscriptToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Voice Feedback</label>
+                                <input type="checkbox" id="voiceFeedbackToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Notifications</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Reminders</label>
+                                <input type="checkbox" id="dailyRemindersToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Reminder Time</label>
+                                <input type="time" id="reminderTimeInput" value="09:00" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add New Vocabulary</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Word/Expression</label>
+                    <input type="text" id="vocabWordInput" placeholder="e.g., Nevertheless" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Definition</label>
+                    <textarea id="vocabDefinitionInput" placeholder="Meaning and usage..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Example</label>
+                    <textarea id="vocabExampleInput" placeholder="Example sentence..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="2"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="vocabCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="academic">Academic</option>
+                        <option value="descriptive">Descriptive</option>
+                        <option value="expressions">Expressions</option>
+                        <option value="connectors">Connectors</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveVocabBtn" class="flex-1 action-button focus-visible">
+                    Add Vocabulary
+                </button>
+                <button id="cancelVocabBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            isRecording: false,
+            currentRecording: null,
+            currentPractice: null,
+            practiceTimer: {
+                startTime: null,
+                elapsed: 0,
+                interval: null
+            },
+            mediaRecorder: null,
+            audioChunks: [],
+            speechRecognition: null,
+            userData: {
+                practices: [],
+                vocabulary: [],
+                streak: 0,
+                longestStreak: 0,
+                lastActiveDate: null,
+                bandTarget: 7.0,
+                totalPractices: 0,
+                totalMinutes: 0,
+                averageBand: 0,
+                settings: {
+                    dailyGoal: 1,
+                    autoTranscript: true,
+                    voiceFeedback: true,
+                    dailyReminders: true,
+                    reminderTime: '09:00'
+                }
+            }
+        };
+
+        // IELTS Speaking Questions Database
+        const questionsDatabase = {
+            part1: {
+                topics: ['Work/Study', 'Hometown', 'Accommodation', 'Family', 'Friends', 'Food', 'Transport', 'Weather', 'Shopping', 'Technology'],
+                questions: {
+                    'Work/Study': [
+                        "Do you work or are you a student?",
+                        "What do you like most about your job/studies?",
+                        "What would you like to change about your work/studies?",
+                        "Do you think you will continue this job/course in the future?"
+                    ],
+                    'Hometown': [
+                        "Where are you from?",
+                        "What do you like about your hometown?",
+                        "Has your hometown changed much over the years?",
+                        "Would you recommend your hometown to visitors?"
+                    ],
+                    'Food': [
+                        "What's your favorite type of food?",
+                        "Do you prefer eating at home or in restaurants?",
+                        "Have your eating habits changed over the years?",
+                        "What food from your country would you recommend to foreigners?"
+                    ]
+                }
+            },
+            part2: {
+                topics: [
+                    {
+                        title: "Describe a person who has influenced you",
+                        bullets: [
+                            "Who this person is",
+                            "How you know them",
+                            "What influence they have had on you",
+                            "And explain why this person is important to you"
+                        ]
+                    },
+                    {
+                        title: "Describe a place you would like to visit",
+                        bullets: [
+                            "Where this place is",
+                            "How you learned about it",
+                            "What you would do there",
+                            "And explain why you want to visit this place"
+                        ]
+                    },
+                    {
+                        title: "Describe a skill you would like to learn",
+                        bullets: [
+                            "What skill this is",
+                            "How you would learn it",
+                            "Why you want to learn this skill",
+                            "And explain how this skill would benefit you"
+                        ]
+                    }
+                ]
+            },
+            part3: {
+                themes: ['Education', 'Technology', 'Environment', 'Society', 'Culture', 'Work'],
+                questions: {
+                    'Education': [
+                        "How has education changed in your country over the past decade?",
+                        "What role should technology play in education?",
+                        "Do you think online learning is as effective as traditional classroom learning?"
+                    ],
+                    'Technology': [
+                        "How has technology changed the way people communicate?",
+                        "What are the advantages and disadvantages of social media?",
+                        "Do you think people are too dependent on technology nowadays?"
+                    ],
+                    'Environment': [
+                        "What are the main environmental problems in your country?",
+                        "How can individuals contribute to environmental protection?",
+                        "Do you think governments are doing enough to address climate change?"
+                    ]
+                }
+            }
+        };
+
+        // Advanced Vocabulary Database
+        const vocabularyDatabase = [
+            {
+                id: 1,
+                word: "Nevertheless",
+                definition: "Despite what has just been said; however",
+                example: "The weather was terrible. Nevertheless, we enjoyed our trip.",
+                category: "connectors",
+                level: "advanced"
+            },
+            {
+                id: 2,
+                word: "Compelling",
+                definition: "Evoking interest, attention, or admiration in a powerfully irresistible way",
+                example: "She presented a compelling argument for renewable energy.",
+                category: "academic"
+            },
+            {
+                id: 3,
+                word: "Ubiquitous",
+                definition: "Present, appearing, or found everywhere",
+                example: "Smartphones have become ubiquitous in modern society.",
+                category: "academic"
+            },
+            {
+                id: 4,
+                word: "To put it succinctly",
+                definition: "To express something clearly and in few words",
+                example: "To put it succinctly, the project was a complete success.",
+                category: "expressions"
+            },
+            {
+                id: 5,
+                word: "Breathtaking",
+                definition: "Astonishing or awe-inspiring in quality, so as to take one's breath away",
+                example: "The view from the mountain top was absolutely breathtaking.",
+                category: "descriptive"
+            }
+        ];
+
+        // Model Scaffolds
+        const modelScaffolds = {
+            part1: {
+                structure: "Direct answer → Explanation → Example/Detail → Future/Opinion",
+                example: "Yes, I do... → This is because... → For instance... → In the future, I think..."
+            },
+            part2: {
+                structure: "Introduction → Point 1 → Point 2 → Point 3 → Conclusion",
+                example: "I'd like to talk about... → Firstly... → Additionally... → What's more... → Overall..."
+            },
+            part3: {
+                structure: "Direct answer → Explanation → Example → Contrast → Conclusion",
+                example: "I believe that... → The main reason is... → For example... → However... → In conclusion..."
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeMediaRecorder();
+            initializeSpeechRecognition();
+            loadUserData();
+            updateUI();
+            generateDailyQuestions();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize default vocabulary if empty
+            if (appState.userData.vocabulary.length === 0) {
+                appState.userData.vocabulary = [...vocabularyDatabase];
+                saveUserData();
+            }
+            
+            // Set today's date
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('practiceBtn').addEventListener('click', () => showView('practice'));
+            document.getElementById('vocabularyBtn').addEventListener('click', () => showView('vocabulary'));
+            document.getElementById('progressBtn').addEventListener('click', () => showView('progress'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+            document.getElementById('backToDashboardBtn').addEventListener('click', () => showView('dashboard'));
+
+            // Dashboard actions
+            document.getElementById('refreshDailyBtn').addEventListener('click', generateDailyQuestions);
+            document.getElementById('viewAllPracticesBtn').addEventListener('click', () => showView('progress'));
+
+            // Practice controls
+            document.getElementById('recordButton').addEventListener('click', toggleRecording);
+            document.getElementById('playRecordingBtn').addEventListener('click', playRecording);
+            document.getElementById('clearRecordingBtn').addEventListener('click', clearRecording);
+            document.getElementById('nextQuestionBtn').addEventListener('click', nextQuestion);
+            document.getElementById('generateTranscriptBtn').addEventListener('click', generateTranscript);
+            document.getElementById('analyzeSpeechBtn').addEventListener('click', analyzeSpeech);
+            document.getElementById('savePracticeBtn').addEventListener('click', savePractice);
+            document.getElementById('exportPracticeBtn').addEventListener('click', exportPractice);
+
+            // Timer controls
+            document.getElementById('startTimerBtn').addEventListener('click', startTimer);
+            document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+            // Vocabulary controls
+            document.getElementById('addVocabBtn').addEventListener('click', showAddVocabModal);
+            document.getElementById('randomVocabBtn').addEventListener('click', showRandomVocabulary);
+            document.getElementById('refreshVocabBtn').addEventListener('click', refreshQuickVocabulary);
+            document.getElementById('saveVocabBtn').addEventListener('click', saveNewVocabulary);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideAddVocabModal);
+
+            // Vocabulary categories
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.addEventListener('click', (e) => filterVocabulary(e.target.dataset.category));
+            });
+
+            // Progress controls
+            document.getElementById('editTargetBtn').addEventListener('click', editBandTarget);
+
+            // Settings
+            document.getElementById('bandTargetSelect').addEventListener('change', updateBandTarget);
+            document.getElementById('dailyGoalSelect').addEventListener('change', updateDailyGoal);
+            document.getElementById('autoTranscriptToggle').addEventListener('change', updateAutoTranscript);
+            document.getElementById('voiceFeedbackToggle').addEventListener('change', updateVoiceFeedback);
+            document.getElementById('dailyRemindersToggle').addEventListener('change', updateDailyReminders);
+            document.getElementById('reminderTimeInput').addEventListener('change', updateReminderTime);
+
+            // Data management
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+        }
+
+        function initializeMediaRecorder() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        appState.mediaRecorder = new MediaRecorder(stream);
+                        
+                        appState.mediaRecorder.ondataavailable = event => {
+                            appState.audioChunks.push(event.data);
+                        };
+                        
+                        appState.mediaRecorder.onstop = () => {
+                            const audioBlob = new Blob(appState.audioChunks, { type: 'audio/wav' });
+                            appState.currentRecording = audioBlob;
+                            appState.audioChunks = [];
+                            
+                            document.getElementById('playRecordingBtn').disabled = false;
+                            document.getElementById('clearRecordingBtn').disabled = false;
+                            
+                            if (appState.userData.settings.autoTranscript) {
+                                generateTranscript();
+                            }
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Error accessing microphone:', error);
+                        showNotification('Microphone access denied', 'error');
+                    });
+            }
+        }
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.speechRecognition = new SpeechRecognition();
+                
+                appState.speechRecognition.continuous = true;
+                appState.speechRecognition.interimResults = true;
+                appState.speechRecognition.lang = 'en-US';
+                
+                appState.speechRecognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+                    
+                    if (finalTranscript && appState.currentPractice) {
+                        appState.currentPractice.transcript = (appState.currentPractice.transcript || '') + finalTranscript;
+                        updateTranscriptDisplay();
+                    }
+                };
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('ieltsSpeak MasterData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('ieltsSpeakMasterData', JSON.stringify(appState.userData));
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('practiceView').classList.add('hidden');
+            document.getElementById('vocabularyView').classList.add('hidden');
+            document.getElementById('progressView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'vocabulary') {
+                updateVocabularyView();
+            } else if (viewName === 'progress') {
+                updateProgressView();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updateBandTargetDisplay();
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalPractices').textContent = appState.userData.totalPractices;
+            document.getElementById('averageBand').textContent = appState.userData.averageBand.toFixed(1);
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Calculate this week's practices
+            const thisWeek = getThisWeekPractices();
+            document.getElementById('thisWeekPractices').textContent = thisWeek;
+            
+            // Update recent practices
+            updateRecentPractices();
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function updateBandTargetDisplay() {
+            document.getElementById('bandTarget').textContent = appState.userData.bandTarget.toFixed(1);
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            saveUserData();
+        }
+
+        function generateDailyQuestions() {
+            // Generate Part 1 question
+            const part1Topics = Object.keys(questionsDatabase.part1.questions);
+            const randomTopic = part1Topics[Math.floor(Math.random() * part1Topics.length)];
+            const topicQuestions = questionsDatabase.part1.questions[randomTopic];
+            const randomQuestion = topicQuestions[Math.floor(Math.random() * topicQuestions.length)];
+            document.getElementById('part1Question').textContent = randomQuestion;
+
+            // Generate Part 2 topic
+            const part2Topics = questionsDatabase.part2.topics;
+            const randomPart2 = part2Topics[Math.floor(Math.random() * part2Topics.length)];
+            document.getElementById('part2Topic').textContent = randomPart2.title;
+
+            // Generate Part 3 question
+            const part3Themes = Object.keys(questionsDatabase.part3.questions);
+            const randomTheme = part3Themes[Math.floor(Math.random() * part3Themes.length)];
+            const themeQuestions = questionsDatabase.part3.questions[randomTheme];
+            const randomPart3Question = themeQuestions[Math.floor(Math.random() * themeQuestions.length)];
+            document.getElementById('part3Question').textContent = randomPart3Question;
+
+            showNotification('New daily questions generated!', 'success');
+        }
+
+        function startPractice(part) {
+            appState.currentPractice = {
+                id: generateId(),
+                part: part,
+                startTime: new Date().toISOString(),
+                question: '',
+                transcript: '',
+                bandScores: {
+                    fluency: 6.0,
+                    lexical: 6.0,
+                    grammar: 6.0,
+                    pronunciation: 6.0,
+                    overall: 6.0
+                },
+                duration: 0
+            };
+
+            // Set the question based on part
+            if (part === 'part1') {
+                appState.currentPractice.question = document.getElementById('part1Question').textContent;
+            } else if (part === 'part2') {
+                appState.currentPractice.question = document.getElementById('part2Topic').textContent;
+            } else if (part === 'part3') {
+                appState.currentPractice.question = document.getElementById('part3Question').textContent;
+            }
+
+            showView('practice');
+            loadPracticeContent();
+            refreshQuickVocabulary();
+        }
+
+        function loadPracticeContent() {
+            if (!appState.currentPractice) return;
+
+            const practice = appState.currentPractice;
+            document.getElementById('practiceTitle').textContent = `IELTS Speaking ${practice.part.toUpperCase()}`;
+            document.getElementById('practiceType').textContent = practice.part.toUpperCase();
+            document.getElementById('currentQuestion').textContent = practice.question;
+
+            // Show/hide cue card for Part 2
+            if (practice.part === 'part2') {
+                const cueCard = document.getElementById('cueCard');
+                cueCard.classList.remove('hidden');
+                
+                // Find the matching Part 2 topic
+                const part2Topic = questionsDatabase.part2.topics.find(t => t.title === practice.question);
+                if (part2Topic) {
+                    document.getElementById('cueCardContent').innerHTML = part2Topic.bullets.map(bullet => `• ${bullet}`).join('<br>');
+                }
+            } else {
+                document.getElementById('cueCard').classList.add('hidden');
+            }
+
+            // Update model scaffold
+            const scaffold = modelScaffolds[practice.part];
+            document.getElementById('modelScaffold').innerHTML = `
+                <div class="mb-2"><strong>Structure:</strong> ${scaffold.structure}</div>
+                <div><strong>Example:</strong> ${scaffold.example}</div>
+            `;
+        }
+
+        function nextQuestion() {
+            if (!appState.currentPractice) return;
+
+            const part = appState.currentPractice.part;
+            
+            if (part === 'part1') {
+                // Generate new Part 1 question
+                const part1Topics = Object.keys(questionsDatabase.part1.questions);
+                const randomTopic = part1Topics[Math.floor(Math.random() * part1Topics.length)];
+                const topicQuestions = questionsDatabase.part1.questions[randomTopic];
+                const randomQuestion = topicQuestions[Math.floor(Math.random() * topicQuestions.length)];
+                appState.currentPractice.question = randomQuestion;
+            } else if (part === 'part2') {
+                // Generate new Part 2 topic
+                const part2Topics = questionsDatabase.part2.topics;
+                const randomPart2 = part2Topics[Math.floor(Math.random() * part2Topics.length)];
+                appState.currentPractice.question = randomPart2.title;
+            } else if (part === 'part3') {
+                // Generate new Part 3 question
+                const part3Themes = Object.keys(questionsDatabase.part3.questions);
+                const randomTheme = part3Themes[Math.floor(Math.random() * part3Themes.length)];
+                const themeQuestions = questionsDatabase.part3.questions[randomTheme];
+                const randomPart3Question = themeQuestions[Math.floor(Math.random() * themeQuestions.length)];
+                appState.currentPractice.question = randomPart3Question;
+            }
+
+            loadPracticeContent();
+            showNotification('New question loaded!', 'success');
+        }
+
+        // Recording Functions
+        function toggleRecording() {
+            if (appState.isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        function startRecording() {
+            if (!appState.mediaRecorder) {
+                showNotification('Microphone not available', 'error');
+                return;
+            }
+
+            appState.isRecording = true;
+            appState.audioChunks = [];
+            
+            // Update UI
+            const recordButton = document.getElementById('recordButton');
+            const recordingArea = document.getElementById('recordingArea');
+            const recordingStatus = document.getElementById('recordingStatus');
+            const waveAnimation = document.getElementById('waveAnimation');
+            
+            recordButton.classList.add('recording');
+            recordButton.innerHTML = '⏹️';
+            recordingArea.classList.add('recording');
+            recordingStatus.textContent = 'Recording in progress...';
+            waveAnimation.classList.remove('hidden');
+            
+            // Start recording
+            appState.mediaRecorder.start();
+            
+            // Start speech recognition if available
+            if (appState.speechRecognition && appState.userData.settings.autoTranscript) {
+                try {
+                    appState.speechRecognition.start();
+                } catch (e) {
+                    console.log('Speech recognition already running');
+                }
+            }
+            
+            // Start practice timer
+            if (!appState.practiceTimer.startTime) {
+                startTimer();
+            }
+            
+            showNotification('Recording started', 'success');
+        }
+
+        function stopRecording() {
+            appState.isRecording = false;
+            
+            // Update UI
+            const recordButton = document.getElementById('recordButton');
+            const recordingArea = document.getElementById('recordingArea');
+            const recordingStatus = document.getElementById('recordingStatus');
+            const waveAnimation = document.getElementById('waveAnimation');
+            
+            recordButton.classList.remove('recording');
+            recordButton.innerHTML = '🎤';
+            recordingArea.classList.remove('recording');
+            recordingStatus.textContent = 'Recording completed';
+            waveAnimation.classList.add('hidden');
+            
+            // Stop recording
+            if (appState.mediaRecorder && appState.mediaRecorder.state === 'recording') {
+                appState.mediaRecorder.stop();
+            }
+            
+            // Stop speech recognition
+            if (appState.speechRecognition) {
+                try {
+                    appState.speechRecognition.stop();
+                } catch (e) {
+                    console.log('Speech recognition already stopped');
+                }
+            }
+            
+            showNotification('Recording stopped', 'success');
+        }
+
+        function playRecording() {
+            if (!appState.currentRecording) {
+                showNotification('No recording available', 'warning');
+                return;
+            }
+
+            const audio = new Audio(URL.createObjectURL(appState.currentRecording));
+            audio.play();
+            showNotification('Playing recording', 'info');
+        }
+
+        function clearRecording() {
+            if (confirm('Are you sure you want to clear the current recording?')) {
+                appState.currentRecording = null;
+                appState.audioChunks = [];
+                
+                document.getElementById('playRecordingBtn').disabled = true;
+                document.getElementById('clearRecordingBtn').disabled = true;
+                document.getElementById('recordingStatus').textContent = 'Ready to record';
+                
+                // Clear transcript
+                if (appState.currentPractice) {
+                    appState.currentPractice.transcript = '';
+                    updateTranscriptDisplay();
+                }
+                
+                showNotification('Recording cleared', 'success');
+            }
+        }
+
+        function generateTranscript() {
+            if (!appState.currentPractice) {
+                showNotification('No active practice session', 'warning');
+                return;
+            }
+
+            // Simulate transcript generation (in a real app, this would use speech-to-text API)
+            const sampleTranscripts = [
+                "Well, I think this is a really interesting question. From my perspective, there are several important factors to consider. Firstly, I believe that... Additionally, it's worth mentioning that... Overall, I would say that this topic is quite complex and requires careful consideration.",
+                "That's a great question. In my opinion, this issue has become increasingly important in recent years. The main reason I think this is because... For example, in my country... However, there are also some challenges that we need to address...",
+                "I'd like to talk about this topic because it's something I'm quite passionate about. To begin with... What's more... Another point I'd like to make is... In conclusion, I believe that..."
+            ];
+
+            const randomTranscript = sampleTranscripts[Math.floor(Math.random() * sampleTranscripts.length)];
+            appState.currentPractice.transcript = randomTranscript;
+            updateTranscriptDisplay();
+            
+            showNotification('Transcript generated', 'success');
+        }
+
+        function updateTranscriptDisplay() {
+            const transcriptArea = document.getElementById('transcriptArea');
+            if (appState.currentPractice && appState.currentPractice.transcript) {
+                transcriptArea.innerHTML = `<p>${appState.currentPractice.transcript}</p>`;
+            } else {
+                transcriptArea.innerHTML = '<p class="text-gray-500 text-center">Record your response to generate a transcript</p>';
+            }
+        }
+
+        function analyzeSpeech() {
+            if (!appState.currentPractice || !appState.currentPractice.transcript) {
+                showNotification('Please record and generate a transcript first', 'warning');
+                return;
+            }
+
+            // Simulate band score analysis
+            const transcript = appState.currentPractice.transcript;
+            const wordCount = transcript.split(' ').length;
+            
+            // Simple scoring algorithm (in a real app, this would use AI/ML)
+            const fluencyScore = Math.min(9, Math.max(4, 5 + (wordCount / 50)));
+            const lexicalScore = Math.min(9, Math.max(4, 5 + (transcript.split(' ').filter(word => word.length > 6).length / 10)));
+            const grammarScore = Math.min(9, Math.max(4, 5.5 + Math.random()));
+            const pronunciationScore = Math.min(9, Math.max(4, 6 + Math.random()));
+            
+            const overallScore = (fluencyScore + lexicalScore + grammarScore + pronunciationScore) / 4;
+            
+            // Update band scores
+            appState.currentPractice.bandScores = {
+                fluency: Math.round(fluencyScore * 2) / 2,
+                lexical: Math.round(lexicalScore * 2) / 2,
+                grammar: Math.round(grammarScore * 2) / 2,
+                pronunciation: Math.round(pronunciationScore * 2) / 2,
+                overall: Math.round(overallScore * 2) / 2
+            };
+            
+            updateBandScoreDisplay();
+            showNotification('Speech analysis completed', 'success');
+        }
+
+        function updateBandScoreDisplay() {
+            if (!appState.currentPractice) return;
+
+            const scores = appState.currentPractice.bandScores;
+            
+            document.getElementById('fluencyScore').textContent = scores.fluency.toFixed(1);
+            document.getElementById('lexicalScore').textContent = scores.lexical.toFixed(1);
+            document.getElementById('grammarScore').textContent = scores.grammar.toFixed(1);
+            document.getElementById('pronunciationScore').textContent = scores.pronunciation.toFixed(1);
+            document.getElementById('overallBand').textContent = scores.overall.toFixed(1);
+            
+            // Update colors based on band scores
+            updateBandScoreColors('fluencyScore', scores.fluency);
+            updateBandScoreColors('lexicalScore', scores.lexical);
+            updateBandScoreColors('grammarScore', scores.grammar);
+            updateBandScoreColors('pronunciationScore', scores.pronunciation);
+        }
+
+        function updateBandScoreColors(elementId, score) {
+            const element = document.getElementById(elementId);
+            element.className = 'band-score';
+            
+            if (score >= 8.5) element.classList.add('band-9');
+            else if (score >= 7.5) element.classList.add('band-8');
+            else if (score >= 6.5) element.classList.add('band-7');
+            else if (score >= 5.5) element.classList.add('band-6');
+            else if (score >= 4.5) element.classList.add('band-5');
+            else element.classList.add('band-4');
+        }
+
+        // Timer Functions
+        function startTimer() {
+            if (appState.practiceTimer.interval) return;
+
+            appState.practiceTimer.startTime = Date.now() - appState.practiceTimer.elapsed;
+            
+            appState.practiceTimer.interval = setInterval(() => {
+                appState.practiceTimer.elapsed = Date.now() - appState.practiceTimer.startTime;
+                updateTimerDisplay();
+            }, 1000);
+            
+            document.getElementById('startTimerBtn').textContent = 'Pause Timer';
+        }
+
+        function resetTimer() {
+            if (appState.practiceTimer.interval) {
+                clearInterval(appState.practiceTimer.interval);
+                appState.practiceTimer.interval = null;
+            }
+            
+            appState.practiceTimer.startTime = null;
+            appState.practiceTimer.elapsed = 0;
+            
+            updateTimerDisplay();
+            document.getElementById('startTimerBtn').textContent = 'Start Timer';
+        }
+
+        function updateTimerDisplay() {
+            const elapsed = appState.practiceTimer.elapsed;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = timeString;
+            document.getElementById('practiceTimer').textContent = timeString;
+            
+            // Update progress ring (assuming 2-minute target for Part 2)
+            const targetTime = appState.currentPractice?.part === 'part2' ? 120000 : 60000;
+            const progress = Math.min(elapsed / targetTime, 1);
+            const circumference = 2 * Math.PI * 50;
+            const offset = circumference - (progress * circumference);
+            
+            document.getElementById('timerProgress').style.strokeDashoffset = offset;
+        }
+
+        function savePractice() {
+            if (!appState.currentPractice) {
+                showNotification('No practice session to save', 'warning');
+                return;
+            }
+
+            // Calculate duration
+            appState.currentPractice.duration = Math.floor(appState.practiceTimer.elapsed / 1000);
+            appState.currentPractice.endTime = new Date().toISOString();
+            
+            // Add to practices array
+            appState.userData.practices.push({ ...appState.currentPractice });
+            
+            // Update statistics
+            appState.userData.totalPractices++;
+            appState.userData.totalMinutes += Math.floor(appState.currentPractice.duration / 60);
+            
+            // Update average band score
+            const totalScore = appState.userData.practices.reduce((sum, p) => sum + (p.bandScores?.overall || 0), 0);
+            appState.userData.averageBand = totalScore / appState.userData.practices.length;
+            
+            // Update streak
+            updatePracticeStreak();
+            
+            saveUserData();
+            showNotification('Practice saved successfully', 'success');
+        }
+
+        function updatePracticeStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive !== today) {
+                if (lastActive) {
+                    const lastActiveDate = new Date(lastActive);
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (lastActiveDate.toDateString() === yesterday.toDateString()) {
+                        appState.userData.streak++;
+                    } else {
+                        appState.userData.streak = 1;
+                    }
+                } else {
+                    appState.userData.streak = 1;
+                }
+                
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                updateStreak();
+            }
+        }
+
+        function exportPractice() {
+            if (!appState.currentPractice) {
+                showNotification('No practice session to export', 'warning');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('IELTS Speaking Practice Report', 20, 30);
+                
+                // Practice details
+                doc.setFontSize(12);
+                doc.text(`Part: ${appState.currentPractice.part.toUpperCase()}`, 20, 50);
+                doc.text(`Date: ${new Date(appState.currentPractice.startTime).toLocaleDateString()}`, 20, 60);
+                doc.text(`Duration: ${Math.floor(appState.currentPractice.duration / 60)}:${(appState.currentPractice.duration % 60).toString().padStart(2, '0')}`, 20, 70);
+                
+                // Question
+                doc.text('Question:', 20, 90);
+                const questionLines = doc.splitTextToSize(appState.currentPractice.question, 170);
+                doc.text(questionLines, 20, 100);
+                
+                // Band scores
+                let yPos = 120 + (questionLines.length * 5);
+                doc.text('Band Scores:', 20, yPos);
+                yPos += 10;
+                
+                const scores = appState.currentPractice.bandScores;
+                doc.text(`Fluency & Coherence: ${scores.fluency}`, 20, yPos);
+                doc.text(`Lexical Resource: ${scores.lexical}`, 20, yPos + 10);
+                doc.text(`Grammatical Range: ${scores.grammar}`, 20, yPos + 20);
+                doc.text(`Pronunciation: ${scores.pronunciation}`, 20, yPos + 30);
+                doc.text(`Overall Band Score: ${scores.overall}`, 20, yPos + 45);
+                
+                // Transcript
+                if (appState.currentPractice.transcript) {
+                    yPos += 65;
+                    doc.text('Transcript:', 20, yPos);
+                    yPos += 10;
+                    const transcriptLines = doc.splitTextToSize(appState.currentPractice.transcript, 170);
+                    doc.text(transcriptLines, 20, yPos);
+                }
+                
+                // Save
+                doc.save(`ielts-practice-${appState.currentPractice.part}-${new Date().toISOString().split('T')[0]}.pdf`);
+                showNotification('Practice report exported', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        // Vocabulary Functions
+        function updateVocabularyView() {
+            filterVocabulary('all');
+        }
+
+        function filterVocabulary(category) {
+            // Update active category button
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.classList.remove('active', 'bg-medium-gold', 'text-white');
+                btn.classList.add('bg-pale-green', 'text-dark-green');
+            });
+            
+            const activeBtn = document.querySelector(`[data-category="${category}"]`);
+            activeBtn.classList.add('active', 'bg-medium-gold', 'text-white');
+            activeBtn.classList.remove('bg-pale-green', 'text-dark-green');
+            
+            // Filter vocabulary
+            const filteredVocab = category === 'all' 
+                ? appState.userData.vocabulary 
+                : appState.userData.vocabulary.filter(v => v.category === category);
+            
+            const vocabularyGrid = document.getElementById('vocabularyGrid');
+            
+            if (filteredVocab.length === 0) {
+                vocabularyGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📚</div>
+                        <p>No vocabulary in this category yet</p>
+                    </div>
+                `;
+            } else {
+                vocabularyGrid.innerHTML = filteredVocab.map(vocab => `
+                    <div class="vocabulary-card" onclick="showVocabularyDetails('${vocab.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-dark-green">${vocab.word}</h4>
+                            <button onclick="event.stopPropagation(); deleteVocabulary('${vocab.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                ✕
+                            </button>
+                        </div>
+                        <p class="text-sm text-medium-green mb-2">${vocab.definition}</p>
+                        <p class="text-xs text-gray-600 italic">"${vocab.example}"</p>
+                        <div class="mt-2">
+                            <span class="text-xs px-2 py-1 bg-pale-gold text-dark-green rounded">${vocab.category}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showRandomVocabulary() {
+            const randomVocab = appState.userData.vocabulary[Math.floor(Math.random() * appState.userData.vocabulary.length)];
+            if (randomVocab) {
+                showVocabularyDetails(randomVocab.id);
+            }
+        }
+
+        function showVocabularyDetails(vocabId) {
+            const vocab = appState.userData.vocabulary.find(v => v.id == vocabId);
+            if (vocab) {
+                alert(`${vocab.word}\n\n${vocab.definition}\n\nExample: ${vocab.example}`);
+            }
+        }
+
+        function refreshQuickVocabulary() {
+            const quickVocabContainer = document.getElementById('quickVocabulary');
+            const randomVocab = appState.userData.vocabulary
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
+            
+            quickVocabContainer.innerHTML = randomVocab.map(vocab => `
+                <div class="vocabulary-card text-sm" onclick="showVocabularyDetails('${vocab.id}')">
+                    <div class="font-semibold text-dark-green">${vocab.word}</div>
+                    <div class="text-xs text-medium-green">${vocab.definition.substring(0, 50)}...</div>
+                </div>
+            `).join('');
+        }
+
+        function showAddVocabModal() {
+            document.getElementById('addVocabModal').classList.remove('hidden');
+            document.getElementById('addVocabModal').classList.add('flex');
+        }
+
+        function hideAddVocabModal() {
+            document.getElementById('addVocabModal').classList.add('hidden');
+            document.getElementById('addVocabModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('vocabWordInput').value = '';
+            document.getElementById('vocabDefinitionInput').value = '';
+            document.getElementById('vocabExampleInput').value = '';
+            document.getElementById('vocabCategorySelect').value = 'academic';
+        }
+
+        function saveNewVocabulary() {
+            const word = document.getElementById('vocabWordInput').value.trim();
+            const definition = document.getElementById('vocabDefinitionInput').value.trim();
+            const example = document.getElementById('vocabExampleInput').value.trim();
+            const category = document.getElementById('vocabCategorySelect').value;
+            
+            if (!word || !definition || !example) {
+                showNotification('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            const newVocab = {
+                id: generateId(),
+                word: word,
+                definition: definition,
+                example: example,
+                category: category,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.vocabulary.push(newVocab);
+            saveUserData();
+            updateVocabularyView();
+            hideAddVocabModal();
+            
+            showNotification('Vocabulary added successfully', 'success');
+        }
+
+        function deleteVocabulary(vocabId) {
+            if (confirm('Are you sure you want to delete this vocabulary item?')) {
+                appState.userData.vocabulary = appState.userData.vocabulary.filter(v => v.id != vocabId);
+                saveUserData();
+                updateVocabularyView();
+                showNotification('Vocabulary deleted', 'success');
+            }
+        }
+
+        // Progress Functions
+        function updateProgressView() {
+            // Update band target progress
+            const currentAvg = appState.userData.averageBand;
+            const target = appState.userData.bandTarget;
+            
+            document.getElementById('currentAverage').textContent = currentAvg.toFixed(1);
+            document.getElementById('targetDisplay').textContent = target.toFixed(1);
+            
+            const progress = Math.min((currentAvg / target) * 100, 100);
+            document.getElementById('targetProgress').style.width = `${progress}%`;
+            
+            if (currentAvg >= target) {
+                document.getElementById('progressText').textContent = 'Congratulations! You\'ve reached your target!';
+            } else {
+                const remaining = target - currentAvg;
+                document.getElementById('progressText').textContent = `${remaining.toFixed(1)} points to reach your target`;
+            }
+            
+            // Update weekly progress
+            const thisWeek = getThisWeekPractices();
+            const weeklyGoal = appState.userData.settings.dailyGoal * 7;
+            document.getElementById('weeklyProgress').textContent = `${thisWeek}/${weeklyGoal}`;
+            document.getElementById('weeklyProgressBar').style.width = `${(thisWeek / weeklyGoal) * 100}%`;
+            
+            // Update detailed analytics
+            document.getElementById('totalMinutes').textContent = appState.userData.totalMinutes;
+            
+            const avgLength = appState.userData.totalPractices > 0 
+                ? Math.round(appState.userData.totalMinutes / appState.userData.totalPractices)
+                : 0;
+            document.getElementById('averageLength').textContent = avgLength;
+            
+            // Calculate improvement rate
+            const recentPractices = appState.userData.practices.slice(-10);
+            const oldPractices = appState.userData.practices.slice(-20, -10);
+            
+            let improvementRate = 0;
+            if (recentPractices.length > 0 && oldPractices.length > 0) {
+                const recentAvg = recentPractices.reduce((sum, p) => sum + (p.bandScores?.overall || 0), 0) / recentPractices.length;
+                const oldAvg = oldPractices.reduce((sum, p) => sum + (p.bandScores?.overall || 0), 0) / oldPractices.length;
+                improvementRate = recentAvg - oldAvg;
+            }
+            
+            document.getElementById('improvementRate').textContent = improvementRate >= 0 ? `+${improvementRate.toFixed(1)}` : improvementRate.toFixed(1);
+            
+            // Calculate consistency score
+            const last7Days = getLast7DaysPractices();
+            const consistencyScore = (last7Days / 7) * 100;
+            document.getElementById('consistencyScore').textContent = `${Math.round(consistencyScore)}%`;
+            
+            // Update practice history
+            updatePracticeHistory();
+        }
+
+        function updatePracticeHistory() {
+            const historyContainer = document.getElementById('practiceHistory');
+            const recentPractices = appState.userData.practices.slice(-10).reverse();
+            
+            if (recentPractices.length === 0) {
+                historyContainer.innerHTML = '<p class="text-gray-500 text-center">No practice history yet</p>';
+            } else {
+                historyContainer.innerHTML = recentPractices.map(practice => `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-pale-green">
+                        <div>
+                            <div class="font-semibold text-dark-green">${practice.part.toUpperCase()}</div>
+                            <div class="text-sm text-medium-green">${new Date(practice.startTime).toLocaleDateString()}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-dark-green">${practice.bandScores?.overall?.toFixed(1) || 'N/A'}</div>
+                            <div class="text-sm text-medium-green">${Math.floor(practice.duration / 60)}:${(practice.duration % 60).toString().padStart(2, '0')}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateRecentPractices() {
+            const recentContainer = document.getElementById('recentPractices');
+            const recentPractices = appState.userData.practices.slice(-5).reverse();
+            
+            if (recentPractices.length === 0) {
+                recentContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🎤</div>
+                        <p>No practices yet. Start your first practice!</p>
+                    </div>
+                `;
+            } else {
+                recentContainer.innerHTML = recentPractices.map(practice => `
+                    <div class="flex justify-between items-center p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${practice.part.toUpperCase()} Practice</div>
+                            <div class="text-sm text-medium-green">${new Date(practice.startTime).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-600">${Math.floor(practice.duration / 60)}:${(practice.duration % 60).toString().padStart(2, '0')}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-dark-green">${practice.bandScores?.overall?.toFixed(1) || 'N/A'}</div>
+                            <div class="text-xs text-medium-green">Band Score</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getThisWeekPractices() {
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            return appState.userData.practices.filter(practice => {
+                const practiceDate = new Date(practice.startTime);
+                return practiceDate >= startOfWeek;
+            }).length;
+        }
+
+        function getLast7DaysPractices() {
+            const now = new Date();
+            const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+            
+            return appState.userData.practices.filter(practice => {
+                const practiceDate = new Date(practice.startTime);
+                return practiceDate >= sevenDaysAgo;
+            }).length;
+        }
+
+        function editBandTarget() {
+            const newTarget = prompt('Enter your new band target (5.5 - 9.0):', appState.userData.bandTarget);
+            if (newTarget && !isNaN(newTarget)) {
+                const target = parseFloat(newTarget);
+                if (target >= 5.5 && target <= 9.0) {
+                    appState.userData.bandTarget = target;
+                    saveUserData();
+                    updateBandTargetDisplay();
+                    updateProgressView();
+                    showNotification('Band target updated', 'success');
+                } else {
+                    showNotification('Please enter a valid band score (5.5 - 9.0)', 'warning');
+                }
+            }
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('bandTargetSelect').value = appState.userData.bandTarget;
+            document.getElementById('dailyGoalSelect').value = appState.userData.settings.dailyGoal;
+            document.getElementById('autoTranscriptToggle').checked = appState.userData.settings.autoTranscript;
+            document.getElementById('voiceFeedbackToggle').checked = appState.userData.settings.voiceFeedback;
+            document.getElementById('dailyRemindersToggle').checked = appState.userData.settings.dailyReminders;
+            document.getElementById('reminderTimeInput').value = appState.userData.settings.reminderTime;
+        }
+
+        function updateBandTarget() {
+            appState.userData.bandTarget = parseFloat(document.getElementById('bandTargetSelect').value);
+            saveUserData();
+            updateBandTargetDisplay();
+        }
+
+        function updateDailyGoal() {
+            appState.userData.settings.dailyGoal = parseInt(document.getElementById('dailyGoalSelect').value);
+            saveUserData();
+        }
+
+        function updateAutoTranscript() {
+            appState.userData.settings.autoTranscript = document.getElementById('autoTranscriptToggle').checked;
+            saveUserData();
+        }
+
+        function updateVoiceFeedback() {
+            appState.userData.settings.voiceFeedback = document.getElementById('voiceFeedbackToggle').checked;
+            saveUserData();
+        }
+
+        function updateDailyReminders() {
+            appState.userData.settings.dailyReminders = document.getElementById('dailyRemindersToggle').checked;
+            saveUserData();
+        }
+
+        function updateReminderTime() {
+            appState.userData.settings.reminderTime = document.getElementById('reminderTimeInput').value;
+            saveUserData();
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `ielts-speakmaster-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('ieltsSpeakMasterData');
+                    
+                    appState.userData = {
+                        practices: [],
+                        vocabulary: [...vocabularyDatabase],
+                        streak: 0,
+                        longestStreak: 0,
+                        lastActiveDate: null,
+                        bandTarget: 7.0,
+                        totalPractices: 0,
+                        totalMinutes: 0,
+                        averageBand: 0,
+                        settings: {
+                            dailyGoal: 1,
+                            autoTranscript: true,
+                            voiceFeedback: true,
+                            dailyReminders: true,
+                            reminderTime: '09:00'
+                        }
+                    };
+                    
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9873dad1c23d1072',t:'MTc1OTIzNjcxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
