@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PitchCoach - 60-Second Self-Introduction Mastery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --dark-green: #1a3b2e;
+            --medium-green: #2d5a3d;
+            --light-green: #4a7c59;
+            --accent-green: #6b9080;
+            --pale-green: #a4c3a2;
+            --dark-gold: #b8860b;
+            --medium-gold: #daa520;
+            --light-gold: #f4d03f;
+            --pale-gold: #fdf6e3;
+            --cream: #fefcf3;
+        }
+        
+        .bg-dark-green { background-color: var(--dark-green); }
+        .bg-medium-green { background-color: var(--medium-green); }
+        .bg-light-green { background-color: var(--light-green); }
+        .bg-accent-green { background-color: var(--accent-green); }
+        .bg-pale-green { background-color: var(--pale-green); }
+        .bg-dark-gold { background-color: var(--dark-gold); }
+        .bg-medium-gold { background-color: var(--medium-gold); }
+        .bg-light-gold { background-color: var(--light-gold); }
+        .bg-pale-gold { background-color: var(--pale-gold); }
+        .bg-cream { background-color: var(--cream); }
+        
+        .text-dark-green { color: var(--dark-green); }
+        .text-medium-green { color: var(--medium-green); }
+        .text-light-green { color: var(--light-green); }
+        .text-dark-gold { color: var(--dark-gold); }
+        .text-medium-gold { color: var(--medium-gold); }
+        
+        .border-dark-green { border-color: var(--dark-green); }
+        .border-medium-green { border-color: var(--medium-green); }
+        .border-dark-gold { border-color: var(--dark-gold); }
+        .border-medium-gold { border-color: var(--medium-gold); }
+        
+        .pitch-card {
+            background: linear-gradient(135deg, var(--pale-gold), var(--cream));
+            border: 2px solid var(--medium-gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .pitch-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .structure-section {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .structure-section:hover {
+            border-color: var(--medium-gold);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--medium-gold), var(--dark-gold));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .timer-display {
+            background: var(--dark-green);
+            color: var(--light-gold);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        
+        .timer-display.warning {
+            background: #dc2626;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .delivery-cue {
+            background: var(--pale-gold);
+            border: 2px solid var(--medium-gold);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 14px;
+            color: var(--dark-green);
+        }
+        
+        .vocabulary-card {
+            background: white;
+            border: 2px solid var(--pale-green);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .vocabulary-card:hover {
+            border-color: var(--medium-gold);
+            transform: translateY(-2px);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        
+        .progress-ring-bg {
+            stroke: var(--pale-green);
+        }
+        
+        .progress-ring-progress {
+            stroke: var(--medium-gold);
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .camera-preview {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .camera-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .voice-input-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-input-btn:hover {
+            background: #b91c1c;
+        }
+        
+        .voice-input-btn.recording {
+            background: #7f1d1d;
+            animation: recordingPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes recordingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .online { background: #4caf50; color: white; }
+        .offline { background: #ff9800; color: white; }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, var(--pale-green), white);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .streak-flame {
+            animation: flicker 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+        
+        .rehearsal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rehearsal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        .script-card {
+            background: var(--cream);
+            border: 2px solid var(--medium-gold);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+        
+        .focus-visible:focus {
+            outline: 3px solid var(--medium-gold);
+            outline-offset: 2px;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .pitch-card {
+                padding: 16px;
+            }
+            
+            .structure-section {
+                padding: 16px;
+            }
+            
+            .rehearsal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cream min-h-screen">
+    <!-- Offline/Online Indicator -->
+    <div id="connectionStatus" class="offline-indicator online">
+        <span id="statusText">Online</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark-green text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-medium-gold rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">PitchCoach</h1>
+                        <p class="text-accent-green text-sm">60-Second Self-Introduction Mastery</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Current Streak -->
+                    <div class="text-center">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl streak-flame">🔥</span>
+                            <span class="text-xl font-bold text-light-gold" id="currentStreak">0</span>
+                        </div>
+                        <div class="text-xs text-accent-green">Day Streak</div>
+                    </div>
+                    
+                    <!-- Pitches Count -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-light-gold" id="pitchesCount">0</div>
+                        <div class="text-xs text-accent-green">Pitches</div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <nav class="flex space-x-2">
+                        <button id="dashboardBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Dashboard
+                        </button>
+                        <button id="pitchesBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            My Pitches
+                        </button>
+                        <button id="rehearsalBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Rehearsal
+                        </button>
+                        <button id="vocabularyBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Vocabulary
+                        </button>
+                        <button id="analyticsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Analytics
+                        </button>
+                        <button id="settingsBtn" class="px-4 py-2 bg-medium-green rounded-lg hover:bg-light-green transition-colors focus-visible">
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-8">
+            <!-- Quick Actions -->
+            <div class="pitch-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Quick Actions</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-medium-green" id="todayDate"></span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Create New Pitch -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="showCreatePitch()">
+                        <div class="text-4xl mb-4 text-center">🎤</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Create New Pitch</h3>
+                        <p class="text-sm text-medium-green text-center">Build your 60-second self-introduction</p>
+                    </div>
+
+                    <!-- Quick Rehearsal -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="startQuickRehearsal()">
+                        <div class="text-4xl mb-4 text-center">🎬</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Quick Rehearsal</h3>
+                        <p class="text-sm text-medium-green text-center">Practice with camera and timer</p>
+                    </div>
+
+                    <!-- Power Words -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-pale-green hover:border-medium-gold transition-colors cursor-pointer" onclick="showRandomVocabulary()">
+                        <div class="text-4xl mb-4 text-center">💎</div>
+                        <h3 class="text-lg font-bold text-dark-green mb-2 text-center">Power Words</h3>
+                        <p class="text-sm text-medium-green text-center">Discover impactful vocabulary</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Pitches -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-dark-green">Recent Pitches</h3>
+                    <button id="viewAllPitchesBtn" class="text-medium-gold hover:text-dark-gold transition-colors focus-visible">
+                        View All →
+                    </button>
+                </div>
+                
+                <div id="recentPitches" class="space-y-4">
+                    <!-- Recent pitches will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="totalPitches">0</div>
+                    <div class="text-sm text-medium-green">Total Pitches</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="practiceHours">0</div>
+                    <div class="text-sm text-medium-green">Practice Hours</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="thisWeekPractice">0</div>
+                    <div class="text-sm text-medium-green">This Week</div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="text-3xl font-bold text-dark-green" id="longestStreak">0</div>
+                    <div class="text-sm text-medium-green">Best Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Pitches View -->
+        <div id="pitchesView" class="hidden space-y-6">
+            <!-- Pitches Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green">My 60-Second Pitches</h2>
+                        <p class="text-sm text-medium-green mt-1">Hook • Background • Value • Call-to-Action</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="createPitchBtn" class="action-button focus-visible">
+                            + New Pitch
+                        </button>
+                        <button id="exportPitchesBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pitches Grid -->
+            <div id="pitchesGrid" class="space-y-6">
+                <!-- Pitches will be populated here -->
+            </div>
+        </div>
+
+        <!-- Rehearsal View -->
+        <div id="rehearsalView" class="hidden space-y-6">
+            <!-- Rehearsal Header -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-dark-green">Camera Rehearsal</h2>
+                        <p class="text-sm text-medium-green mt-1">Practice with timer and delivery cues</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="startRehearsalBtn" class="action-button focus-visible">
+                            🎬 Start Rehearsal
+                        </button>
+                        <button id="selectPitchBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            Select Pitch
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rehearsal Setup -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Camera Preview -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Camera Preview</h3>
+                    
+                    <div class="camera-preview aspect-video mb-4">
+                        <video id="cameraPreview" class="w-full h-full object-cover" autoplay muted></video>
+                        <div class="camera-controls">
+                            <button id="toggleCameraBtn" class="px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible">
+                                📹 Enable Camera
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-medium-green text-center">
+                        Position yourself in the frame and ensure good lighting
+                    </div>
+                </div>
+
+                <!-- Timer and Controls -->
+                <div class="space-y-6">
+                    <!-- Timer Display -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4 text-center">60-Second Timer</h3>
+                        
+                        <div class="timer-display" id="rehearsalTimer">
+                            <div id="timerDisplay">01:00</div>
+                        </div>
+                        
+                        <div class="relative inline-block mb-4 w-full flex justify-center">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring-bg progress-ring-circle" cx="60" cy="60" r="52"></circle>
+                                <circle class="progress-ring-progress progress-ring-circle" cx="60" cy="60" r="52" id="rehearsalTimerProgress"></circle>
+                            </svg>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button id="startTimerBtn" class="w-full action-button focus-visible">
+                                Start Timer
+                            </button>
+                            <button id="resetTimerBtn" class="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Cues -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Delivery Cues</h3>
+                        
+                        <div class="space-y-3" id="deliveryCues">
+                            <div class="delivery-cue">
+                                <strong>0-15s:</strong> Hook - Grab attention with confidence
+                            </div>
+                            <div class="delivery-cue">
+                                <strong>15-30s:</strong> Background - Share relevant experience
+                            </div>
+                            <div class="delivery-cue">
+                                <strong>30-45s:</strong> Value - Highlight your strengths
+                            </div>
+                            <div class="delivery-cue">
+                                <strong>45-60s:</strong> Call-to-Action - End with purpose
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary View -->
+        <div id="vocabularyView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-dark-green">Professional Vocabulary Bank</h2>
+                    <div class="flex space-x-2">
+                        <button id="addVocabBtn" class="action-button focus-visible">
+                            + Add Word
+                        </button>
+                        <button id="randomVocabBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                            🎲 Random
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Vocabulary Categories -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="vocab-category active px-4 py-2 bg-medium-gold text-white rounded-lg hover:bg-dark-gold transition-colors focus-visible" data-category="all">
+                        All
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="opening">
+                        Opening
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="experience">
+                        Experience
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="skills">
+                        Skills
+                    </button>
+                    <button class="vocab-category px-4 py-2 bg-pale-green text-dark-green rounded-lg hover:bg-accent-green hover:text-white transition-colors focus-visible" data-category="closing">
+                        Closing
+                    </button>
+                </div>
+                
+                <!-- Vocabulary Grid -->
+                <div id="vocabularyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Vocabulary cards will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analyticsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Progress Analytics</h2>
+                
+                <!-- Progress Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Consistency</h3>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-dark-green mb-2" id="weeklyProgress">5/7</div>
+                            <div class="text-sm text-medium-green mb-4">Days This Week</div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-accent-green h-3 rounded-full transition-all duration-500" id="weeklyProgressBar" style="width: 71%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Pitch Quality</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Complete pitches:</span>
+                                <span class="font-bold text-dark-green" id="completePitches">3/5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">With timing practice:</span>
+                                <span class="font-bold text-dark-green" id="timedPitches">2/5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-medium-green">Camera ready:</span>
+                                <span class="font-bold text-dark-green" id="cameraReady">1/5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="totalPracticeTime">0h</div>
+                        <div class="text-sm text-medium-green">Total Practice</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="averagePitchLength">45s</div>
+                        <div class="text-sm text-medium-green">Avg Length</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="vocabularyUsed">12</div>
+                        <div class="text-sm text-medium-green">Power Words</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="text-3xl font-bold text-dark-green" id="readinessScore">85%</div>
+                        <div class="text-sm text-medium-green">Readiness</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-pale-gold p-6 rounded-lg border-2 border-medium-gold">
+                    <h3 class="text-lg font-bold text-dark-green mb-4">Recent Activity</h3>
+                    
+                    <div id="recentActivity" class="space-y-3">
+                        <!-- Recent activity will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-pale-green">
+                <h2 class="text-2xl font-bold text-dark-green mb-6">Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Practice Settings -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Practice Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Timer Duration</label>
+                                <select id="timerDurationSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="45">45 seconds</option>
+                                    <option value="60" selected>60 seconds</option>
+                                    <option value="90">90 seconds</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Practice Goal</label>
+                                <select id="dailyGoalSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                                    <option value="1" selected>1 session</option>
+                                    <option value="2">2 sessions</option>
+                                    <option value="3">3 sessions</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Auto-save Pitches</label>
+                                <input type="checkbox" id="autoSaveToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Voice Input</label>
+                                <input type="checkbox" id="voiceInputToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Data Management</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="backupBtn" class="action-button focus-visible">
+                                💾 Backup Data
+                            </button>
+                            <button id="restoreBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                                📥 Restore Data
+                            </button>
+                            <button id="clearDataBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus-visible">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-green mb-4">Notifications</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Daily Reminders</label>
+                                <input type="checkbox" id="dailyRemindersToggle" checked class="rounded border-gray-300 text-medium-gold focus:ring-medium-gold">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <label class="text-medium-green">Reminder Time</label>
+                                <input type="time" id="reminderTimeInput" value="09:00" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Create/Edit Pitch Modal -->
+    <div id="pitchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-90vh overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-dark-green" id="pitchModalTitle">Create New 60-Second Pitch</h3>
+                <button id="closePitchModal" class="text-gray-500 hover:text-gray-700 text-2xl focus-visible">×</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Pitch Title -->
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Pitch Title</label>
+                    <input type="text" id="pitchTitleInput" placeholder="e.g., Software Developer Introduction" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+
+                <!-- Structure Sections -->
+                <div class="space-y-4">
+                    <!-- Hook (0-15s) -->
+                    <div class="structure-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">🎯 Hook (0-15 seconds)</h4>
+                            <button id="voiceHookBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="hookInput" placeholder="Start with an attention-grabbing statement about yourself..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Examples: "I'm a problem-solver who turns complex challenges into elegant solutions" or "I'm passionate about creating technology that makes people's lives easier"</div>
+                    </div>
+
+                    <!-- Background (15-30s) -->
+                    <div class="structure-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">📚 Background (15-30 seconds)</h4>
+                            <button id="voiceBackgroundBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="backgroundInput" placeholder="Share your relevant experience and background..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Include: Education, years of experience, key roles, or relevant achievements</div>
+                    </div>
+
+                    <!-- Value Proposition (30-45s) -->
+                    <div class="structure-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">💎 Value Proposition (30-45 seconds)</h4>
+                            <button id="voiceValueBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="valueInput" placeholder="Highlight what makes you unique and valuable..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Focus on: Key skills, unique strengths, specific achievements, or what you bring to the table</div>
+                    </div>
+
+                    <!-- Call-to-Action (45-60s) -->
+                    <div class="structure-section">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-dark-green text-lg">🚀 Call-to-Action (45-60 seconds)</h4>
+                            <button id="voiceCallBtn" class="voice-input-btn text-sm focus-visible">🎤</button>
+                        </div>
+                        <textarea id="callInput" placeholder="End with a clear next step or invitation..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                        <div class="text-xs text-gray-600 mt-2">Examples: "I'd love to discuss how I can contribute to your team" or "I'm excited to learn more about opportunities here"</div>
+                    </div>
+                </div>
+
+                <!-- Full Script Preview -->
+                <div class="script-card">
+                    <h4 class="font-bold text-dark-green text-lg mb-3">📝 Complete Script Preview</h4>
+                    <div id="scriptPreview" class="text-dark-green">
+                        Your complete 60-second pitch will appear here as you fill in each section...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-8">
+                <button id="savePitchBtn" class="flex-1 action-button focus-visible">
+                    Save Pitch
+                </button>
+                <button id="downloadScriptBtn" class="px-6 py-3 bg-accent-green text-white rounded-lg hover:bg-medium-green transition-colors focus-visible">
+                    📄 Download Script
+                </button>
+                <button id="cancelPitchBtn" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rehearsal Overlay -->
+    <div id="rehearsalOverlay" class="rehearsal-overlay hidden">
+        <div class="rehearsal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-dark-green">Camera Rehearsal Mode</h3>
+                <button id="exitRehearsalBtn" class="text-gray-500 hover:text-gray-700 text-2xl focus-visible">×</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Camera Feed -->
+                <div>
+                    <div class="camera-preview aspect-video mb-4">
+                        <video id="rehearsalCamera" class="w-full h-full object-cover" autoplay muted></video>
+                    </div>
+                    
+                    <!-- Timer and Controls -->
+                    <div class="text-center">
+                        <div class="timer-display mb-4" id="rehearsalTimerDisplay">
+                            <div id="rehearsalTimerText">01:00</div>
+                        </div>
+                        
+                        <div class="flex justify-center space-x-4">
+                            <button id="startRehearsalTimerBtn" class="action-button focus-visible">
+                                ▶️ Start
+                            </button>
+                            <button id="pauseRehearsalTimerBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                                ⏸️ Pause
+                            </button>
+                            <button id="resetRehearsalTimerBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                                🔄 Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Script and Cues -->
+                <div>
+                    <div class="script-card mb-6">
+                        <h4 class="font-bold text-dark-green mb-3">Your Script</h4>
+                        <div id="rehearsalScript" class="text-dark-green">
+                            Select a pitch to start rehearsing...
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-dark-green">Live Delivery Cues</h4>
+                        <div id="liveDeliveryCues" class="space-y-2">
+                            <div class="delivery-cue" id="cue0-15">
+                                <strong>0-15s:</strong> Hook - Speak with confidence and energy
+                            </div>
+                            <div class="delivery-cue" id="cue15-30">
+                                <strong>15-30s:</strong> Background - Maintain steady pace
+                            </div>
+                            <div class="delivery-cue" id="cue30-45">
+                                <strong>30-45s:</strong> Value - Emphasize key strengths
+                            </div>
+                            <div class="delivery-cue" id="cue45-60">
+                                <strong>45-60s:</strong> Call-to-Action - End with purpose
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Add Professional Vocabulary</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Word/Phrase</label>
+                    <input type="text" id="vocabWordInput" placeholder="e.g., Results-driven" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Definition</label>
+                    <textarea id="vocabDefinitionInput" placeholder="Meaning and context..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="3"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Example Usage</label>
+                    <textarea id="vocabExampleInput" placeholder="I'm a results-driven professional who..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold" rows="2"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-medium-green mb-2">Category</label>
+                    <select id="vocabCategorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-medium-gold focus:border-medium-gold">
+                        <option value="opening">Opening</option>
+                        <option value="experience">Experience</option>
+                        <option value="skills">Skills</option>
+                        <option value="closing">Closing</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="saveVocabBtn" class="flex-1 action-button focus-visible">
+                    Add Vocabulary
+                </button>
+                <button id="cancelVocabBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Pitch Modal -->
+    <div id="selectPitchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full mx-4">
+            <h3 class="text-xl font-bold text-dark-green mb-6">Select Pitch for Rehearsal</h3>
+            
+            <div id="pitchSelectionList" class="space-y-4 max-h-96 overflow-y-auto">
+                <!-- Pitch selection options will be populated here -->
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button id="cancelSelectPitchBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus-visible">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input for Restore -->
+    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+
+    <script>
+        // Global state management
+        let appState = {
+            currentView: 'dashboard',
+            isOnline: navigator.onLine,
+            currentPitch: null,
+            editingPitchId: null,
+            rehearsalTimer: {
+                startTime: null,
+                elapsed: 0,
+                interval: null,
+                duration: 60000, // 60 seconds default
+                isRunning: false,
+                isPaused: false
+            },
+            speechRecognition: null,
+            isVoiceRecording: false,
+            currentVoiceTarget: null,
+            cameraStream: null,
+            selectedPitchForRehearsal: null,
+            userData: {
+                pitches: [],
+                vocabulary: [],
+                practiceHistory: [],
+                streak: 0,
+                longestStreak: 0,
+                lastActiveDate: null,
+                totalPracticeTime: 0,
+                settings: {
+                    timerDuration: 60,
+                    dailyGoal: 1,
+                    autoSave: true,
+                    voiceInput: true,
+                    dailyReminders: true,
+                    reminderTime: '09:00'
+                }
+            }
+        };
+
+        // Professional Vocabulary Database
+        const professionalVocabulary = [
+            {
+                id: 1,
+                word: "Results-driven",
+                definition: "Focused on achieving measurable outcomes and goals",
+                example: "I'm a results-driven professional with a track record of exceeding targets.",
+                category: "opening"
+            },
+            {
+                id: 2,
+                word: "Collaborative",
+                definition: "Working effectively with others to achieve common goals",
+                example: "I'm collaborative by nature and thrive in team environments.",
+                category: "skills"
+            },
+            {
+                id: 3,
+                word: "Innovative",
+                definition: "Bringing creative and original ideas to solve problems",
+                example: "I bring an innovative approach to traditional challenges.",
+                category: "skills"
+            },
+            {
+                id: 4,
+                word: "Spearheaded",
+                definition: "Led or initiated an important project or initiative",
+                example: "I spearheaded the digital transformation project that increased efficiency by 40%.",
+                category: "experience"
+            },
+            {
+                id: 5,
+                word: "Passionate about",
+                definition: "Having strong enthusiasm and dedication for something",
+                example: "I'm passionate about creating technology solutions that make a real difference.",
+                category: "opening"
+            },
+            {
+                id: 6,
+                word: "Proven track record",
+                definition: "Demonstrated history of success and achievement",
+                example: "I have a proven track record of delivering projects on time and under budget.",
+                category: "experience"
+            },
+            {
+                id: 7,
+                word: "Strategic thinker",
+                definition: "Able to plan and think about long-term goals and outcomes",
+                example: "As a strategic thinker, I focus on solutions that create lasting value.",
+                category: "skills"
+            },
+            {
+                id: 8,
+                word: "Eager to contribute",
+                definition: "Enthusiastic about adding value and making a positive impact",
+                example: "I'm eager to contribute my expertise to your team's continued success.",
+                category: "closing"
+            },
+            {
+                id: 9,
+                word: "Adaptable",
+                definition: "Able to adjust and thrive in changing environments",
+                example: "I'm highly adaptable and excel in fast-paced, dynamic environments.",
+                category: "skills"
+            },
+            {
+                id: 10,
+                word: "Looking forward to",
+                definition: "Anticipating with enthusiasm and positive expectation",
+                example: "I'm looking forward to discussing how I can add value to your organization.",
+                category: "closing"
+            }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeSpeechRecognition();
+            loadUserData();
+            updateUI();
+            checkDailyStreak();
+        });
+
+        function initializeApp() {
+            // Check online status
+            updateConnectionStatus();
+            
+            // Set up offline/online event listeners
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+            
+            // Initialize default vocabulary if empty
+            if (appState.userData.vocabulary.length === 0) {
+                appState.userData.vocabulary = [...professionalVocabulary];
+                saveUserData();
+            }
+            
+            // Set today's date
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString();
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('dashboardBtn').addEventListener('click', () => showView('dashboard'));
+            document.getElementById('pitchesBtn').addEventListener('click', () => showView('pitches'));
+            document.getElementById('rehearsalBtn').addEventListener('click', () => showView('rehearsal'));
+            document.getElementById('vocabularyBtn').addEventListener('click', () => showView('vocabulary'));
+            document.getElementById('analyticsBtn').addEventListener('click', () => showView('analytics'));
+            document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
+
+            // Dashboard actions
+            document.getElementById('viewAllPitchesBtn').addEventListener('click', () => showView('pitches'));
+
+            // Pitch management
+            document.getElementById('createPitchBtn').addEventListener('click', showCreatePitch);
+            document.getElementById('exportPitchesBtn').addEventListener('click', exportPitches);
+            document.getElementById('savePitchBtn').addEventListener('click', savePitch);
+            document.getElementById('downloadScriptBtn').addEventListener('click', downloadScript);
+            document.getElementById('cancelPitchBtn').addEventListener('click', hidePitchModal);
+            document.getElementById('closePitchModal').addEventListener('click', hidePitchModal);
+
+            // Rehearsal controls
+            document.getElementById('startRehearsalBtn').addEventListener('click', startCameraRehearsal);
+            document.getElementById('selectPitchBtn').addEventListener('click', showSelectPitchModal);
+            document.getElementById('toggleCameraBtn').addEventListener('click', toggleCamera);
+            document.getElementById('startTimerBtn').addEventListener('click', toggleRehearsalTimer);
+            document.getElementById('resetTimerBtn').addEventListener('click', resetRehearsalTimer);
+            document.getElementById('exitRehearsalBtn').addEventListener('click', exitRehearsal);
+            document.getElementById('startRehearsalTimerBtn').addEventListener('click', startRehearsalTimer);
+            document.getElementById('pauseRehearsalTimerBtn').addEventListener('click', pauseRehearsalTimer);
+            document.getElementById('resetRehearsalTimerBtn').addEventListener('click', resetRehearsalTimer);
+
+            // Vocabulary controls
+            document.getElementById('addVocabBtn').addEventListener('click', showAddVocabModal);
+            document.getElementById('randomVocabBtn').addEventListener('click', showRandomVocabulary);
+            document.getElementById('saveVocabBtn').addEventListener('click', saveNewVocabulary);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideAddVocabModal);
+
+            // Vocabulary categories
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.addEventListener('click', (e) => filterVocabulary(e.target.dataset.category));
+            });
+
+            // Voice input buttons
+            document.getElementById('voiceHookBtn').addEventListener('click', () => toggleVoiceInput('hookInput'));
+            document.getElementById('voiceBackgroundBtn').addEventListener('click', () => toggleVoiceInput('backgroundInput'));
+            document.getElementById('voiceValueBtn').addEventListener('click', () => toggleVoiceInput('valueInput'));
+            document.getElementById('voiceCallBtn').addEventListener('click', () => toggleVoiceInput('callInput'));
+
+            // Script preview updates
+            document.getElementById('hookInput').addEventListener('input', updateScriptPreview);
+            document.getElementById('backgroundInput').addEventListener('input', updateScriptPreview);
+            document.getElementById('valueInput').addEventListener('input', updateScriptPreview);
+            document.getElementById('callInput').addEventListener('input', updateScriptPreview);
+
+            // Settings
+            document.getElementById('timerDurationSelect').addEventListener('change', updateTimerDuration);
+            document.getElementById('dailyGoalSelect').addEventListener('change', updateDailyGoal);
+            document.getElementById('autoSaveToggle').addEventListener('change', updateAutoSave);
+            document.getElementById('voiceInputToggle').addEventListener('change', updateVoiceInput);
+            document.getElementById('dailyRemindersToggle').addEventListener('change', updateDailyReminders);
+            document.getElementById('reminderTimeInput').addEventListener('change', updateReminderTime);
+
+            // Data management
+            document.getElementById('backupBtn').addEventListener('click', backupData);
+            document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFileInput').click());
+            document.getElementById('restoreFileInput').addEventListener('change', restoreData);
+            document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+
+            // Select pitch modal
+            document.getElementById('cancelSelectPitchBtn').addEventListener('click', hideSelectPitchModal);
+        }
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                appState.speechRecognition = new SpeechRecognition();
+                
+                appState.speechRecognition.continuous = true;
+                appState.speechRecognition.interimResults = true;
+                appState.speechRecognition.lang = 'en-US';
+                
+                appState.speechRecognition.onresult = function(event) {
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
+                    }
+                    
+                    if (finalTranscript && appState.currentVoiceTarget) {
+                        const targetElement = document.getElementById(appState.currentVoiceTarget);
+                        if (targetElement) {
+                            const cursorPos = targetElement.selectionStart || targetElement.value.length;
+                            const textBefore = targetElement.value.substring(0, cursorPos);
+                            const textAfter = targetElement.value.substring(cursorPos);
+                            
+                            targetElement.value = textBefore + finalTranscript + textAfter;
+                            targetElement.selectionStart = targetElement.selectionEnd = cursorPos + finalTranscript.length;
+                            
+                            // Update script preview if in pitch modal
+                            if (appState.currentVoiceTarget.includes('Input')) {
+                                updateScriptPreview();
+                            }
+                        }
+                    }
+                };
+                
+                appState.speechRecognition.onend = function() {
+                    appState.isVoiceRecording = false;
+                    appState.currentVoiceTarget = null;
+                    updateVoiceInputButtons();
+                };
+            }
+        }
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('pitchCoachData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    appState.userData = { ...appState.userData, ...parsedData };
+                } catch (e) {
+                    console.error('Error loading user data:', e);
+                }
+            }
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('pitchCoachData', JSON.stringify(appState.userData));
+            } catch (e) {
+                console.error('Error saving user data:', e);
+                showNotification('Error saving data', 'error');
+            }
+        }
+
+        function updateConnectionStatus() {
+            appState.isOnline = navigator.onLine;
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (appState.isOnline) {
+                statusElement.className = 'offline-indicator online';
+                statusText.textContent = 'Online';
+            } else {
+                statusElement.className = 'offline-indicator offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('pitchesView').classList.add('hidden');
+            document.getElementById('rehearsalView').classList.add('hidden');
+            document.getElementById('vocabularyView').classList.add('hidden');
+            document.getElementById('analyticsView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.remove('hidden');
+            appState.currentView = viewName;
+
+            // Update navigation buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('bg-light-green');
+                btn.classList.add('bg-medium-green');
+            });
+
+            const activeBtn = document.getElementById(viewName + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-medium-green');
+                activeBtn.classList.add('bg-light-green');
+            }
+
+            // Load view-specific data
+            if (viewName === 'pitches') {
+                updatePitchesView();
+            } else if (viewName === 'vocabulary') {
+                updateVocabularyView();
+            } else if (viewName === 'analytics') {
+                updateAnalyticsView();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function updateUI() {
+            updateDashboard();
+            updateStreak();
+            updatePitchesCount();
+        }
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalPitches').textContent = appState.userData.pitches.length;
+            document.getElementById('practiceHours').textContent = Math.floor(appState.userData.totalPracticeTime / 3600);
+            document.getElementById('longestStreak').textContent = appState.userData.longestStreak;
+            
+            // Calculate this week's practice sessions
+            const thisWeek = getThisWeekPractice();
+            document.getElementById('thisWeekPractice').textContent = thisWeek;
+            
+            // Update recent pitches
+            updateRecentPitches();
+        }
+
+        function updateStreak() {
+            document.getElementById('currentStreak').textContent = appState.userData.streak;
+        }
+
+        function updatePitchesCount() {
+            document.getElementById('pitchesCount').textContent = appState.userData.pitches.length;
+        }
+
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive) {
+                const lastActiveDate = new Date(lastActive).toDateString();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayString = yesterday.toDateString();
+
+                if (lastActiveDate === today) {
+                    return;
+                } else if (lastActiveDate === yesterdayString) {
+                    return;
+                } else {
+                    appState.userData.streak = 0;
+                }
+            }
+
+            saveUserData();
+        }
+
+        function updateRecentPitches() {
+            const recentContainer = document.getElementById('recentPitches');
+            const recentPitches = appState.userData.pitches.slice(-5).reverse();
+            
+            if (recentPitches.length === 0) {
+                recentContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🎤</div>
+                        <p>No pitches yet. Create your first 60-second pitch!</p>
+                    </div>
+                `;
+            } else {
+                recentContainer.innerHTML = recentPitches.map(pitch => `
+                    <div class="flex justify-between items-center p-4 bg-pale-gold rounded-lg border border-medium-gold">
+                        <div>
+                            <div class="font-semibold text-dark-green">${pitch.title}</div>
+                            <div class="text-sm text-medium-green">${new Date(pitch.createdAt).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                ${pitch.hook ? '✓ Hook' : '○ Hook'} • 
+                                ${pitch.background ? '✓ Background' : '○ Background'} • 
+                                ${pitch.value ? '✓ Value' : '○ Value'} • 
+                                ${pitch.callToAction ? '✓ Call-to-Action' : '○ Call-to-Action'}
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="editPitch('${pitch.id}')" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                ✏️
+                            </button>
+                            <button onclick="deletePitch('${pitch.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Pitch Management Functions
+        function showCreatePitch() {
+            appState.editingPitchId = null;
+            document.getElementById('pitchModalTitle').textContent = 'Create New 60-Second Pitch';
+            clearPitchForm();
+            document.getElementById('pitchModal').classList.remove('hidden');
+            document.getElementById('pitchModal').classList.add('flex');
+        }
+
+        function editPitch(pitchId) {
+            const pitch = appState.userData.pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+
+            appState.editingPitchId = pitchId;
+            document.getElementById('pitchModalTitle').textContent = 'Edit 60-Second Pitch';
+            
+            // Populate form with pitch data
+            document.getElementById('pitchTitleInput').value = pitch.title;
+            document.getElementById('hookInput').value = pitch.hook || '';
+            document.getElementById('backgroundInput').value = pitch.background || '';
+            document.getElementById('valueInput').value = pitch.value || '';
+            document.getElementById('callInput').value = pitch.callToAction || '';
+            
+            updateScriptPreview();
+            document.getElementById('pitchModal').classList.remove('hidden');
+            document.getElementById('pitchModal').classList.add('flex');
+        }
+
+        function deletePitch(pitchId) {
+            if (confirm('Are you sure you want to delete this pitch?')) {
+                appState.userData.pitches = appState.userData.pitches.filter(p => p.id !== pitchId);
+                saveUserData();
+                updateUI();
+                if (appState.currentView === 'pitches') {
+                    updatePitchesView();
+                }
+                showNotification('Pitch deleted', 'success');
+            }
+        }
+
+        function clearPitchForm() {
+            document.getElementById('pitchTitleInput').value = '';
+            document.getElementById('hookInput').value = '';
+            document.getElementById('backgroundInput').value = '';
+            document.getElementById('valueInput').value = '';
+            document.getElementById('callInput').value = '';
+            updateScriptPreview();
+        }
+
+        function updateScriptPreview() {
+            const hook = document.getElementById('hookInput').value.trim();
+            const background = document.getElementById('backgroundInput').value.trim();
+            const value = document.getElementById('valueInput').value.trim();
+            const callToAction = document.getElementById('callInput').value.trim();
+            
+            let script = '';
+            
+            if (hook) script += hook + ' ';
+            if (background) script += background + ' ';
+            if (value) script += value + ' ';
+            if (callToAction) script += callToAction;
+            
+            const previewElement = document.getElementById('scriptPreview');
+            if (script.trim()) {
+                previewElement.textContent = script.trim();
+            } else {
+                previewElement.textContent = 'Your complete 60-second pitch will appear here as you fill in each section...';
+            }
+        }
+
+        function savePitch() {
+            const title = document.getElementById('pitchTitleInput').value.trim();
+            const hook = document.getElementById('hookInput').value.trim();
+            const background = document.getElementById('backgroundInput').value.trim();
+            const value = document.getElementById('valueInput').value.trim();
+            const callToAction = document.getElementById('callInput').value.trim();
+            
+            if (!title) {
+                showNotification('Please enter a pitch title', 'warning');
+                return;
+            }
+            
+            if (!hook || !background || !value || !callToAction) {
+                showNotification('Please fill in all sections for a complete pitch', 'warning');
+                return;
+            }
+            
+            const pitchData = {
+                id: appState.editingPitchId || generateId(),
+                title,
+                hook,
+                background,
+                value,
+                callToAction,
+                createdAt: appState.editingPitchId ? 
+                    appState.userData.pitches.find(p => p.id === appState.editingPitchId).createdAt : 
+                    new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (appState.editingPitchId) {
+                const index = appState.userData.pitches.findIndex(p => p.id === appState.editingPitchId);
+                appState.userData.pitches[index] = pitchData;
+                showNotification('Pitch updated successfully', 'success');
+            } else {
+                appState.userData.pitches.push(pitchData);
+                updateDailyStreak();
+                showNotification('Pitch created successfully', 'success');
+            }
+            
+            saveUserData();
+            updateUI();
+            hidePitchModal();
+            
+            if (appState.currentView === 'pitches') {
+                updatePitchesView();
+            }
+        }
+
+        function downloadScript() {
+            const title = document.getElementById('pitchTitleInput').value.trim() || 'My Pitch';
+            const hook = document.getElementById('hookInput').value.trim();
+            const background = document.getElementById('backgroundInput').value.trim();
+            const value = document.getElementById('valueInput').value.trim();
+            const callToAction = document.getElementById('callInput').value.trim();
+            
+            if (!hook || !background || !value || !callToAction) {
+                showNotification('Please complete all sections before downloading', 'warning');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('60-Second Pitch Script', 20, 30);
+                
+                doc.setFontSize(16);
+                doc.text(title, 20, 50);
+                
+                doc.setFontSize(12);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 65);
+                
+                let yPos = 85;
+                
+                // Hook section
+                doc.setFontSize(14);
+                doc.text('Hook (0-15 seconds):', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                const hookLines = doc.splitTextToSize(hook, 170);
+                doc.text(hookLines, 20, yPos);
+                yPos += hookLines.length * 5 + 15;
+                
+                // Background section
+                doc.setFontSize(14);
+                doc.text('Background (15-30 seconds):', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                const backgroundLines = doc.splitTextToSize(background, 170);
+                doc.text(backgroundLines, 20, yPos);
+                yPos += backgroundLines.length * 5 + 15;
+                
+                // Value section
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                doc.setFontSize(14);
+                doc.text('Value Proposition (30-45 seconds):', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                const valueLines = doc.splitTextToSize(value, 170);
+                doc.text(valueLines, 20, yPos);
+                yPos += valueLines.length * 5 + 15;
+                
+                // Call-to-Action section
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                doc.setFontSize(14);
+                doc.text('Call-to-Action (45-60 seconds):', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                const callLines = doc.splitTextToSize(callToAction, 170);
+                doc.text(callLines, 20, yPos);
+                yPos += callLines.length * 5 + 20;
+                
+                // Complete script
+                if (yPos > 220) {
+                    doc.addPage();
+                    yPos = 30;
+                }
+                doc.setFontSize(16);
+                doc.text('Complete Script:', 20, yPos);
+                yPos += 15;
+                doc.setFontSize(12);
+                const fullScript = `${hook} ${background} ${value} ${callToAction}`;
+                const scriptLines = doc.splitTextToSize(fullScript, 170);
+                doc.text(scriptLines, 20, yPos);
+                
+                // Save
+                doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_script.pdf`);
+                showNotification('Script downloaded successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error downloading script', 'error');
+            }
+        }
+
+        function hidePitchModal() {
+            document.getElementById('pitchModal').classList.add('hidden');
+            document.getElementById('pitchModal').classList.remove('flex');
+        }
+
+        function updatePitchesView() {
+            displayPitches();
+        }
+
+        function displayPitches() {
+            const pitchesGrid = document.getElementById('pitchesGrid');
+            
+            if (appState.userData.pitches.length === 0) {
+                pitchesGrid.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <div class="text-6xl mb-4">🎤</div>
+                        <h3 class="text-xl font-semibold mb-2">No pitches found</h3>
+                        <p>Create your first 60-second pitch to get started!</p>
+                    </div>
+                `;
+            } else {
+                pitchesGrid.innerHTML = appState.userData.pitches.map(pitch => `
+                    <div class="pitch-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-dark-green">${pitch.title}</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="editPitch('${pitch.id}')" class="text-medium-gold hover:text-dark-gold focus-visible">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deletePitch('${pitch.id}')" class="text-red-500 hover:text-red-700 focus-visible">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">🎯 Hook (0-15s)</h4>
+                                <p class="text-sm text-medium-green">${pitch.hook.substring(0, 100)}${pitch.hook.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">📚 Background (15-30s)</h4>
+                                <p class="text-sm text-medium-green">${pitch.background.substring(0, 100)}${pitch.background.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">💎 Value (30-45s)</h4>
+                                <p class="text-sm text-medium-green">${pitch.value.substring(0, 100)}${pitch.value.length > 100 ? '...' : ''}</p>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pale-green">
+                                <h4 class="font-semibold text-dark-green text-sm mb-1">🚀 Call-to-Action (45-60s)</h4>
+                                <p class="text-sm text-medium-green">${pitch.callToAction.substring(0, 100)}${pitch.callToAction.length > 100 ? '...' : ''}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="text-xs text-gray-500">
+                                Created: ${new Date(pitch.createdAt).toLocaleDateString()}
+                                ${pitch.updatedAt !== pitch.createdAt ? ` • Updated: ${new Date(pitch.updatedAt).toLocaleDateString()}` : ''}
+                            </div>
+                            <button onclick="selectPitchForRehearsal('${pitch.id}')" class="px-3 py-1 bg-accent-green text-white rounded hover:bg-medium-green transition-colors text-sm focus-visible">
+                                🎬 Rehearse
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Rehearsal Functions
+        function startCameraRehearsal() {
+            if (appState.userData.pitches.length === 0) {
+                showNotification('Create a pitch first before rehearsing', 'warning');
+                return;
+            }
+            
+            if (!appState.selectedPitchForRehearsal) {
+                showSelectPitchModal();
+                return;
+            }
+            
+            document.getElementById('rehearsalOverlay').classList.remove('hidden');
+            initializeCamera();
+        }
+
+        function startQuickRehearsal() {
+            if (appState.userData.pitches.length === 0) {
+                showNotification('Create a pitch first before rehearsing', 'warning');
+                return;
+            }
+            
+            // Select the most recent pitch
+            const recentPitch = appState.userData.pitches[appState.userData.pitches.length - 1];
+            appState.selectedPitchForRehearsal = recentPitch.id;
+            
+            document.getElementById('rehearsalOverlay').classList.remove('hidden');
+            initializeCamera();
+            updateRehearsalScript();
+        }
+
+        function selectPitchForRehearsal(pitchId) {
+            appState.selectedPitchForRehearsal = pitchId;
+            document.getElementById('rehearsalOverlay').classList.remove('hidden');
+            initializeCamera();
+            updateRehearsalScript();
+        }
+
+        function showSelectPitchModal() {
+            const pitchList = document.getElementById('pitchSelectionList');
+            
+            pitchList.innerHTML = appState.userData.pitches.map(pitch => `
+                <div class="flex justify-between items-center p-4 bg-pale-gold rounded-lg border border-medium-gold cursor-pointer hover:bg-light-gold transition-colors" onclick="selectPitchAndStartRehearsal('${pitch.id}')">
+                    <div>
+                        <div class="font-semibold text-dark-green">${pitch.title}</div>
+                        <div class="text-sm text-medium-green">${new Date(pitch.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div class="text-accent-green">
+                        🎬 Select
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('selectPitchModal').classList.remove('hidden');
+            document.getElementById('selectPitchModal').classList.add('flex');
+        }
+
+        function hideSelectPitchModal() {
+            document.getElementById('selectPitchModal').classList.add('hidden');
+            document.getElementById('selectPitchModal').classList.remove('flex');
+        }
+
+        function selectPitchAndStartRehearsal(pitchId) {
+            appState.selectedPitchForRehearsal = pitchId;
+            hideSelectPitchModal();
+            document.getElementById('rehearsalOverlay').classList.remove('hidden');
+            initializeCamera();
+            updateRehearsalScript();
+        }
+
+        function updateRehearsalScript() {
+            if (!appState.selectedPitchForRehearsal) return;
+            
+            const pitch = appState.userData.pitches.find(p => p.id === appState.selectedPitchForRehearsal);
+            if (!pitch) return;
+            
+            const script = `${pitch.hook} ${pitch.background} ${pitch.value} ${pitch.callToAction}`;
+            document.getElementById('rehearsalScript').textContent = script;
+        }
+
+        async function initializeCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                const videoElement = document.getElementById('rehearsalCamera');
+                videoElement.srcObject = stream;
+                appState.cameraStream = stream;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showNotification('Camera access denied or not available', 'warning');
+            }
+        }
+
+        async function toggleCamera() {
+            const button = document.getElementById('toggleCameraBtn');
+            const preview = document.getElementById('cameraPreview');
+            
+            if (appState.cameraStream) {
+                // Stop camera
+                appState.cameraStream.getTracks().forEach(track => track.stop());
+                appState.cameraStream = null;
+                preview.srcObject = null;
+                button.textContent = '📹 Enable Camera';
+            } else {
+                // Start camera
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    preview.srcObject = stream;
+                    appState.cameraStream = stream;
+                    button.textContent = '📹 Disable Camera';
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    showNotification('Camera access denied or not available', 'warning');
+                }
+            }
+        }
+
+        function exitRehearsal() {
+            document.getElementById('rehearsalOverlay').classList.add('hidden');
+            
+            // Stop camera
+            if (appState.cameraStream) {
+                appState.cameraStream.getTracks().forEach(track => track.stop());
+                appState.cameraStream = null;
+            }
+            
+            // Reset timer
+            resetRehearsalTimer();
+        }
+
+        function toggleRehearsalTimer() {
+            if (appState.rehearsalTimer.isRunning) {
+                pauseRehearsalTimer();
+            } else {
+                startRehearsalTimer();
+            }
+        }
+
+        function startRehearsalTimer() {
+            if (appState.rehearsalTimer.interval) return;
+
+            if (!appState.rehearsalTimer.isPaused) {
+                appState.rehearsalTimer.elapsed = 0;
+            }
+            
+            appState.rehearsalTimer.startTime = Date.now() - appState.rehearsalTimer.elapsed;
+            appState.rehearsalTimer.isRunning = true;
+            appState.rehearsalTimer.isPaused = false;
+            
+            appState.rehearsalTimer.interval = setInterval(() => {
+                appState.rehearsalTimer.elapsed = Date.now() - appState.rehearsalTimer.startTime;
+                updateRehearsalTimerDisplay();
+                updateDeliveryCues();
+                
+                // Check if time is up
+                if (appState.rehearsalTimer.elapsed >= appState.rehearsalTimer.duration) {
+                    pauseRehearsalTimer();
+                    showNotification('Time is up! Great job!', 'success');
+                }
+            }, 100);
+            
+            document.getElementById('startTimerBtn').textContent = 'Pause Timer';
+            document.getElementById('startRehearsalTimerBtn').textContent = '⏸️ Pause';
+        }
+
+        function pauseRehearsalTimer() {
+            if (appState.rehearsalTimer.interval) {
+                clearInterval(appState.rehearsalTimer.interval);
+                appState.rehearsalTimer.interval = null;
+                appState.rehearsalTimer.isRunning = false;
+                appState.rehearsalTimer.isPaused = true;
+            }
+            
+            document.getElementById('startTimerBtn').textContent = 'Start Timer';
+            document.getElementById('startRehearsalTimerBtn').textContent = '▶️ Resume';
+        }
+
+        function resetRehearsalTimer() {
+            pauseRehearsalTimer();
+            appState.rehearsalTimer.elapsed = 0;
+            appState.rehearsalTimer.isPaused = false;
+            updateRehearsalTimerDisplay();
+            resetDeliveryCues();
+            
+            document.getElementById('startRehearsalTimerBtn').textContent = '▶️ Start';
+        }
+
+        function updateRehearsalTimerDisplay() {
+            const remaining = Math.max(0, appState.rehearsalTimer.duration - appState.rehearsalTimer.elapsed);
+            
+            // Update remaining time
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timerDisplay').textContent = timeString;
+            document.getElementById('rehearsalTimerText').textContent = timeString;
+            
+            // Update progress ring
+            const progress = appState.rehearsalTimer.elapsed / appState.rehearsalTimer.duration;
+            const circumference = 2 * Math.PI * 52;
+            const offset = circumference - (progress * circumference);
+            document.getElementById('rehearsalTimerProgress').style.strokeDashoffset = offset;
+            
+            // Warning styling when time is running low
+            const timerElements = [document.getElementById('rehearsalTimer'), document.getElementById('rehearsalTimerDisplay')];
+            timerElements.forEach(element => {
+                if (remaining < 10000) { // Less than 10 seconds
+                    element.classList.add('warning');
+                } else {
+                    element.classList.remove('warning');
+                }
+            });
+        }
+
+        function updateDeliveryCues() {
+            const elapsed = appState.rehearsalTimer.elapsed;
+            const cues = ['cue0-15', 'cue15-30', 'cue30-45', 'cue45-60'];
+            
+            // Reset all cues
+            cues.forEach(cueId => {
+                const element = document.getElementById(cueId);
+                if (element) {
+                    element.style.backgroundColor = 'var(--pale-gold)';
+                    element.style.borderColor = 'var(--medium-gold)';
+                }
+            });
+            
+            // Highlight current cue
+            let currentCue = '';
+            if (elapsed < 15000) {
+                currentCue = 'cue0-15';
+            } else if (elapsed < 30000) {
+                currentCue = 'cue15-30';
+            } else if (elapsed < 45000) {
+                currentCue = 'cue30-45';
+            } else {
+                currentCue = 'cue45-60';
+            }
+            
+            const currentElement = document.getElementById(currentCue);
+            if (currentElement) {
+                currentElement.style.backgroundColor = 'var(--light-gold)';
+                currentElement.style.borderColor = 'var(--dark-gold)';
+            }
+        }
+
+        function resetDeliveryCues() {
+            const cues = ['cue0-15', 'cue15-30', 'cue30-45', 'cue45-60'];
+            cues.forEach(cueId => {
+                const element = document.getElementById(cueId);
+                if (element) {
+                    element.style.backgroundColor = 'var(--pale-gold)';
+                    element.style.borderColor = 'var(--medium-gold)';
+                }
+            });
+        }
+
+        // Voice Input Functions
+        function toggleVoiceInput(targetId) {
+            if (!appState.speechRecognition) {
+                showNotification('Voice input not supported in this browser', 'warning');
+                return;
+            }
+
+            if (appState.isVoiceRecording && appState.currentVoiceTarget === targetId) {
+                appState.speechRecognition.stop();
+                appState.isVoiceRecording = false;
+                appState.currentVoiceTarget = null;
+            } else {
+                try {
+                    appState.currentVoiceTarget = targetId;
+                    appState.speechRecognition.start();
+                    appState.isVoiceRecording = true;
+                    showNotification('Voice input started', 'success');
+                } catch (e) {
+                    showNotification('Error starting voice input', 'error');
+                }
+            }
+            
+            updateVoiceInputButtons();
+        }
+
+        function updateVoiceInputButtons() {
+            const buttons = ['voiceHookBtn', 'voiceBackgroundBtn', 'voiceValueBtn', 'voiceCallBtn'];
+            
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    const targetId = btnId.replace('voice', '').replace('Btn', 'Input');
+                    if (appState.isVoiceRecording && appState.currentVoiceTarget === targetId) {
+                        btn.classList.add('recording');
+                        btn.innerHTML = '⏹️';
+                    } else {
+                        btn.classList.remove('recording');
+                        btn.innerHTML = '🎤';
+                    }
+                }
+            });
+        }
+
+        // Vocabulary Functions
+        function updateVocabularyView() {
+            filterVocabulary('all');
+        }
+
+        function filterVocabulary(category) {
+            // Update active category button
+            document.querySelectorAll('.vocab-category').forEach(btn => {
+                btn.classList.remove('active', 'bg-medium-gold', 'text-white');
+                btn.classList.add('bg-pale-green', 'text-dark-green');
+            });
+            
+            const activeBtn = document.querySelector(`[data-category="${category}"]`);
+            activeBtn.classList.add('active', 'bg-medium-gold', 'text-white');
+            activeBtn.classList.remove('bg-pale-green', 'text-dark-green');
+            
+            // Filter vocabulary
+            const filteredVocab = category === 'all' 
+                ? appState.userData.vocabulary 
+                : appState.userData.vocabulary.filter(v => v.category === category);
+            
+            const vocabularyGrid = document.getElementById('vocabularyGrid');
+            
+            if (filteredVocab.length === 0) {
+                vocabularyGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">💎</div>
+                        <p>No vocabulary in this category yet</p>
+                    </div>
+                `;
+            } else {
+                vocabularyGrid.innerHTML = filteredVocab.map(vocab => `
+                    <div class="vocabulary-card">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-dark-green text-lg">${vocab.word}</h4>
+                            <button onclick="deleteVocabulary('${vocab.id}')" class="text-red-500 hover:text-red-700 text-sm focus-visible">
+                                ✕
+                            </button>
+                        </div>
+                        <p class="text-sm text-medium-green mb-3">${vocab.definition}</p>
+                        <p class="text-xs text-gray-600 italic mb-3">"${vocab.example}"</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs px-2 py-1 bg-pale-gold text-dark-green rounded">${vocab.category}</span>
+                            <button onclick="copyToClipboard('${vocab.word}')" class="text-xs text-medium-gold hover:text-dark-gold focus-visible">
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showRandomVocabulary() {
+            const randomVocab = appState.userData.vocabulary[Math.floor(Math.random() * appState.userData.vocabulary.length)];
+            if (randomVocab) {
+                alert(`💎 ${randomVocab.word}\n\n${randomVocab.definition}\n\nExample: ${randomVocab.example}`);
+            }
+        }
+
+        function showAddVocabModal() {
+            document.getElementById('addVocabModal').classList.remove('hidden');
+            document.getElementById('addVocabModal').classList.add('flex');
+        }
+
+        function hideAddVocabModal() {
+            document.getElementById('addVocabModal').classList.add('hidden');
+            document.getElementById('addVocabModal').classList.remove('flex');
+            
+            // Clear form
+            document.getElementById('vocabWordInput').value = '';
+            document.getElementById('vocabDefinitionInput').value = '';
+            document.getElementById('vocabExampleInput').value = '';
+            document.getElementById('vocabCategorySelect').value = 'opening';
+        }
+
+        function saveNewVocabulary() {
+            const word = document.getElementById('vocabWordInput').value.trim();
+            const definition = document.getElementById('vocabDefinitionInput').value.trim();
+            const example = document.getElementById('vocabExampleInput').value.trim();
+            const category = document.getElementById('vocabCategorySelect').value;
+            
+            if (!word || !definition || !example) {
+                showNotification('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            const newVocab = {
+                id: generateId(),
+                word: word,
+                definition: definition,
+                example: example,
+                category: category,
+                dateAdded: new Date().toISOString()
+            };
+            
+            appState.userData.vocabulary.push(newVocab);
+            saveUserData();
+            updateVocabularyView();
+            hideAddVocabModal();
+            
+            showNotification('Vocabulary added successfully', 'success');
+        }
+
+        function deleteVocabulary(vocabId) {
+            if (confirm('Are you sure you want to delete this vocabulary item?')) {
+                appState.userData.vocabulary = appState.userData.vocabulary.filter(v => v.id != vocabId);
+                saveUserData();
+                updateVocabularyView();
+                showNotification('Vocabulary deleted', 'success');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(`"${text}" copied to clipboard`, 'success');
+            }).catch(() => {
+                showNotification('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        // Analytics Functions
+        function updateAnalyticsView() {
+            // Update practice consistency
+            const thisWeek = getThisWeekPractice();
+            const weeklyGoal = appState.userData.settings.dailyGoal * 7;
+            document.getElementById('weeklyProgress').textContent = `${thisWeek}/${weeklyGoal}`;
+            document.getElementById('weeklyProgressBar').style.width = `${(thisWeek / weeklyGoal) * 100}%`;
+            
+            // Update pitch quality metrics
+            const totalPitches = appState.userData.pitches.length;
+            const completePitches = appState.userData.pitches.filter(p => p.hook && p.background && p.value && p.callToAction).length;
+            const timedPitches = appState.userData.practiceHistory.length;
+            const cameraReady = Math.floor(timedPitches * 0.5); // Simulated
+            
+            document.getElementById('completePitches').textContent = `${completePitches}/${totalPitches}`;
+            document.getElementById('timedPitches').textContent = `${timedPitches}/${totalPitches}`;
+            document.getElementById('cameraReady').textContent = `${cameraReady}/${totalPitches}`;
+            
+            // Update detailed analytics
+            document.getElementById('totalPracticeTime').textContent = `${Math.floor(appState.userData.totalPracticeTime / 3600)}h`;
+            document.getElementById('averagePitchLength').textContent = '45s'; // Simulated
+            document.getElementById('vocabularyUsed').textContent = appState.userData.vocabulary.length;
+            
+            // Update recent activity
+            updateRecentActivity();
+        }
+
+        function updateRecentActivity() {
+            const activityContainer = document.getElementById('recentActivity');
+            const recentActivities = [];
+            
+            // Add recent pitches
+            appState.userData.pitches.slice(-5).forEach(pitch => {
+                recentActivities.push({
+                    type: 'pitch',
+                    date: pitch.createdAt,
+                    description: `Created pitch: ${pitch.title}`
+                });
+            });
+            
+            // Add recent practice sessions
+            appState.userData.practiceHistory.slice(-5).forEach(session => {
+                recentActivities.push({
+                    type: 'practice',
+                    date: session.date,
+                    description: `Rehearsal session completed`
+                });
+            });
+            
+            // Sort by date and take most recent
+            recentActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recent = recentActivities.slice(0, 10);
+            
+            if (recent.length === 0) {
+                activityContainer.innerHTML = '<p class="text-gray-500 text-center">No recent activity</p>';
+            } else {
+                activityContainer.innerHTML = recent.map(activity => `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-pale-green">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg">${activity.type === 'pitch' ? '🎤' : '🎬'}</span>
+                            <span class="text-sm text-dark-green">${activity.description}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">${new Date(activity.date).toLocaleDateString()}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getThisWeekPractice() {
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            return appState.userData.practiceHistory.filter(session => {
+                const sessionDate = new Date(session.date);
+                return sessionDate >= startOfWeek;
+            }).length;
+        }
+
+        function updateDailyStreak() {
+            const today = new Date().toDateString();
+            const lastActive = appState.userData.lastActiveDate;
+
+            if (lastActive !== today) {
+                if (lastActive) {
+                    const lastActiveDate = new Date(lastActive);
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (lastActiveDate.toDateString() === yesterday.toDateString()) {
+                        appState.userData.streak++;
+                    } else {
+                        appState.userData.streak = 1;
+                    }
+                } else {
+                    appState.userData.streak = 1;
+                }
+                
+                appState.userData.lastActiveDate = today;
+                
+                if (appState.userData.streak > appState.userData.longestStreak) {
+                    appState.userData.longestStreak = appState.userData.streak;
+                }
+                
+                // Add practice session
+                appState.userData.practiceHistory.push({
+                    id: generateId(),
+                    date: new Date().toISOString(),
+                    type: 'daily_activity'
+                });
+                
+                updateStreak();
+            }
+        }
+
+        // Export Functions
+        function exportPitches() {
+            if (appState.userData.pitches.length === 0) {
+                showNotification('No pitches to export', 'warning');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('60-Second Pitch Collection', 20, 30);
+                
+                doc.setFontSize(12);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 45);
+                doc.text(`Total Pitches: ${appState.userData.pitches.length}`, 20, 55);
+                
+                let yPos = 75;
+                
+                appState.userData.pitches.forEach((pitch, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    
+                    // Pitch title
+                    doc.setFontSize(16);
+                    doc.text(`${index + 1}. ${pitch.title}`, 20, yPos);
+                    yPos += 20;
+                    
+                    // Hook
+                    doc.setFontSize(12);
+                    doc.text('Hook (0-15s):', 20, yPos);
+                    yPos += 7;
+                    const hookLines = doc.splitTextToSize(pitch.hook, 170);
+                    doc.text(hookLines, 20, yPos);
+                    yPos += hookLines.length * 5 + 10;
+                    
+                    // Background
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Background (15-30s):', 20, yPos);
+                    yPos += 7;
+                    const backgroundLines = doc.splitTextToSize(pitch.background, 170);
+                    doc.text(backgroundLines, 20, yPos);
+                    yPos += backgroundLines.length * 5 + 10;
+                    
+                    // Value
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Value Proposition (30-45s):', 20, yPos);
+                    yPos += 7;
+                    const valueLines = doc.splitTextToSize(pitch.value, 170);
+                    doc.text(valueLines, 20, yPos);
+                    yPos += valueLines.length * 5 + 10;
+                    
+                    // Call-to-Action
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    doc.text('Call-to-Action (45-60s):', 20, yPos);
+                    yPos += 7;
+                    const callLines = doc.splitTextToSize(pitch.callToAction, 170);
+                    doc.text(callLines, 20, yPos);
+                    yPos += callLines.length * 5 + 20;
+                });
+                
+                // Save
+                doc.save(`pitch-collection-${new Date().toISOString().split('T')[0]}.pdf`);
+                showNotification('Pitches exported successfully', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('Error exporting PDF', 'error');
+            }
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            document.getElementById('timerDurationSelect').value = appState.userData.settings.timerDuration;
+            document.getElementById('dailyGoalSelect').value = appState.userData.settings.dailyGoal;
+            document.getElementById('autoSaveToggle').checked = appState.userData.settings.autoSave;
+            document.getElementById('voiceInputToggle').checked = appState.userData.settings.voiceInput;
+            document.getElementById('dailyRemindersToggle').checked = appState.userData.settings.dailyReminders;
+            document.getElementById('reminderTimeInput').value = appState.userData.settings.reminderTime;
+        }
+
+        function updateTimerDuration() {
+            appState.userData.settings.timerDuration = parseInt(document.getElementById('timerDurationSelect').value);
+            appState.rehearsalTimer.duration = appState.userData.settings.timerDuration * 1000;
+            saveUserData();
+        }
+
+        function updateDailyGoal() {
+            appState.userData.settings.dailyGoal = parseInt(document.getElementById('dailyGoalSelect').value);
+            saveUserData();
+        }
+
+        function updateAutoSave() {
+            appState.userData.settings.autoSave = document.getElementById('autoSaveToggle').checked;
+            saveUserData();
+        }
+
+        function updateVoiceInput() {
+            appState.userData.settings.voiceInput = document.getElementById('voiceInputToggle').checked;
+            saveUserData();
+        }
+
+        function updateDailyReminders() {
+            appState.userData.settings.dailyReminders = document.getElementById('dailyRemindersToggle').checked;
+            saveUserData();
+        }
+
+        function updateReminderTime() {
+            appState.userData.settings.reminderTime = document.getElementById('reminderTimeInput').value;
+            saveUserData();
+        }
+
+        // Data Management Functions
+        function backupData() {
+            try {
+                const dataStr = JSON.stringify(appState.userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `pitch-coach-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('Data backup downloaded', 'success');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showNotification('Error creating backup', 'error');
+            }
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        appState.userData = { ...appState.userData, ...data };
+                        saveUserData();
+                        updateUI();
+                        showNotification('Data restored successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Error restoring data', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            const confirmed = confirm('This will permanently delete all your data. Are you sure?');
+            if (confirmed) {
+                const doubleConfirm = confirm('This action cannot be undone. Are you absolutely sure?');
+                if (doubleConfirm) {
+                    localStorage.removeItem('pitchCoachData');
+                    
+                    appState.userData = {
+                        pitches: [],
+                        vocabulary: [...professionalVocabulary],
+                        practiceHistory: [],
+                        streak: 0,
+                        longestStreak: 0,
+                        lastActiveDate: null,
+                        totalPracticeTime: 0,
+                        settings: {
+                            timerDuration: 60,
+                            dailyGoal: 1,
+                            autoSave: true,
+                            voiceInput: true,
+                            dailyReminders: true,
+                            reminderTime: '09:00'
+                        }
+                    };
+                    
+                    updateUI();
+                    showNotification('All data cleared', 'success');
+                }
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 fade-in ${
+                type === 'error' ? 'bg-red-600 text-white' :
+                type === 'warning' ? 'bg-yellow-600 text-white' :
+                type === 'info' ? 'bg-blue-600 text-white' :
+                'bg-green-600 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98742d48829d1072',t:'MTc1OTI0MDA5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
