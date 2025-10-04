@@ -3,23 +3,156 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Archetype Deck</title>
-  <!-- Tailwind CDN -->
+  <title>Find Your Archetype | CHIZSA COACHING</title>
+
+  <!-- Tailwind (for the deck UI only) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React 18 and Babel Standalone for JSX-in-browser -->
+  <!-- React 18 + Babel for JSX-in-browser -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
   <style>
-    /* optional: smooth font rendering */
-    html, body { background: #F8F7F2; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    :root{
+      --deep:#0f2419; --deep2:#1a3d2e;
+      --gold:#d4af37; --gold2:#b8941f;
+      --ink:#f4f1e8; --muted:#c9d1d9; --glass:rgba(26,61,46,.85);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Georgia, serif; color:var(--ink);
+      background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);
+      line-height:1.6; min-height:100vh;
+    }
+
+    /* Header */
+    .header{position:sticky;top:0;z-index:10;background:rgba(26,61,46,.95);border-bottom:1px solid rgba(212,175,55,.25);backdrop-filter:blur(10px)}
+    .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
+    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px}
+    .menu{list-style:none;display:flex;gap:24px;margin:0;padding:0}
+    .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
+    .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .right{display:flex;gap:12px;align-items:center}
+    .btn{display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;transition:.25s;cursor:pointer}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep)}
+    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(212,175,55,.28)}
+    .btn-outline{border:2px solid var(--gold);color:var(--gold);background:transparent}
+    .btn-outline:hover{background:var(--gold);color:var(--deep)}
+    .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
+    .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
+
+    /* Page wrapper for deck */
+    .wrap{max-width:1200px;margin:0 auto;padding:24px 20px}
+    .cta-top{margin:18px auto 16px;display:flex;justify-content:center}
+    .cta-top .btn{padding:12px 18px}
+
+    /* Footer */
+    .footer{margin-top:48px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
+    .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+    .foot a{color:var(--muted);text-decoration:none}
+    .foot a:hover{color:var(--gold)}
+    .foot-center{display:flex;gap:12px;justify-content:center;align-items:center}
+    .foot-right{display:flex;gap:14px;justify-content:flex-end;align-items:center}
+    .icon{width:22px;height:22px;display:inline-block;vertical-align:middle;fill:currentColor;color:var(--muted)}
+    .icon:hover{color:var(--gold)}
+
+    /* Mobile */
+    @media (max-width:768px){
+      .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
+      .menu.active{left:0}
+      .hamb{display:flex}
+      .foot{grid-template-columns:1fr;text-align:center}
+      .foot-center,.foot-right{justify-content:center}
+    }
+
+    /* Light canvas behind React deck */
+    .deck-canvas{background:#F8F7F2;border:1px solid rgba(212,175,55,.2);border-radius:16px;overflow:hidden}
   </style>
 </head>
 <body>
-  <div id="root"></div>
 
+  <!-- Uniform Header -->
+  <header class="header">
+    <div class="nav">
+      <a class="logo" href="/">CHIZSA | COACHING</a>
+      <nav>
+        <ul class="menu" id="menu">
+          <li><a class="active" href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
+          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
+          <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
+          <li><a href="https://chizsaleei.com/about.html">About</a></li>
+          <li><a href="https://chizsaleei.com/training.html">Training</a></li>
+          <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
+        </ul>
+      </nav>
+      <div class="right">
+        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+        <div class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top CTA (above deck) -->
+  <div class="wrap">
+    <div class="cta-top">
+      <a class="btn btn-gold" href="https://chizsaleei.com/archetype/quiz/index.html">
+        Take a quiz to find your core
+      </a>
+    </div>
+
+    <!-- React Deck Canvas -->
+    <div class="deck-canvas">
+      <div id="root"></div>
+    </div>
+  </div>
+
+  <!-- Uniform Footer -->
+  <footer class="footer">
+    <div class="foot">
+      <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
+      <div class="foot-center">
+        <a href="https://chizsaleei.com/about.html">About</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
+      </div>
+      <div class="foot-right">
+        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/>
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/>
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2c-3.1 0-3.5 0-4.7.1-1.1.06-1.7.24-2.1.4-.5.2-.8.4-1.1.8-.3.3-.6.6-1.1.8-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.06 1.1.24 1.7.4 2.1.2.5.4.8.8 1.1.3.3.6.6 1.1.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.06 1.7-.24 2.1-.4.5-.2.8-.4 1.1-.8.3-.3.6-.6.8-1.1.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.06-1.1-.24-1.7-.4-2.1-.2-.5-.4-.8-.8-1.1-.3-.3-.6-.6-1.1-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Zm0 2.2a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8Zm5-2.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/>
+          </svg>
+        </a>
+        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile menu script -->
+  <script>
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    hamb.addEventListener('click', () => {
+      const open = menu.classList.toggle('active');
+      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.querySelectorAll('#menu a').forEach(a=>{
+      a.addEventListener('click', ()=> menu.classList.remove('active'));
+    });
+  </script>
+
+  <!-- React App (unchanged deck + styling) -->
   <script type="text/babel">
-    // Use React hooks from the global React object
     const { useState, useRef, useEffect } = React;
 
     const PALETTE = {
@@ -119,7 +252,7 @@
     ];
 
     function useKeyboardFlip(ref, onFlip) {
-      useEffect(() => {
+      React.useEffect(() => {
         const el = ref.current;
         if (!el) return;
         const handler = (e) => {
@@ -164,8 +297,8 @@
           rel="noopener noreferrer"
           className="block w-full rounded-lg text-center text-[12px] font-semibold py-2 mt-2 transition-transform"
           style={{
-            background: PALETTE.templeGold,
-            color: PALETTE.inkCharcoal,
+            background: "#CBA35B",
+            color: "#0E1514",
             boxShadow: "0 2px 0 rgba(0,0,0,0.25)",
           }}
         >
@@ -197,9 +330,9 @@
             <div
               className="absolute inset-0 rounded-2xl border overflow-hidden [backface-visibility:hidden] transition-transform duration-300"
               style={{
-                background: PALETTE.deepEvergreen,
-                borderColor: PALETTE.templeGold,
-                color: PALETTE.lotusWhite,
+                background: "#26433A",
+                borderColor: "#CBA35B",
+                color: "#F8F7F2",
                 boxShadow: "0 12px 24px rgba(14,21,20,0.45)",
               }}
             >
@@ -229,9 +362,9 @@
             <div
               className="absolute inset-0 rounded-2xl border p-5 [transform:rotateY(180deg)] [backface-visibility:hidden]"
               style={{
-                background: PALETTE.deepEvergreen,
-                borderColor: PALETTE.templeGold,
-                color: PALETTE.lotusWhite,
+                background: "#26433A",
+                borderColor: "#CBA35B",
+                color: "#F8F7F2",
                 boxShadow: "0 12px 24px rgba(14,21,20,0.45)",
               }}
             >
@@ -240,7 +373,7 @@
                 <p className="text-base leading-snug" style={{ textShadow: "0 1px 1px rgba(0,0,0,0.35)" }}>
                   {item.quietTruth}
                 </p>
-                <p className="mt-2 text-sm opacity-95" style={{ color: PALETTE.softGreen }}>
+                <p className="mt-2 text-sm opacity-95" style={{ color: "#8DC8B5" }}>
                   {item.nextStep}
                 </p>
                 <div className="mt-3 grid grid-cols-1 gap-2">
@@ -257,12 +390,12 @@
 
     function ArchetypeCards() {
       return (
-        <div className="min-h-screen" style={{ background: PALETTE.lotusWhite }}>
-          <header className="mx-auto max-w-7xl px-4 pt-10 pb-6">
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: PALETTE.inkCharcoal }}>
+        <div className="min-h-[60vh]" style={{ background: "#F8F7F2" }}>
+          <header className="mx-auto max-w-7xl px-4 pt-8 pb-5">
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "#0E1514" }}>
               Archetype Deck
             </h1>
-            <p className="text-sm md:text-base mt-1" style={{ color: PALETTE.inkCharcoal, opacity: 0.8 }}>
+            <p className="text-sm md:text-base mt-1" style={{ color: "#0E1514", opacity: 0.8 }}>
               Flip a card to reveal a quiet truth and choose your next step
             </p>
           </header>
@@ -282,4 +415,3 @@
   </script>
 </body>
 </html>
-
