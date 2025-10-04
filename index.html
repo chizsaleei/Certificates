@@ -125,15 +125,15 @@
       </article>
     </section>
 
-    <!-- Sign-up (Google Form link) -->
-    <section class="contact" id="contact">
-      <h2>Sign Up for Freebies and Collaboration</h2>
-      <p>Short form, quick reply. Opens in a new tab.</p>
-      <a class="btn btn-gold" href="https://forms.gle/rhWbAaNNjECo7iDf7" target="_blank" rel="noopener" aria-label="Open Google Form">
-        Open Google Form
-      </a>
-    </section>
-  </main>
+    <form id="contact-form" class="contact-form">
+  <input id="c-name" type="text" placeholder="Full name" required>
+  <input id="c-email" type="email" placeholder="Email" required>
+  <textarea id="c-msg" placeholder="What do you need? (coaching, collab, freebies)" required></textarea>
+  <button id="contact-submit" type="submit">Send</button>
+  <p id="contact-status" class="muted"></p>
+</form>
+<script src="/js/contact.js"></script>
+
 
   <!-- Footer -->
   <footer class="footer">
