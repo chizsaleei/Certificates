@@ -963,11 +963,6 @@
   </main>
 
   <script>
-    // Initialize Supabase client
-    const supabaseUrl = 'https://gwlwctytwendsixwvnvu.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
     // Global variables
     let currentUser = null;
     let userStats = null;
@@ -975,23 +970,21 @@
     let userAchievements = [];
 
     // Initialize dashboard
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeDashboard();
-    });
-
-    async function initializeDashboard() {
+    (async function() {
       try {
-        showNotification('Loading your dashboard...', 'info');
+        const who = document.getElementById("user-name");
+        const membershipLevel = document.getElementById("membership-level");
         
-        // Check authentication
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
-        if (error || !user) {
-          window.location.href = '/login.html';
-          return;
+        // Check authentication using Auth module
+        const user = await Auth.getUser();
+        if (!user) { 
+          who.textContent = "Please sign in from the home page."; 
+          setTimeout(() => window.location.href = '/', 2000);
+          return; 
         }
 
         currentUser = user;
+        who.textContent = user.email.split('@')[0];
         
         // Load all dashboard data
         await Promise.all([
@@ -1009,7 +1002,7 @@
         console.error('Dashboard initialization error:', error);
         showNotification('Failed to load dashboard. Please refresh the page.', 'error');
       }
-    }
+    })();
 
     async function loadUserProfile() {
       try {
@@ -1630,16 +1623,7 @@
     }
 
     // Sign out functionality
-    document.getElementById('btn-signout').addEventListener('click', async () => {
-      try {
-        showNotification('Signing out...', 'info');
-        await supabase.auth.signOut();
-        window.location.href = '/login.html';
-      } catch (error) {
-        console.error('Sign out error:', error);
-        showNotification('Failed to sign out', 'error');
-      }
-    });
+    document.getElementById('btn-signout').addEventListener('click', Auth.signOut);
 
     // Auto-refresh data every 5 minutes
     setInterval(() => {
@@ -1647,5 +1631,5 @@
       loadUserStats();
     }, 300000);
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9895f56d45d4b9f0',t:'MTc1OTU5NDMyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9895ff5912e7b9f0',t:'MTc1OTU5NDczMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
