@@ -1,18 +1,1731 @@
-<!doctype html><html><head>
-<meta charset="utf-8"><title>Lesson Room</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/js/supabaseClient.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/sessions.js" defer></script>
-<link rel="stylesheet" href="/styles.css">
-<style>
-#room, #fallback { width:100%; max-width:980px; height:72vh; margin:20px auto; border:0; border-radius:12px; }
-.banner{max-width:980px;margin:0 auto;color:#cbd5d1}
-</style>
-</head><body>
-<h1 class="banner">Your 1 on 1 Lesson</h1>
-<div id="controls" class="banner"></div>
-<iframe id="room" allow="camera; microphone; display-capture; autoplay" style="display:none"></iframe>
-<div id="fallback" style="display:none"></div>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1-on-1 Coaching Sessions | CHIZSA COACHING</title>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(135deg, #1a3d2e 0%, #0f2419 100%);
+      color: #f4f1e8;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Header Styles */
+    .session-header {
+      background: rgba(26, 61, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #c9d1d9;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #d4af37;
+    }
+
+    .back-btn {
+      padding: 8px 16px;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      background: transparent;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    /* Main Container */
+    .session-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .session-title {
+      color: #d4af37;
+      font-size: 2.5rem;
+      margin: 0 0 15px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .session-subtitle {
+      color: #c9d1d9;
+      font-size: 1.2rem;
+      text-align: center;
+      margin: 0 0 40px;
+      font-weight: 300;
+    }
+
+    /* Session Grid */
+    .session-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .main-session {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .session-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Card Styles */
+    .session-card {
+      background: rgba(26, 61, 46, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .session-card:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .card-title {
+      color: #d4af37;
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge.live {
+      background: linear-gradient(135deg, #3fa67a, #4fb085);
+    }
+
+    .status-badge.scheduled {
+      background: linear-gradient(135deg, #bf8a2c, #d4af37);
+    }
+
+    /* Video Room Styles */
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: rgba(15, 36, 25, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(212, 175, 55, 0.2);
+    }
+
+    #room {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 10px;
+      display: none;
+    }
+
+    #fallback {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fallback-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: #d4af37;
+    }
+
+    .fallback-title {
+      color: #d4af37;
+      font-size: 1.5rem;
+      margin: 0 0 15px;
+      font-weight: 600;
+    }
+
+    .fallback-description {
+      color: #c9d1d9;
+      font-size: 1rem;
+      margin: 0 0 25px;
+      line-height: 1.5;
+    }
+
+    .voov-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .voov-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    #controls {
+      margin-top: 15px;
+      text-align: center;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+    }
+
+    #controls a {
+      color: #d4af37;
+      text-decoration: none;
+    }
+
+    #controls a:hover {
+      text-decoration: underline;
+    }
+
+    /* Session Info */
+    .session-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .info-item {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .info-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+      color: #d4af37;
+    }
+
+    .info-label {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin: 0 0 5px;
+      font-weight: 500;
+    }
+
+    .info-value {
+      color: #f4f1e8;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* Booking Form */
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      color: #d4af37;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 12px 16px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 6px;
+      background: rgba(15, 36, 25, 0.6);
+      color: #f4f1e8;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .book-btn {
+      padding: 15px 25px;
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .book-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .book-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Upcoming Sessions */
+    .sessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .session-item {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .session-item:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .session-date {
+      color: #d4af37;
+      font-weight: 600;
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .session-time {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin: 0 0 10px;
+    }
+
+    .session-topic {
+      color: #f4f1e8;
+      font-weight: 500;
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .session-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      background: transparent;
+      color: #d4af37;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .session-btn:hover {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    .session-btn.primary {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      border: none;
+    }
+
+    /* Guidelines */
+    .guidelines-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .guidelines-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+      color: #c9d1d9;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .guidelines-list li:last-child {
+      border-bottom: none;
+    }
+
+    .guideline-icon {
+      color: #d4af37;
+      font-size: 1.1rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Loading States */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(212, 175, 55, 0.3);
+      border-top: 3px solid #d4af37;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(26, 61, 46, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+      border-radius: 8px;
+      padding: 15px 20px;
+      color: #f4f1e8;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-color: #3fa67a;
+    }
+
+    .notification.error {
+      border-color: #bf8a2c;
+    }
+
+    /* Week Navigation */
+    .week-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(15, 36, 25, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .nav-btn {
+      padding: 8px 12px;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      background: transparent;
+      color: #d4af37;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .nav-btn:hover {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .week-display {
+      color: #f4f1e8;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* Available Slots */
+    .slots-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .day-group {
+      margin-bottom: 20px;
+    }
+
+    .day-header {
+      color: #d4af37;
+      font-weight: 600;
+      margin: 0 0 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      font-size: 0.95rem;
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .time-slot {
+      padding: 10px 8px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 6px;
+      background: rgba(15, 36, 25, 0.6);
+      color: #d4af37;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .time-slot:hover {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: #d4af37;
+      transform: translateY(-1px);
+    }
+
+    .time-slot.booked {
+      background: rgba(191, 138, 44, 0.2);
+      color: #bf8a2c;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .time-slot.booked:hover {
+      transform: none;
+    }
+
+    .time-slot.selected {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      border-color: #d4af37;
+    }
+
+    /* Booking Modal */
+    .booking-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: rgba(26, 61, 46, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 0;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .modal-header h4 {
+      color: #d4af37;
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: #d4af37;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .selected-slot {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .selected-slot-date {
+      color: #d4af37;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0 0 5px;
+    }
+
+    .selected-slot-time {
+      color: #c9d1d9;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* Session Controls */
+    .session-controls {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .timer-display {
+      margin-bottom: 20px;
+    }
+
+    .timer-label {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .timer-value {
+      color: #d4af37;
+      font-size: 2.5rem;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .timer-value.warning {
+      color: #bf8a2c;
+      animation: pulse 1s infinite;
+    }
+
+    .timer-value.critical {
+      color: #e74c3c;
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .extension-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .extend-btn {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #3fa67a, #4fb085);
+      color: #f4f1e8;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .extend-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(63, 166, 122, 0.4);
+    }
+
+    .extend-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .extension-info {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+    }
+
+    #extensions-left {
+      color: #d4af37;
+      font-weight: 600;
+    }
+
+    /* Empty State for Slots */
+    .no-slots {
+      text-align: center;
+      padding: 40px 20px;
+      color: #c9d1d9;
+    }
+
+    .no-slots-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .no-slots h4 {
+      color: #d4af37;
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .no-slots p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+      .session-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .session-sidebar {
+        order: -1;
+      }
+
+      .session-info {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .time-slots {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 20px;
+        gap: 15px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .session-title {
+        font-size: 2rem;
+      }
+
+      .session-info {
+        grid-template-columns: 1fr;
+      }
+
+      .video-container {
+        height: 300px;
+      }
+
+      .session-card {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .session-container {
+        padding: 20px 15px;
+      }
+
+      .session-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="session-header">
+    <div class="header-container">
+      <a class="brand" href="/">CHIZSA | COACHING</a>
+      <nav class="nav-links">
+        <a href="/dashboard.html" class="nav-link">Dashboard</a>
+        <a href="/dashboard.html" class="back-btn">← Back to Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="session-container">
+    <h1 class="session-title">1-on-1 Coaching Sessions</h1>
+    <p class="session-subtitle">Personalized coaching sessions tailored to accelerate your growth</p>
+
+    <div class="session-grid">
+      <!-- Main Session Area -->
+      <div class="main-session">
+        <!-- Live Session -->
+        <div class="session-card">
+          <div class="card-header">
+            <h2 class="card-title">Live Session Room</h2>
+            <span class="status-badge" id="session-status">Ready</span>
+          </div>
+          
+          <div class="session-info">
+            <div class="info-item">
+              <span class="info-icon">📅</span>
+              <div class="info-label">Next Session</div>
+              <div class="info-value" id="next-session-date">Not Scheduled</div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">⏰</span>
+              <div class="info-label">Duration</div>
+              <div class="info-value" id="session-duration-display">25 minutes</div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🎯</span>
+              <div class="info-label">Focus Area</div>
+              <div class="info-value" id="session-focus">General Coaching</div>
+            </div>
+          </div>
+
+          <!-- Session Timer & Extension Controls -->
+          <div class="session-controls" id="session-controls" style="display: none;">
+            <div class="timer-display">
+              <div class="timer-label">Session Time Remaining</div>
+              <div class="timer-value" id="session-timer">25:00</div>
+            </div>
+            <div class="extension-controls">
+              <button class="extend-btn" id="extend-session" onclick="extendSession()">
+                ⏰ Extend +25 minutes
+              </button>
+              <div class="extension-info" id="extension-info">
+                Extensions available: <span id="extensions-left">2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="video-container">
+            <iframe id="room"></iframe>
+            <div id="fallback">
+              <div class="fallback-icon">🎥</div>
+              <h3 class="fallback-title">Video Meeting</h3>
+              <p class="fallback-description">For your region, we'll use VooV Meeting for the best experience.</p>
+            </div>
+          </div>
+          
+          <div id="controls"></div>
+        </div>
+
+        <!-- Session Guidelines -->
+        <div class="session-card">
+          <div class="card-header">
+            <h3 class="card-title">Session Guidelines</h3>
+          </div>
+          <ul class="guidelines-list">
+            <li>
+              <span class="guideline-icon">🎧</span>
+              <span>Use headphones or earbuds for better audio quality and to prevent echo</span>
+            </li>
+            <li>
+              <span class="guideline-icon">💡</span>
+              <span>Find a quiet, well-lit space where you won't be interrupted</span>
+            </li>
+            <li>
+              <span class="guideline-icon">📝</span>
+              <span>Have a notebook ready to jot down key insights and action items</span>
+            </li>
+            <li>
+              <span class="guideline-icon">🎯</span>
+              <span>Come prepared with specific questions or challenges you'd like to discuss</span>
+            </li>
+            <li>
+              <span class="guideline-icon">⏰</span>
+              <span>Join the session 2-3 minutes early to test your connection</span>
+            </li>
+            <li>
+              <span class="guideline-icon">🔄</span>
+              <span>If you experience technical issues, refresh the page or use the backup link</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="session-sidebar">
+        <!-- Available Time Slots -->
+        <div class="session-card">
+          <div class="card-header">
+            <h3 class="card-title">Available Time Slots</h3>
+          </div>
+          
+          <!-- Week Navigation -->
+          <div class="week-navigation">
+            <button class="nav-btn" id="prev-week">← Previous Week</button>
+            <span class="week-display" id="current-week">Loading...</span>
+            <button class="nav-btn" id="next-week">Next Week →</button>
+          </div>
+
+          <!-- Available Slots -->
+          <div class="slots-container" id="available-slots">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+
+          <!-- Booking Modal -->
+          <div class="booking-modal" id="booking-modal" style="display: none;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4>Book Session</h4>
+                <button class="close-btn" id="close-modal">×</button>
+              </div>
+              <div class="modal-body">
+                <div class="selected-slot" id="selected-slot-info"></div>
+                <form class="booking-form" id="booking-form">
+                  <div class="form-group">
+                    <label class="form-label" for="session-duration">Session Duration</label>
+                    <select id="session-duration" class="form-select" required>
+                      <option value="">Select duration</option>
+                      <option value="25">25 minutes - Quick Focus Session</option>
+                      <option value="50">50 minutes - Extended Session (25 + 25)</option>
+                      <option value="75">75 minutes - Deep Dive Session (25 + 25 + 25)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="session-type">Session Type</label>
+                    <select id="session-type" class="form-select" required>
+                      <option value="">Select session type</option>
+                      <option value="general">General Coaching</option>
+                      <option value="goal-setting">Goal Setting</option>
+                      <option value="career">Career Development</option>
+                      <option value="leadership">Leadership Skills</option>
+                      <option value="productivity">Productivity & Time Management</option>
+                      <option value="mindset">Mindset & Motivation</option>
+                      <option value="follow-up">Follow-up Session</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="session-notes">What would you like to focus on?</label>
+                    <textarea id="session-notes" class="form-textarea" placeholder="Describe your goals, challenges, or specific topics you'd like to discuss..."></textarea>
+                  </div>
+                  <button type="submit" class="book-btn" id="book-btn">
+                    📅 Book This Slot
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="session-card">
+          <div class="card-header">
+            <h3 class="card-title">Upcoming Sessions</h3>
+          </div>
+          <div class="sessions-list" id="upcoming-sessions">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Daily Prebuilt with simple country check for VooV fallback
+    (async function(){
+      const user = await Auth.getUser();
+      if (!user) { location.href = "/index.html"; return; }
+
+      // Create or find a room URL. For MVP, use a static Daily room you created in your Daily dashboard.
+      const DAILY_ROOM = "https://YOUR-SUBDOMAIN.daily.co/your-room"; // Precreated room
+      const voovLink   = "https://voovmeeting.com/s/your-meeting-id";  // Your VooV meeting
+
+      // Basic country check
+      let country = "XX";
+      try {
+        const res = await fetch("https://ipapi.co/country/");
+        if (res.ok) country = (await res.text()).trim();
+      } catch(_) {}
+
+      const isCN = country === "CN";
+      const iframe = document.getElementById("room");
+      const fallback = document.getElementById("fallback");
+      const controls = document.getElementById("controls");
+
+      if (!isCN) {
+        iframe.src = DAILY_ROOM;
+        iframe.style.display = "block";
+        controls.innerHTML = "If the embed does not load, <a href='"+DAILY_ROOM+"' target='_blank' rel='noopener'>open in a new tab</a>.";
+      } else {
+        fallback.innerHTML = `
+          <div class="fallback-icon">🎥</div>
+          <h3 class="fallback-title">VooV Meeting</h3>
+          <p class="fallback-description">For users in mainland China, we use VooV Meeting for optimal connectivity and performance.</p>
+          <a class="voov-btn" href="${voovLink}" target="_blank" rel="noopener">
+            🚀 Open VooV Meeting
+          </a>`;
+        fallback.style.display = "flex";
+      }
+
+      // Load session data
+      await loadSessionData();
+      await loadUpcomingSessions();
+      
+      // Initialize availability system
+      await initializeAvailabilitySystem();
+      
+    })();
+
+    async function loadSessionData() {
+      try {
+        const user = await Auth.getUser();
+        if (!user) return;
+
+        // Load next scheduled session
+        const { data: nextSession } = await supabase
+          .from('coaching_sessions')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', 'confirmed')
+          .gte('scheduled_date', new Date().toISOString())
+          .order('scheduled_date', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (nextSession) {
+          const sessionDate = new Date(nextSession.scheduled_date);
+          const now = new Date();
+          const isLive = Math.abs(sessionDate - now) < 30 * 60 * 1000; // Within 30 minutes
+
+          document.getElementById('next-session-date').textContent = sessionDate.toLocaleDateString();
+          document.getElementById('session-duration-display').textContent = `${nextSession.duration || 25} minutes`;
+          document.getElementById('session-focus').textContent = nextSession.session_type || 'General Coaching';
+          
+          const statusBadge = document.getElementById('session-status');
+          if (isLive) {
+            statusBadge.textContent = 'Live Now';
+            statusBadge.className = 'status-badge live';
+          } else {
+            statusBadge.textContent = 'Scheduled';
+            statusBadge.className = 'status-badge scheduled';
+          }
+        }
+      } catch (error) {
+        console.error('Error loading session data:', error);
+      }
+    }
+
+    async function loadUpcomingSessions() {
+      try {
+        const user = await Auth.getUser();
+        if (!user) return;
+
+        const { data: sessions } = await supabase
+          .from('coaching_sessions')
+          .select('*')
+          .eq('user_id', user.id)
+          .gte('scheduled_date', new Date().toISOString())
+          .order('scheduled_date', { ascending: true })
+          .limit(5);
+
+        const container = document.getElementById('upcoming-sessions');
+        
+        if (sessions && sessions.length > 0) {
+          container.innerHTML = '';
+          
+          sessions.forEach(session => {
+            const sessionElement = createSessionElement(session);
+            container.appendChild(sessionElement);
+          });
+        } else {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: #c9d1d9;">
+              <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;">📅</div>
+              <h4 style="color: #d4af37; margin: 0 0 10px;">No Upcoming Sessions</h4>
+              <p style="margin: 0; font-size: 0.9rem;">Book your first session using the form above.</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading upcoming sessions:', error);
+      }
+    }
+
+    function createSessionElement(session) {
+      const sessionDiv = document.createElement('div');
+      sessionDiv.className = 'session-item';
+      
+      const sessionDate = new Date(session.scheduled_date);
+      const now = new Date();
+      const isToday = sessionDate.toDateString() === now.toDateString();
+      const isPast = sessionDate < now;
+      const canJoin = Math.abs(sessionDate - now) < 30 * 60 * 1000; // Within 30 minutes
+
+      sessionDiv.innerHTML = `
+        <div class="session-date">${sessionDate.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</div>
+        <div class="session-time">${sessionDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        })}</div>
+        <div class="session-topic">${session.session_type || 'General Coaching'}</div>
+        <div class="session-actions">
+          ${canJoin ? 
+            `<button class="session-btn primary" onclick="joinSession('${session.id}')">Join Now</button>` :
+            `<button class="session-btn" onclick="viewSession('${session.id}')">View Details</button>`
+          }
+          ${!isPast ? 
+            `<button class="session-btn" onclick="rescheduleSession('${session.id}')">Reschedule</button>` : ''
+          }
+        </div>
+      `;
+      
+      return sessionDiv;
+    }
+
+    // Global variables for availability system
+    let currentWeekStart = new Date();
+    let selectedSlot = null;
+    let availableSlots = [];
+
+    async function initializeAvailabilitySystem() {
+      // Set current week to start of this week (Monday)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Handle Sunday as 0
+      currentWeekStart = new Date(today);
+      currentWeekStart.setDate(today.getDate() + mondayOffset);
+      currentWeekStart.setHours(0, 0, 0, 0);
+
+      // Load initial availability
+      await loadAvailableSlots();
+      
+      // Set up event listeners
+      setupAvailabilityEventListeners();
+    }
+
+    function setupAvailabilityEventListeners() {
+      // Week navigation
+      document.getElementById('prev-week').addEventListener('click', async () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        await loadAvailableSlots();
+      });
+
+      document.getElementById('next-week').addEventListener('click', async () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        await loadAvailableSlots();
+      });
+
+      // Modal controls
+      document.getElementById('close-modal').addEventListener('click', closeBookingModal);
+      document.getElementById('booking-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'booking-modal') closeBookingModal();
+      });
+
+      // Booking form
+      const form = document.getElementById('booking-form');
+      form.addEventListener('submit', handleSlotBooking);
+    }
+
+    async function loadAvailableSlots() {
+      try {
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(currentWeekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        // Update week display
+        const weekDisplay = document.getElementById('current-week');
+        weekDisplay.textContent = `${currentWeekStart.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric' 
+        })} - ${weekEnd.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        })}`;
+
+        // Check if we can go to previous week (not before today)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        document.getElementById('prev-week').disabled = currentWeekStart <= today;
+
+        // Load coach availability for this week
+        const { data: coachAvailability } = await supabase
+          .from('coach_availability')
+          .select('*')
+          .gte('date', currentWeekStart.toISOString().split('T')[0])
+          .lte('date', weekEnd.toISOString().split('T')[0])
+          .eq('is_available', true)
+          .order('date', { ascending: true });
+
+        // Load existing bookings for this week
+        const { data: existingBookings } = await supabase
+          .from('coaching_sessions')
+          .select('scheduled_date, status')
+          .gte('scheduled_date', currentWeekStart.toISOString())
+          .lte('scheduled_date', weekEnd.toISOString())
+          .in('status', ['confirmed', 'requested']);
+
+        // Process and display slots
+        displayAvailableSlots(coachAvailability || [], existingBookings || []);
+
+      } catch (error) {
+        console.error('Error loading available slots:', error);
+        showNotification('Failed to load available time slots', 'error');
+      }
+    }
+
+    function displayAvailableSlots(availability, bookings) {
+      const container = document.getElementById('available-slots');
+      
+      if (!availability || availability.length === 0) {
+        container.innerHTML = `
+          <div class="no-slots">
+            <div class="no-slots-icon">📅</div>
+            <h4>No Available Slots</h4>
+            <p>The coach hasn't set availability for this week yet. Please check back later or contact support.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Group availability by date
+      const slotsByDate = {};
+      availability.forEach(slot => {
+        const date = slot.date;
+        if (!slotsByDate[date]) {
+          slotsByDate[date] = [];
+        }
+        
+        // Parse time slots (assuming format like "09:00,10:00,11:00")
+        const timeSlots = slot.time_slots ? slot.time_slots.split(',') : [];
+        timeSlots.forEach(time => {
+          const slotDateTime = new Date(`${date}T${time}:00`);
+          const isBooked = bookings.some(booking => {
+            const bookingDate = new Date(booking.scheduled_date);
+            return Math.abs(bookingDate - slotDateTime) < 60000; // Within 1 minute
+          });
+
+          slotsByDate[date].push({
+            time: time,
+            datetime: slotDateTime,
+            isBooked: isBooked,
+            isPast: slotDateTime < new Date()
+          });
+        });
+      });
+
+      // Render slots
+      container.innerHTML = '';
+      Object.keys(slotsByDate).sort().forEach(date => {
+        const daySlots = slotsByDate[date];
+        const dateObj = new Date(date);
+        
+        const dayGroup = document.createElement('div');
+        dayGroup.className = 'day-group';
+        
+        dayGroup.innerHTML = `
+          <div class="day-header">
+            ${dateObj.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </div>
+          <div class="time-slots">
+            ${daySlots.map(slot => `
+              <div class="time-slot ${slot.isBooked || slot.isPast ? 'booked' : ''}" 
+                   data-date="${date}" 
+                   data-time="${slot.time}"
+                   ${!slot.isBooked && !slot.isPast ? 'onclick="selectTimeSlot(this)"' : ''}>
+                ${formatTime(slot.time)}
+                ${slot.isBooked ? '<br><small>Booked</small>' : ''}
+                ${slot.isPast ? '<br><small>Past</small>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        `;
+        
+        container.appendChild(dayGroup);
+      });
+    }
+
+    function formatTime(time24) {
+      const [hours, minutes] = time24.split(':');
+      const hour12 = hours % 12 || 12;
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      return `${hour12}:${minutes} ${ampm}`;
+    }
+
+    function selectTimeSlot(element) {
+      // Remove previous selection
+      document.querySelectorAll('.time-slot.selected').forEach(slot => {
+        slot.classList.remove('selected');
+      });
+      
+      // Select current slot
+      element.classList.add('selected');
+      
+      selectedSlot = {
+        date: element.dataset.date,
+        time: element.dataset.time,
+        datetime: new Date(`${element.dataset.date}T${element.dataset.time}:00`)
+      };
+      
+      // Show booking modal
+      showBookingModal();
+    }
+
+    function showBookingModal() {
+      if (!selectedSlot) return;
+      
+      const modal = document.getElementById('booking-modal');
+      const slotInfo = document.getElementById('selected-slot-info');
+      
+      slotInfo.innerHTML = `
+        <div class="selected-slot-date">
+          ${selectedSlot.datetime.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </div>
+        <div class="selected-slot-time">
+          ${formatTime(selectedSlot.time)}
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      
+      // Reset form
+      document.getElementById('booking-form').reset();
+    }
+
+    function closeBookingModal() {
+      document.getElementById('booking-modal').style.display = 'none';
+      
+      // Remove selection
+      document.querySelectorAll('.time-slot.selected').forEach(slot => {
+        slot.classList.remove('selected');
+      });
+      selectedSlot = null;
+    }
+
+    async function handleSlotBooking(e) {
+      e.preventDefault();
+      
+      if (!selectedSlot) {
+        showNotification('No time slot selected', 'error');
+        return;
+      }
+      
+      const formData = new FormData(e.target);
+      const sessionDuration = formData.get('session-duration');
+      const sessionType = formData.get('session-type');
+      const sessionNotes = formData.get('session-notes');
+      
+      if (!sessionDuration) {
+        showNotification('Please select a session duration', 'error');
+        return;
+      }
+      
+      if (!sessionType) {
+        showNotification('Please select a session type', 'error');
+        return;
+      }
+      
+      const bookBtn = document.getElementById('book-btn');
+      bookBtn.disabled = true;
+      bookBtn.textContent = 'Booking...';
+      
+      try {
+        await bookTimeSlot({
+          datetime: selectedSlot.datetime,
+          duration: parseInt(sessionDuration),
+          type: sessionType,
+          notes: sessionNotes
+        });
+        
+        showNotification('Session booked successfully!', 'success');
+        closeBookingModal();
+        await loadAvailableSlots();
+        await loadUpcomingSessions();
+        
+      } catch (error) {
+        console.error('Booking error:', error);
+        showNotification('Failed to book session. Please try again.', 'error');
+      } finally {
+        bookBtn.disabled = false;
+        bookBtn.textContent = '📅 Book This Slot';
+      }
+    }
+
+    async function bookTimeSlot(slotData) {
+      const user = await Auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data, error } = await supabase
+        .from('coaching_sessions')
+        .insert({
+          user_id: user.id,
+          scheduled_date: slotData.datetime.toISOString(),
+          session_type: slotData.type,
+          notes: slotData.notes,
+          status: 'confirmed', // Auto-confirm since they're booking available slots
+          duration: slotData.duration,
+          extensions_used: 0,
+          max_extensions: Math.floor((slotData.duration - 25) / 25) // Calculate based on initial duration
+        });
+
+      if (error) throw error;
+
+      // Log activity
+      await supabase
+        .from('user_activities')
+        .insert({
+          user_id: user.id,
+          activity_type: 'session_booked',
+          description: `Booked ${slotData.duration}-minute ${slotData.type} session for ${slotData.datetime.toLocaleDateString()}`
+        });
+
+      return data;
+    }
+
+    // Session timer variables
+    let sessionTimer = null;
+    let sessionTimeLeft = 0;
+    let currentSessionId = null;
+    let extensionsUsed = 0;
+    let maxExtensions = 2;
+
+    async function joinSession(sessionId) {
+      showNotification('Joining session...', 'info');
+      
+      // Load session details
+      try {
+        const { data: session } = await supabase
+          .from('coaching_sessions')
+          .select('*')
+          .eq('id', sessionId)
+          .single();
+
+        if (session) {
+          currentSessionId = sessionId;
+          sessionTimeLeft = session.duration * 60; // Convert to seconds
+          extensionsUsed = session.extensions_used || 0;
+          maxExtensions = session.max_extensions || 2;
+          
+          // Show session controls and start timer
+          showSessionControls();
+          startSessionTimer();
+          
+          // Update extension info
+          updateExtensionInfo();
+        }
+      } catch (error) {
+        console.error('Error loading session details:', error);
+      }
+      
+      // The video room is already loaded, just scroll to it
+      document.querySelector('.video-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showSessionControls() {
+      const controls = document.getElementById('session-controls');
+      controls.style.display = 'block';
+    }
+
+    function startSessionTimer() {
+      if (sessionTimer) clearInterval(sessionTimer);
+      
+      sessionTimer = setInterval(() => {
+        sessionTimeLeft--;
+        updateTimerDisplay();
+        
+        if (sessionTimeLeft <= 0) {
+          clearInterval(sessionTimer);
+          sessionEnded();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(sessionTimeLeft / 60);
+      const seconds = sessionTimeLeft % 60;
+      const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      
+      const timerElement = document.getElementById('session-timer');
+      timerElement.textContent = timeString;
+      
+      // Add warning classes based on time left
+      timerElement.className = 'timer-value';
+      if (sessionTimeLeft <= 300) { // 5 minutes
+        timerElement.classList.add('warning');
+      }
+      if (sessionTimeLeft <= 120) { // 2 minutes
+        timerElement.classList.add('critical');
+      }
+    }
+
+    function updateExtensionInfo() {
+      const extensionsLeft = maxExtensions - extensionsUsed;
+      document.getElementById('extensions-left').textContent = extensionsLeft;
+      
+      const extendBtn = document.getElementById('extend-session');
+      extendBtn.disabled = extensionsLeft <= 0;
+      
+      if (extensionsLeft <= 0) {
+        extendBtn.textContent = '⏰ No Extensions Left';
+      }
+    }
+
+    async function extendSession() {
+      if (!currentSessionId || extensionsUsed >= maxExtensions) {
+        showNotification('Cannot extend session further', 'error');
+        return;
+      }
+      
+      try {
+        // Add 25 minutes (1500 seconds)
+        sessionTimeLeft += 1500;
+        extensionsUsed++;
+        
+        // Update database
+        await supabase
+          .from('coaching_sessions')
+          .update({ 
+            extensions_used: extensionsUsed,
+            duration: (sessionTimeLeft / 60) // Update total duration
+          })
+          .eq('id', currentSessionId);
+        
+        // Update UI
+        updateExtensionInfo();
+        showNotification('Session extended by 25 minutes!', 'success');
+        
+        // Log activity
+        const user = await Auth.getUser();
+        await supabase
+          .from('user_activities')
+          .insert({
+            user_id: user.id,
+            activity_type: 'session_extended',
+            description: `Extended session by 25 minutes (Extension ${extensionsUsed}/${maxExtensions})`
+          });
+          
+      } catch (error) {
+        console.error('Error extending session:', error);
+        showNotification('Failed to extend session', 'error');
+      }
+    }
+
+    function sessionEnded() {
+      showNotification('Session time has ended', 'info');
+      
+      // Hide session controls
+      const controls = document.getElementById('session-controls');
+      controls.style.display = 'none';
+      
+      // Reset timer variables
+      currentSessionId = null;
+      sessionTimeLeft = 0;
+      extensionsUsed = 0;
+      
+      // Optional: Show session feedback modal or redirect
+      setTimeout(() => {
+        if (confirm('Your session has ended. Would you like to book another session?')) {
+          document.querySelector('.session-sidebar').scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 2000);
+    }
+
+    async function viewSession(sessionId) {
+      showNotification('Session details feature coming soon!', 'info');
+    }
+
+    async function rescheduleSession(sessionId) {
+      if (confirm('Would you like to reschedule this session? This will send a request to your coach.')) {
+        try {
+          await supabase
+            .from('coaching_sessions')
+            .update({ status: 'reschedule_requested' })
+            .eq('id', sessionId);
+          
+          showNotification('Reschedule request sent to your coach!', 'success');
+          await loadUpcomingSessions();
+        } catch (error) {
+          console.error('Reschedule error:', error);
+          showNotification('Failed to send reschedule request', 'error');
+        }
+      }
+    }
+
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Trigger animation
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // Remove notification
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+          }
+        }, 300);
+      }, 4000);
+    }
+
+    // Auto-refresh session data every 2 minutes
+    setInterval(() => {
+      loadSessionData();
+      loadUpcomingSessions();
+    }, 120000);
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98962123d4a3b9f0',t:'MTc1OTU5NjExNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
