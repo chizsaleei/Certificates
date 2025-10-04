@@ -17,10 +17,10 @@
       line-height:1.6;min-height:100vh;
     }
 
-    /* Header (site-wide) */
+    /* Header */
     .header{position:sticky;top:0;z-index:10;background:var(--glass);border-bottom:1px solid rgba(212,175,55,.28);backdrop-filter:blur(10px)}
     .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
-    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px}
     .menu{list-style:none;display:flex;gap:28px;margin:0;padding:0}
     .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
     .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
@@ -60,12 +60,7 @@
     .card:hover .arrow{transform:translateX(5px)}
     .muted{color:var(--muted);font-size:.95rem}
 
-    /* Quick launch (direct to web tools) */
-    .quick{margin:10px 0 28px;display:flex;flex-wrap:wrap;gap:10px}
-    .quick a{border:1px solid rgba(212,175,55,.35);color:var(--ink);text-decoration:none;padding:8px 12px;border-radius:10px;background:rgba(26,61,46,.55)}
-    .quick a:hover{color:var(--deep);background:var(--gold)}
-
-    /* Footer (site-wide) */
+    /* Footer */
     .footer{margin-top:40px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
     .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
     .foot a{color:var(--muted);text-decoration:none}
@@ -113,19 +108,7 @@
     <h1 class="page-title">Select Your Focus</h1>
     <p class="page-sub">Choose your area of focus to access specialized coaching tools and resources designed to help you achieve your goals.</p>
 
-    <!-- Quick launch to live tools -->
-    <div class="quick" aria-label="Quick launch">
-      <a href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener">Career</a>
-      <a href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener">Leadership</a>
-      <a href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener">Business</a>
-      <a href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener">Health & Wellness</a>
-      <a href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener">Financial</a>
-      <a href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener">Life Vision</a>
-      <a href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener">Spiritual</a>
-      <a href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener">Relationship</a>
-    </div>
-
-    <!-- Filters -->
+    <!-- Filters (kept) -->
     <section class="filter" aria-label="Filter tools">
       <h3>Filter Tools by Focus Area & Type</h3>
       <div class="filter-grid">
@@ -168,7 +151,7 @@
       </div>
     </section>
 
-    <!-- Focus Sections (content preserved) -->
+    <!-- Focus sections (each card links to the single live tool page for that focus) -->
     <div class="focus-grid">
       <!-- Career -->
       <section class="section" data-focus="career">
@@ -265,7 +248,7 @@
         </div>
       </section>
 
-      <!-- Life Vision -->
+      <!-- Life Vision (2 tools only) -->
       <section class="section" data-focus="life-vision">
         <h2>Life Vision</h2>
         <div class="tools">
@@ -348,7 +331,7 @@
       a.addEventListener('click', ()=> menu.classList.remove('active'));
     });
 
-    // ------- Existing filter logic (unchanged) -------
+    // Filters (unchanged logic)
     const focusFilter = document.getElementById('focus-filter');
     const toolFilter  = document.getElementById('tool-filter');
     const filterButtons = document.querySelectorAll('.chip');
