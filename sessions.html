@@ -1,1 +1,18 @@
+<!doctype html><html><head>
+<meta charset="utf-8"><title>Lesson Room</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/js/supabaseClient.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/sessions.js" defer></script>
+<link rel="stylesheet" href="/styles.css">
+<style>
+#room, #fallback { width:100%; max-width:980px; height:72vh; margin:20px auto; border:0; border-radius:12px; }
+.banner{max-width:980px;margin:0 auto;color:#cbd5d1}
+</style>
+</head><body>
+<h1 class="banner">Your 1 on 1 Lesson</h1>
+<div id="controls" class="banner"></div>
+<iframe id="room" allow="camera; microphone; display-capture; autoplay" style="display:none"></iframe>
+<div id="fallback" style="display:none"></div>
+</body></html>
 
