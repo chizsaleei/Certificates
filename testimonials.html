@@ -36,12 +36,17 @@
     h1{color:var(--gold);margin:0 0 8px}
     .sub{color:var(--muted);margin:0 0 16px}
 
-    /* Lighter-gold gallery notice with black text */
+    /* Subtle translucent gold gallery notice */
     .notice{
-      background:var(--goldLight); color:#111; border:1px solid var(--gold2);
-      border-radius:12px; padding:14px 18px; text-align:center; margin:8px 0 24px
+      background:rgba(230,197,90,.16); /* subtle light transparent gold */
+      color:var(--ink);
+      border:1px solid rgba(212,175,55,.28);
+      border-radius:12px;
+      padding:14px 18px;
+      text-align:center;
+      margin:8px 0 24px
     }
-    .notice a{color:#111; text-decoration:underline; text-underline-offset:2px}
+    .notice a{color:var(--gold); text-decoration:underline; text-underline-offset:2px}
 
     /* Testimonials grid */
     .t-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:1rem}
@@ -121,7 +126,7 @@
     <div class="notice">
       For screenshots and more reviews, visit
       <a href="https://github.com/chizsaleei/studentstestimonials" target="_blank" rel="noopener">
-        github.com/chizsaleei/studentstestimonials
+        this gallery
       </a>.
     </div>
 
@@ -180,7 +185,7 @@
       a.addEventListener('click', ()=> menu.classList.remove('active'));
     });
 
-    // Testimonials data (your original list)
+    // Testimonials data (original list + 3)
     const RAW_LIST = [
       { name:"Dr. Ron", role:"Cardiologist surgeon, ICU", goal:"OET preparation", quote:"Focused OET speaking drills and quick pattern notes helped me communicate clearly during ICU rounds."},
       { name:"Dr. Crystal", role:"Hematologist", goal:"Medical English", quote:"Clear strategies for writing and speaking, plus gentle corrections that built my confidence for test day."},
@@ -238,7 +243,7 @@
       cta.className = "t-cta";
       const shop = document.createElement("a");
       shop.className = "btn-link";
-      shop.href = "https://ko-fi.com/lifebalanceq/shop";
+      shop.href = "https://chizsaleei.com/profiles/index.html";  // route to Profiles
       shop.target = "_blank"; shop.rel = "noopener";
       shop.textContent = "View matching tools";
       cta.appendChild(shop);
