@@ -5,17 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Select Your Focus | CHIZSA COACHING</title>
   <style>
-    :root{
-      --deep:#0f2419; --deep2:#1a3d2e;
-      --gold:#d4af37; --gold2:#b8941f; --ink:#f4f1e8; --muted:#c9d1d9;
-      --glass:rgba(26,61,46,.92);
-    }
+    :root{--deep:#0f2419;--deep2:#1a3d2e;--gold:#d4af37;--gold2:#b8941f;--ink:#f4f1e8;--muted:#c9d1d9;--glass:rgba(26,61,46,.92)}
     *{box-sizing:border-box}
-    body{
-      margin:0;font-family:Georgia, serif;color:var(--ink);
-      background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);
-      line-height:1.6;min-height:100vh;
-    }
+    body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);line-height:1.6;min-height:100vh}
 
     /* Header */
     .header{position:sticky;top:0;z-index:10;background:var(--glass);border-bottom:1px solid rgba(212,175,55,.28);backdrop-filter:blur(10px)}
@@ -45,15 +37,15 @@
     .select:focus{outline:none;border-color:var(--gold)}
     .chiprow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
     .chip{border:1px solid var(--gold);background:transparent;color:var(--gold);padding:8px 14px;border-radius:999px;cursor:pointer}
-    .chip:hover,.chip.active{background:var(--gold);color:var(--deep);}
+    .chip:hover,.chip.active{background:var(--gold);color:var(--deep)}
 
-    /* Sections & cards */
+    /* Sections & single cards */
     .focus-grid{display:grid;gap:34px}
-    .section{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:14px;padding:24px;transition:border-color .2s, box-shadow .2s}
+    .section{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:14px;padding:24px;transition:border-color .2s,box-shadow .2s}
     .section:hover{border-color:rgba(212,175,55,.5);box-shadow:0 12px 28px rgba(0,0,0,.28)}
     .section h2{margin:0 0 14px;color:var(--gold);border-bottom:2px solid rgba(212,175,55,.28);padding-bottom:8px}
     .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-    .card{display:block;text-decoration:none;color:inherit;background:rgba(15,36,25,.85);border:1px solid rgba(212,175,55,.14);border-radius:12px;padding:18px;transition:transform .2s, box-shadow .2s, border-color .2s}
+    .card{display:block;text-decoration:none;color:inherit;background:rgba(15,36,25,.85);border:1px solid rgba(212,175,55,.14);border-radius:12px;padding:18px;transition:transform .2s,box-shadow .2s,border-color .2s}
     .card:hover{transform:translateY(-3px);border-color:rgba(212,175,55,.45);box-shadow:0 10px 24px rgba(0,0,0,.26)}
     .card .name{color:var(--gold);font-weight:700;margin-bottom:6px}
     .card .arrow{float:right;color:var(--gold);transition:transform .2s}
@@ -108,7 +100,7 @@
     <h1 class="page-title">Select Your Focus</h1>
     <p class="page-sub">Choose your area of focus to access specialized coaching tools and resources designed to help you achieve your goals.</p>
 
-    <!-- Filters (kept) -->
+    <!-- Filters (unchanged) -->
     <section class="filter" aria-label="Filter tools">
       <h3>Filter Tools by Focus Area & Type</h3>
       <div class="filter-grid">
@@ -151,144 +143,92 @@
       </div>
     </section>
 
-    <!-- Focus sections (each card links to the single live tool page for that focus) -->
+    <!-- One card per focus -->
     <div class="focus-grid">
-      <!-- Career -->
       <section class="section" data-focus="career">
         <h2>Career</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="planning assessment practice">
-            <div class="name">Career Craft <span class="arrow">→</span></div>
-            <div class="muted">Design and craft your ideal career path with strategic planning tools</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="assessment planning">
-            <div class="name">Role Map <span class="arrow">→</span></div>
-            <div class="muted">Map out roles and responsibilities to align with your career goals</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="practice communication">
-            <div class="name">Interview Drill <span class="arrow">→</span></div>
-            <div class="muted">Practice and perfect your interview skills with targeted drills</div>
+          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener"
+             data-focus="career" data-tool="planning assessment practice communication">
+            <div class="name">Career Craft, Role Map and Interview Drill <span class="arrow">→</span></div>
+            <div class="muted">Career planning, role design and interview practice in one place.</div>
           </a>
         </div>
       </section>
 
-      <!-- Leadership -->
       <section class="section" data-focus="leadership">
         <h2>Leadership</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="communication planning">
-            <div class="name">Leader Sync <span class="arrow">→</span></div>
-            <div class="muted">Synchronize your leadership approach with team dynamics and goals</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="planning communication">
-            <div class="name">One-Page Alignment <span class="arrow">→</span></div>
-            <div class="muted">Create clear, concise alignment documents for team clarity</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="communication assessment">
-            <div class="name">Feedback Loop <span class="arrow">→</span></div>
-            <div class="muted">Establish effective feedback systems for continuous improvement</div>
+          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener"
+             data-focus="leadership" data-tool="planning communication assessment">
+            <div class="name">Leader Sync, One-Page Alignment and Feedback Loop <span class="arrow">→</span></div>
+            <div class="muted">Alignment, communication and feedback systems for leaders.</div>
           </a>
         </div>
       </section>
 
-      <!-- Business -->
       <section class="section" data-focus="business">
         <h2>Business</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="planning communication">
-            <div class="name">Offer Craft <span class="arrow">→</span></div>
-            <div class="muted">Craft compelling business offers that convert prospects to clients</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="financial planning">
-            <div class="name">Business Offer Calculator <span class="arrow">→</span></div>
-            <div class="muted">Calculate pricing and profitability for your business offers</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="communication practice">
-            <div class="name">Customer Calls <span class="arrow">→</span></div>
-            <div class="muted">Master customer communication and sales call techniques</div>
+          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener"
+             data-focus="business" data-tool="planning financial communication">
+            <div class="name">Offer Craft, Business Offer Calculator and Customer Calls <span class="arrow">→</span></div>
+            <div class="muted">Build offers, price them well, and run confident customer calls.</div>
           </a>
         </div>
       </section>
 
-      <!-- Health & Wellness -->
       <section class="section" data-focus="health-wellness">
         <h2>Health and Wellness</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="wellness mindfulness">
-            <div class="name">Energy Flow <span class="arrow">→</span></div>
-            <div class="muted">Optimize your energy levels throughout the day with flow techniques</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="tracking wellness">
-            <div class="name">Energy Diary <span class="arrow">→</span></div>
-            <div class="muted">Track and analyze your energy patterns for better wellness</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="practice wellness">
-            <div class="name">Micro Workouts <span class="arrow">→</span></div>
-            <div class="muted">Quick, effective workout routines that fit into any schedule</div>
+          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener"
+             data-focus="health-wellness" data-tool="wellness tracking mindfulness practice">
+            <div class="name">Energy Flow, Energy Diary and Micro Workouts <span class="arrow">→</span></div>
+            <div class="muted">Daily energy planning, tracking and quick workout prompts.</div>
           </a>
         </div>
       </section>
 
-      <!-- Financial -->
       <section class="section" data-focus="financial">
         <h2>Financial</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial planning">
-            <div class="name">Cashflow Compass <span class="arrow">→</span></div>
-            <div class="muted">Navigate your cashflow with strategic financial planning tools</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial tracking">
-            <div class="name">Financial Tracker <span class="arrow">→</span></div>
-            <div class="muted">Track expenses, income, and financial goals in one place</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial planning">
-            <div class="name">Investing Habits <span class="arrow">→</span></div>
-            <div class="muted">Build sustainable investing habits for long-term wealth</div>
+          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener"
+             data-focus="financial" data-tool="financial planning tracking">
+            <div class="name">Cashflow Compass, Financial Tracker and Investing Habits <span class="arrow">→</span></div>
+            <div class="muted">Plan cashflow, track money, and build investing routines.</div>
           </a>
         </div>
       </section>
 
-      <!-- Life Vision (2 tools only) -->
       <section class="section" data-focus="life-vision">
         <h2>Life Vision</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener" data-focus="life-vision" data-tool="planning assessment">
-            <div class="name">10-Year Backcast <span class="arrow">→</span></div>
-            <div class="muted">Work backwards from your 10-year vision to create actionable steps</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener" data-focus="life-vision" data-tool="planning mindfulness">
-            <div class="name">Focus Fence <span class="arrow">→</span></div>
-            <div class="muted">Create boundaries to maintain focus on what matters most</div>
+          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener"
+             data-focus="life-vision" data-tool="planning assessment mindfulness">
+            <div class="name">10-Year Backcast &amp; Focus Fence <span class="arrow">→</span></div>
+            <div class="muted">Backcast your vision and protect attention with clear boundaries.</div>
           </a>
         </div>
       </section>
 
-      <!-- Spiritual -->
       <section class="section" data-focus="spiritual">
         <h2>Spiritual</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener" data-focus="spiritual" data-tool="mindfulness practice">
-            <div class="name">Stillness Timer <span class="arrow">→</span></div>
-            <div class="muted">Guided meditation and stillness practice with customizable timers</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener" data-focus="spiritual" data-tool="mindfulness tracking">
-            <div class="name">Gratitude Trifecta <span class="arrow">→</span></div>
-            <div class="muted">Three-part gratitude practice for daily spiritual growth</div>
+          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener"
+             data-focus="spiritual" data-tool="mindfulness practice tracking">
+            <div class="name">Stillness Timer and Gratitude Trifecta <span class="arrow">→</span></div>
+            <div class="muted">Guided stillness plus a three-part daily gratitude practice.</div>
           </a>
         </div>
       </section>
 
-      <!-- Relationship -->
       <section class="section" data-focus="relationship">
         <h2>Relationship</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener" data-focus="relationship" data-tool="communication planning">
-            <div class="name">Connection Cadence <span class="arrow">→</span></div>
-            <div class="muted">Maintain meaningful connections with structured communication rhythms</div>
-          </a>
-          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener" data-focus="relationship" data-tool="communication practice">
-            <div class="name">Repair Playbook <span class="arrow">→</span></div>
-            <div class="muted">Navigate relationship challenges with proven repair strategies</div>
+          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener"
+             data-focus="relationship" data-tool="communication planning practice">
+            <div class="name">Connection Cadence and Repair Playbook <span class="arrow">→</span></div>
+            <div class="muted">Keep connections warm and repair ruptures with simple steps.</div>
           </a>
         </div>
       </section>
@@ -321,60 +261,42 @@
 
   <script>
     // Mobile menu
-    const hamb = document.getElementById('hamb');
-    const menu = document.getElementById('menu');
-    hamb.addEventListener('click', ()=>{
-      const open = menu.classList.toggle('active');
-      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    document.querySelectorAll('#menu a').forEach(a=>{
-      a.addEventListener('click', ()=> menu.classList.remove('active'));
-    });
+    const hamb=document.getElementById('hamb');const menu=document.getElementById('menu');
+    hamb.addEventListener('click',()=>{const open=menu.classList.toggle('active');hamb.setAttribute('aria-expanded',open?'true':'false')});
+    document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('active')));
 
-    // Filters (unchanged logic)
-    const focusFilter = document.getElementById('focus-filter');
-    const toolFilter  = document.getElementById('tool-filter');
-    const filterButtons = document.querySelectorAll('.chip');
-    const focusSections = document.querySelectorAll('.section');
+    // Filters (same logic, now with one card per focus)
+    const focusFilter=document.getElementById('focus-filter');
+    const toolFilter=document.getElementById('tool-filter');
+    const filterButtons=document.querySelectorAll('.chip');
+    const focusSections=document.querySelectorAll('.section');
 
     function filterContent(){
-      const selectedFocus = focusFilter.value;
-      const selectedTool  = toolFilter.value;
+      const selectedFocus=focusFilter.value;
+      const selectedTool=toolFilter.value;
 
       focusSections.forEach(section=>{
-        const sectionFocus = section.getAttribute('data-focus');
-        let showSection = selectedFocus === 'all' || selectedFocus === sectionFocus;
+        const sectionFocus=section.getAttribute('data-focus');
+        let showSection=(selectedFocus==='all'||selectedFocus===sectionFocus);
 
-        if(showSection && selectedTool !== 'all'){
-          const cards = section.querySelectorAll('.card');
-          showSection = Array.from(cards).some(card=>{
-            const types = card.getAttribute('data-tool');
-            return types && types.includes(selectedTool);
-          });
+        if(showSection && selectedTool!=='all'){
+          const card=section.querySelector('.card');
+          const types=card.getAttribute('data-tool');
+          showSection=types && types.includes(selectedTool);
         }
 
-        section.style.display = showSection ? 'block' : 'none';
-
-        if(showSection){
-          const cards = section.querySelectorAll('.card');
-          cards.forEach(card=>{
-            const types = card.getAttribute('data-tool');
-            const showCard = selectedTool === 'all' || (types && types.includes(selectedTool));
-            card.style.display = showCard ? 'block' : 'none';
-          });
-        }
+        section.style.display=showSection?'block':'none';
       });
     }
 
-    focusFilter.addEventListener('change', filterContent);
-    toolFilter.addEventListener('change',  filterContent);
+    focusFilter.addEventListener('change',filterContent);
+    toolFilter.addEventListener('change',filterContent);
 
     filterButtons.forEach(btn=>{
-      btn.addEventListener('click', function(){
+      btn.addEventListener('click',function(){
         filterButtons.forEach(b=>b.classList.remove('active'));
         this.classList.add('active');
-        const v = this.getAttribute('data-filter');
-        toolFilter.value = v;
+        toolFilter.value=this.getAttribute('data-filter');
         filterContent();
       });
     });
