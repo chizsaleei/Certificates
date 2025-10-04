@@ -1,15 +1,1651 @@
-<!doctype html><html><head>
-<meta charset="utf-8"><title>Dashboard</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/js/supabaseClient.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/dashboard.js" defer></script>
-<link rel="stylesheet" href="/styles.css">
-</head><body>
-<h1>My Dashboard</h1>
-<p id="who"></p>
-<ul id="items"></ul>
-<p><a href="/sessions.html">Join my 1 on 1 lesson</a></p>
-<button id="btn-signout">Sign out</button>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Client Dashboard | CHIZSA COACHING</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(135deg, #1a3d2e 0%, #0f2419 100%);
+      color: #f4f1e8;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Header Styles */
+    .dashboard-header {
+      background: rgba(26, 61, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-text {
+      color: #c9d1d9;
+      font-size: 1rem;
+    }
+
+    .user-name {
+      color: #d4af37;
+      font-weight: 600;
+    }
+
+    .membership-badge {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .sign-out-btn {
+      padding: 8px 16px;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      background: transparent;
+      color: #d4af37;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .sign-out-btn:hover {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    /* Main Dashboard */
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .dashboard-title {
+      color: #d4af37;
+      font-size: 2.5rem;
+      margin: 0 0 30px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Card Styles */
+    .dashboard-card {
+      background: rgba(26, 61, 46, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .card-title {
+      color: #d4af37;
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .card-badge {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Quick Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: rgba(15, 36, 25, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      color: #d4af37;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      display: block;
+    }
+
+    .stat-label {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin: 8px 0 0;
+      font-weight: 500;
+    }
+
+    .stat-change {
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+
+    .stat-change.positive {
+      color: #3fa67a;
+    }
+
+    .stat-change.negative {
+      color: #bf8a2c;
+    }
+
+    /* Tools Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .tool-item {
+      background: rgba(15, 36, 25, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-item:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .tool-item.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .tool-item.locked::after {
+      content: '🔒';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.2rem;
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .tool-name {
+      color: #d4af37;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .tool-category {
+      background: rgba(212, 175, 55, 0.2);
+      color: #d4af37;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tool-description {
+      color: #c9d1d9;
+      font-size: 0.95rem;
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
+
+    .tool-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 0.8rem;
+      color: #c9d1d9;
+    }
+
+    .tool-duration {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tool-difficulty {
+      display: flex;
+      gap: 2px;
+    }
+
+    .difficulty-star {
+      color: #d4af37;
+    }
+
+    .difficulty-star.empty {
+      color: rgba(212, 175, 55, 0.3);
+    }
+
+    .tool-progress {
+      margin-top: 20px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .progress-percentage {
+      color: #d4af37;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(15, 36, 25, 0.8);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #e6c55a);
+      border-radius: 4px;
+      transition: width 0.6s ease;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .tool-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .tool-btn {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      background: transparent;
+      color: #d4af37;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .tool-btn:hover {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    .tool-btn.primary {
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      border: none;
+    }
+
+    .tool-btn.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Recent Activity */
+    .activity-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+      background: rgba(15, 36, 25, 0.3);
+      margin: 0 -15px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 45px;
+      height: 45px;
+      background: rgba(212, 175, 55, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4af37;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-title {
+      color: #f4f1e8;
+      font-weight: 600;
+      margin: 0 0 5px;
+      font-size: 0.95rem;
+    }
+
+    .activity-description {
+      color: #c9d1d9;
+      font-size: 0.85rem;
+      margin: 0 0 5px;
+      line-height: 1.4;
+    }
+
+    .activity-time {
+      color: #c9d1d9;
+      font-size: 0.8rem;
+      margin: 0;
+      opacity: 0.8;
+    }
+
+    /* Session Booking */
+    .session-card {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(26, 61, 46, 0.8), rgba(15, 36, 25, 0.8));
+    }
+
+    .session-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .session-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #d4af37, #e6c55a);
+      color: #1a3d2e;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .session-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: rgba(212, 175, 55, 0.4);
+      transform: translateX(5px);
+    }
+
+    /* Settings Panel */
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-label {
+      color: #f4f1e8;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .settings-description {
+      color: #c9d1d9;
+      font-size: 0.8rem;
+      margin-top: 3px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(15, 36, 25, 0.8);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .toggle-switch.active {
+      background: #d4af37;
+      border-color: #d4af37;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: #f4f1e8;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(24px);
+    }
+
+    /* Achievements */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .achievement-item {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .achievement-item.earned {
+      border-color: #d4af37;
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .achievement-item.earned .achievement-icon {
+      filter: none;
+    }
+
+    .achievement-item:not(.earned) {
+      opacity: 0.6;
+    }
+
+    .achievement-item:not(.earned) .achievement-icon {
+      filter: grayscale(100%);
+    }
+
+    .achievement-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .achievement-name {
+      color: #d4af37;
+      font-weight: 600;
+      margin: 0 0 5px;
+      font-size: 0.9rem;
+    }
+
+    .achievement-description {
+      color: #c9d1d9;
+      font-size: 0.8rem;
+      margin: 0;
+    }
+
+    .achievement-points {
+      color: #d4af37;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* Loading States */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(212, 175, 55, 0.3);
+      border-top: 3px solid #d4af37;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #c9d1d9;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      color: #d4af37;
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(26, 61, 46, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+      border-radius: 8px;
+      padding: 15px 20px;
+      color: #f4f1e8;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-color: #3fa67a;
+    }
+
+    .notification.error {
+      border-color: #bf8a2c;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        order: -1;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 20px;
+        gap: 15px;
+      }
+
+      .user-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-card {
+        padding: 20px;
+      }
+
+      .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-container {
+        padding: 20px 15px;
+      }
+
+      .achievements-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-container">
+      <a class="brand" href="/">CHIZSA | COACHING</a>
+      <div class="user-info">
+        <div>
+          <span class="welcome-text">Welcome back, <span class="user-name" id="user-name">Loading...</span></span>
+          <div class="membership-badge" id="membership-level">Loading...</div>
+        </div>
+        <button class="sign-out-btn" id="btn-signout">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard -->
+  <main class="dashboard-container">
+    <h1 class="dashboard-title">Your Coaching Dashboard</h1>
+
+    <div class="dashboard-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Quick Stats -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2 class="card-title">Your Progress Overview</h2>
+            <span class="card-badge" id="last-activity">Today</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-number" id="tools-accessed">0</span>
+              <div class="stat-label">Tools Accessed</div>
+              <div class="stat-change positive" id="tools-change">+0 this week</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" id="sessions-completed">0</span>
+              <div class="stat-label">Sessions Completed</div>
+              <div class="stat-change positive" id="sessions-change">+0 this month</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" id="progress-percentage">0%</span>
+              <div class="stat-label">Overall Progress</div>
+              <div class="stat-change positive" id="progress-change">+0% this week</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" id="streak-days">0</span>
+              <div class="stat-label">Day Streak</div>
+              <div class="stat-change positive" id="streak-change">Keep it up!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Tools -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2 class="card-title">Your Coaching Tools</h2>
+            <span class="card-badge" id="tools-count">Loading...</span>
+          </div>
+          <div class="tools-grid" id="tools-container">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2 class="card-title">Achievements</h2>
+            <span class="card-badge" id="achievements-count">0 Earned</span>
+          </div>
+          <div class="achievements-grid" id="achievements-container">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Activity</h2>
+          </div>
+          <ul class="activity-list" id="activity-list">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Session Booking -->
+        <div class="dashboard-card session-card">
+          <div class="card-header">
+            <h3 class="card-title">1-on-1 Coaching</h3>
+          </div>
+          <span class="session-icon">🎯</span>
+          <p style="color: #c9d1d9; margin-bottom: 20px;">Ready to accelerate your growth? Book a personalized coaching session tailored to your goals.</p>
+          <a href="/sessions.html" class="session-btn">
+            📅 Book Your Session
+          </a>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3 class="card-title">Quick Actions</h3>
+          </div>
+          <div class="quick-actions">
+            <button class="action-btn" onclick="exportProgress()">
+              📊 Export Progress Report
+            </button>
+            <button class="action-btn" onclick="downloadData()">
+              💾 Download My Data
+            </button>
+            <button class="action-btn" onclick="resetProgress()">
+              🔄 Reset Tool Progress
+            </button>
+            <a href="/support.html" class="action-btn">
+              💬 Contact Support
+            </a>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3 class="card-title">Notification Settings</h3>
+          </div>
+          <div class="settings-item">
+            <div>
+              <div class="settings-label">Email Notifications</div>
+              <div class="settings-description">Receive updates about your progress</div>
+            </div>
+            <div class="toggle-switch active" id="email-notifications"></div>
+          </div>
+          <div class="settings-item">
+            <div>
+              <div class="settings-label">Progress Reminders</div>
+              <div class="settings-description">Daily reminders to use your tools</div>
+            </div>
+            <div class="toggle-switch active" id="progress-reminders"></div>
+          </div>
+          <div class="settings-item">
+            <div>
+              <div class="settings-label">Weekly Reports</div>
+              <div class="settings-description">Summary of your weekly progress</div>
+            </div>
+            <div class="toggle-switch" id="weekly-reports"></div>
+          </div>
+          <div class="settings-item">
+            <div>
+              <div class="settings-label">Achievement Alerts</div>
+              <div class="settings-description">Notifications when you earn achievements</div>
+            </div>
+            <div class="toggle-switch active" id="achievement-notifications"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Initialize Supabase client
+    const supabaseUrl = 'https://gwlwctytwendsixwvnvu.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Global variables
+    let currentUser = null;
+    let userStats = null;
+    let userTools = [];
+    let userAchievements = [];
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDashboard();
+    });
+
+    async function initializeDashboard() {
+      try {
+        showNotification('Loading your dashboard...', 'info');
+        
+        // Check authentication
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error || !user) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        currentUser = user;
+        
+        // Load all dashboard data
+        await Promise.all([
+          loadUserProfile(),
+          loadUserStats(),
+          loadUserTools(),
+          loadUserAchievements(),
+          loadRecentActivity(),
+          loadUserSettings()
+        ]);
+
+        showNotification('Dashboard loaded successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Dashboard initialization error:', error);
+        showNotification('Failed to load dashboard. Please refresh the page.', 'error');
+      }
+    }
+
+    async function loadUserProfile() {
+      try {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (profile) {
+          const displayName = profile.full_name || currentUser.email.split('@')[0];
+          document.getElementById('user-name').textContent = displayName;
+          document.getElementById('membership-level').textContent = profile.membership_level.toUpperCase();
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    }
+
+    async function loadUserStats() {
+      try {
+        const { data: stats } = await supabase
+          .from('user_stats')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        if (stats) {
+          userStats = stats;
+          updateStatsDisplay(stats);
+        } else {
+          // Create initial stats if they don't exist
+          await createInitialStats();
+        }
+      } catch (error) {
+        console.error('Error loading user stats:', error);
+      }
+    }
+
+    function updateStatsDisplay(stats) {
+      document.getElementById('tools-accessed').textContent = stats.tools_accessed || 0;
+      document.getElementById('sessions-completed').textContent = stats.sessions_completed || 0;
+      document.getElementById('progress-percentage').textContent = `${stats.progress_percentage || 0}%`;
+      document.getElementById('streak-days').textContent = stats.streak_days || 0;
+      
+      // Update last activity
+      if (stats.last_activity_date) {
+        const lastActivity = new Date(stats.last_activity_date);
+        const today = new Date();
+        const diffDays = Math.floor((today - lastActivity) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+          document.getElementById('last-activity').textContent = 'Today';
+        } else if (diffDays === 1) {
+          document.getElementById('last-activity').textContent = 'Yesterday';
+        } else {
+          document.getElementById('last-activity').textContent = `${diffDays} days ago`;
+        }
+      }
+    }
+
+    async function createInitialStats() {
+      try {
+        const { data } = await supabase
+          .from('user_stats')
+          .insert({
+            user_id: currentUser.id,
+            tools_accessed: 0,
+            sessions_completed: 0,
+            progress_percentage: 0,
+            streak_days: 0
+          })
+          .select()
+          .single();
+        
+        if (data) {
+          userStats = data;
+          updateStatsDisplay(data);
+        }
+      } catch (error) {
+        console.error('Error creating initial stats:', error);
+      }
+    }
+
+    async function loadUserTools() {
+      try {
+        // First get all available tools
+        const { data: allTools } = await supabase
+          .from('tools')
+          .select('*')
+          .eq('is_active', true)
+          .order('name');
+
+        // Then get user's tool access and progress
+        const { data: userToolsData } = await supabase
+          .from('user_tools')
+          .select('*')
+          .eq('user_id', currentUser.id);
+
+        const toolsContainer = document.getElementById('tools-container');
+        const toolsCount = document.getElementById('tools-count');
+        
+        if (allTools && allTools.length > 0) {
+          userTools = allTools.map(tool => {
+            const userTool = userToolsData?.find(ut => ut.tool_id === tool.id);
+            return {
+              ...tool,
+              has_access: userTool?.has_access || false,
+              progress: userTool?.progress || 0,
+              last_accessed: userTool?.last_accessed,
+              is_completed: userTool?.is_completed || false,
+              time_spent: userTool?.time_spent || 0,
+              user_tool_id: userTool?.id
+            };
+          });
+
+          const accessibleTools = userTools.filter(tool => tool.has_access);
+          toolsCount.textContent = `${accessibleTools.length} Available`;
+          
+          toolsContainer.innerHTML = '';
+          userTools.forEach(tool => {
+            const toolElement = createToolElement(tool);
+            toolsContainer.appendChild(toolElement);
+          });
+        } else {
+          toolsCount.textContent = '0 Tools';
+          toolsContainer.innerHTML = createEmptyState('🛠️', 'No Tools Available', 'Contact your coach to get access to coaching tools.');
+        }
+      } catch (error) {
+        console.error('Error loading user tools:', error);
+        document.getElementById('tools-container').innerHTML = createEmptyState('❌', 'Error Loading Tools', 'Please refresh the page to try again.');
+      }
+    }
+
+    function createToolElement(tool) {
+      const toolDiv = document.createElement('div');
+      toolDiv.className = `tool-item ${tool.has_access ? '' : 'locked'}`;
+      
+      const difficultyStars = Array.from({length: 5}, (_, i) => 
+        `<span class="difficulty-star ${i < (tool.difficulty_level || 1) ? '' : 'empty'}">★</span>`
+      ).join('');
+
+      toolDiv.innerHTML = `
+        <div class="tool-header">
+          <h4 class="tool-name">${tool.name}</h4>
+          <span class="tool-category">${tool.category}</span>
+        </div>
+        <p class="tool-description">${tool.description || 'No description available.'}</p>
+        <div class="tool-meta">
+          <div class="tool-duration">
+            <span>⏱️</span>
+            <span>${tool.estimated_duration || 30} min</span>
+          </div>
+          <div class="tool-difficulty">
+            ${difficultyStars}
+          </div>
+        </div>
+        <div class="tool-progress">
+          <div class="progress-header">
+            <span class="progress-label">Progress</span>
+            <span class="progress-percentage">${tool.progress}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${tool.progress}%"></div>
+          </div>
+        </div>
+        <div class="tool-actions">
+          ${tool.has_access ? 
+            `<a href="${tool.url}" class="tool-btn primary" target="_blank" onclick="trackToolAccess('${tool.id}', '${tool.user_tool_id}')">
+              ${tool.progress > 0 ? 'Continue' : 'Start'} Tool
+            </a>` :
+            `<button class="tool-btn" onclick="requestAccess('${tool.id}')">Request Access</button>`
+          }
+          ${tool.has_access && tool.progress > 0 ? 
+            `<button class="tool-btn" onclick="viewProgress('${tool.id}')">View Details</button>` : ''
+          }
+        </div>
+      `;
+      
+      return toolDiv;
+    }
+
+    async function trackToolAccess(toolId, userToolId) {
+      try {
+        if (userToolId) {
+          // Update existing user_tool record
+          await supabase
+            .from('user_tools')
+            .update({ 
+              last_accessed: new Date().toISOString(),
+              access_count: supabase.sql`access_count + 1`
+            })
+            .eq('id', userToolId);
+        } else {
+          // Create new user_tool record
+          await supabase
+            .from('user_tools')
+            .insert({
+              user_id: currentUser.id,
+              tool_id: toolId,
+              has_access: true,
+              last_accessed: new Date().toISOString(),
+              access_count: 1
+            });
+        }
+
+        // Log activity
+        await logActivity('tool_access', `Accessed coaching tool`, toolId);
+        
+        // Update stats
+        await updateUserStats('tools_accessed');
+        
+      } catch (error) {
+        console.error('Error tracking tool access:', error);
+      }
+    }
+
+    async function loadUserAchievements() {
+      try {
+        // Get all achievements
+        const { data: allAchievements } = await supabase
+          .from('achievements')
+          .select('*')
+          .eq('is_active', true)
+          .order('points');
+
+        // Get user's earned achievements
+        const { data: earnedAchievements } = await supabase
+          .from('user_achievements')
+          .select('*')
+          .eq('user_id', currentUser.id);
+
+        const achievementsContainer = document.getElementById('achievements-container');
+        const achievementsCount = document.getElementById('achievements-count');
+        
+        if (allAchievements && allAchievements.length > 0) {
+          userAchievements = allAchievements.map(achievement => {
+            const earned = earnedAchievements?.find(ea => ea.achievement_id === achievement.id);
+            return {
+              ...achievement,
+              is_earned: !!earned,
+              earned_at: earned?.earned_at,
+              progress: earned?.progress || 0
+            };
+          });
+
+          const earnedCount = userAchievements.filter(a => a.is_earned).length;
+          achievementsCount.textContent = `${earnedCount} Earned`;
+          
+          achievementsContainer.innerHTML = '';
+          userAchievements.forEach(achievement => {
+            const achievementElement = createAchievementElement(achievement);
+            achievementsContainer.appendChild(achievementElement);
+          });
+        } else {
+          achievementsCount.textContent = '0 Available';
+          achievementsContainer.innerHTML = createEmptyState('🏆', 'No Achievements Available', 'Complete coaching activities to earn achievements.');
+        }
+      } catch (error) {
+        console.error('Error loading achievements:', error);
+      }
+    }
+
+    function createAchievementElement(achievement) {
+      const achievementDiv = document.createElement('div');
+      achievementDiv.className = `achievement-item ${achievement.is_earned ? 'earned' : ''}`;
+      
+      achievementDiv.innerHTML = `
+        <span class="achievement-icon">${achievement.icon || '🏆'}</span>
+        <h5 class="achievement-name">${achievement.name}</h5>
+        <p class="achievement-description">${achievement.description}</p>
+        <div class="achievement-points">${achievement.points} points</div>
+      `;
+      
+      return achievementDiv;
+    }
+
+    async function loadRecentActivity() {
+      try {
+        const { data: activities } = await supabase
+          .from('user_activities')
+          .select(`
+            *,
+            tools (name)
+          `)
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        const activityList = document.getElementById('activity-list');
+        
+        if (activities && activities.length > 0) {
+          activityList.innerHTML = '';
+          
+          activities.forEach(activity => {
+            const activityElement = createActivityElement(activity);
+            activityList.appendChild(activityElement);
+          });
+        } else {
+          activityList.innerHTML = createEmptyState('📝', 'No Recent Activity', 'Start using your coaching tools to see activity here.');
+        }
+      } catch (error) {
+        console.error('Error loading recent activity:', error);
+      }
+    }
+
+    function createActivityElement(activity) {
+      const li = document.createElement('li');
+      li.className = 'activity-item';
+      
+      const timeAgo = getTimeAgo(new Date(activity.created_at));
+      const icon = getActivityIcon(activity.activity_type);
+      
+      li.innerHTML = `
+        <div class="activity-icon">${icon}</div>
+        <div class="activity-content">
+          <p class="activity-title">${activity.description}</p>
+          ${activity.tools ? `<p class="activity-description">Tool: ${activity.tools.name}</p>` : ''}
+          <p class="activity-time">${timeAgo}</p>
+        </div>
+      `;
+      
+      return li;
+    }
+
+    function getActivityIcon(type) {
+      const icons = {
+        'tool_access': '🛠️',
+        'session_booked': '📅',
+        'progress_update': '📈',
+        'achievement': '🏆',
+        'login': '🔐',
+        'signup': '👋',
+        'tool_completed': '✅'
+      };
+      return icons[type] || '📝';
+    }
+
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      
+      if (diffInSeconds < 60) return 'Just now';
+      if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+      if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+      if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+      return date.toLocaleDateString();
+    }
+
+    async function loadUserSettings() {
+      try {
+        const { data: settings } = await supabase
+          .from('user_settings')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+
+        if (settings) {
+          updateToggle('email-notifications', settings.email_notifications);
+          updateToggle('progress-reminders', settings.progress_reminders);
+          updateToggle('weekly-reports', settings.weekly_reports);
+          updateToggle('achievement-notifications', settings.achievement_notifications);
+        } else {
+          // Create default settings
+          await createDefaultSettings();
+        }
+      } catch (error) {
+        console.error('Error loading user settings:', error);
+      }
+    }
+
+    async function createDefaultSettings() {
+      try {
+        await supabase
+          .from('user_settings')
+          .insert({
+            user_id: currentUser.id,
+            email_notifications: true,
+            progress_reminders: true,
+            weekly_reports: false,
+            achievement_notifications: true
+          });
+      } catch (error) {
+        console.error('Error creating default settings:', error);
+      }
+    }
+
+    function updateToggle(toggleId, isActive) {
+      const toggle = document.getElementById(toggleId);
+      if (isActive) {
+        toggle.classList.add('active');
+      } else {
+        toggle.classList.remove('active');
+      }
+      
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('active');
+        const newValue = toggle.classList.contains('active');
+        saveUserSetting(toggleId, newValue);
+      });
+    }
+
+    async function saveUserSetting(setting, value) {
+      try {
+        const settingKey = setting.replace('-', '_');
+        await supabase
+          .from('user_settings')
+          .upsert({
+            user_id: currentUser.id,
+            [settingKey]: value
+          });
+        
+        showNotification(`Setting updated: ${setting.replace('-', ' ')}`, 'success');
+      } catch (error) {
+        console.error('Error saving user setting:', error);
+        showNotification('Failed to save setting', 'error');
+      }
+    }
+
+    async function logActivity(type, description, toolId = null, metadata = null) {
+      try {
+        await supabase
+          .from('user_activities')
+          .insert({
+            user_id: currentUser.id,
+            activity_type: type,
+            description: description,
+            tool_id: toolId,
+            metadata: metadata
+          });
+      } catch (error) {
+        console.error('Error logging activity:', error);
+      }
+    }
+
+    async function updateUserStats(statType) {
+      try {
+        let updateData = { updated_at: new Date().toISOString() };
+        
+        switch (statType) {
+          case 'tools_accessed':
+            updateData.tools_accessed = supabase.sql`tools_accessed + 1`;
+            break;
+          case 'sessions_completed':
+            updateData.sessions_completed = supabase.sql`sessions_completed + 1`;
+            break;
+        }
+        
+        await supabase
+          .from('user_stats')
+          .update(updateData)
+          .eq('user_id', currentUser.id);
+        
+        // Reload stats
+        await loadUserStats();
+      } catch (error) {
+        console.error('Error updating user stats:', error);
+      }
+    }
+
+    // Quick action functions
+    async function exportProgress() {
+      try {
+        showNotification('Preparing progress report...', 'info');
+        
+        const { data: progress } = await supabase
+          .from('user_progress')
+          .select(`
+            *,
+            tools (name, category),
+            coaching_sessions (title, scheduled_date)
+          `)
+          .eq('user_id', currentUser.id);
+
+        const report = {
+          user: currentUser.email,
+          generated_at: new Date().toISOString(),
+          stats: userStats,
+          tools: userTools.filter(t => t.has_access),
+          achievements: userAchievements.filter(a => a.is_earned),
+          progress: progress || []
+        };
+
+        const dataStr = JSON.stringify(report, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `coaching_progress_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        showNotification('Progress report downloaded!', 'success');
+        await logActivity('progress_update', 'Exported progress report');
+      } catch (error) {
+        console.error('Error exporting progress:', error);
+        showNotification('Failed to export progress report', 'error');
+      }
+    }
+
+    async function downloadData() {
+      try {
+        showNotification('Preparing your data...', 'info');
+        
+        const [stats, tools, activities, settings, achievements] = await Promise.all([
+          supabase.from('user_stats').select('*').eq('user_id', currentUser.id),
+          supabase.from('user_tools').select('*, tools(*)').eq('user_id', currentUser.id),
+          supabase.from('user_activities').select('*').eq('user_id', currentUser.id),
+          supabase.from('user_settings').select('*').eq('user_id', currentUser.id),
+          supabase.from('user_achievements').select('*, achievements(*)').eq('user_id', currentUser.id)
+        ]);
+
+        const userData = {
+          user_id: currentUser.id,
+          email: currentUser.email,
+          stats: stats.data,
+          tools: tools.data,
+          activities: activities.data,
+          settings: settings.data,
+          achievements: achievements.data,
+          exported_at: new Date().toISOString()
+        };
+
+        const dataStr = JSON.stringify(userData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `my_coaching_data_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        showNotification('Your data has been downloaded!', 'success');
+      } catch (error) {
+        console.error('Error downloading data:', error);
+        showNotification('Failed to download data', 'error');
+      }
+    }
+
+    async function resetProgress() {
+      if (confirm('Are you sure you want to reset all tool progress? This action cannot be undone.')) {
+        try {
+          showNotification('Resetting progress...', 'info');
+          
+          await supabase
+            .from('user_tools')
+            .update({ 
+              progress: 0, 
+              is_completed: false,
+              completion_date: null 
+            })
+            .eq('user_id', currentUser.id);
+          
+          await logActivity('progress_update', 'Reset all tool progress');
+          
+          showNotification('Progress reset successfully!', 'success');
+          
+          // Reload the page to reflect changes
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } catch (error) {
+          console.error('Error resetting progress:', error);
+          showNotification('Failed to reset progress', 'error');
+        }
+      }
+    }
+
+    async function requestAccess(toolId) {
+      try {
+        showNotification('Access request sent to your coach!', 'success');
+        
+        await logActivity('tool_access', 'Requested access to coaching tool', toolId, {
+          requested_at: new Date().toISOString()
+        });
+        
+        // You could also send an email notification to the coach here
+      } catch (error) {
+        console.error('Error requesting access:', error);
+        showNotification('Failed to send access request', 'error');
+      }
+    }
+
+    function viewProgress(toolId) {
+      // This could open a modal or navigate to a detailed progress page
+      showNotification('Progress details feature coming soon!', 'info');
+    }
+
+    function createEmptyState(icon, title, description) {
+      return `
+        <div class="empty-state">
+          <div class="empty-state-icon">${icon}</div>
+          <h3>${title}</h3>
+          <p>${description}</p>
+        </div>
+      `;
+    }
+
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Trigger animation
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // Remove notification
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+          }
+        }, 300);
+      }, 4000);
+    }
+
+    // Sign out functionality
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      try {
+        showNotification('Signing out...', 'info');
+        await supabase.auth.signOut();
+        window.location.href = '/login.html';
+      } catch (error) {
+        console.error('Sign out error:', error);
+        showNotification('Failed to sign out', 'error');
+      }
+    });
+
+    // Auto-refresh data every 5 minutes
+    setInterval(() => {
+      loadRecentActivity();
+      loadUserStats();
+    }, 300000);
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9895f56d45d4b9f0',t:'MTc1OTU5NDMyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
