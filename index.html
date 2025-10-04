@@ -26,9 +26,13 @@
     .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
     .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
     .right{display:flex;gap:12px;align-items:center}
-    .btn{display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;transition:.25s;cursor:pointer}
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600;transition:.25s;cursor:pointer}
     .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep)}
     .btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(212,175,55,.28)}
+    .btn-outline{border:2px solid var(--gold);color:var(--gold);background:transparent}
+    .btn-outline:hover{background:var(--gold);color:var(--deep)}
+    .link-muted{color:var(--muted);text-decoration:none}
+    .link-muted:hover{color:var(--gold)}
     .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
     .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
 
@@ -38,8 +42,6 @@
     .hero h1{font-size:3rem;color:var(--gold);margin:0 0 10px}
     .hero p{max-width:680px;margin:0 auto 18px;color:var(--muted)}
     .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-    .btn-outline{border:2px solid var(--gold);color:var(--gold);background:transparent}
-    .btn-outline:hover{background:var(--gold);color:var(--deep)}
 
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin:44px 0}
     .card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);transition:.25s}
@@ -47,11 +49,20 @@
     .card h3{color:var(--gold);margin:0 0 8px}
     .card p{color:var(--muted);margin:0 0 12px}
 
-    /* Sign-up (Google Form link card) */
-    .contact{max-width:760px;margin:32px auto 0;background:var(--glass);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:20px;text-align:center}
-    .contact h2{color:var(--gold);margin:0 0 10px;font-size:1.6rem}
-    .contact p{color:var(--muted);margin:0 0 14px}
-    .contact .btn-gold{padding:12px 18px}
+    /* Contact card */
+    .contact{max-width:1000px;margin:38px auto 0;background:var(--glass);border:1px solid rgba(212,175,55,.25);border-radius:14px;padding:22px}
+    .contact-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .contact h2{color:var(--gold);margin:0;font-size:1.5rem}
+    .contact small{color:var(--muted)}
+    .contact-form{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:center}
+    .contact-form input,.contact-form textarea{
+      width:100%; padding:12px 14px; border:1px solid #335e50; border-radius:10px; background:#0e2a23; color:#f4f1e8;
+    }
+    .contact-form textarea{min-height:44px;resize:vertical}
+    .contact .btn-gold{height:44px}
+    .muted{color:var(--muted)}
+    .row-note{grid-column:1 / -1}
+    .helper{font-size:.9rem;color:var(--muted)}
 
     /* Footer */
     .footer{margin-top:48px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
@@ -64,6 +75,11 @@
     .icon:hover{color:var(--gold)}
 
     /* Mobile */
+    @media (max-width:980px){
+      .contact-form{grid-template-columns:1fr 1fr;gap:10px}
+      .contact .btn-gold{grid-column:1 / -1}
+      .row-note{grid-column:1 / -1}
+    }
     @media (max-width:768px){
       .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
       .menu.active{left:0}
@@ -82,14 +98,25 @@
       <nav>
         <ul class="menu" id="menu">
           <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
-          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
-          <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
+
+          <!-- GATED NAV ITEMS -->
+          <li data-gated="true" style="display:none">
+            <a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a>
+          </li>
+          <li data-gated="true" style="display:none">
+            <a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a>
+          </li>
+
           <li><a href="https://chizsaleei.com/about.html">About</a></li>
           <li><a href="https://chizsaleei.com/training.html">Training</a></li>
           <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
+          <li><a href="https://chizsaleei.com/dashboard.html" class="link-muted">Dashboard</a></li>
+          <li><a href="https://chizsaleei.com/sessions.html" class="link-muted">Sessions</a></li>
         </ul>
       </nav>
       <div class="right">
+        <button id="btn-signin" class="btn btn-outline" type="button">Sign in</button>
+        <button id="btn-signout" class="btn btn-outline" type="button" style="display:none">Sign out</button>
         <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
         <div class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -104,10 +131,18 @@
       <h1>Transform Your Life Journey</h1>
       <p>Discover your authentic self through simple coaching tools and clear next steps</p>
       <div class="cta">
+        <!-- Public -->
         <a class="btn btn-gold" href="https://chizsaleei.com/archetype/quiz/index.html">Take a quiz to find your core</a>
-        <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Choose your Profile Toolkits</a>
-        <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Select your focus</a>
+
+        <!-- Gated CTAs -->
+        <span data-gated="true" style="display:none">
+          <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Choose your Profile Toolkits</a>
+          <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Select your focus</a>
+        </span>
       </div>
+      <p class="muted" id="auth-hint" style="margin-top:10px;">
+        Premium toolkits and session links unlock after sign in.
+      </p>
     </section>
 
     <!-- Main cards -->
@@ -115,65 +150,78 @@
       <article class="card">
         <h3>Choose Your Profile Toolkits</h3>
         <p>Personalized frameworks for professional growth and everyday clarity.</p>
-        <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Explore profiles</a>
+        <span data-gated="true" style="display:none">
+          <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Explore profiles</a>
+        </span>
+        <span class="muted" data-gated="false">Sign in to access</span>
       </article>
 
       <article class="card">
         <h3>Select Your Focus</h3>
         <p>Targeted resources for career, wellness, and life vision goals.</p>
-        <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Choose focus</a>
+        <span data-gated="true" style="display:none">
+          <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Choose focus</a>
+        </span>
+        <span class="muted" data-gated="false">Sign in to access</span>
       </article>
     </section>
 
-    <form id="contact-form" class="contact-form">
-  <input id="c-name" type="text" placeholder="Full name" required>
-  <input id="c-email" type="email" placeholder="Email" required>
-  <textarea id="c-msg" placeholder="What do you need? (coaching, collab, freebies)" required></textarea>
-  <button id="contact-submit" type="submit">Send</button>
-  <p id="contact-status" class="muted"></p>
-</form>
-<script src="/js/contact.js"></script>
+    <!-- Contact form (Supabase) -->
+    <section class="contact" aria-label="Contact">
+      <div class="contact-head">
+        <h2>Sign Up for Freebies and Collaboration</h2>
+        <small>Short form, quick reply.</small>
+      </div>
 
+      <form id="contact-form" class="contact-form">
+        <!-- Honeypot -->
+        <input type="text" id="hp" name="hp" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px">
+
+        <input id="c-name" type="text" placeholder="Full name" required aria-label="Full name">
+        <input id="c-email" type="email" placeholder="Email" required aria-label="Email">
+        <textarea id="c-msg" placeholder="What do you need? (coaching, collab, freebies)" required aria-label="Your message"></textarea>
+        <button id="contact-submit" class="btn btn-gold" type="submit">Send</button>
+
+        <div class="row-note">
+          <p id="contact-status" class="helper"></p>
+        </div>
+      </form>
+    </section>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="foot">
-      <!-- Left -->
       <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
 
-      <!-- Center -->
       <div class="foot-center">
         <a href="https://chizsaleei.com/about.html">About</a>
         <span aria-hidden="true">·</span>
         <a href="https://chizsaleei.com/privacy.html">Privacy</a>
       </div>
 
-      <!-- Right: social logos + Support -->
       <div class="foot-right">
-        <!-- Gmail -->
         <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
           <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
             <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/>
           </svg>
         </a>
-        <!-- LinkedIn -->
         <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
           <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
             <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/>
           </svg>
         </a>
-        <!-- Instagram -->
         <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
             <path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2c-3.1 0-3.5 0-4.7.1-1.1.06-1.7.24-2.1.4-.5.2-.8.4-1.1.8-.3.3-.6.6-.8 1.1-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.06 1.1.24 1.7.4 2.1.2.5.4.8.8 1.1.3.3.6.6 1.1.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.06 1.7-.24 2.1-.4.5-.2.8-.4 1.1-.8.3-.3.6-.6.8-1.1.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.06-1.1-.24-1.7-.4-2.1-.2-.5-.4-.8-.8-1.1-.3-.3-.6-.6-1.1-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Zm0 2.2a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8Zm5-2.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/>
           </svg>
         </a>
-        <!-- Ko-fi Support button -->
         <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
       </div>
     </div>
   </footer>
 
+  <!-- Base scripts -->
   <script>
     // Mobile menu
     const hamb = document.getElementById('hamb');
@@ -185,13 +233,13 @@
     document.querySelectorAll('#menu a').forEach(a=>{
       a.addEventListener('click', ()=> menu.classList.remove('active'));
     });
-    // Smooth scroll for on-page anchors
-    document.querySelectorAll('a[href^="#"]').forEach(a=>{
-      a.addEventListener('click', e=>{
-        const id=a.getAttribute('href'), t=document.querySelector(id);
-        if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); }
-      });
-    });
   </script>
+
+  <!-- Supabase + gating + contact -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/js/supabaseClient.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/gate.js"></script>
+  <script src="/js/contact.js"></script>
 </body>
 </html>
