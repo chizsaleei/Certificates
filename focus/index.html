@@ -1,685 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Your Focus | CHIZSA COACHING</title>
-    <style>
-        body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Georgia', serif;
-            background: linear-gradient(135deg, #1a3d2e 0%, #0f2419 100%);
-            color: #f4f1e8;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Select Your Focus | CHIZSA COACHING</title>
+  <style>
+    :root{
+      --deep:#0f2419; --deep2:#1a3d2e;
+      --gold:#d4af37; --gold2:#b8941f; --ink:#f4f1e8; --muted:#c9d1d9;
+      --glass:rgba(26,61,46,.92);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Georgia, serif;color:var(--ink);
+      background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);
+      line-height:1.6;min-height:100vh;
+    }
 
-        * {
-            box-sizing: border-box;
-        }
+    /* Header (site-wide) */
+    .header{position:sticky;top:0;z-index:10;background:var(--glass);border-bottom:1px solid rgba(212,175,55,.28);backdrop-filter:blur(10px)}
+    .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
+    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+    .menu{list-style:none;display:flex;gap:28px;margin:0;padding:0}
+    .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
+    .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .right{display:flex;gap:12px;align-items:center}
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700;transition:.25s;cursor:pointer}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep)}
+    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(212,175,55,.28)}
+    .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
+    .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
 
-        /* Header Styles */
-        .header {
-            background: rgba(26, 61, 46, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+    /* Layout */
+    .container{max-width:1200px;margin:0 auto;padding:48px 20px}
+    .page-title{font-size:2.6rem;color:var(--gold);margin:0 0 10px}
+    .page-sub{color:var(--muted);margin:0 0 22px}
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
+    /* Filter panel */
+    .filter{background:rgba(26,61,46,.75);border:1px solid rgba(212,175,55,.25);border-radius:14px;padding:26px;margin:8px 0 30px}
+    .filter h3{margin:0 0 14px;color:var(--gold);font-size:1.2rem;text-align:center}
+    .filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:14px}
+    .filter label{color:var(--gold);font-weight:600;margin-bottom:6px;display:block}
+    .select{width:100%;padding:10px 12px;border-radius:10px;border:2px solid rgba(212,175,55,.28);background:rgba(15,36,25,.85);color:var(--ink)}
+    .select:focus{outline:none;border-color:var(--gold)}
+    .chiprow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+    .chip{border:1px solid var(--gold);background:transparent;color:var(--gold);padding:8px 14px;border-radius:999px;cursor:pointer}
+    .chip:hover,.chip.active{background:var(--gold);color:var(--deep);}
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #d4af37;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
+    /* Sections & cards */
+    .focus-grid{display:grid;gap:34px}
+    .section{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:14px;padding:24px;transition:border-color .2s, box-shadow .2s}
+    .section:hover{border-color:rgba(212,175,55,.5);box-shadow:0 12px 28px rgba(0,0,0,.28)}
+    .section h2{margin:0 0 14px;color:var(--gold);border-bottom:2px solid rgba(212,175,55,.28);padding-bottom:8px}
+    .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .card{display:block;text-decoration:none;color:inherit;background:rgba(15,36,25,.85);border:1px solid rgba(212,175,55,.14);border-radius:12px;padding:18px;transition:transform .2s, box-shadow .2s, border-color .2s}
+    .card:hover{transform:translateY(-3px);border-color:rgba(212,175,55,.45);box-shadow:0 10px 24px rgba(0,0,0,.26)}
+    .card .name{color:var(--gold);font-weight:700;margin-bottom:6px}
+    .card .arrow{float:right;color:var(--gold);transition:transform .2s}
+    .card:hover .arrow{transform:translateX(5px)}
+    .muted{color:var(--muted);font-size:.95rem}
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
+    /* Quick launch (direct to web tools) */
+    .quick{margin:10px 0 28px;display:flex;flex-wrap:wrap;gap:10px}
+    .quick a{border:1px solid rgba(212,175,55,.35);color:var(--ink);text-decoration:none;padding:8px 12px;border-radius:10px;background:rgba(26,61,46,.55)}
+    .quick a:hover{color:var(--deep);background:var(--gold)}
 
-        .nav-link {
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 8px 16px;
-            border: 1px solid #d4af37;
-            border-radius: 6px;
-        }
+    /* Footer (site-wide) */
+    .footer{margin-top:40px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
+    .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+    .foot a{color:var(--muted);text-decoration:none}
+    .foot a:hover{color:var(--gold)}
+    .foot-center{display:flex;gap:12px;justify-content:center;align-items:center}
+    .foot-right{display:flex;gap:14px;justify-content:flex-end;align-items:center}
+    .icon{width:22px;height:22px;display:inline-block;fill:currentColor;color:var(--muted)}
+    .icon:hover{color:var(--gold)}
 
-        .nav-link:hover {
-            background: #d4af37;
-            color: #1a3d2e;
-        }
-
-        /* Filter Section */
-        .filter-section {
-            background: rgba(26, 61, 46, 0.8);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 40px;
-            backdrop-filter: blur(10px);
-        }
-
-        .filter-title {
-            color: #d4af37;
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .filter-groups {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-label {
-            color: #d4af37;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .filter-select {
-            padding: 10px;
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 6px;
-            background: rgba(15, 36, 25, 0.8);
-            color: #f4f1e8;
-            font-size: 1rem;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            border: 1px solid #d4af37;
-            border-radius: 6px;
-            background: transparent;
-            color: #d4af37;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: #d4af37;
-            color: #1a3d2e;
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .page-title {
-            font-size: 3rem;
-            color: #d4af37;
-            margin-bottom: 20px;
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-
-        .page-subtitle {
-            font-size: 1.2rem;
-            color: #c9d1d9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Focus Sections */
-        .focus-grid {
-            display: grid;
-            gap: 40px;
-            margin-bottom: 60px;
-        }
-
-        .focus-section {
-            background: rgba(26, 61, 46, 0.6);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 12px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .focus-section:hover {
-            border-color: rgba(212, 175, 55, 0.5);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .focus-title {
-            color: #d4af37;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            padding-bottom: 10px;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .tool-card {
-            background: rgba(15, 36, 25, 0.8);
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(212, 175, 55, 0.4);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .tool-name {
-            color: #d4af37;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .tool-description {
-            color: #c9d1d9;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .tool-arrow {
-            color: #d4af37;
-            float: right;
-            font-size: 1.2rem;
-            transition: transform 0.3s ease;
-        }
-
-        .tool-card:hover .tool-arrow {
-            transform: translateX(5px);
-        }
-
-        /* Footer */
-        .footer {
-            background: rgba(15, 36, 25, 0.9);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 40px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .footer-left {
-            color: #c9d1d9;
-        }
-
-        .footer-center {
-            display: flex;
-            gap: 30px;
-        }
-
-        .footer-center a {
-            color: #c9d1d9;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-center a:hover {
-            color: #d4af37;
-        }
-
-        .footer-right {
-            display: flex;
-            gap: 20px;
-            justify-content: flex-end;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .social-link:hover {
-            background: rgba(212, 175, 55, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .social-link svg {
-            width: 20px;
-            height: 20px;
-            fill: #d4af37;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 2.2rem;
-            }
-
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-container {
-                flex-direction: column;
-                height: auto;
-                padding: 15px 20px;
-                gap: 15px;
-            }
-
-            .main-content {
-                padding: 40px 20px;
-            }
-
-            .filter-groups {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .filter-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-btn {
-                text-align: center;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 20px;
-            }
-
-            .footer-right {
-                justify-content: center;
-            }
-        }
-    </style>
+    /* Mobile */
+    @media (max-width:768px){
+      .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
+      .menu.active{left:0}
+      .hamb{display:flex}
+      .filter-grid{grid-template-columns:1fr}
+      .foot{grid-template-columns:1fr;text-align:center}
+      .foot-center,.foot-right{justify-content:center}
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="nav-container">
-            <a href="#" class="logo">CHIZSA | COACHING</a>
-            <div class="nav-links">
-                <a href="../index.html" class="nav-link">← Back to Home</a>
-            </div>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="nav">
+      <a class="logo" href="/">CHIZSA | COACHING</a>
+      <nav aria-label="Primary">
+        <ul class="menu" id="menu">
+          <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
+          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
+          <li><a class="active" href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
+          <li><a href="https://chizsaleei.com/about.html">About</a></li>
+          <li><a href="https://chizsaleei.com/training.html">Training</a></li>
+          <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
+        </ul>
+      </nav>
+      <div class="right">
+        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
+        <button class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container" role="main">
+    <h1 class="page-title">Select Your Focus</h1>
+    <p class="page-sub">Choose your area of focus to access specialized coaching tools and resources designed to help you achieve your goals.</p>
+
+    <!-- Quick launch to live tools -->
+    <div class="quick" aria-label="Quick launch">
+      <a href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener">Career</a>
+      <a href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener">Leadership</a>
+      <a href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener">Business</a>
+      <a href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener">Health & Wellness</a>
+      <a href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener">Financial</a>
+      <a href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener">Life Vision</a>
+      <a href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener">Spiritual</a>
+      <a href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener">Relationship</a>
+    </div>
+
+    <!-- Filters -->
+    <section class="filter" aria-label="Filter tools">
+      <h3>Filter Tools by Focus Area & Type</h3>
+      <div class="filter-grid">
+        <div>
+          <label for="focus-filter">Filter by Focus Area</label>
+          <select id="focus-filter" class="select">
+            <option value="all">All Focus Areas</option>
+            <option value="career">Career</option>
+            <option value="leadership">Leadership</option>
+            <option value="business">Business</option>
+            <option value="health-wellness">Health and Wellness</option>
+            <option value="financial">Financial</option>
+            <option value="life-vision">Life Vision</option>
+            <option value="spiritual">Spiritual</option>
+            <option value="relationship">Relationship</option>
+          </select>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Page Header -->
-        <section class="page-header">
-            <h1 class="page-title">Select Your Focus</h1>
-            <p class="page-subtitle">Choose your area of focus to access specialized coaching tools and resources designed to help you achieve your goals</p>
-        </section>
-
-        <!-- Filter Section -->
-        <section class="filter-section">
-            <h3 class="filter-title">Filter Tools by Focus Area & Type</h3>
-            <div class="filter-groups">
-                <div class="filter-group">
-                    <label class="filter-label">Filter by Focus Area:</label>
-                    <select id="focus-filter" class="filter-select">
-                        <option value="all">All Focus Areas</option>
-                        <option value="career">Career</option>
-                        <option value="leadership">Leadership</option>
-                        <option value="business">Business</option>
-                        <option value="health-wellness">Health and Wellness</option>
-                        <option value="financial">Financial</option>
-                        <option value="life-vision">Life Vision</option>
-                        <option value="spiritual">Spiritual</option>
-                        <option value="relationship">Relationship</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Filter by Tool Type:</label>
-                    <select id="tool-filter" class="filter-select">
-                        <option value="all">All Tools</option>
-                        <option value="planning">Planning Tools</option>
-                        <option value="tracking">Tracking Tools</option>
-                        <option value="practice">Practice Tools</option>
-                        <option value="assessment">Assessment Tools</option>
-                        <option value="communication">Communication Tools</option>
-                        <option value="wellness">Wellness Tools</option>
-                        <option value="financial">Financial Tools</option>
-                        <option value="mindfulness">Mindfulness Tools</option>
-                    </select>
-                </div>
-            </div>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">Show All</button>
-                <button class="filter-btn" data-filter="planning">Planning</button>
-                <button class="filter-btn" data-filter="tracking">Tracking</button>
-                <button class="filter-btn" data-filter="practice">Practice</button>
-                <button class="filter-btn" data-filter="communication">Communication</button>
-                <button class="filter-btn" data-filter="wellness">Wellness</button>
-            </div>
-        </section>
-
-        <!-- Focus Areas Grid -->
-        <div class="focus-grid">
-            <!-- Career -->
-            <section class="focus-section" data-focus="career">
-                <h2 class="focus-title">Career</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="career" data-tool="planning assessment practice">
-                        <div class="tool-name">Career Craft <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Design and craft your ideal career path with strategic planning tools</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="career" data-tool="assessment planning">
-                        <div class="tool-name">Role Map <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Map out roles and responsibilities to align with your career goals</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="career" data-tool="practice communication">
-                        <div class="tool-name">Interview Drill <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Practice and perfect your interview skills with targeted drills</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Leadership -->
-            <section class="focus-section" data-focus="leadership">
-                <h2 class="focus-title">Leadership</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="leadership" data-tool="communication planning">
-                        <div class="tool-name">Leader Sync <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Synchronize your leadership approach with team dynamics and goals</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="leadership" data-tool="planning communication">
-                        <div class="tool-name">One-Page Alignment <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Create clear, concise alignment documents for team clarity</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="leadership" data-tool="communication assessment">
-                        <div class="tool-name">Feedback Loop <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Establish effective feedback systems for continuous improvement</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Business -->
-            <section class="focus-section" data-focus="business">
-                <h2 class="focus-title">Business</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="business" data-tool="planning communication">
-                        <div class="tool-name">Offer Craft <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Craft compelling business offers that convert prospects to clients</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="business" data-tool="financial planning">
-                        <div class="tool-name">Business Offer Calculator <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Calculate pricing and profitability for your business offers</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="business" data-tool="communication practice">
-                        <div class="tool-name">Customer Calls <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Master customer communication and sales call techniques</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Health and Wellness -->
-            <section class="focus-section" data-focus="health-wellness">
-                <h2 class="focus-title">Health and Wellness</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="health-wellness" data-tool="wellness mindfulness">
-                        <div class="tool-name">Energy Flow <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Optimize your energy levels throughout the day with flow techniques</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="health-wellness" data-tool="tracking wellness">
-                        <div class="tool-name">Energy Diary <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Track and analyze your energy patterns for better wellness</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="health-wellness" data-tool="practice wellness">
-                        <div class="tool-name">Micro Workouts <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Quick, effective workout routines that fit into any schedule</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Financial -->
-            <section class="focus-section" data-focus="financial">
-                <h2 class="focus-title">Financial</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="financial" data-tool="financial planning">
-                        <div class="tool-name">Cashflow Compass <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Navigate your cashflow with strategic financial planning tools</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="financial" data-tool="financial tracking">
-                        <div class="tool-name">Financial Tracker <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Track expenses, income, and financial goals in one place</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="financial" data-tool="financial planning">
-                        <div class="tool-name">Investing Habits <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Build sustainable investing habits for long-term wealth</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Life Vision -->
-            <section class="focus-section" data-focus="life-vision">
-                <h2 class="focus-title">Life Vision</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="life-vision" data-tool="planning assessment">
-                        <div class="tool-name">10-Year Backcast <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Work backwards from your 10-year vision to create actionable steps</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="life-vision" data-tool="planning mindfulness">
-                        <div class="tool-name">Focus Fence <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Create boundaries to maintain focus on what matters most</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Spiritual -->
-            <section class="focus-section" data-focus="spiritual">
-                <h2 class="focus-title">Spiritual</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="spiritual" data-tool="mindfulness practice">
-                        <div class="tool-name">Stillness Timer <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Guided meditation and stillness practice with customizable timers</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="spiritual" data-tool="mindfulness tracking">
-                        <div class="tool-name">Gratitude Trifecta <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Three-part gratitude practice for daily spiritual growth</div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Relationship -->
-            <section class="focus-section" data-focus="relationship">
-                <h2 class="focus-title">Relationship</h2>
-                <div class="tools-grid">
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="relationship" data-tool="communication planning">
-                        <div class="tool-name">Connection Cadence <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Maintain meaningful connections with structured communication rhythms</div>
-                    </a>
-                    <a href="item01/" class="tool-card" target="_blank" rel="noopener noreferrer" data-focus="relationship" data-tool="communication practice">
-                        <div class="tool-name">Repair Playbook <span class="tool-arrow">→</span></div>
-                        <div class="tool-description">Navigate relationship challenges with proven repair strategies</div>
-                    </a>
-                </div>
-            </section>
+        <div>
+          <label for="tool-filter">Filter by Tool Type</label>
+          <select id="tool-filter" class="select">
+            <option value="all">All Tools</option>
+            <option value="planning">Planning Tools</option>
+            <option value="tracking">Tracking Tools</option>
+            <option value="practice">Practice Tools</option>
+            <option value="assessment">Assessment Tools</option>
+            <option value="communication">Communication Tools</option>
+            <option value="wellness">Wellness Tools</option>
+            <option value="financial">Financial Tools</option>
+            <option value="mindfulness">Mindfulness Tools</option>
+          </select>
         </div>
-    </main>
+      </div>
+      <div class="chiprow">
+        <button class="chip active" data-filter="all">Show All</button>
+        <button class="chip" data-filter="planning">Planning</button>
+        <button class="chip" data-filter="tracking">Tracking</button>
+        <button class="chip" data-filter="practice">Practice</button>
+        <button class="chip" data-filter="communication">Communication</button>
+        <button class="chip" data-filter="wellness">Wellness</button>
+      </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-left">
-                <p>chizsaleei | 2025, All Rights Reserved</p>
-            </div>
-            
-            <div class="footer-center">
-                <a href="#about">About</a>
-                <a href="#privacy">Privacy</a>
-            </div>
-            
-            <div class="footer-right">
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                </a>
-                
-                <a href="mailto:contact@chizsa.com" class="social-link">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h.749L12 10.724l9.615-6.903h.749c.904 0 1.636.732 1.636 1.636z"/>
-                    </svg>
-                </a>
-                
-                <a href="https://ko-fi.com/chizsa" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.033 11.596c.049 4.271 3.468 7.121 8.187 7.121s8.138-2.85 8.187-7.121c.049-4.272-.033-11.596-.033-11.596s-.075-.798-.679-.798h18.35s4.086.508 4.859 4.593c.773 4.085-2.233 8.051-2.233 8.051s1.679.798 3.911-1.024c2.233-1.823 2.233-4.593 2.233-4.593s-.508-4.085-4.593-4.085z"/>
-                    </svg>
-                </a>
-            </div>
+    <!-- Focus Sections (content preserved) -->
+    <div class="focus-grid">
+      <!-- Career -->
+      <section class="section" data-focus="career">
+        <h2>Career</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="planning assessment practice">
+            <div class="name">Career Craft <span class="arrow">→</span></div>
+            <div class="muted">Design and craft your ideal career path with strategic planning tools</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="assessment planning">
+            <div class="name">Role Map <span class="arrow">→</span></div>
+            <div class="muted">Map out roles and responsibilities to align with your career goals</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener" data-focus="career" data-tool="practice communication">
+            <div class="name">Interview Drill <span class="arrow">→</span></div>
+            <div class="muted">Practice and perfect your interview skills with targeted drills</div>
+          </a>
         </div>
-    </footer>
+      </section>
 
-    <script>
-        // Filter functionality
-        const focusFilter = document.getElementById('focus-filter');
-        const toolFilter = document.getElementById('tool-filter');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const focusSections = document.querySelectorAll('.focus-section');
-        const toolCards = document.querySelectorAll('.tool-card');
+      <!-- Leadership -->
+      <section class="section" data-focus="leadership">
+        <h2>Leadership</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="communication planning">
+            <div class="name">Leader Sync <span class="arrow">→</span></div>
+            <div class="muted">Synchronize your leadership approach with team dynamics and goals</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="planning communication">
+            <div class="name">One-Page Alignment <span class="arrow">→</span></div>
+            <div class="muted">Create clear, concise alignment documents for team clarity</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener" data-focus="leadership" data-tool="communication assessment">
+            <div class="name">Feedback Loop <span class="arrow">→</span></div>
+            <div class="muted">Establish effective feedback systems for continuous improvement</div>
+          </a>
+        </div>
+      </section>
 
-        function filterContent() {
-            const selectedFocus = focusFilter.value;
-            const selectedTool = toolFilter.value;
+      <!-- Business -->
+      <section class="section" data-focus="business">
+        <h2>Business</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="planning communication">
+            <div class="name">Offer Craft <span class="arrow">→</span></div>
+            <div class="muted">Craft compelling business offers that convert prospects to clients</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="financial planning">
+            <div class="name">Business Offer Calculator <span class="arrow">→</span></div>
+            <div class="muted">Calculate pricing and profitability for your business offers</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener" data-focus="business" data-tool="communication practice">
+            <div class="name">Customer Calls <span class="arrow">→</span></div>
+            <div class="muted">Master customer communication and sales call techniques</div>
+          </a>
+        </div>
+      </section>
 
-            focusSections.forEach(section => {
-                const sectionFocus = section.getAttribute('data-focus');
-                let showSection = selectedFocus === 'all' || selectedFocus === sectionFocus;
-                
-                if (showSection && selectedTool !== 'all') {
-                    // Check if any tools in this section match the tool filter
-                    const sectionTools = section.querySelectorAll('.tool-card');
-                    showSection = Array.from(sectionTools).some(tool => {
-                        const toolTypes = tool.getAttribute('data-tool');
-                        return toolTypes && toolTypes.includes(selectedTool);
-                    });
-                }
+      <!-- Health & Wellness -->
+      <section class="section" data-focus="health-wellness">
+        <h2>Health and Wellness</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="wellness mindfulness">
+            <div class="name">Energy Flow <span class="arrow">→</span></div>
+            <div class="muted">Optimize your energy levels throughout the day with flow techniques</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="tracking wellness">
+            <div class="name">Energy Diary <span class="arrow">→</span></div>
+            <div class="muted">Track and analyze your energy patterns for better wellness</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener" data-focus="health-wellness" data-tool="practice wellness">
+            <div class="name">Micro Workouts <span class="arrow">→</span></div>
+            <div class="muted">Quick, effective workout routines that fit into any schedule</div>
+          </a>
+        </div>
+      </section>
 
-                section.style.display = showSection ? 'block' : 'none';
+      <!-- Financial -->
+      <section class="section" data-focus="financial">
+        <h2>Financial</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial planning">
+            <div class="name">Cashflow Compass <span class="arrow">→</span></div>
+            <div class="muted">Navigate your cashflow with strategic financial planning tools</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial tracking">
+            <div class="name">Financial Tracker <span class="arrow">→</span></div>
+            <div class="muted">Track expenses, income, and financial goals in one place</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener" data-focus="financial" data-tool="financial planning">
+            <div class="name">Investing Habits <span class="arrow">→</span></div>
+            <div class="muted">Build sustainable investing habits for long-term wealth</div>
+          </a>
+        </div>
+      </section>
 
-                // Filter individual tools within visible sections
-                if (showSection) {
-                    const sectionTools = section.querySelectorAll('.tool-card');
-                    sectionTools.forEach(tool => {
-                        const toolTypes = tool.getAttribute('data-tool');
-                        const showTool = selectedTool === 'all' || (toolTypes && toolTypes.includes(selectedTool));
-                        tool.style.display = showTool ? 'block' : 'none';
-                    });
-                }
-            });
+      <!-- Life Vision -->
+      <section class="section" data-focus="life-vision">
+        <h2>Life Vision</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener" data-focus="life-vision" data-tool="planning assessment">
+            <div class="name">10-Year Backcast <span class="arrow">→</span></div>
+            <div class="muted">Work backwards from your 10-year vision to create actionable steps</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener" data-focus="life-vision" data-tool="planning mindfulness">
+            <div class="name">Focus Fence <span class="arrow">→</span></div>
+            <div class="muted">Create boundaries to maintain focus on what matters most</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Spiritual -->
+      <section class="section" data-focus="spiritual">
+        <h2>Spiritual</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener" data-focus="spiritual" data-tool="mindfulness practice">
+            <div class="name">Stillness Timer <span class="arrow">→</span></div>
+            <div class="muted">Guided meditation and stillness practice with customizable timers</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener" data-focus="spiritual" data-tool="mindfulness tracking">
+            <div class="name">Gratitude Trifecta <span class="arrow">→</span></div>
+            <div class="muted">Three-part gratitude practice for daily spiritual growth</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Relationship -->
+      <section class="section" data-focus="relationship">
+        <h2>Relationship</h2>
+        <div class="tools">
+          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener" data-focus="relationship" data-tool="communication planning">
+            <div class="name">Connection Cadence <span class="arrow">→</span></div>
+            <div class="muted">Maintain meaningful connections with structured communication rhythms</div>
+          </a>
+          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener" data-focus="relationship" data-tool="communication practice">
+            <div class="name">Repair Playbook <span class="arrow">→</span></div>
+            <div class="muted">Navigate relationship challenges with proven repair strategies</div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="foot">
+      <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
+      <div class="foot-center">
+        <a href="https://chizsaleei.com/about.html">About</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
+      </div>
+      <div class="foot-right">
+        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
+          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Z"/></svg>
+        </a>
+        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    hamb.addEventListener('click', ()=>{
+      const open = menu.classList.toggle('active');
+      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.querySelectorAll('#menu a').forEach(a=>{
+      a.addEventListener('click', ()=> menu.classList.remove('active'));
+    });
+
+    // ------- Existing filter logic (unchanged) -------
+    const focusFilter = document.getElementById('focus-filter');
+    const toolFilter  = document.getElementById('tool-filter');
+    const filterButtons = document.querySelectorAll('.chip');
+    const focusSections = document.querySelectorAll('.section');
+
+    function filterContent(){
+      const selectedFocus = focusFilter.value;
+      const selectedTool  = toolFilter.value;
+
+      focusSections.forEach(section=>{
+        const sectionFocus = section.getAttribute('data-focus');
+        let showSection = selectedFocus === 'all' || selectedFocus === sectionFocus;
+
+        if(showSection && selectedTool !== 'all'){
+          const cards = section.querySelectorAll('.card');
+          showSection = Array.from(cards).some(card=>{
+            const types = card.getAttribute('data-tool');
+            return types && types.includes(selectedTool);
+          });
         }
 
-        // Event listeners for dropdowns
-        focusFilter.addEventListener('change', filterContent);
-        toolFilter.addEventListener('change', filterContent);
+        section.style.display = showSection ? 'block' : 'none';
 
-        // Event listeners for filter buttons
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Set the tool filter based on button
-                const filterValue = this.getAttribute('data-filter');
-                toolFilter.value = filterValue;
-                filterContent();
-            });
-        });
+        if(showSection){
+          const cards = section.querySelectorAll('.card');
+          cards.forEach(card=>{
+            const types = card.getAttribute('data-tool');
+            const showCard = selectedTool === 'all' || (types && types.includes(selectedTool));
+            card.style.display = showCard ? 'block' : 'none';
+          });
+        }
+      });
+    }
 
-        // Add smooth hover effects
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
+    focusFilter.addEventListener('change', filterContent);
+    toolFilter.addEventListener('change',  filterContent);
 
-        // Smooth scrolling for any internal links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'988bfa7ba534b9f0',t:'MTc1OTQ4OTY3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    filterButtons.forEach(btn=>{
+      btn.addEventListener('click', function(){
+        filterButtons.forEach(b=>b.classList.remove('active'));
+        this.classList.add('active');
+        const v = this.getAttribute('data-filter');
+        toolFilter.value = v;
+        filterContent();
+      });
+    });
+  </script>
+</body>
 </html>
