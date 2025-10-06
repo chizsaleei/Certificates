@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Accessibility Statement | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:48px 20px}
+h1,h2{color:var(--gold)}h1{margin:0 0 6px}
+p,li{color:var(--muted);line-height:1.7}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);margin-top:18px}
+.small{font-size:.95rem}
+
+/* Accessibility Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.feature-item {
+  background: rgba(15, 36, 25, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.feature-title {
+  color: var(--gold);
+  font-weight: 600;
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.feature-description {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Standards Table */
+.standards-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.standards-table th,
+.standards-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.standards-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.standards-table td {
+  color: var(--muted);
+}
+
+.status-met {
+  color: #3fa67a;
+  font-weight: 600;
+}
+
+.status-partial {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.status-planned {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Agreement Section */
+.agreement-section {
+  position: sticky;
+  bottom: 0;
+  background: rgba(15, 36, 25, 0.95);
+  border-top: 2px solid var(--gold);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
+}
+
+.agreement-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.reading-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.agreement-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox-input.checked {
+  background: var(--gold);
+}
+
+.checkbox-input.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--deep);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.agreement-text {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.agree-button {
+  background: var(--gold);
+  color: var(--deep);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.agree-button.enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.agree-button.enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+/* Highlight boxes */
+.highlight-box {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.highlight-box h3 {
+  color: var(--gold);
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.highlight-box p {
+  margin: 0;
+  color: var(--ink);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 20px 15px;
+  }
+  
+  .agreement-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .agreement-checkbox {
+    justify-content: center;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .standards-table {
+    font-size: 0.9rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --gold: #ffff00;
+    --ink: #ffffff;
+    --muted: #e0e0e0;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<a href="/" class="back-link">← Back to Home</a>
+
+<main class="wrap">
+<h1>Accessibility Statement</h1>
+<p class="small">Effective date: December 15, 2024</p>
+
+<div class="highlight-box">
+<h3>Making Our Platform Accessible</h3>
+<p>We want everyone to be able to use our coaching platform. As a startup, we're working to make our site accessible and will be honest about what we've done and what we're still working on.</p>
+</div>
+
+<div class="card">
+<h2>1. Our Goal</h2>
+<p>We aim to meet basic web accessibility standards (WCAG 2.1 Level AA) across our main pages and tools. We design for clarity, keyboard access, and readable contrast that works with our brand colors.</p>
+</div>
+
+<div class="card">
+<h2>2. What We've Done</h2>
+<ul>
+<li>Used proper HTML structure with headings and labels</li>
+<li>Made sure you can navigate with just a keyboard</li>
+<li>Checked that our colors have good contrast for readability</li>
+<li>Added descriptions for images and icons that need them</li>
+<li>Kept animations subtle and respectful of motion preferences</li>
+<li>Made the site work well on mobile devices and with browser zoom</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>3. What We're Still Working On</h2>
+<p>We're honest about areas that need improvement:</p>
+<ul>
+<li>Some third-party tools (like payment forms) may not be fully accessible yet - we're choosing the best options available</li>
+<li>Our video coaching sessions are still being optimized for screen readers</li>
+<li>Some interactive features might need better keyboard shortcuts</li>
+<li>We're still adding captions and transcripts to all video content</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>4. Assistive Technology</h2>
+<p>Our site should work with common assistive technologies like:</p>
+<ul>
+<li>Screen readers (NVDA, JAWS, VoiceOver)</li>
+<li>Keyboard navigation</li>
+<li>Browser zoom up to 200%</li>
+<li>Voice control software</li>
+</ul>
+<p>If something doesn't work with your setup, please let us know.</p>
+</div>
+
+<div class="card">
+<h2>5. Getting Help</h2>
+<p>If you run into accessibility problems or have suggestions:</p>
+<ul>
+<li><strong>Email us:</strong> <a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></li>
+<li><strong>Tell us:</strong> What page you were on and what went wrong</li>
+<li><strong>We'll respond:</strong> Within 3 business days</li>
+<li><strong>We'll fix it:</strong> As quickly as we can, usually within a week</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>6. Our Commitment</h2>
+<p>As we grow, we're committed to:</p>
+<ul>
+<li>Testing new features for accessibility before we launch them</li>
+<li>Learning from user feedback and making improvements</li>
+<li>Staying up to date with accessibility best practices</li>
+<li>Being transparent about our progress and limitations</li>
+</ul>
+<p>Accessibility is a journey, not a destination. We're on that journey and appreciate your patience as we improve.</p>
+</div>
+</main>
+
+<!-- Agreement Section -->
+<div class="agreement-section">
+  <div class="agreement-content">
+    <div class="reading-progress">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="agreement-checkbox" onclick="toggleAgreement()">
+      <div class="checkbox-input" id="agreement-checkbox"></div>
+      <span class="agreement-text">I have read and understand the Accessibility Statement</span>
+    </div>
+    
+    <button class="agree-button" id="agree-button" onclick="proceedWithAgreement()">
+      Continue to Platform
+    </button>
+  </div>
+</div>
+
+<script>
+let hasAgreed = false;
+let hasScrolledToBottom = false;
+
+// Track reading progress
+function updateReadingProgress() {
+  const scrollTop = window.pageYOffset;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollPercent = (scrollTop / docHeight) * 100;
+  
+  document.getElementById('progress-bar').style.width = Math.min(scrollPercent, 100) + '%';
+  
+  // Check if user has scrolled near the bottom
+  if (scrollPercent > 85 && !hasScrolledToBottom) {
+    hasScrolledToBottom = true;
+    updateButtonState();
+  }
+}
+
+// Toggle agreement checkbox
+function toggleAgreement() {
+  if (!hasScrolledToBottom) {
+    alert('Please read through the accessibility statement by scrolling to the bottom first.');
+    return;
+  }
+  
+  hasAgreed = !hasAgreed;
+  const checkbox = document.getElementById('agreement-checkbox');
+  
+  if (hasAgreed) {
+    checkbox.classList.add('checked');
+  } else {
+    checkbox.classList.remove('checked');
+  }
+  
+  updateButtonState();
+}
+
+// Update button state
+function updateButtonState() {
+  const button = document.getElementById('agree-button');
+  
+  if (hasAgreed && hasScrolledToBottom) {
+    button.classList.add('enabled');
+    button.textContent = 'Continue to Platform';
+  } else if (hasScrolledToBottom && !hasAgreed) {
+    button.classList.remove('enabled');
+    button.textContent = 'Please acknowledge to continue';
+  } else {
+    button.classList.remove('enabled');
+    button.textContent = 'Read statement to continue';
+  }
+}
+
+// Proceed with agreement
+function proceedWithAgreement() {
+  if (!hasAgreed || !hasScrolledToBottom) {
+    if (!hasScrolledToBottom) {
+      alert('Please read through the complete accessibility statement first.');
+    } else {
+      alert('Please check the acknowledgment box to continue.');
+    }
+    return;
+  }
+  
+  // Store agreement in localStorage
+  localStorage.setItem('accessibilityAcknowledged', 'true');
+  localStorage.setItem('accessibilityAcknowledgedDate', new Date().toISOString());
+  
+  // Redirect based on where user came from
+  const urlParams = new URLSearchParams(window.location.search);
+  const returnUrl = urlParams.get('return') || '/dashboard.html';
+  
+  // Show confirmation
+  alert('Thank you for reviewing our Accessibility Statement. Redirecting you now...');
+  
+  // Redirect after short delay
+  setTimeout(() => {
+    window.location.href = returnUrl;
+  }, 1000);
+}
+
+// Check if user has already acknowledged
+function checkExistingAcknowledgment() {
+  const acknowledged = localStorage.getItem('accessibilityAcknowledged');
+  const acknowledgedDate = localStorage.getItem('accessibilityAcknowledgedDate');
+  
+  if (acknowledged === 'true' && acknowledgedDate) {
+    // Check if acknowledgment is still valid (within 1 year)
+    const ackDate = new Date(acknowledgedDate);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    
+    if (ackDate > oneYearAgo) {
+      // Acknowledgment still valid, redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return') || '/dashboard.html';
+      window.location.href = returnUrl;
+      return;
+    }
+  }
+}
+
+// Event listeners
+window.addEventListener('scroll', updateReadingProgress);
+window.addEventListener('load', () => {
+  checkExistingAcknowledgment();
+  updateReadingProgress();
+  updateButtonState();
+});
+
+// Prevent accidental navigation
+window.addEventListener('beforeunload', (e) => {
+  if (hasScrolledToBottom && !hasAgreed) {
+    e.preventDefault();
+    e.returnValue = 'You haven\'t acknowledged the accessibility statement yet. Are you sure you want to leave?';
+  }
+});
+
+// Keyboard accessibility for custom elements
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    if (e.target.classList.contains('agreement-checkbox')) {
+      e.preventDefault();
+      toggleAgreement();
+    }
+    if (e.target.classList.contains('agree-button') && e.target.classList.contains('enabled')) {
+      e.preventDefault();
+      proceedWithAgreement();
+    }
+  }
+});
+
+// Add keyboard focus support
+document.querySelector('.agreement-checkbox').setAttribute('tabindex', '0');
+document.querySelector('.agreement-checkbox').setAttribute('role', 'checkbox');
+document.querySelector('.agreement-checkbox').setAttribute('aria-label', 'I have read and understand the Accessibility Statement');
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a63176373dbc3f',t:'MTc1OTc2NDU1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
