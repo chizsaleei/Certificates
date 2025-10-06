@@ -1,66 +1,472 @@
 <!doctype html>
-</ul>
-</div>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms of Service | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
 
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:48px 20px}
+h1,h2{color:var(--gold)}h1{margin:0 0 6px}
+p,li{color:var(--muted);line-height:1.7}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);margin-top:18px}
+.small{font-size:.95rem}
+
+/* Agreement Section */
+.agreement-section {
+  position: sticky;
+  bottom: 0;
+  background: rgba(15, 36, 25, 0.95);
+  border-top: 2px solid var(--gold);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
+}
+
+.agreement-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.reading-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.agreement-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox-input.checked {
+  background: var(--gold);
+}
+
+.checkbox-input.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--deep);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.agreement-text {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.agree-button {
+  background: var(--gold);
+  color: var(--deep);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.agree-button.enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.agree-button.enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 20px 15px;
+  }
+  
+  .agreement-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .agreement-checkbox {
+    justify-content: center;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+}
+</style>
+</head>
+<body>
+<a href="/" class="back-link">← Back to Home</a>
+
+<main class="wrap">
+<h1>Terms of Service</h1>
+<p class="small">Effective date: December 15, 2024</p>
 
 <div class="card">
-<h2>6. One time purchases</h2>
-<p>Single tool purchases grant ongoing access for that tool as long as the site operates that tool. Major changes or retirement of a tool may occur for security, technical, or educational reasons. If a tool is retired, we will offer a comparable replacement when possible.</p>
+<h2>1. Who we are</h2>
+<p>CHIZSA | COACHING ("we," "us," or "our") provides the CHIZSA | COACHING website, tools, and coaching services located at <a href="https://chizsaleei.com">chizsaleei.com</a>. By using our site, creating an account, or purchasing access to any tool or session, you agree to these Terms of Service.</p>
 </div>
 
-
 <div class="card">
-<h2>7. Refund policy</h2>
+<h2>2. Our Services</h2>
 <ul>
-<li>Subscriptions. You can cancel anytime and you keep access through the paid term. We provide a 7 day first purchase refund window for the Tools Pass if you have used less than 2 tools after sign up. Contact us within 7 days of the first subscription charge for a refund review.</li>
-<li>Single tool purchases. Eligible for a refund within 72 hours if you experience a technical issue that we cannot resolve after you contact support. We may ask for a brief description and a screenshot to assist.</li>
-<li>Coaching sessions. Reschedule at least 12 hours before your slot inside the dashboard. No show or late cancellation within 12 hours is not refundable. If we need to cancel, we will offer a new time or a refund.</li>
-<li>Chargebacks. Please contact support first so we can help. Open chargebacks may lead to account hold during review.</li>
+<li><strong>Free Quiz:</strong> Instant results with no account required</li>
+<li><strong>Free Tool:</strong> One complimentary micro-tool requiring sign-in to save progress</li>
+<li><strong>Tools Pass:</strong> Monthly subscription unlocking all web-based learning tools</li>
+<li><strong>Individual Tools:</strong> One-time purchases granting permanent access to specific tools</li>
+<li><strong>1:1 Coaching Sessions:</strong> Professional coaching available through your signed-in dashboard</li>
+<li><strong>Session Materials:</strong> Cloud storage and classroom technology integration</li>
 </ul>
-<p>How to request. Email <a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a> with your account email, the purchase you want to refund, and the reason. We aim to respond within 3 business days.</p>
 </div>
-
 
 <div class="card">
-<h2>8. Acceptable use</h2>
-<p>Use the site for lawful purposes. Do not reverse engineer, scrape at scale, share paid content publicly, or misuse the tools. We may rate limit or suspend accounts to protect the service and users.</p>
+<h2>3. Account Requirements</h2>
+<p>To access premium features, you must create an account with accurate information. You are responsible for:</p>
+<ul>
+<li>Maintaining the security of your login credentials</li>
+<li>Using your account solely for personal learning purposes</li>
+<li>Not sharing account access with others</li>
+<li>Notifying us immediately of any unauthorized use</li>
+</ul>
+<p>We reserve the right to suspend or terminate accounts that violate these Terms.</p>
 </div>
-
 
 <div class="card">
-<h2>9. Intellectual property</h2>
-<p>All site content and tools are owned by us or our licensors. You receive a personal, non transferable, and revocable license to use the tools for your own learning. You may not resell, rehost, or redistribute the tools or code.</p>
+<h2>4. Pricing and Payments</h2>
+<ul>
+<li>All prices are displayed in USD with local currency estimates at checkout</li>
+<li>Payments processed securely through Stripe, supporting cards, Alipay, and WeChat Pay</li>
+<li>Applicable taxes calculated based on your billing location</li>
+<li>You are responsible for any bank fees or currency conversion charges</li>
+<li>Prices may change with 30 days notice to existing subscribers</li>
+</ul>
 </div>
-
 
 <div class="card">
-<h2>10. User content</h2>
-<p>You own your uploads and entries. You give us a limited license to process and display your content inside the tools so the service works for you. Do not upload sensitive personal data, confidential employer data, or content that you do not have rights to share.</p>
+<h2>5. Subscriptions (Tools Pass)</h2>
+<ul>
+<li>Automatically renews monthly until canceled</li>
+<li>Cancel anytime through your account billing portal</li>
+<li>Access continues through your current billing period after cancellation</li>
+<li>Your saved progress and data remain accessible unless you request account deletion</li>
+<li>No partial refunds for unused portions of billing periods</li>
+</ul>
 </div>
 
+<div class="card">
+<h2>6. One-Time Purchases</h2>
+<ul>
+<li>Individual tool purchases grant permanent access to that specific tool</li>
+<li>Access tied to your account and non-transferable</li>
+<li>Tools may receive updates and improvements over time</li>
+<li>We reserve the right to discontinue tools with 90 days notice</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>7. Refund Policy</h2>
+<ul>
+<li><strong>Tools Pass Subscriptions:</strong> 7-day refund window for first-time subscribers who have used fewer than 2 tools. Contact support within 7 days of initial charge.</li>
+<li><strong>Individual Tools:</strong> 72-hour refund window for unresolvable technical issues. May require description and screenshots for support review.</li>
+<li><strong>Coaching Sessions:</strong> Reschedule at least 12 hours in advance through your dashboard. No-shows or late cancellations (under 12 hours) are non-refundable. If we cancel, you'll receive a new time slot or full refund.</li>
+<li><strong>Chargebacks:</strong> Please contact support first. Disputed charges may result in account suspension during review.</li>
+</ul>
+<p>To request a refund, email <a href="mailto:support@chizsaleei.com">support@chizsaleei.com</a> with your order details.</p>
+</div>
+
+<div class="card">
+<h2>8. Coaching Sessions</h2>
+<ul>
+<li>Sessions conducted via integrated video platforms (Daily.co, VooV, ClassIn)</li>
+<li>Professional coaching with classroom technology and recording capabilities</li>
+<li>Materials uploaded to cloud storage for session use</li>
+<li>Session recordings available for review (where permitted by law)</li>
+<li>Punctuality expected; late arrivals may result in shortened sessions</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>9. Intellectual Property</h2>
+<p>All content, tools, methodologies, and materials provided through our platform are owned by CHIZSA | COACHING or our licensors. You may:</p>
+<ul>
+<li>Use our tools and content for personal learning purposes</li>
+<li>Download materials provided during your sessions</li>
+</ul>
+<p>You may not:</p>
+<ul>
+<li>Reproduce, distribute, or sell our content</li>
+<li>Reverse engineer or copy our tools</li>
+<li>Use our materials for commercial purposes without written permission</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>10. User Content</h2>
+<p>Content you create or upload (practice responses, session recordings, notes) remains yours. By using our platform, you grant us permission to:</p>
+<ul>
+<li>Store and process your content to provide our services</li>
+<li>Use anonymized data for service improvement</li>
+<li>Share content with your assigned coaches for educational purposes</li>
+</ul>
+<p>You are responsible for ensuring your content doesn't violate others' rights or applicable laws.</p>
+</div>
 
 <div class="card">
 <h2>11. Disclaimers</h2>
-<p>The site and tools are provided as is. Results can vary. We do not guarantee admission, job offers, or test scores. We disclaim implied warranties to the fullest extent allowed by law.</p>
+<p>Our services are provided "as is" without warranties. While we strive for accuracy and effectiveness:</p>
+<ul>
+<li>We cannot guarantee specific learning outcomes or test scores</li>
+<li>Technical issues may occasionally affect service availability</li>
+<li>Coaching advice is educational and not a substitute for professional assessment</li>
+<li>Third-party integrations (payment processors, video platforms) are subject to their own terms</li>
+</ul>
 </div>
-
 
 <div class="card">
-<h2>12. Limitation of liability</h2>
-<p>To the extent allowed by law, our total liability for any claim is limited to the amount you paid for access in the 3 months before the claim. We are not liable for indirect or special damages.</p>
+<h2>12. Limitation of Liability</h2>
+<p>To the maximum extent permitted by law, CHIZSA | COACHING's liability is limited to the amount you paid for the specific service in question. We are not liable for:</p>
+<ul>
+<li>Indirect, incidental, or consequential damages</li>
+<li>Lost profits, data, or opportunities</li>
+<li>Third-party actions or service interruptions</li>
+<li>Technical failures beyond our reasonable control</li>
+</ul>
 </div>
-
 
 <div class="card">
 <h2>13. Privacy</h2>
-<p>Our <a href="/privacy.html">Privacy Policy</a> explains how we handle personal data, cookies, and analytics.</p>
+<p>Your privacy is important to us. Our data practices are governed by our Privacy Policy, which explains:</p>
+<ul>
+<li>What information we collect and why</li>
+<li>How we protect and use your data</li>
+<li>Your rights regarding your personal information</li>
+<li>Cookie usage and third-party integrations</li>
+</ul>
+<p>By using our services, you also agree to our Privacy Policy.</p>
 </div>
-
 
 <div class="card">
-<h2>14. Changes and contact</h2>
-<p>We may update these Terms to reflect product or legal changes. We will post the new date at the top. Questions or concerns: <a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a>.</p>
+<h2>14. Changes and Contact</h2>
+<p>We may update these Terms periodically. Significant changes will be communicated via email or platform notification. Continued use after changes constitutes acceptance.</p>
+<p><strong>Contact us:</strong></p>
+<ul>
+<li>Email: <a href="mailto:support@chizsaleei.com">support@chizsaleei.com</a></li>
+<li>Website: <a href="https://chizsaleei.com">chizsaleei.com</a></li>
+<li>Response time: Within 48 hours during business days</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>15. Governing Law</h2>
+<p>These Terms are governed by the laws of [Your Jurisdiction]. Any disputes will be resolved through binding arbitration or in the courts of [Your Jurisdiction], as applicable.</p>
 </div>
 </main>
-</body>
+
+<!-- Agreement Section -->
+<div class="agreement-section">
+  <div class="agreement-content">
+    <div class="reading-progress">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="agreement-checkbox" onclick="toggleAgreement()">
+      <div class="checkbox-input" id="agreement-checkbox"></div>
+      <span class="agreement-text">I have read and agree to the Terms of Service</span>
+    </div>
+    
+    <button class="agree-button" id="agree-button" onclick="proceedWithAgreement()">
+      Continue to Platform
+    </button>
+  </div>
+</div>
+
+<script>
+let hasAgreed = false;
+let hasScrolledToBottom = false;
+
+// Track reading progress
+function updateReadingProgress() {
+  const scrollTop = window.pageYOffset;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollPercent = (scrollTop / docHeight) * 100;
+  
+  document.getElementById('progress-bar').style.width = Math.min(scrollPercent, 100) + '%';
+  
+  // Check if user has scrolled near the bottom
+  if (scrollPercent > 85 && !hasScrolledToBottom) {
+    hasScrolledToBottom = true;
+    updateButtonState();
+  }
+}
+
+// Toggle agreement checkbox
+function toggleAgreement() {
+  if (!hasScrolledToBottom) {
+    alert('Please read through the terms by scrolling to the bottom first.');
+    return;
+  }
+  
+  hasAgreed = !hasAgreed;
+  const checkbox = document.getElementById('agreement-checkbox');
+  
+  if (hasAgreed) {
+    checkbox.classList.add('checked');
+  } else {
+    checkbox.classList.remove('checked');
+  }
+  
+  updateButtonState();
+}
+
+// Update button state
+function updateButtonState() {
+  const button = document.getElementById('agree-button');
+  
+  if (hasAgreed && hasScrolledToBottom) {
+    button.classList.add('enabled');
+    button.textContent = 'Continue to Platform';
+  } else if (hasScrolledToBottom && !hasAgreed) {
+    button.classList.remove('enabled');
+    button.textContent = 'Please agree to continue';
+  } else {
+    button.classList.remove('enabled');
+    button.textContent = 'Read terms to continue';
+  }
+}
+
+// Proceed with agreement
+function proceedWithAgreement() {
+  if (!hasAgreed || !hasScrolledToBottom) {
+    if (!hasScrolledToBottom) {
+      alert('Please read through the complete terms first.');
+    } else {
+      alert('Please check the agreement box to continue.');
+    }
+    return;
+  }
+  
+  // Store agreement in localStorage
+  localStorage.setItem('termsAgreed', 'true');
+  localStorage.setItem('termsAgreedDate', new Date().toISOString());
+  
+  // Redirect based on where user came from
+  const urlParams = new URLSearchParams(window.location.search);
+  const returnUrl = urlParams.get('return') || '/dashboard.html';
+  
+  // Show confirmation
+  alert('Thank you for agreeing to our Terms of Service. Redirecting you now...');
+  
+  // Redirect after short delay
+  setTimeout(() => {
+    window.location.href = returnUrl;
+  }, 1000);
+}
+
+// Check if user has already agreed
+function checkExistingAgreement() {
+  const agreed = localStorage.getItem('termsAgreed');
+  const agreedDate = localStorage.getItem('termsAgreedDate');
+  
+  if (agreed === 'true' && agreedDate) {
+    // Check if agreement is still valid (within 1 year)
+    const agreementDate = new Date(agreedDate);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    
+    if (agreementDate > oneYearAgo) {
+      // Agreement still valid, redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return') || '/dashboard.html';
+      window.location.href = returnUrl;
+      return;
+    }
+  }
+}
+
+// Event listeners
+window.addEventListener('scroll', updateReadingProgress);
+window.addEventListener('load', () => {
+  checkExistingAgreement();
+  updateReadingProgress();
+  updateButtonState();
+});
+
+// Prevent accidental navigation
+window.addEventListener('beforeunload', (e) => {
+  if (hasScrolledToBottom && !hasAgreed) {
+    e.preventDefault();
+    e.returnValue = 'You haven\'t agreed to the terms yet. Are you sure you want to leave?';
+  }
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a607a604a0bc3f',t:'MTc1OTc2Mjg0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
