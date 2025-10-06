@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Discover Your Tools | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh}
+.wrap{max-width:1200px;margin:0 auto;padding:48px 20px}
+h1,h2,h3{color:var(--gold)}h1{margin:0 0 6px}
+p,li{color:var(--muted);line-height:1.7}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  margin: 0 0 16px;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  color: var(--muted);
+  margin: 0 0 24px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-banner {
+  background: linear-gradient(135deg, var(--gold), #b8941f);
+  color: var(--deep);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 40px 0;
+  box-shadow: 0 8px 25px rgba(212,175,55,.3);
+}
+
+.cta-banner h3 {
+  color: var(--deep);
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+}
+
+.cta-banner p {
+  color: var(--deep);
+  margin: 0 0 16px;
+  opacity: 0.8;
+}
+
+.cta-button {
+  background: var(--deep);
+  color: var(--gold);
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15,36,25,.4);
+  text-decoration: none;
+}
+
+.section {
+  margin-bottom: 80px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  color: var(--gold);
+  margin: 0 0 12px;
+}
+
+.section-description {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.archetype-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.archetype-card {
+  background: rgba(26,61,46,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 16px;
+  padding: 28px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.archetype-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 30px rgba(0,0,0,.2);
+}
+
+.archetype-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.archetype-icon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212,175,55,.1);
+  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,.3);
+}
+
+.archetype-info h3 {
+  color: var(--gold);
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
+.archetype-tagline {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+  font-style: italic;
+}
+
+.tool-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tool-item {
+  background: rgba(15,36,25,.4);
+  border: 1px solid rgba(212,175,55,.15);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tool-item:hover {
+  background: rgba(15,36,25,.6);
+  border-color: rgba(212,175,55,.3);
+  transform: translateX(4px);
+}
+
+.tool-name {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.tool-hook {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.profile-card {
+  background: rgba(26,61,46,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.profile-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-icon {
+  font-size: 1.8rem;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212,175,55,.1);
+  border-radius: 8px;
+}
+
+.profile-card h3 {
+  color: var(--gold);
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.life-areas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.life-area-card {
+  background: rgba(26,61,46,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.life-area-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+}
+
+.life-area-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.life-area-icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.life-area-card h3 {
+  color: var(--gold);
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.life-area-description {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+.sign-in-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.sign-in-modal {
+  background: rgba(26,61,46,.95);
+  border: 1px solid var(--gold);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.modal-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.modal-title {
+  color: var(--gold);
+  font-size: 1.8rem;
+  margin: 0 0 16px;
+}
+
+.modal-description {
+  color: var(--muted);
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.modal-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.modal-button.primary {
+  background: var(--gold);
+  color: var(--deep);
+}
+
+.modal-button.secondary {
+  background: rgba(15,36,25,.6);
+  color: var(--ink);
+  border: 1px solid rgba(212,175,55,.3);
+}
+
+.modal-button:hover {
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 20px 15px;
+  }
+  
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .archetype-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .life-areas-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+<body>
+<a href="/" class="back-link">← Back to Home</a>
+
+<main class="wrap">
+<div class="hero-section">
+  <h1 class="hero-title">🔍 Discover Your Perfect Tools</h1>
+  <p class="hero-subtitle">
+    Explore our comprehensive toolkit designed to accelerate your personal and professional growth. 
+    Each tool is crafted to solve specific challenges and unlock your potential.
+  </p>
+</div>
+
+<div class="cta-banner">
+  <h3>🚀 Ready to Transform Your Life?</h3>
+  <p>Sign in to save your progress, track your growth, and unlock the full potential of these powerful tools.</p>
+  <a href="/signin.html" class="cta-button">Sign In to Get Started</a>
+</div>
+
+<!-- Find Your Archetype Section -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">🎯 Find Your Archetype</h2>
+    <p class="section-description">
+      Discover tools tailored to your unique personality and working style. Each archetype comes with specialized tools 
+      designed to amplify your natural strengths and address your specific challenges.
+    </p>
+  </div>
+
+  <div class="archetype-grid">
+    <div class="archetype-card" onclick="showSignInModal('The Builder', 'Build systems that last')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🏗️</div>
+        <div class="archetype-info">
+          <h3>The Builder</h3>
+          <p class="archetype-tagline">"I create systems that last"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Motivational Tracking App</div>
+          <div class="tool-hook">Turn your daily wins into unstoppable momentum</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Task Management App</div>
+          <div class="tool-hook">Build bulletproof systems that work even when you don't</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Analyst', 'Make data-driven decisions')">
+      <div class="archetype-header">
+        <div class="archetype-icon">📊</div>
+        <div class="archetype-info">
+          <h3>The Analyst</h3>
+          <p class="archetype-tagline">"I make data-driven decisions"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Data Visualization App</div>
+          <div class="tool-hook">Transform complex data into crystal-clear insights</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Decision Support App</div>
+          <div class="tool-hook">Never second-guess important decisions again</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Connector', 'Build meaningful relationships')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🤝</div>
+        <div class="archetype-info">
+          <h3>The Connector</h3>
+          <p class="archetype-tagline">"I build meaningful relationships"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Professional Networking Scripts</div>
+          <div class="tool-hook">Turn awkward networking into natural conversations</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Social Balance App</div>
+          <div class="tool-hook">Maintain healthy boundaries while staying connected</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Relationship Board App</div>
+          <div class="tool-hook">Nurture your network with systematic care</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Creator', 'Bring ideas to life')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🎨</div>
+        <div class="archetype-info">
+          <h3>The Creator</h3>
+          <p class="archetype-tagline">"I bring ideas to life"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Consistency Tracker App</div>
+          <div class="tool-hook">Turn creative bursts into sustainable habits</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Idea Capture App</div>
+          <div class="tool-hook">Never lose another brilliant idea again</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Ideation Prompt</div>
+          <div class="tool-hook">Break through creative blocks with targeted prompts</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Caregiver', 'Support others while caring for yourself')">
+      <div class="archetype-header">
+        <div class="archetype-icon">💝</div>
+        <div class="archetype-info">
+          <h3>The Caregiver</h3>
+          <p class="archetype-tagline">"I support others while caring for myself"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Boundary Management App</div>
+          <div class="tool-hook">Say no with confidence and protect your energy</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Self-care Planner App</div>
+          <div class="tool-hook">Schedule self-care like the essential appointment it is</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Leader', 'Inspire and guide others')">
+      <div class="archetype-header">
+        <div class="archetype-icon">👑</div>
+        <div class="archetype-info">
+          <h3>The Leader</h3>
+          <p class="archetype-tagline">"I inspire and guide others"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Delegation Tool App</div>
+          <div class="tool-hook">Empower your team while freeing up your time</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Team Motivation App</div>
+          <div class="tool-hook">Keep your team engaged and performing at their peak</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Strategist', 'Plan for long-term success')">
+      <div class="archetype-header">
+        <div class="archetype-icon">♟️</div>
+        <div class="archetype-info">
+          <h3>The Strategist</h3>
+          <p class="archetype-tagline">"I plan for long-term success"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Planning Visualization App</div>
+          <div class="tool-hook">See your strategy unfold with visual clarity</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Strategy Simulation App</div>
+          <div class="tool-hook">Test your plans before you execute them</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Explorer', 'Discover new possibilities')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🧭</div>
+        <div class="archetype-info">
+          <h3>The Explorer</h3>
+          <p class="archetype-tagline">"I discover new possibilities"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Safety Preparation App</div>
+          <div class="tool-hook">Explore boldly with confidence and preparation</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Adventure Planning App</div>
+          <div class="tool-hook">Turn spontaneous ideas into well-planned adventures</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Performer', 'Excel under pressure')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🎭</div>
+        <div class="archetype-info">
+          <h3>The Performer</h3>
+          <p class="archetype-tagline">"I excel under pressure"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Feedback Recovery App</div>
+          <div class="tool-hook">Transform criticism into fuel for improvement</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Performer Prep App</div>
+          <div class="tool-hook">Show up confident and ready for any stage</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="archetype-card" onclick="showSignInModal('The Finisher', 'Complete what you start')">
+      <div class="archetype-header">
+        <div class="archetype-icon">🏁</div>
+        <div class="archetype-info">
+          <h3>The Finisher</h3>
+          <p class="archetype-tagline">"I complete what I start"</p>
+        </div>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Achievement Logging App</div>
+          <div class="tool-hook">Celebrate every win and build unstoppable momentum</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Task Completion App</div>
+          <div class="tool-hook">Cross the finish line on every project, every time</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Choose Your Profile Section -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">👔 Choose Your Profile</h2>
+    <p class="section-description">
+      Professional tools designed for your specific career path. Master the skills that matter most in your field 
+      with targeted practice and real-world scenarios.
+    </p>
+  </div>
+
+  <div class="profile-grid">
+    <div class="profile-card" onclick="showSignInModal('Doctors', 'Master clinical communication')">
+      <div class="profile-header">
+        <div class="profile-icon">👩‍⚕️</div>
+        <h3>Doctors</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Clinical English Simulation App</div>
+          <div class="tool-hook">Practice patient interactions with confidence</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">OET Medicine Speaking App</div>
+          <div class="tool-hook">Ace your OET speaking test on the first try</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Rounds Planner App</div>
+          <div class="tool-hook">Organize patient rounds like a seasoned attending</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Clinical Notes App</div>
+          <div class="tool-hook">Write clear, professional notes that protect you legally</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Nurses', 'Excel in patient care communication')">
+      <div class="profile-header">
+        <div class="profile-icon">👩‍⚕️</div>
+        <h3>Nurses</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Clinical English Writing App</div>
+          <div class="tool-hook">Document patient care with precision and clarity</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">OET Nursing Speaking App</div>
+          <div class="tool-hook">Pass your OET speaking test with flying colors</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Managers', 'Lead with clear communication')">
+      <div class="profile-header">
+        <div class="profile-icon">👔</div>
+        <h3>Managers</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">IELTS General Writing App</div>
+          <div class="tool-hook">Write professional emails and reports that get results</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Business English Speaking App</div>
+          <div class="tool-hook">Command respect in every meeting and presentation</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('IELTS Prep', 'Achieve your target score')">
+      <div class="profile-header">
+        <div class="profile-icon">📚</div>
+        <h3>IELTS Prep</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Writing Frame App</div>
+          <div class="tool-hook">Structure perfect essays that score band 7+</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Speaking Drill App</div>
+          <div class="tool-hook">Speak with confidence and fluency on test day</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Sales and Negotiations', 'Close deals with confidence')">
+      <div class="profile-header">
+        <div class="profile-icon">💼</div>
+        <h3>Sales & Negotiations</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Negotiation English Writing App</div>
+          <div class="tool-hook">Write proposals that clients can't refuse</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Sales English Role-Play App</div>
+          <div class="tool-hook">Practice objection handling until it's second nature</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Job Interview', 'Land your dream job')">
+      <div class="profile-header">
+        <div class="profile-icon">🎯</div>
+        <h3>Job Interview</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Comprehensive Job Interview Practice Studio</div>
+          <div class="tool-hook">Walk into any interview feeling completely prepared</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Pitch English Coach App</div>
+          <div class="tool-hook">Deliver your elevator pitch with magnetic confidence</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Interview English Story Bank App</div>
+          <div class="tool-hook">Have compelling stories ready for any behavioral question</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Med and PhD Interview', 'Secure your academic future')">
+      <div class="profile-header">
+        <div class="profile-icon">🎓</div>
+        <h3>Med & PhD Interview</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Research Talk English App for Researchers</div>
+          <div class="tool-hook">Present your research with clarity and impact</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Academic English Panel App for Applicants</div>
+          <div class="tool-hook">Impress interview panels with articulate responses</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Meetings and Presentations', 'Command the room')">
+      <div class="profile-header">
+        <div class="profile-icon">📊</div>
+        <h3>Meetings & Presentations</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Meeting English Runner App</div>
+          <div class="tool-hook">Lead meetings that actually get things done</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Presentation English Builder App</div>
+          <div class="tool-hook">Create presentations that captivate and convince</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Finance and Management', 'Excel in financial communication')">
+      <div class="profile-header">
+        <div class="profile-icon">💰</div>
+        <h3>Finance & Management</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">TOEIC Finance Booster</div>
+          <div class="tool-hook">Master financial English for global markets</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Finance English Writing App</div>
+          <div class="tool-hook">Write reports that influence executive decisions</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Business Owners', 'Scale with clear communication')">
+      <div class="profile-header">
+        <div class="profile-icon">🚀</div>
+        <h3>Business Owners</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Pitch English Rhythm App</div>
+          <div class="tool-hook">Pitch investors with rhythm and confidence</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Client English Offer App</div>
+          <div class="tool-hook">Present offers that clients eagerly accept</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="profile-card" onclick="showSignInModal('Young Learners', 'Build strong foundations')">
+      <div class="profile-header">
+        <div class="profile-icon">🎒</div>
+        <h3>Young Learners</h3>
+      </div>
+      <ul class="tool-list">
+        <li class="tool-item">
+          <div class="tool-name">Teen ESL Study Quest App</div>
+          <div class="tool-hook">Make English learning an exciting adventure</div>
+        </li>
+        <li class="tool-item">
+          <div class="tool-name">Vocabulary Growth App</div>
+          <div class="tool-hook">Expand vocabulary naturally through engaging activities</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Life Areas Section -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">🌟 Transform Every Area of Your Life</h2>
+    <p class="section-description">
+      Comprehensive tools for holistic growth. Address the key areas that matter most for a fulfilling, 
+      successful life with our integrated approach to personal development.
+    </p>
+  </div>
+
+  <div class="life-areas-grid">
+    <div class="life-area-card" onclick="showSignInModal('Career', 'Accelerate your professional growth')">
+      <div class="life-area-header">
+        <div class="life-area-icon">💼</div>
+        <h3>CAREER</h3>
+        <p class="life-area-description">Career Craft, Role Map and Interview Drill</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Leadership', 'Lead with impact and alignment')">
+      <div class="life-area-header">
+        <div class="life-area-icon">👑</div>
+        <h3>LEADERSHIP</h3>
+        <p class="life-area-description">Leader Sync, One-Page Alignment and Feedback Loop</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Business', 'Build profitable relationships')">
+      <div class="life-area-header">
+        <div class="life-area-icon">🚀</div>
+        <h3>BUSINESS</h3>
+        <p class="life-area-description">Offer Craft, Business Offer Calculator and Customer Calls</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Health and Wellness', 'Optimize your energy and vitality')">
+      <div class="life-area-header">
+        <div class="life-area-icon">💪</div>
+        <h3>HEALTH & WELLNESS</h3>
+        <p class="life-area-description">Energy Flow, Energy Diary and Micro Workouts</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Financial', 'Master your money mindset')">
+      <div class="life-area-header">
+        <div class="life-area-icon">💰</div>
+        <h3>FINANCIAL</h3>
+        <p class="life-area-description">Cashflow Compass, Financial Tracker and Investing Habits</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Life Vision', 'Design your ideal future')">
+      <div class="life-area-header">
+        <div class="life-area-icon">🎯</div>
+        <h3>LIFE VISION</h3>
+        <p class="life-area-description">10-Year Backcast & Focus Fence</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Spiritual', 'Find inner peace and purpose')">
+      <div class="life-area-header">
+        <div class="life-area-icon">🧘</div>
+        <h3>SPIRITUAL</h3>
+        <p class="life-area-description">Stillness Timer and Gratitude Trifecta</p>
+      </div>
+    </div>
+
+    <div class="life-area-card" onclick="showSignInModal('Relationship', 'Build deeper connections')">
+      <div class="life-area-header">
+        <div class="life-area-icon">❤️</div>
+        <h3>RELATIONSHIP</h3>
+        <p class="life-area-description">Connection Cadence and Repair Playbook</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner">
+  <h3>🎉 Ready to Start Your Transformation?</h3>
+  <p>Join thousands of professionals who are already using these tools to accelerate their growth and achieve their goals.</p>
+  <a href="/signin.html" class="cta-button">Sign In & Start Growing Today</a>
+</div>
+</main>
+
+<!-- Sign In Modal -->
+<div class="sign-in-overlay" id="signInOverlay">
+  <div class="sign-in-modal">
+    <div class="modal-icon">🔐</div>
+    <h3 class="modal-title">Unlock Your Potential</h3>
+    <p class="modal-description" id="modalDescription">
+      Sign in to access this powerful tool, save your progress, and start your transformation journey today.
+    </p>
+    <div class="modal-buttons">
+      <a href="/signin.html" class="modal-button primary">Sign In Now</a>
+      <button class="modal-button secondary" onclick="closeSignInModal()">Browse More</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSignInModal(toolName, description) {
+  const modal = document.getElementById('signInOverlay');
+  const modalDescription = document.getElementById('modalDescription');
+  
+  modalDescription.textContent = `Ready to explore ${toolName}? Sign in to access this powerful tool, save your progress, and start your transformation journey.`;
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSignInModal() {
+  const modal = document.getElementById('signInOverlay');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('signInOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'signInOverlay') {
+    closeSignInModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeSignInModal();
+  }
+});
+
+// Add some interactive feedback
+document.querySelectorAll('.archetype-card, .profile-card, .life-area-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.style.transform = 'translateY(-4px)';
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'translateY(0)';
+  });
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a68992170bbc3f',t:'MTc1OTc2ODE2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
