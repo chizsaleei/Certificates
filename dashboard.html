@@ -83,7 +83,7 @@
 
     /* Main Container */
     .settings-container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 40px 20px;
     }
@@ -153,6 +153,133 @@
       font-size: 1rem;
       margin: 0 0 25px;
       line-height: 1.5;
+    }
+
+    /* Quick Actions Grid */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .quick-action {
+      background: rgba(15, 36, 25, 0.6);
+      border: 2px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .quick-action:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .quick-action-icon {
+      font-size: 2.5rem;
+      color: #d4af37;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .quick-action-title {
+      color: #f4f1e8;
+      font-weight: 600;
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .quick-action-description {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* Toolkit Grid */
+    .toolkit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .toolkit-item {
+      background: rgba(15, 36, 25, 0.6);
+      border: 2px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      position: relative;
+    }
+
+    .toolkit-item:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .toolkit-item.purchased {
+      border-color: #3fa67a;
+      background: rgba(63, 166, 122, 0.1);
+    }
+
+    .toolkit-item.locked {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .toolkit-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .toolkit-status.purchased {
+      background: #3fa67a;
+      color: white;
+    }
+
+    .toolkit-status.free {
+      background: #d4af37;
+      color: #1a3d2e;
+    }
+
+    .toolkit-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .toolkit-title {
+      color: #f4f1e8;
+      font-weight: 600;
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .toolkit-description {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin: 0 0 15px;
+      line-height: 1.4;
+    }
+
+    .toolkit-price {
+      color: #d4af37;
+      font-weight: 600;
+      font-size: 1rem;
     }
 
     /* Goal Selection */
@@ -311,6 +438,48 @@
       margin: 0;
     }
 
+    /* Session Management */
+    .session-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .session-card {
+      background: rgba(15, 36, 25, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .session-card:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .session-icon {
+      font-size: 2rem;
+      color: #d4af37;
+      margin-bottom: 15px;
+    }
+
+    .session-title {
+      color: #f4f1e8;
+      font-weight: 600;
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .session-description {
+      color: #c9d1d9;
+      font-size: 0.85rem;
+      margin: 0 0 15px;
+    }
+
     /* Simple Toggle */
     .simple-toggle {
       display: flex;
@@ -423,11 +592,43 @@
       color: #1a3d2e;
     }
 
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+
     .form-actions {
       display: flex;
       gap: 15px;
       justify-content: center;
       margin-top: 30px;
+    }
+
+    /* Calendly Widget */
+    .calendly-widget {
+      min-height: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* File Upload Area */
+    .upload-area {
+      border: 2px dashed rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-area:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      background: rgba(212, 175, 55, 0.05);
+    }
+
+    .upload-area.dragover {
+      border-color: #d4af37;
+      background: rgba(212, 175, 55, 0.1);
     }
 
     /* Notifications */
@@ -458,6 +659,69 @@
       border-color: #e74c3c;
     }
 
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: rgba(26, 61, 46, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .modal-title {
+      color: #d4af37;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: #d4af37;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .header-container {
@@ -484,7 +748,7 @@
         padding: 20px;
       }
 
-      .goal-grid {
+      .goal-grid, .toolkit-grid, .quick-actions {
         grid-template-columns: 1fr;
       }
 
@@ -496,7 +760,7 @@
         min-width: auto;
       }
 
-      .schedule-grid {
+      .schedule-grid, .session-actions {
         grid-template-columns: 1fr;
       }
 
@@ -506,6 +770,11 @@
 
       .form-actions {
         flex-direction: column;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
       }
     }
 
@@ -525,6 +794,8 @@
       <nav class="nav-links">
         <a href="/dashboard.html" class="nav-link">Dashboard</a>
         <a href="/practice.html" class="nav-link">Practice</a>
+        <a href="/sessions.html" class="nav-link">Sessions</a>
+        <a href="/media.html" class="nav-link">Media</a>
         <a href="/dashboard.html" class="back-btn">← Back to Dashboard</a>
       </nav>
     </div>
@@ -533,9 +804,134 @@
   <!-- Main Content -->
   <main class="settings-container">
     <h1 class="settings-title">Learning Dashboard</h1>
-    <p class="settings-subtitle">Configure your English learning journey and monitor your achievements</p>
+    <p class="settings-subtitle">Your complete English learning command center with integrated tools and services</p>
 
     <div class="settings-grid">
+      <!-- Quick Actions -->
+      <div class="settings-card">
+        <div class="card-header">
+          <span class="card-icon">⚡</span>
+          <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <p class="card-description">Jump into your most common activities</p>
+        
+        <div class="quick-actions">
+          <a href="#" class="quick-action" onclick="startPracticeSession()">
+            <span class="quick-action-icon">🎯</span>
+            <h3 class="quick-action-title">Start Practice</h3>
+            <p class="quick-action-description">Begin your daily practice session</p>
+          </a>
+          
+          <a href="#" class="quick-action" onclick="bookSessionModal()">
+            <span class="quick-action-icon">📅</span>
+            <h3 class="quick-action-title">Book Session</h3>
+            <p class="quick-action-description">Schedule coaching with Calendly</p>
+          </a>
+          
+          <a href="#" class="quick-action" onclick="joinVideoCall()">
+            <span class="quick-action-icon">📹</span>
+            <h3 class="quick-action-title">Join Call</h3>
+            <p class="quick-action-description">Enter your video session</p>
+          </a>
+          
+          <a href="#" class="quick-action" onclick="uploadMaterial()">
+            <span class="quick-action-icon">📁</span>
+            <h3 class="quick-action-title">Upload Files</h3>
+            <p class="quick-action-description">Add learning materials</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Available Toolkits -->
+      <div class="settings-card">
+        <div class="card-header">
+          <span class="card-icon">🧰</span>
+          <h2 class="card-title">Learning Toolkits</h2>
+        </div>
+        <p class="card-description">Access powerful tools to discover your learning style and focus areas</p>
+        
+        <div class="toolkit-grid">
+          <div class="toolkit-item" data-toolkit="archetype" onclick="accessToolkit('archetype')">
+            <div class="toolkit-status free">FREE</div>
+            <span class="toolkit-icon">🎭</span>
+            <h3 class="toolkit-title">Find Your Archetype</h3>
+            <p class="toolkit-description">Discover your unique learning personality and style preferences</p>
+            <div class="toolkit-price">Free Tool</div>
+          </div>
+          
+          <div class="toolkit-item" data-toolkit="profile" onclick="accessToolkit('profile')">
+            <span class="toolkit-icon">👤</span>
+            <h3 class="toolkit-title">Choose Your Profile</h3>
+            <p class="toolkit-description">Create a personalized learning profile based on your goals</p>
+            <div class="toolkit-price">$12 One-Time</div>
+          </div>
+          
+          <div class="toolkit-item" data-toolkit="focus" onclick="accessToolkit('focus')">
+            <span class="toolkit-icon">🎯</span>
+            <h3 class="toolkit-title">Select Your Focus</h3>
+            <p class="toolkit-description">Identify specific areas for targeted English improvement</p>
+            <div class="toolkit-price">$12 One-Time</div>
+          </div>
+          
+
+          
+          <div class="toolkit-item" data-toolkit="tools-pass" onclick="accessToolkit('tools-pass')">
+            <span class="toolkit-icon">🎫</span>
+            <h3 class="toolkit-title">Tools Pass</h3>
+            <p class="toolkit-description">Unlock all web tools with progress saving and smart suggestions</p>
+            <div class="toolkit-price">$10/month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Management -->
+      <div class="settings-card">
+        <div class="card-header">
+          <span class="card-icon">📅</span>
+          <h2 class="card-title">Session Management</h2>
+        </div>
+        <p class="card-description">Book coaching sessions and manage your learning schedule</p>
+        
+        <div class="session-actions">
+          <div class="session-card" onclick="bookSession25()">
+            <div class="session-icon">⏱️</div>
+            <h3 class="session-title">25-Minute Session</h3>
+            <p class="session-description">Quick focused coaching session</p>
+            <div class="toolkit-price">$25</div>
+            <button class="btn btn-primary btn-small">Book 25min</button>
+          </div>
+          
+          <div class="session-card" onclick="bookSession50()">
+            <div class="session-icon">⏰</div>
+            <h3 class="session-title">50-Minute Session</h3>
+            <p class="session-description">Comprehensive coaching session</p>
+            <div class="toolkit-price">$45</div>
+            <button class="btn btn-primary btn-small">Book 50min</button>
+          </div>
+          
+          <div class="session-card" onclick="viewUpcoming()">
+            <div class="session-icon">📋</div>
+            <h3 class="session-title">Upcoming Sessions</h3>
+            <p class="session-description">View and manage scheduled sessions</p>
+            <button class="btn btn-secondary btn-small">View All</button>
+          </div>
+          
+          <div class="session-card" onclick="joinVideoCall()">
+            <div class="session-icon">📹</div>
+            <h3 class="session-title">Join Video Call</h3>
+            <p class="session-description">Daily.co & VooV integration</p>
+            <button class="btn btn-secondary btn-small">Join Call</button>
+          </div>
+          
+          <div class="session-card" onclick="viewHistory()">
+            <div class="session-icon">📚</div>
+            <h3 class="session-title">Session History</h3>
+            <p class="session-description">Review past sessions and notes</p>
+            <button class="btn btn-secondary btn-small">View History</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Learning Goals -->
       <div class="settings-card">
         <div class="card-header">
@@ -646,7 +1042,35 @@
             <div class="stat-value" id="tools-completed">0</div>
             <div class="stat-label">Tools Completed</div>
           </div>
+          
+          <div class="stat-item">
+            <div class="stat-value" id="files-uploaded">0</div>
+            <div class="stat-label">Files Uploaded</div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-value" id="sessions-completed">0</div>
+            <div class="stat-label">Sessions Done</div>
+          </div>
         </div>
+      </div>
+
+      <!-- File Management -->
+      <div class="settings-card">
+        <div class="card-header">
+          <span class="card-icon">📁</span>
+          <h2 class="card-title">Learning Materials</h2>
+        </div>
+        <p class="card-description">Upload and manage your learning files with Supabase Storage</p>
+        
+        <div class="upload-area" onclick="triggerFileUpload()" ondrop="handleFileDrop(event)" ondragover="handleDragOver(event)">
+          <span class="quick-action-icon">☁️</span>
+          <h3>Upload Learning Materials</h3>
+          <p>Drag & drop files here or click to browse</p>
+          <p><small>Supports: PDF, DOC, MP3, MP4, Images</small></p>
+        </div>
+        
+        <input type="file" id="file-upload" multiple accept=".pdf,.doc,.docx,.mp3,.mp4,.jpg,.jpeg,.png" style="display: none;">
       </div>
 
       <!-- Simple Preferences -->
@@ -690,7 +1114,16 @@
           </label>
         </div>
         
-
+        <div class="simple-toggle">
+          <div class="toggle-info">
+            <h3 class="toggle-title">Video Call Notifications</h3>
+            <p class="toggle-description">Get notified before scheduled video sessions</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="video-notifications" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
 
       <!-- Save Settings -->
@@ -703,28 +1136,106 @@
     </div>
   </main>
 
-  <!-- Supabase + your app -->
+  <!-- Calendly Booking Modal -->
+  <div id="calendly-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Book Your Session</h3>
+        <button class="modal-close" onclick="closeModal('calendly-modal')">&times;</button>
+      </div>
+      <div class="calendly-widget" id="calendly-widget"></div>
+    </div>
+  </div>
+
+  <!-- Video Call Modal -->
+  <div id="video-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Join Video Session</h3>
+        <button class="modal-close" onclick="closeModal('video-modal')">&times;</button>
+      </div>
+      <div id="video-container"></div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Pay What You Want</h3>
+        <button class="modal-close" onclick="closeModal('payment-modal')">&times;</button>
+      </div>
+      <div id="payment-form"></div>
+    </div>
+  </div>
+
+  <!-- External Libraries -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://assets.calendly.com/assets/external/widget.js"></script>
+  <script src="https://unpkg.com/@daily-co/daily-js"></script>
+
+  <!-- Core System -->
   <script src="/js/supabaseClient.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/gate.js"></script>
-  <script src="/js/progress.js"></script>
-  <script src="/js/settings.js"></script>
-  <script src="/js/notifications.js"></script>
   <script src="/js/database.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/validation.js"></script>
+
+  <!-- Commerce & Payments -->
+  <script src="/js/stripe.js"></script>
+  <script src="/js/payWhatYouWant.js"></script>
+  <script src="/js/checkout.js"></script>
+  <script src="/js/commerce.js"></script>
+  <script src="/js/payments.js"></script>
+
+  <!-- Scheduling & Video -->
+  <script src="/js/calendly.js"></script>
+  <script src="/js/daily.js"></script>
+  <script src="/js/voov.js"></script>
+  <script src="/js/videoCall.js"></script>
+  <script src="/js/sessions.js"></script>
+  <script src="/js/scheduler.js"></script>
+  <script src="/js/calendar.js"></script>
+
+  <!-- Storage & Media -->
+  <script src="/js/supabaseStorage.js"></script>
+  <script src="/js/fileUpload.js"></script>
+  <script src="/js/mediaManager.js"></script>
+  <script src="/js/storage.js"></script>
+
+  <!-- Learning Platform -->
+  <script src="/js/toolkits.js"></script>
+  <script src="/js/practiceTools.js"></script>
+  <script src="/js/progress.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/settings.js"></script>
+
+  <!-- UI & Experience -->
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/navigation.js"></script>
+  <script src="/js/modals.js"></script>
 
   <script>
-    // Initialize learning dashboard
+    // Initialize comprehensive learning dashboard
     (async function() {
-      const user = await Auth.getUser();
-      if (!user) {
-        location.href = "/index.html";
-        return;
-      }
-
-      await loadUserSettings();
-      await loadProgressStats();
+      // No authentication required for free access
+      await initializeIntegrations();
       setupEventListeners();
+      
+      // Try to load user data if signed in
+      try {
+        const user = await Auth.getUser();
+        if (user) {
+          await loadUserSettings();
+          await loadProgressStats();
+          await loadUserToolkits();
+        }
+      } catch (error) {
+        console.log('User not signed in - showing free access');
+      }
     })();
 
     let currentSettings = {
@@ -733,8 +1244,29 @@
       schedule: 30,
       dailyReminders: true,
       progressTracking: true,
-      audioPronunciation: true
+      audioPronunciation: true,
+      videoNotifications: true
     };
+
+    async function initializeIntegrations() {
+      try {
+        // Initialize Stripe
+        if (typeof Stripe !== 'undefined') {
+          window.stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        }
+
+        // Initialize Daily.co
+        if (typeof DailyIframe !== 'undefined') {
+          window.dailyCall = DailyIframe.createCallObject();
+        }
+
+        // Initialize file upload
+        setupFileUpload();
+
+      } catch (error) {
+        console.log('Some integrations not available:', error);
+      }
+    }
 
     function setupEventListeners() {
       // Goal selection
@@ -771,14 +1303,306 @@
           currentSettings[setting] = e.target.checked;
         });
       });
+
+      // File upload
+      document.getElementById('file-upload').addEventListener('change', handleFileSelect);
     }
 
+    // Quick Action Functions
+    function startPracticeSession() {
+      window.location.href = '/practice.html';
+    }
+
+    function bookSessionModal() {
+      showModal('calendly-modal');
+      initializeCalendly();
+    }
+
+    function joinVideoCall() {
+      showModal('video-modal');
+      initializeVideoCall();
+    }
+
+    function uploadMaterial() {
+      document.getElementById('file-upload').click();
+    }
+
+    // Toolkit Functions
+    async function accessToolkit(toolkitId) {
+      if (toolkitId === 'archetype') {
+        // Free tool - no sign in required
+        window.location.href = `/toolkits/archetype.html`;
+        return;
+      }
+      
+      if (toolkitId === 'tools-pass') {
+        // Show Tools Pass payment modal
+        showModal('payment-modal');
+        initializePayment('tools-pass', 'tools-pass', 10);
+        return;
+      }
+      
+      // Single tools - $12 each
+      showModal('payment-modal');
+      initializePayment('tool', toolkitId, 12);
+    }
+
+    // Session Functions
+    function bookSession25() {
+      showModal('payment-modal');
+      initializePayment('session', '25', 25);
+    }
+
+    function bookSession50() {
+      showModal('payment-modal');
+      initializePayment('session', '50', 45);
+    }
+
+    // Session Functions
+    function viewUpcoming() {
+      window.location.href = '/sessions/upcoming.html';
+    }
+
+    function viewHistory() {
+      window.location.href = '/sessions/history.html';
+    }
+
+    // Calendly Integration
+    function initializeCalendly() {
+      if (typeof Calendly !== 'undefined') {
+        Calendly.initInlineWidget({
+          url: 'https://calendly.com/your-calendly-link',
+          parentElement: document.getElementById('calendly-widget'),
+          prefill: {},
+          utm: {}
+        });
+      }
+    }
+
+    // Video Call Integration
+    function initializeVideoCall() {
+      const container = document.getElementById('video-container');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <h3>Choose Your Video Platform</h3>
+          <button class="btn btn-primary" onclick="joinDaily()" style="margin: 10px;">Join Daily.co</button>
+          <button class="btn btn-secondary" onclick="joinVooV()" style="margin: 10px;">Join VooV</button>
+        </div>
+      `;
+    }
+
+    function joinDaily() {
+      if (window.dailyCall) {
+        window.dailyCall.join({ url: 'https://your-domain.daily.co/room-name' });
+      }
+    }
+
+    function joinVooV() {
+      // VooV integration
+      window.open('https://voovmeeting.com/your-meeting-link', '_blank');
+    }
+
+    // Payment Integration
+    function initializePayment(itemType, itemId, price) {
+      const paymentForm = document.getElementById('payment-form');
+      
+      if (itemType === 'tools-pass') {
+        paymentForm.innerHTML = `
+          <div style="text-align: center;">
+            <h4>Tools Pass - $10/month</h4>
+            <p>Unlock all web tools with progress saving</p>
+            <div style="margin: 20px 0;">
+              <button class="btn btn-primary" onclick="processStripePayment('tools-pass', 10, 'subscription')" style="margin: 10px;">💳 Pay with Card</button>
+              <button class="btn btn-secondary" onclick="processWeChatPay('tools-pass', 10)" style="margin: 10px;">💬 WeChat Pay</button>
+            </div>
+          </div>
+        `;
+      } else if (itemType === 'session') {
+        paymentForm.innerHTML = `
+          <div style="text-align: center;">
+            <h4>${itemId === '25' ? '25-Minute' : '50-Minute'} Session - $${price}</h4>
+            <p>1:1 English coaching session</p>
+            <div style="margin: 20px 0;">
+              <button class="btn btn-primary" onclick="processStripePayment('session-${itemId}', ${price}, 'payment')" style="margin: 10px;">💳 Pay with Card</button>
+              <button class="btn btn-secondary" onclick="processAlipay('session-${itemId}', ${price})" style="margin: 10px;">💰 Alipay</button>
+              <button class="btn btn-secondary" onclick="processWeChatPay('session-${itemId}', ${price})" style="margin: 10px;">💬 WeChat Pay</button>
+            </div>
+          </div>
+        `;
+      } else {
+        // Single tool
+        paymentForm.innerHTML = `
+          <div style="text-align: center;">
+            <h4>Single Tool - $12</h4>
+            <p>Lifetime access to this tool</p>
+            <div style="margin: 20px 0;">
+              <button class="btn btn-primary" onclick="processStripePayment('${itemId}', 12, 'payment')" style="margin: 10px;">💳 Pay with Card</button>
+              <button class="btn btn-secondary" onclick="processAlipay('${itemId}', 12)" style="margin: 10px;">💰 Alipay</button>
+              <button class="btn btn-secondary" onclick="processWeChatPay('${itemId}', 12)" style="margin: 10px;">💬 WeChat Pay</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Payment Processing Functions
+    async function processStripePayment(itemId, amount, mode) {
+      try {
+        if (!window.stripe) {
+          showNotification('Payment system loading...', 'info');
+          return;
+        }
+
+        const { error } = await stripe.redirectToCheckout({
+          lineItems: [{
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: getProductName(itemId),
+              },
+              unit_amount: amount * 100,
+              recurring: mode === 'subscription' ? { interval: 'month' } : undefined,
+            },
+            quantity: 1,
+          }],
+          mode: mode,
+          successUrl: `${window.location.origin}/success.html?item=${itemId}`,
+          cancelUrl: window.location.href,
+        });
+
+        if (error) {
+          showNotification('Payment failed. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Stripe payment error:', error);
+        showNotification('Payment system unavailable', 'error');
+      }
+    }
+
+    function processAlipay(itemId, amount) {
+      showNotification('Redirecting to Alipay...', 'info');
+      // Integrate with Alipay API
+      window.open(`https://your-alipay-gateway.com/pay?item=${itemId}&amount=${amount}`, '_blank');
+    }
+
+    function processWeChatPay(itemId, amount) {
+      showNotification('Redirecting to WeChat Pay...', 'info');
+      // Integrate with WeChat Pay API
+      window.open(`https://your-wechat-gateway.com/pay?item=${itemId}&amount=${amount}`, '_blank');
+    }
+
+    function getProductName(itemId) {
+      const names = {
+        'archetype': 'Find Your Archetype Tool',
+        'profile': 'Choose Your Profile Tool',
+        'focus': 'Select Your Focus Tool',
+        'tools-pass': 'Tools Pass Monthly Subscription',
+        'session-25': '25-Minute Coaching Session',
+        'session-50': '50-Minute Coaching Session'
+      };
+      return names[itemId] || 'Learning Tool';
+    }
+
+    // File Upload Functions
+    function setupFileUpload() {
+      const uploadArea = document.querySelector('.upload-area');
+      
+      uploadArea.addEventListener('dragover', handleDragOver);
+      uploadArea.addEventListener('drop', handleFileDrop);
+      uploadArea.addEventListener('dragleave', handleDragLeave);
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('dragover');
+    }
+
+    function handleFileDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      uploadFiles(files);
+    }
+
+    function triggerFileUpload() {
+      document.getElementById('file-upload').click();
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      uploadFiles(files);
+    }
+
+    async function uploadFiles(files) {
+      const user = await Auth.getUser();
+      if (!user) return;
+
+      for (let file of files) {
+        try {
+          showNotification(`Uploading ${file.name}...`, 'info');
+          
+          // Upload to Supabase Storage
+          const { data, error } = await supabase.storage
+            .from('learning-materials')
+            .upload(`${user.id}/${Date.now()}-${file.name}`, file);
+
+          if (error) throw error;
+
+          // Save file record to database
+          await supabase
+            .from('user_files')
+            .insert({
+              user_id: user.id,
+              filename: file.name,
+              file_path: data.path,
+              file_size: file.size,
+              file_type: file.type
+            });
+
+          showNotification(`${file.name} uploaded successfully!`, 'success');
+          
+          // Update stats
+          updateFileStats();
+          
+        } catch (error) {
+          console.error('Upload error:', error);
+          showNotification(`Failed to upload ${file.name}`, 'error');
+        }
+      }
+    }
+
+    async function updateFileStats() {
+      const user = await Auth.getUser();
+      if (!user) return;
+
+      const { count } = await supabase
+        .from('user_files')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      document.getElementById('files-uploaded').textContent = count || 0;
+    }
+
+    // Modal Functions
+    function showModal(modalId) {
+      document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Settings Functions
     async function loadUserSettings() {
       try {
         const user = await Auth.getUser();
         if (!user) return;
 
-        // Load user practice settings from database
         const { data: settings } = await supabase
           .from('user_practice_settings')
           .select('*')
@@ -789,12 +1613,44 @@
           currentSettings = { ...currentSettings, ...settings.settings };
         }
 
-        // Apply settings to UI
         applySettingsToUI();
 
       } catch (error) {
         console.log('No existing settings found, using defaults');
         applySettingsToUI();
+      }
+    }
+
+    async function loadUserToolkits() {
+      try {
+        const user = await Auth.getUser();
+        if (!user) return;
+
+        const { data: purchases } = await supabase
+          .from('user_purchases')
+          .select('toolkit_id')
+          .eq('user_id', user.id);
+
+        const purchasedToolkits = purchases ? purchases.map(p => p.toolkit_id) : [];
+
+        document.querySelectorAll('.toolkit-item').forEach(item => {
+          const toolkitId = item.dataset.toolkit;
+          if (purchasedToolkits.includes(toolkitId)) {
+            item.classList.add('purchased');
+            const status = item.querySelector('.toolkit-status');
+            if (status) {
+              status.textContent = 'OWNED';
+              status.className = 'toolkit-status purchased';
+            }
+            const price = item.querySelector('.toolkit-price');
+            if (price) {
+              price.textContent = 'Purchased';
+            }
+          }
+        });
+
+      } catch (error) {
+        console.log('Error loading user toolkits:', error);
       }
     }
 
@@ -824,6 +1680,7 @@
       document.getElementById('daily-reminders').checked = currentSettings.dailyReminders;
       document.getElementById('progress-tracking').checked = currentSettings.progressTracking;
       document.getElementById('audio-pronunciation').checked = currentSettings.audioPronunciation;
+      document.getElementById('video-notifications').checked = currentSettings.videoNotifications;
     }
 
     async function loadProgressStats() {
@@ -831,7 +1688,6 @@
         const user = await Auth.getUser();
         if (!user) return;
 
-        // Load practice statistics
         const { data: stats } = await supabase
           .from('user_practice_stats')
           .select('*')
@@ -843,7 +1699,11 @@
           document.getElementById('total-minutes').textContent = stats.total_minutes || 0;
           document.getElementById('current-streak').textContent = stats.current_streak || 0;
           document.getElementById('tools-completed').textContent = stats.tools_completed || 0;
+          document.getElementById('sessions-completed').textContent = stats.sessions_completed || 0;
         }
+
+        // Load file count
+        await updateFileStats();
 
       } catch (error) {
         console.log('No practice stats found yet');
@@ -855,10 +1715,8 @@
         const user = await Auth.getUser();
         if (!user) return;
 
-        // Create tables if they don't exist
         await createPracticeTablesIfNeeded();
 
-        // Save settings to database
         const { error } = await supabase
           .from('user_practice_settings')
           .upsert({
@@ -869,7 +1727,6 @@
 
         if (error) throw error;
 
-        // Log activity
         await supabase
           .from('user_activities')
           .insert({
@@ -880,7 +1737,6 @@
 
         showNotification('Settings saved successfully! 🎉', 'success');
 
-        // Redirect to practice page after a short delay
         setTimeout(() => {
           window.location.href = '/practice.html';
         }, 2000);
@@ -893,7 +1749,6 @@
 
     async function createPracticeTablesIfNeeded() {
       try {
-        // Create user practice settings table
         await supabase.rpc('exec_sql', {
           sql: `
             CREATE TABLE IF NOT EXISTS user_practice_settings (
@@ -912,15 +1767,37 @@
               total_minutes INTEGER DEFAULT 0,
               current_streak INTEGER DEFAULT 0,
               tools_completed INTEGER DEFAULT 0,
+              sessions_completed INTEGER DEFAULT 0,
               last_practice_date DATE,
               created_at TIMESTAMPTZ DEFAULT NOW(),
               updated_at TIMESTAMPTZ DEFAULT NOW(),
               UNIQUE(user_id)
             );
 
+            CREATE TABLE IF NOT EXISTS user_purchases (
+              id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+              user_id UUID REFERENCES auth.users(id) NOT NULL,
+              toolkit_id TEXT NOT NULL,
+              purchase_date TIMESTAMPTZ DEFAULT NOW(),
+              amount DECIMAL(10,2),
+              status TEXT DEFAULT 'completed'
+            );
+
+            CREATE TABLE IF NOT EXISTS user_files (
+              id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+              user_id UUID REFERENCES auth.users(id) NOT NULL,
+              filename TEXT NOT NULL,
+              file_path TEXT NOT NULL,
+              file_size BIGINT,
+              file_type TEXT,
+              uploaded_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
             -- Enable RLS
             ALTER TABLE user_practice_settings ENABLE ROW LEVEL SECURITY;
             ALTER TABLE user_practice_stats ENABLE ROW LEVEL SECURITY;
+            ALTER TABLE user_purchases ENABLE ROW LEVEL SECURITY;
+            ALTER TABLE user_files ENABLE ROW LEVEL SECURITY;
 
             -- Policies
             DROP POLICY IF EXISTS "user_practice_settings_own" ON user_practice_settings;
@@ -929,6 +1806,14 @@
 
             DROP POLICY IF EXISTS "user_practice_stats_own" ON user_practice_stats;
             CREATE POLICY "user_practice_stats_own" ON user_practice_stats
+              FOR ALL USING (auth.uid() = user_id);
+
+            DROP POLICY IF EXISTS "user_purchases_own" ON user_purchases;
+            CREATE POLICY "user_purchases_own" ON user_purchases
+              FOR ALL USING (auth.uid() = user_id);
+
+            DROP POLICY IF EXISTS "user_files_own" ON user_files;
+            CREATE POLICY "user_files_own" ON user_files
               FOR ALL USING (auth.uid() = user_id);
           `
         });
@@ -945,7 +1830,8 @@
           schedule: 30,
           dailyReminders: true,
           progressTracking: true,
-          audioPronunciation: true
+          audioPronunciation: true,
+          videoNotifications: true
         };
         
         applySettingsToUI();
@@ -960,12 +1846,10 @@
       
       document.body.appendChild(notification);
       
-      // Trigger animation
       setTimeout(() => {
         notification.classList.add('show');
       }, 100);
       
-      // Remove notification
       setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {
@@ -975,6 +1859,13 @@
         }, 300);
       }, 4000);
     }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('show');
+      }
+    });
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a415edf0ebb9f0',t:'MTc1OTc0MjQ1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a4784e31dc0452',t:'MTc1OTc0NjQ4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
