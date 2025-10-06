@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Authentication | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+
+.callback-container {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+}
+
+.callback-card {
+  background: rgba(26,61,46,.8);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 16px;
+  padding: 40px 32px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  text-align: center;
+}
+
+.logo-section {
+  margin-bottom: 32px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 8px;
+  letter-spacing: 2px;
+}
+
+.status-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.status-title {
+  font-size: 1.5rem;
+  color: var(--gold);
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.status-message {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.user-info {
+  background: rgba(15,36,25,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 24px 0;
+  text-align: left;
+}
+
+.user-info h3 {
+  color: var(--gold);
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.user-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.progress-steps {
+  margin: 24px 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.step-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.step.completed .step-icon {
+  background: var(--gold);
+  color: var(--deep);
+}
+
+.step.current .step-icon {
+  background: rgba(212,175,55,.3);
+  color: var(--gold);
+  border: 2px solid var(--gold);
+}
+
+.step.pending .step-icon {
+  background: rgba(212,175,55,.1);
+  color: var(--muted);
+  border: 1px solid rgba(212,175,55,.2);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--deep);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212,175,55,.4);
+}
+
+.btn-secondary {
+  background: rgba(15,36,25,.6);
+  color: var(--ink);
+  border: 1px solid rgba(212,175,55,.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(15,36,25,.8);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: rgba(231,76,60,.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(231,76,60,.3);
+}
+
+.btn-danger:hover {
+  background: rgba(231,76,60,.3);
+  transform: translateY(-1px);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(212,175,55,.2);
+  border-top: 3px solid var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.countdown {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.error-details {
+  background: rgba(231,76,60,.1);
+  border: 1px solid rgba(231,76,60,.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.error-details h4 {
+  color: #ff6b6b;
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.error-details p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.help-section {
+  background: rgba(212,175,55,.1);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.help-section h4 {
+  color: var(--gold);
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.help-section p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .callback-container {
+    padding: 15px;
+  }
+  
+  .callback-card {
+    padding: 32px 24px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Animation for success state */
+.success-animation {
+  animation: successPulse 2s ease-in-out;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Hide elements initially */
+.hidden {
+  display: none;
+}
+</style>
+</head>
+<body>
+<div class="callback-container">
+  <div class="callback-card">
+    <div class="logo-section">
+      <h1 class="logo">CHIZSA | COACHING</h1>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="status-title">🔄 Processing...</div>
+      <div class="status-message">Please wait while we set up your account</div>
+      
+      <div class="progress-steps">
+        <div class="step completed">
+          <div class="step-icon">✓</div>
+          <span>Authentication verified</span>
+        </div>
+        <div class="step current">
+          <div class="step-icon">⚡</div>
+          <span>Setting up your account</span>
+        </div>
+        <div class="step pending">
+          <div class="step-icon">🚀</div>
+          <span>Redirecting to dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success State -->
+    <div id="success-state" class="hidden">
+      <div class="status-icon success-animation">🎉</div>
+      <div class="status-title">Welcome!</div>
+      <div class="status-message">Your account is ready. Let's start your learning journey!</div>
+      
+      <div class="user-info" id="user-info">
+        <h3>👤 Account Details</h3>
+        <div class="user-detail">
+          <span>📧</span>
+          <span id="user-email">Loading...</span>
+        </div>
+        <div class="user-detail">
+          <span>⏰</span>
+          <span>Signed in just now</span>
+        </div>
+        <div class="user-detail">
+          <span>🎯</span>
+          <span>Ready to start coaching</span>
+        </div>
+      </div>
+
+      <div class="status-message">
+        Redirecting to your dashboard in <span class="countdown" id="countdown">3</span> seconds...
+      </div>
+
+      <div class="action-buttons">
+        <a href="/dashboard.html" class="btn btn-primary">🚀 Go to Dashboard</a>
+        <a href="/profile.html" class="btn btn-secondary">👤 View Profile</a>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="hidden">
+      <div class="status-icon">❌</div>
+      <div class="status-title">Something went wrong</div>
+      <div class="status-message">We couldn't complete your sign-in. Don't worry, let's try again!</div>
+      
+      <div class="error-details" id="error-details">
+        <h4>🔍 What happened?</h4>
+        <p id="error-message">There was a problem with the authentication process.</p>
+      </div>
+
+      <div class="help-section">
+        <h4>💡 What you can do:</h4>
+        <p>• Try signing in again<br>
+        • Check your internet connection<br>
+        • Clear your browser cache<br>
+        • Contact support if problem continues</p>
+      </div>
+
+      <div class="action-buttons">
+        <a href="/auth/index.html" class="btn btn-primary">🔄 Try Again</a>
+        <a href="/" class="btn btn-secondary">🏠 Go Home</a>
+        <a href="mailto:chizsaleei@gmail.com" class="btn btn-danger">📧 Get Help</a>
+      </div>
+    </div>
+
+    <!-- Email Verification State -->
+    <div id="verification-state" class="hidden">
+      <div class="status-icon">📧</div>
+      <div class="status-title">Check Your Email</div>
+      <div class="status-message">We sent a verification link to your email. Please click it to activate your account.</div>
+      
+      <div class="user-info">
+        <h3>📬 Next Steps</h3>
+        <div class="user-detail">
+          <span>1️⃣</span>
+          <span>Check your email inbox</span>
+        </div>
+        <div class="user-detail">
+          <span>2️⃣</span>
+          <span>Click the verification link</span>
+        </div>
+        <div class="user-detail">
+          <span>3️⃣</span>
+          <span>Return here to sign in</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="resendVerification()">📧 Resend Email</button>
+        <a href="/auth/index.html" class="btn btn-secondary">🔑 Sign In</a>
+        <a href="/" class="btn btn-secondary">🏠 Go Home</a>
+      </div>
+    </div>
+
+    <!-- Social Auth Processing -->
+    <div id="social-state" class="hidden">
+      <div class="status-icon">🔄</div>
+      <div class="status-title">Connecting...</div>
+      <div class="status-message">Completing your social login. This will just take a moment.</div>
+      
+      <div class="progress-steps">
+        <div class="step completed">
+          <div class="step-icon">✓</div>
+          <span>Social account verified</span>
+        </div>
+        <div class="step current">
+          <div class="step-icon">⚡</div>
+          <span>Creating your profile</span>
+        </div>
+        <div class="step pending">
+          <div class="step-icon">🎯</div>
+          <span>Setting up preferences</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Get URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const status = urlParams.get('status') || 'loading';
+const error = urlParams.get('error');
+const email = urlParams.get('email');
+const name = urlParams.get('name');
+const provider = urlParams.get('provider');
+const token = urlParams.get('token');
+const returnUrl = urlParams.get('return') || sessionStorage.getItem('returnUrl') || '/dashboard.html';
+
+// State management
+let currentState = 'loading';
+let countdownTimer = null;
+
+// Initialize the callback page
+function initCallback() {
+  console.log('Callback initialized with status:', status);
+  
+  // Hide all states initially
+  hideAllStates();
+  
+  // Route to appropriate state based on URL parameters
+  switch(status) {
+    case 'success':
+      handleSuccess();
+      break;
+    case 'error':
+      handleError();
+      break;
+    case 'verification':
+      handleVerification();
+      break;
+    case 'social':
+      handleSocialAuth();
+      break;
+    default:
+      handleLoading();
+  }
+}
+
+// Hide all state divs
+function hideAllStates() {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('success-state').classList.add('hidden');
+  document.getElementById('error-state').classList.add('hidden');
+  document.getElementById('verification-state').classList.add('hidden');
+  document.getElementById('social-state').classList.add('hidden');
+}
+
+// Show specific state
+function showState(stateId) {
+  hideAllStates();
+  document.getElementById(stateId).classList.remove('hidden');
+  currentState = stateId;
+}
+
+// Handle loading state
+function handleLoading() {
+  showState('loading-state');
+  
+  // Simulate processing time
+  setTimeout(() => {
+    // Check if we have user data
+    if (email || token) {
+      handleSuccess();
+    } else {
+      handleError();
+    }
+  }, 2000);
+}
+
+// Handle success state
+function handleSuccess() {
+  showState('success-state');
+  
+  // Update user info if available
+  if (email) {
+    document.getElementById('user-email').textContent = email;
+  }
+  
+  // Store user session
+  const userData = {
+    email: email || 'user@example.com',
+    name: name || 'User',
+    loginTime: new Date().toISOString(),
+    provider: provider || 'email',
+    token: token
+  };
+  
+  // Store in appropriate storage
+  const rememberMe = localStorage.getItem('rememberMe') === 'true';
+  if (rememberMe) {
+    localStorage.setItem('userSession', JSON.stringify(userData));
+  } else {
+    sessionStorage.setItem('userSession', JSON.stringify(userData));
+  }
+  
+  // Start countdown
+  startCountdown();
+}
+
+// Handle error state
+function handleError() {
+  showState('error-state');
+  
+  // Set error message based on error parameter
+  let errorMessage = 'There was a problem with the authentication process.';
+  
+  switch(error) {
+    case 'invalid_credentials':
+      errorMessage = '❌ Wrong email or password. Please check and try again.';
+      break;
+    case 'account_not_found':
+      errorMessage = '❌ No account found with this email. Please sign up first.';
+      break;
+    case 'email_not_verified':
+      errorMessage = '📧 Please verify your email before signing in.';
+      break;
+    case 'social_error':
+      errorMessage = '🔗 Social login failed. Please try email sign-in instead.';
+      break;
+    case 'network_error':
+      errorMessage = '🌐 Connection problem. Please check your internet and try again.';
+      break;
+    case 'server_error':
+      errorMessage = '⚠️ Our servers are having issues. Please try again in a few minutes.';
+      break;
+    default:
+      if (error) {
+        errorMessage = `❌ ${error.replace(/_/g, ' ')}`;
+      }
+  }
+  
+  document.getElementById('error-message').textContent = errorMessage;
+}
+
+// Handle email verification state
+function handleVerification() {
+  showState('verification-state');
+}
+
+// Handle social auth processing
+function handleSocialAuth() {
+  showState('social-state');
+  
+  // Simulate social auth processing
+  setTimeout(() => {
+    handleSuccess();
+  }, 3000);
+}
+
+// Start countdown timer
+function startCountdown() {
+  let seconds = 3;
+  const countdownElement = document.getElementById('countdown');
+  
+  countdownTimer = setInterval(() => {
+    seconds--;
+    countdownElement.textContent = seconds;
+    
+    if (seconds <= 0) {
+      clearInterval(countdownTimer);
+      redirectToDestination();
+    }
+  }, 1000);
+}
+
+// Redirect to final destination
+function redirectToDestination() {
+  // Clear any existing return URL
+  sessionStorage.removeItem('returnUrl');
+  
+  // Redirect to appropriate page
+  window.location.href = returnUrl;
+}
+
+// Resend verification email
+function resendVerification() {
+  const button = event.target;
+  const originalText = button.textContent;
+  
+  button.textContent = '📤 Sending...';
+  button.disabled = true;
+  
+  // Simulate API call
+  setTimeout(() => {
+    button.textContent = '✅ Email Sent!';
+    
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.disabled = false;
+    }, 2000);
+  }, 1500);
+}
+
+// Handle browser back button
+window.addEventListener('popstate', (event) => {
+  // Prevent going back during auth flow
+  if (currentState === 'loading-state' || currentState === 'social-state') {
+    history.pushState(null, null, window.location.href);
+  }
+});
+
+// Prevent accidental navigation during processing
+window.addEventListener('beforeunload', (event) => {
+  if (currentState === 'loading-state' || currentState === 'social-state') {
+    event.preventDefault();
+    event.returnValue = 'Authentication is in progress. Are you sure you want to leave?';
+  }
+});
+
+// Initialize when page loads
+window.addEventListener('load', initCallback);
+
+// Handle authentication messages from parent window (for popup flows)
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'auth_result') {
+    const { success, error, userData } = event.data;
+    
+    if (success) {
+      // Update URL and handle success
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('status', 'success');
+      if (userData.email) newUrl.searchParams.set('email', userData.email);
+      if (userData.name) newUrl.searchParams.set('name', userData.name);
+      
+      window.history.replaceState({}, '', newUrl);
+      handleSuccess();
+    } else {
+      // Update URL and handle error
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('status', 'error');
+      newUrl.searchParams.set('error', error || 'unknown_error');
+      
+      window.history.replaceState({}, '', newUrl);
+      handleError();
+    }
+  }
+});
+
+// Cleanup on page unload
+window.addEventListener('unload', () => {
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+  }
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a6589392f9bc3f',t:'MTc1OTc2NjE1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
