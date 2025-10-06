@@ -1,0 +1,1478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Thank You | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+
+.thank-you-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.thank-you-card {
+  background: rgba(26,61,46,.8);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 16px;
+  padding: 48px 40px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 5rem;
+  margin-bottom: 24px;
+  display: block;
+  animation: successPulse 2s ease-in-out infinite;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.thank-you-title {
+  font-size: 2.2rem;
+  color: var(--gold);
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.thank-you-message {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 32px;
+}
+
+.ticket-info {
+  background: rgba(15,36,25,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  text-align: left;
+}
+
+.ticket-info h3 {
+  color: var(--gold);
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(212,175,55,.1);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.info-value {
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.ticket-number {
+  background: var(--gold);
+  color: var(--deep);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.priority-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.priority-low { background: rgba(63,166,122,.2); color: #4ecdc4; }
+.priority-medium { background: rgba(243,156,18,.2); color: #f39c12; }
+.priority-high { background: rgba(231,76,60,.2); color: #ff6b6b; }
+
+.next-steps {
+  background: rgba(212,175,55,.1);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  text-align: left;
+}
+
+.next-steps h3 {
+  color: var(--gold);
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+}
+
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 12px 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.step-number {
+  background: var(--gold);
+  color: var(--deep);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--deep);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212,175,55,.4);
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: rgba(15,36,25,.6);
+  color: var(--ink);
+  border: 1px solid rgba(212,175,55,.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(15,36,25,.8);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.contact-reminder {
+  background: rgba(15,36,25,.4);
+  border-left: 4px solid var(--gold);
+  padding: 16px 20px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.contact-reminder p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.contact-reminder strong {
+  color: var(--gold);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .thank-you-container {
+    padding: 15px;
+  }
+  
+  .thank-you-card {
+    padding: 32px 24px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .info-value {
+    max-width: 100%;
+    text-align: left;
+  }
+}
+
+/* Animation for page load */
+.thank-you-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+<body>
+<div class="thank-you-container">
+  <div class="thank-you-card">
+    <div class="success-icon">✅</div>
+    <h1 class="thank-you-title">Message Sent!</h1>
+    <p class="thank-you-message">
+      Thank you for contacting us. We've received your support request and will get back to you soon.
+    </p>
+
+    <div class="ticket-info" id="ticket-info">
+      <h3>📋 Your Support Ticket</h3>
+      <div class="info-row">
+        <span class="info-label">Ticket Number:</span>
+        <span class="info-value ticket-number" id="ticket-number">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Name:</span>
+        <span class="info-value" id="customer-name">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email:</span>
+        <span class="info-value" id="customer-email">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Topic:</span>
+        <span class="info-value" id="ticket-topic">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Priority:</span>
+        <span class="info-value" id="ticket-priority">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Subject:</span>
+        <span class="info-value" id="ticket-subject">Loading...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Submitted:</span>
+        <span class="info-value" id="submit-time">Just now</span>
+      </div>
+    </div>
+
+    <div class="next-steps">
+      <h3>🚀 What happens next?</h3>
+      <ul class="step-list">
+        <li class="step-item">
+          <span class="step-number">1</span>
+          <span>We'll review your message and assign it to the right team member</span>
+        </li>
+        <li class="step-item">
+          <span class="step-number">2</span>
+          <span>You'll receive an email confirmation with your ticket details</span>
+        </li>
+        <li class="step-item">
+          <span class="step-number">3</span>
+          <span>We'll respond within 24 hours (usually much faster!)</span>
+        </li>
+        <li class="step-item">
+          <span class="step-number">4</span>
+          <span>Keep your ticket number handy for any follow-up questions</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="contact-reminder">
+      <p>
+        <strong>Need urgent help?</strong> Email us directly at 
+        <strong>chizsaleei@gmail.com</strong> and mention your ticket number.
+      </p>
+    </div>
+
+    <div class="action-buttons">
+      <a href="/" class="btn btn-primary">🏠 Back to Home</a>
+      <a href="/support.html" class="btn btn-secondary">📝 Submit Another</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Load ticket information from session storage
+window.addEventListener('load', () => {
+  const ticketData = sessionStorage.getItem('submittedTicket');
+  
+  if (ticketData) {
+    const ticket = JSON.parse(ticketData);
+    
+    // Populate ticket information
+    document.getElementById('ticket-number').textContent = ticket.ticketNumber;
+    document.getElementById('customer-name').textContent = ticket.name;
+    document.getElementById('customer-email').textContent = ticket.email;
+    document.getElementById('ticket-topic').textContent = capitalizeFirst(ticket.topic);
+    document.getElementById('ticket-subject').textContent = ticket.subject;
+    
+    // Set priority with appropriate styling
+    const priorityElement = document.getElementById('ticket-priority');
+    priorityElement.textContent = capitalizeFirst(ticket.priority);
+    priorityElement.className = `info-value priority-badge priority-${ticket.priority}`;
+    
+    // Clear the session storage
+    sessionStorage.removeItem('submittedTicket');
+  } else {
+    // If no ticket data, redirect back to support page
+    window.location.href = '/support.html';
+  }
+});
+
+// Helper function to capitalize first letter
+function capitalizeFirst(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Add some interactive feedback
+document.querySelectorAll('.btn').forEach(button => {
+  button.addEventListener('click', (e) => {
+    // Add a small animation on click
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      button.style.transform = '';
+    }, 150);
+  });
+});
+
+// Auto-copy ticket number when clicked
+document.getElementById('ticket-number').addEventListener('click', () => {
+  const ticketNumber = document.getElementById('ticket-number').textContent;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(ticketNumber).then(() => {
+      // Show temporary feedback
+      const originalText = document.getElementById('ticket-number').textContent;
+      document.getElementById('ticket-number').textContent = 'Copied!';
+      
+      setTimeout(() => {
+        document.getElementById('ticket-number').textContent = originalText;
+      }, 1500);
+    });
+  }
+});
+
+// Add tooltip to ticket number
+document.getElementById('ticket-number').title = 'Click to copy ticket number';
+document.getElementById('ticket-number').style.cursor = 'pointer';
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a6732f4516bc3f',t:'MTc1OTc2NzI0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Support Center | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh}
+.wrap{max-width:1000px;margin:0 auto;padding:48px 20px}
+h1,h2,h3{color:var(--gold)}h1{margin:0 0 6px}
+p,li{color:var(--muted);line-height:1.7}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);margin-top:18px}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin: 0 0 12px;
+  color: var(--gold);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.contact-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.contact-card {
+  background: rgba(15,36,25,.6);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 8px 25px rgba(0,0,0,.2);
+}
+
+.contact-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.contact-title {
+  color: var(--gold);
+  font-size: 1.3rem;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.contact-description {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.contact-action {
+  background: var(--gold);
+  color: var(--deep);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.contact-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212,175,55,.4);
+  text-decoration: none;
+}
+
+.support-form {
+  background: rgba(26,61,46,.6);
+  border: 1px solid rgba(212,175,55,.22);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 40px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  display: block;
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(15,36,25,.4);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(15,36,25,.6);
+  box-shadow: 0 0 0 3px rgba(212,175,55,.1);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.topic-option {
+  background: rgba(15,36,25,.4);
+  border: 2px solid rgba(212,175,55,.2);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.topic-option:hover {
+  border-color: var(--gold);
+  background: rgba(15,36,25,.6);
+}
+
+.topic-option.selected {
+  border-color: var(--gold);
+  background: rgba(212,175,55,.1);
+}
+
+.topic-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.topic-name {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.priority-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.priority-option {
+  flex: 1;
+  background: rgba(15,36,25,.4);
+  border: 2px solid rgba(212,175,55,.2);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.priority-option:hover {
+  border-color: var(--gold);
+}
+
+.priority-option.selected {
+  border-color: var(--gold);
+  background: rgba(212,175,55,.1);
+}
+
+.priority-low { border-left: 4px solid #3fa67a; }
+.priority-medium { border-left: 4px solid #f39c12; }
+.priority-high { border-left: 4px solid #e74c3c; }
+
+.file-upload {
+  border: 2px dashed rgba(212,175,55,.3);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.file-upload:hover {
+  border-color: var(--gold);
+  background: rgba(212,175,55,.05);
+}
+
+.file-upload.dragover {
+  border-color: var(--gold);
+  background: rgba(212,175,55,.1);
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.upload-text {
+  color: var(--muted);
+  margin: 0;
+}
+
+.file-list {
+  margin-top: 12px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15,36,25,.6);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.file-name {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.file-remove {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 4px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: var(--deep);
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212,175,55,.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.faq-section {
+  margin-top: 40px;
+}
+
+.faq-item {
+  background: rgba(15,36,25,.4);
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.faq-question {
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 16px 20px;
+  text-align: left;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+  background: rgba(212,175,55,.1);
+}
+
+.faq-answer {
+  padding: 0 20px 16px;
+  color: var(--muted);
+  line-height: 1.6;
+  display: none;
+}
+
+.faq-answer.open {
+  display: block;
+}
+
+.faq-icon {
+  transition: transform 0.3s ease;
+}
+
+.faq-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.success-message {
+  background: rgba(63,166,122,.1);
+  border: 1px solid rgba(63,166,122,.3);
+  color: #4ecdc4;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.error-message {
+  background: rgba(231,76,60,.1);
+  border: 1px solid rgba(231,76,60,.3);
+  color: #ff6b6b;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 20px 15px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .priority-options {
+    flex-direction: column;
+  }
+  
+  .topic-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+}
+</style>
+</head>
+<body>
+<a href="/" class="back-link">← Back to Home</a>
+
+<main class="wrap">
+<div class="hero-section">
+  <h1 class="hero-title">🆘 Need Help?</h1>
+  <p class="hero-subtitle">We're here to support your learning journey</p>
+</div>
+
+<div class="contact-options">
+  <div class="contact-card" onclick="scrollToForm()">
+    <span class="contact-icon">📝</span>
+    <h3 class="contact-title">Send Message</h3>
+    <p class="contact-description">Fill out a form and we'll get back to you within 24 hours</p>
+    <span class="contact-action">📝 Write Message</span>
+  </div>
+  
+  <div class="contact-card">
+    <span class="contact-icon">📧</span>
+    <h3 class="contact-title">Email Us</h3>
+    <p class="contact-description">Send us an email directly for detailed questions</p>
+    <a href="mailto:chizsaleei@gmail.com" class="contact-action">📧 Send Email</a>
+  </div>
+</div>
+
+<div class="support-form" id="support-form">
+  <h2>📝 Send Us a Message</h2>
+  <p>Tell us what you need help with. We'll respond quickly!</p>
+  
+  <div id="success-message" class="success-message"></div>
+  <div id="error-message" class="error-message"></div>
+  
+  <form onsubmit="submitTicket(event)">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="name">👤 Your Name</label>
+        <input type="text" id="name" class="form-input" placeholder="John Smith" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="email">📧 Email</label>
+        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">🎯 Help Topic</label>
+      <div class="topic-grid">
+        <div class="topic-option" onclick="selectTopic('account')">
+          <span class="topic-icon">👤</span>
+          <p class="topic-name">Account</p>
+        </div>
+        <div class="topic-option" onclick="selectTopic('billing')">
+          <span class="topic-icon">💳</span>
+          <p class="topic-name">Billing</p>
+        </div>
+        <div class="topic-option" onclick="selectTopic('technical')">
+          <span class="topic-icon">🔧</span>
+          <p class="topic-name">Technical</p>
+        </div>
+        <div class="topic-option" onclick="selectTopic('coaching')">
+          <span class="topic-icon">🎯</span>
+          <p class="topic-name">Coaching</p>
+        </div>
+        <div class="topic-option" onclick="selectTopic('scheduling')">
+          <span class="topic-icon">📅</span>
+          <p class="topic-name">Scheduling</p>
+        </div>
+        <div class="topic-option" onclick="selectTopic('other')">
+          <span class="topic-icon">❓</span>
+          <p class="topic-name">Other</p>
+        </div>
+      </div>
+      <input type="hidden" id="topic" required>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">⚡ How urgent?</label>
+      <div class="priority-options">
+        <div class="priority-option priority-low" onclick="selectPriority('low')">
+          <div>🟢 Low</div>
+          <small>Can wait a few days</small>
+        </div>
+        <div class="priority-option priority-medium" onclick="selectPriority('medium')">
+          <div>🟡 Medium</div>
+          <small>Need help soon</small>
+        </div>
+        <div class="priority-option priority-high" onclick="selectPriority('high')">
+          <div>🔴 High</div>
+          <small>Need help now</small>
+        </div>
+      </div>
+      <input type="hidden" id="priority" value="medium">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="subject">📋 Quick Summary</label>
+      <input type="text" id="subject" class="form-input" placeholder="What's the main problem?" required>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="details">📝 Tell us more</label>
+      <textarea id="details" class="form-textarea" placeholder="Describe your problem in detail. What happened? What were you trying to do?" required></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">📎 Add Files (optional)</label>
+      <div class="file-upload" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📎</div>
+        <p class="upload-text">Click to add screenshots or documents</p>
+        <div class="file-list" id="file-list"></div>
+      </div>
+      <input type="file" id="file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;" onchange="handleFiles(event)">
+    </div>
+    
+    <button type="submit" class="submit-button">🚀 Send Message</button>
+  </form>
+</div>
+
+<div class="card faq-section">
+  <h2>❓ Common Questions</h2>
+  <p>Quick answers to help you right now</p>
+  
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      How do I reset my password?
+      <span class="faq-icon">▼</span>
+    </button>
+    <div class="faq-answer">
+      Go to the sign-in page and click "Forgot password?". Enter your email and we'll send you a reset link. Check your spam folder if you don't see it.
+    </div>
+  </div>
+  
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      How do I schedule a coaching session?
+      <span class="faq-icon">▼</span>
+    </button>
+    <div class="faq-answer">
+      Log into your dashboard and click "Book Session". Choose your coach, pick a time that works for you, and confirm. You'll get an email with the meeting link.
+    </div>
+  </div>
+  
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      Can I cancel or reschedule a session?
+      <span class="faq-icon">▼</span>
+    </button>
+    <div class="faq-answer">
+      Yes! You can cancel or reschedule up to 24 hours before your session. Go to "My Sessions" in your dashboard to make changes.
+    </div>
+  </div>
+  
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      What if I have technical problems during a session?
+      <span class="faq-icon">▼</span>
+    </button>
+    <div class="faq-answer">
+      Try refreshing your browser first. If that doesn't work, use the backup phone number we provide. We can also reschedule if needed.
+    </div>
+  </div>
+  
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      How do I update my billing information?
+      <span class="faq-icon">▼</span>
+    </button>
+    <div class="faq-answer">
+      Go to your profile settings and click "Billing". You can update your payment method, billing address, and download invoices there.
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+let selectedTopic = '';
+let selectedPriority = 'medium';
+let uploadedFiles = [];
+
+// Auto-fill user info if logged in
+window.addEventListener('load', () => {
+  const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+  if (userSession) {
+    const userData = JSON.parse(userSession);
+    if (userData.email) {
+      document.getElementById('email').value = userData.email;
+    }
+    if (userData.name) {
+      document.getElementById('name').value = userData.name;
+    }
+  }
+});
+
+// Scroll to form
+function scrollToForm() {
+  document.getElementById('support-form').scrollIntoView({ 
+    behavior: 'smooth' 
+  });
+}
+
+// Chat function removed - no live chat available
+
+// Topic selection
+function selectTopic(topic) {
+  // Remove previous selection
+  document.querySelectorAll('.topic-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // Add selection to clicked option
+  event.target.closest('.topic-option').classList.add('selected');
+  
+  // Store selection
+  selectedTopic = topic;
+  document.getElementById('topic').value = topic;
+}
+
+// Priority selection
+function selectPriority(priority) {
+  // Remove previous selection
+  document.querySelectorAll('.priority-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // Add selection to clicked option
+  event.target.closest('.priority-option').classList.add('selected');
+  
+  // Store selection
+  selectedPriority = priority;
+  document.getElementById('priority').value = priority;
+}
+
+// File handling
+function handleFiles(event) {
+  const files = Array.from(event.target.files);
+  const fileList = document.getElementById('file-list');
+  
+  files.forEach(file => {
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showError('❌ File too large. Please use files under 10MB.');
+      return;
+    }
+    
+    uploadedFiles.push(file);
+    
+    // Create file item
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    fileItem.innerHTML = `
+      <span class="file-name">📎 ${file.name}</span>
+      <button type="button" class="file-remove" onclick="removeFile('${file.name}')">×</button>
+    `;
+    
+    fileList.appendChild(fileItem);
+  });
+  
+  // Clear input
+  event.target.value = '';
+}
+
+// Remove file
+function removeFile(fileName) {
+  uploadedFiles = uploadedFiles.filter(file => file.name !== fileName);
+  
+  // Remove from display
+  const fileItems = document.querySelectorAll('.file-item');
+  fileItems.forEach(item => {
+    if (item.querySelector('.file-name').textContent.includes(fileName)) {
+      item.remove();
+    }
+  });
+}
+
+// Toggle FAQ
+function toggleFaq(button) {
+  const answer = button.nextElementSibling;
+  const icon = button.querySelector('.faq-icon');
+  
+  if (answer.classList.contains('open')) {
+    answer.classList.remove('open');
+    icon.classList.remove('rotated');
+  } else {
+    // Close all other FAQs
+    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('rotated'));
+    
+    // Open this FAQ
+    answer.classList.add('open');
+    icon.classList.add('rotated');
+  }
+}
+
+// Show messages
+function showSuccess(message) {
+  const successDiv = document.getElementById('success-message');
+  successDiv.textContent = message;
+  successDiv.style.display = 'block';
+  document.getElementById('error-message').style.display = 'none';
+}
+
+function showError(message) {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  document.getElementById('success-message').style.display = 'none';
+}
+
+function hideMessages() {
+  document.getElementById('success-message').style.display = 'none';
+  document.getElementById('error-message').style.display = 'none';
+}
+
+// Submit ticket
+async function submitTicket(event) {
+  event.preventDefault();
+  hideMessages();
+  
+  // Get form data
+  const formData = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    topic: selectedTopic,
+    priority: selectedPriority,
+    subject: document.getElementById('subject').value,
+    details: document.getElementById('details').value,
+    files: uploadedFiles.map(f => f.name)
+  };
+  
+  // Validation
+  if (!selectedTopic) {
+    showError('❌ Please select a help topic');
+    return;
+  }
+  
+  if (formData.details.length < 10) {
+    showError('❌ Please provide more details about your problem');
+    return;
+  }
+  
+  // Show loading
+  const submitButton = document.querySelector('.submit-button');
+  const originalText = submitButton.textContent;
+  submitButton.textContent = '📤 Sending...';
+  submitButton.disabled = true;
+  
+  try {
+    // Create the support ticket
+    const ticketData = {
+      name: formData.name,
+      email: formData.email,
+      topic: formData.topic,
+      priority: formData.priority,
+      subject: formData.subject,
+      details: formData.details,
+      source: 'web_form'
+    };
+    
+    // In a real app, you'd use Supabase client here
+    // For demo purposes, we'll simulate the database insert
+    console.log('Inserting ticket:', ticketData);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Generate ticket number (in real app, this comes from database)
+    const ticketNumber = 'CHZ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    
+    // Store ticket info for thank you page
+    sessionStorage.setItem('submittedTicket', JSON.stringify({
+      ticketNumber,
+      name: formData.name,
+      email: formData.email,
+      topic: formData.topic,
+      priority: formData.priority,
+      subject: formData.subject
+    }));
+    
+    // Redirect to thank you page
+    window.location.href = '/thank-you/index.html';
+    
+  } catch (error) {
+    console.error('Error submitting ticket:', error);
+    showError('❌ Something went wrong. Please try again or email us directly.');
+    
+    // Reset button
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
+  }
+}
+
+// Drag and drop for file upload
+const fileUpload = document.querySelector('.file-upload');
+
+fileUpload.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  fileUpload.classList.add('dragover');
+});
+
+fileUpload.addEventListener('dragleave', () => {
+  fileUpload.classList.remove('dragover');
+});
+
+fileUpload.addEventListener('drop', (e) => {
+  e.preventDefault();
+  fileUpload.classList.remove('dragover');
+  
+  const files = Array.from(e.dataTransfer.files);
+  const event = { target: { files } };
+  handleFiles(event);
+});
+</script>
+
+<!-- Improved Database Schema -->
+<script type="application/sql" style="display: none;">
+-- Improved Support Tickets Schema
+-- Drop existing table if you need to recreate
+-- DROP TABLE IF EXISTS support_tickets CASCADE;
+
+-- Create enhanced support tickets table
+CREATE TABLE IF NOT EXISTS support_tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_number TEXT UNIQUE NOT NULL DEFAULT 'CHZ-' || UPPER(SUBSTR(gen_random_uuid()::text, 1, 6)),
+  
+  -- User Information
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  
+  -- Ticket Details
+  topic TEXT NOT NULL CHECK (topic IN ('account', 'billing', 'technical', 'coaching', 'scheduling', 'other')),
+  priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
+  subject TEXT NOT NULL,
+  details TEXT NOT NULL,
+  
+  -- Status and Assignment
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'waiting_response', 'resolved', 'closed')),
+  assigned_to UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  first_response_at TIMESTAMPTZ,
+  resolved_at TIMESTAMPTZ,
+  closed_at TIMESTAMPTZ,
+  
+  -- Metadata
+  source TEXT DEFAULT 'web_form' CHECK (source IN ('web_form', 'email', 'chat', 'phone')),
+  tags TEXT[],
+  internal_notes TEXT,
+  customer_satisfaction_rating INTEGER CHECK (customer_satisfaction_rating BETWEEN 1 AND 5),
+  
+  -- Search and indexing
+  search_vector TSVECTOR GENERATED ALWAYS AS (
+    to_tsvector('english', 
+      COALESCE(subject, '') || ' ' || 
+      COALESCE(details, '') || ' ' || 
+      COALESCE(name, '') || ' ' ||
+      COALESCE(topic, '')
+    )
+  ) STORED
+);
+
+-- Create support ticket attachments table
+CREATE TABLE IF NOT EXISTS support_ticket_attachments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id UUID NOT NULL REFERENCES support_tickets(id) ON DELETE CASCADE,
+  filename TEXT NOT NULL,
+  original_filename TEXT NOT NULL,
+  file_size INTEGER NOT NULL,
+  mime_type TEXT NOT NULL,
+  storage_path TEXT NOT NULL,
+  uploaded_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create support ticket responses table for conversation history
+CREATE TABLE IF NOT EXISTS support_ticket_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id UUID NOT NULL REFERENCES support_tickets(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  message TEXT NOT NULL,
+  is_internal BOOLEAN DEFAULT FALSE,
+  is_from_customer BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_priority ON support_tickets(priority);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_topic ON support_tickets(topic);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_created_at ON support_tickets(created_at);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_user_id ON support_tickets(user_id);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_assigned_to ON support_tickets(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_search ON support_tickets USING GIN(search_vector);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_ticket_number ON support_tickets(ticket_number);
+
+-- Create indexes for related tables
+CREATE INDEX IF NOT EXISTS idx_support_ticket_attachments_ticket_id ON support_ticket_attachments(ticket_id);
+CREATE INDEX IF NOT EXISTS idx_support_ticket_responses_ticket_id ON support_ticket_responses(ticket_id);
+
+-- Enable Row Level Security
+ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE support_ticket_attachments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE support_ticket_responses ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for support_tickets
+CREATE POLICY "public_insert_tickets" ON support_tickets 
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "users_view_own_tickets" ON support_tickets 
+  FOR SELECT USING (
+    auth.uid() = user_id OR 
+    email = auth.jwt() ->> 'email' OR
+    auth.jwt() ->> 'role' = 'support_agent' OR
+    auth.jwt() ->> 'role' = 'admin'
+  );
+
+CREATE POLICY "users_update_own_tickets" ON support_tickets 
+  FOR UPDATE USING (
+    auth.uid() = user_id OR
+    auth.jwt() ->> 'role' = 'support_agent' OR
+    auth.jwt() ->> 'role' = 'admin'
+  );
+
+-- RLS Policies for attachments
+CREATE POLICY "public_insert_attachments" ON support_ticket_attachments 
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "users_view_ticket_attachments" ON support_ticket_attachments 
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM support_tickets 
+      WHERE id = ticket_id AND (
+        auth.uid() = user_id OR 
+        email = auth.jwt() ->> 'email' OR
+        auth.jwt() ->> 'role' = 'support_agent' OR
+        auth.jwt() ->> 'role' = 'admin'
+      )
+    )
+  );
+
+-- RLS Policies for responses
+CREATE POLICY "public_insert_responses" ON support_ticket_responses 
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "users_view_ticket_responses" ON support_ticket_responses 
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM support_tickets 
+      WHERE id = ticket_id AND (
+        auth.uid() = user_id OR 
+        email = auth.jwt() ->> 'email' OR
+        auth.jwt() ->> 'role' = 'support_agent' OR
+        auth.jwt() ->> 'role' = 'admin'
+      )
+    ) AND (is_internal = FALSE OR auth.jwt() ->> 'role' IN ('support_agent', 'admin'))
+  );
+
+-- Create function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_support_ticket_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for updated_at
+CREATE TRIGGER trigger_update_support_ticket_updated_at
+  BEFORE UPDATE ON support_tickets
+  FOR EACH ROW
+  EXECUTE FUNCTION update_support_ticket_updated_at();
+
+-- Create function to set first_response_at
+CREATE OR REPLACE FUNCTION set_first_response_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Update first_response_at if this is the first response from support
+  IF NEW.is_from_customer = FALSE AND NOT EXISTS (
+    SELECT 1 FROM support_ticket_responses 
+    WHERE ticket_id = NEW.ticket_id AND is_from_customer = FALSE
+  ) THEN
+    UPDATE support_tickets 
+    SET first_response_at = NOW() 
+    WHERE id = NEW.ticket_id AND first_response_at IS NULL;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for first response
+CREATE TRIGGER trigger_set_first_response
+  AFTER INSERT ON support_ticket_responses
+  FOR EACH ROW
+  EXECUTE FUNCTION set_first_response_timestamp();
+
+-- Create view for ticket analytics
+CREATE OR REPLACE VIEW support_ticket_analytics AS
+SELECT 
+  DATE_TRUNC('day', created_at) as date,
+  topic,
+  priority,
+  status,
+  COUNT(*) as ticket_count,
+  AVG(EXTRACT(EPOCH FROM (COALESCE(resolved_at, NOW()) - created_at))/3600) as avg_resolution_hours,
+  AVG(EXTRACT(EPOCH FROM (first_response_at - created_at))/3600) as avg_first_response_hours,
+  AVG(customer_satisfaction_rating) as avg_satisfaction
+FROM support_tickets
+GROUP BY DATE_TRUNC('day', created_at), topic, priority, status;
+
+-- Grant permissions (adjust based on your auth setup)
+-- GRANT SELECT, INSERT, UPDATE ON support_tickets TO authenticated;
+-- GRANT SELECT, INSERT ON support_ticket_attachments TO authenticated;
+-- GRANT SELECT, INSERT ON support_ticket_responses TO authenticated;
+</script>
+</body>
+</html>
