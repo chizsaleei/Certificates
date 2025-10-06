@@ -207,18 +207,18 @@
       <div><small>&copy; 2025 chizsaleei. All Rights Reserved</small></div>
       <div class="foot-center">
         <a href="https://chizsaleei.com/terms.html">Terms</a>
-        <a href="https://chizsaleei.com/pivacy.html">Privacy</a>
+        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
         <a href="https://chizsaleei.com/accessibility.html">Accessibility</a>
       </div>
       <div class="foot-right">
         <a href="mailto:chizsaleei@gmail.com" aria-label="Email" title="Email">
-          <img class="icon-img" src="https://chizsaleei.com/icons/mail.svg" alt="Gmail" />
+          <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-gmail.svg" alt="Gmail" />
         </a>
         <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
-          <img class="icon-img" src="https://chizsaleei.com/icons/linkedin.svg" alt="LinkedIn" />
+          <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-linkedin.svg" alt="LinkedIn" />
         </a>
         <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
-          <img class="icon-img" src="https://chizsaleei.com/icons/instagram.svg" alt="Instagram" />
+          <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-instagram.svg" alt="Instagram" />
         </a>
       </div>
     </div>
@@ -244,8 +244,8 @@
   <script src="https://chizsaleei.com/js/contact.js" defer></script>
   <script>
     // ---------- CONFIG ----------
-    const SUPABASE_URL = "https://gwlwctytwendsixwvnvu.supabase.co"; // retain your URL here
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo";       // retain your anon key here
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co"; // retain your URL here
+    const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";       // retain your anon key here
     const API_CHECKOUT = "/api/create-checkout-session"; // POST {priceId|toolId}
     const API_PORTAL = "/api/customer-portal";           // POST {}
     const TOOL_PATH = (toolId) => `/tools/${toolId}/index.html`;
@@ -303,7 +303,7 @@
           else { openBuyModal(toolId); }
         };
       });
-      document.querySelectorAll('[data-unlock-all]').forEach(btn=>{ btn.onclick = () => window.location.href = 'https://chizsaleei/auth/callback.html'; });
+      document.querySelectorAll('[data-unlock-all]').forEach(btn=>{ btn.onclick = () => window.location.href = 'https://chizsaleei/auth/index.html'; });
       document.querySelectorAll('[data-buy-one]').forEach(btn=>{ btn.onclick = () => beginCheckout({ toolId: btn.getAttribute('data-buy-one') }); });
     }
 
