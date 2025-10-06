@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practice Settings | CHIZSA COACHING</title>
+  <title>Learning Dashboard | CHIZSA COACHING</title>
   <style>
     body {
       box-sizing: border-box;
@@ -532,8 +532,8 @@
 
   <!-- Main Content -->
   <main class="settings-container">
-    <h1 class="settings-title">Practice Settings</h1>
-    <p class="settings-subtitle">Set up your English practice goals and track your progress</p>
+    <h1 class="settings-title">Learning Dashboard</h1>
+    <p class="settings-subtitle">Configure your English learning journey and monitor your achievements</p>
 
     <div class="settings-grid">
       <!-- Learning Goals -->
@@ -690,16 +690,7 @@
           </label>
         </div>
         
-        <div class="simple-toggle">
-          <div class="toggle-info">
-            <h3 class="toggle-title">Simplified Interface</h3>
-            <p class="toggle-description">Use a cleaner, simpler practice interface</p>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="simplified-interface">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
+
       </div>
 
       <!-- Save Settings -->
@@ -712,8 +703,18 @@
     </div>
   </main>
 
+  <!-- Supabase + your app -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/js/supabaseClient.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/gate.js"></script>
+  <script src="/js/progress.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/database.js"></script>
+
   <script>
-    // Initialize settings page
+    // Initialize learning dashboard
     (async function() {
       const user = await Auth.getUser();
       if (!user) {
@@ -732,8 +733,7 @@
       schedule: 30,
       dailyReminders: true,
       progressTracking: true,
-      audioPronunciation: true,
-      simplifiedInterface: false
+      audioPronunciation: true
     };
 
     function setupEventListeners() {
@@ -824,7 +824,6 @@
       document.getElementById('daily-reminders').checked = currentSettings.dailyReminders;
       document.getElementById('progress-tracking').checked = currentSettings.progressTracking;
       document.getElementById('audio-pronunciation').checked = currentSettings.audioPronunciation;
-      document.getElementById('simplified-interface').checked = currentSettings.simplifiedInterface;
     }
 
     async function loadProgressStats() {
@@ -946,8 +945,7 @@
           schedule: 30,
           dailyReminders: true,
           progressTracking: true,
-          audioPronunciation: true,
-          simplifiedInterface: false
+          audioPronunciation: true
         };
         
         applySettingsToUI();
@@ -978,5 +976,5 @@
       }, 4000);
     }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a33b2c0088b9f0',t:'MTc1OTczMzQ5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a415edf0ebb9f0',t:'MTc1OTc0MjQ1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
