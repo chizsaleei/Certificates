@@ -1,1 +1,44 @@
+<!-- Coaching/partials/header.html -->
+<header class="header">
+  <div class="nav">
+    <a class="logo" href="/">CHIZSA | COACHING</a>
+
+    <nav>
+      <ul class="menu" id="menu">
+        <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
+        <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
+        <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
+        <li><a href="https://chizsaleei.com/about.html">About</a></li>
+        <li><a href="https://chizsaleei.com/training.html">Training</a></li>
+        <li><a href="https://chizsaleei.com/testimonials.html">Testimonials</a></li>
+      </ul>
+    </nav>
+
+    <div class="right">
+      <a class="btn btn-gold" href="/support/">Support</a>
+      <a id="btn-signin" class="btn btn-outline" href="https://chizsaleei/auth/index.html">Sign in</a>
+
+      <button class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // mobile menu toggle (no dependency)
+  (function () {
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    if (hamb && menu) {
+      hamb.addEventListener('click', () => {
+        const open = menu.classList.toggle('active');
+        hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      menu.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => menu.classList.remove('active'));
+      });
+    }
+  })();
+</script>
 
