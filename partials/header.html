@@ -1,44 +1,24 @@
-<!-- Coaching/partials/header.html -->
-<header class="header">
-  <div class="nav">
-    <a class="logo" href="/">CHIZSA | COACHING</a>
+<!-- Coaching/partials/footer.html -->
+<footer class="footer">
+  <div class="foot">
+    <div><small>&copy; 2025 chizsaleei. All Rights Reserved</small></div>
 
-    <nav>
-      <ul class="menu" id="menu">
-        <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
-        <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
-        <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
-        <li><a href="https://chizsaleei.com/about.html">About</a></li>
-        <li><a href="https://chizsaleei.com/training.html">Training</a></li>
-        <li><a href="https://chizsaleei.com/testimonials.html">Testimonials</a></li>
-      </ul>
-    </nav>
+    <div class="foot-center">
+      <a href="https://chizsaleei.com/terms.html">Terms</a>
+      <a href="https://chizsaleei.com/privacy.html">Privacy</a>
+      <a href="https://chizsaleei.com/accessibility.html">Accessibility</a>
+    </div>
 
-    <div class="right">
-      <a class="btn btn-gold" href="/support/">Support</a>
-      <a id="btn-signin" class="btn btn-outline" href="https://chizsaleei/auth/index.html">Sign in</a>
-
-      <button class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+    <div class="foot-right">
+      <a href="mailto:chizsaleei@gmail.com" aria-label="Email" title="Email">
+        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-gmail.svg" alt="Gmail" />
+      </a>
+      <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-linkedin.svg" alt="LinkedIn" />
+      </a>
+      <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
+        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-instagram.svg" alt="Instagram" />
+      </a>
     </div>
   </div>
-</header>
-
-<script>
-  // mobile menu toggle (no dependency)
-  (function () {
-    const hamb = document.getElementById('hamb');
-    const menu = document.getElementById('menu');
-    if (hamb && menu) {
-      hamb.addEventListener('click', () => {
-        const open = menu.classList.toggle('active');
-        hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      menu.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => menu.classList.remove('active'));
-      });
-    }
-  })();
-</script>
-
+</footer>
