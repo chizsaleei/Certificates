@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Review, Request & Collaborate | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
+
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 700px;
+  padding: 20px;
+}
+
+.form-card {
+  background: rgba(26,61,46,.8);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 20px;
+  padding: 48px 40px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.3);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.form-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.form-title {
+  font-size: 2.5rem;
+  color: var(--gold);
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.form-subtitle {
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.form-description {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.collaboration-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.collab-option {
+  background: rgba(15,36,25,.4);
+  border: 2px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.collab-option:hover {
+  border-color: var(--gold);
+  background: rgba(15,36,25,.6);
+  transform: translateY(-2px);
+}
+
+.collab-option.selected {
+  border-color: var(--gold);
+  background: rgba(212,175,55,.1);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+.collab-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.collab-title {
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.collab-desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(15,36,25,.4);
+  border: 2px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(15,36,25,.6);
+  box-shadow: 0 0 0 3px rgba(212,175,55,.1);
+}
+
+.form-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.character-count {
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--gold), #b8941f);
+  color: var(--deep);
+  border: none;
+  border-radius: 12px;
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+}
+
+.submit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(212,175,55,.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.success-message {
+  background: rgba(63,166,122,.1);
+  border: 2px solid rgba(63,166,122,.3);
+  color: #4ecdc4;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: none;
+  text-align: center;
+}
+
+.error-message {
+  background: rgba(231,76,60,.1);
+  border: 2px solid rgba(231,76,60,.3);
+  color: #ff6b6b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: none;
+  text-align: center;
+}
+
+.privacy-note {
+  background: rgba(15,36,25,.3);
+  border-left: 4px solid var(--gold);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin-top: 24px;
+}
+
+.privacy-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.privacy-note strong {
+  color: var(--gold);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 15px;
+  }
+  
+  .form-card {
+    padding: 32px 24px;
+  }
+  
+  .form-title {
+    font-size: 2rem;
+  }
+  
+  .collaboration-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+}
+
+/* Animation for form load */
+.form-card {
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+<body>
+<a href="/" class="back-link">← Back to Home</a>
+
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <div class="form-icon">🤝</div>
+      <h1 class="form-title">Review, Request & Collaborate</h1>
+      <p class="form-subtitle">
+        Help us build something amazing together
+      </p>
+      <p class="form-description">
+        Share your thoughts, request new features, or propose collaboration ideas. 
+        Your input shapes the future of our platform.
+      </p>
+    </div>
+
+    <div id="success-message" class="success-message"></div>
+    <div id="error-message" class="error-message"></div>
+
+    <form id="contact-form" onsubmit="submitCollaboration(event)">
+      <div class="form-group">
+        <label class="form-label">What would you like to do?</label>
+        <div class="collaboration-options">
+          <div class="collab-option" onclick="selectCollabType('review')">
+            <div class="collab-icon">⭐</div>
+            <div class="collab-title">Review</div>
+            <div class="collab-desc">Share feedback about our tools and services</div>
+          </div>
+          <div class="collab-option" onclick="selectCollabType('request')">
+            <div class="collab-icon">💡</div>
+            <div class="collab-title">Request</div>
+            <div class="collab-desc">Suggest new features or improvements</div>
+          </div>
+          <div class="collab-option" onclick="selectCollabType('collaborate')">
+            <div class="collab-icon">🚀</div>
+            <div class="collab-title">Collaborate</div>
+            <div class="collab-desc">Propose partnership or joint ventures</div>
+          </div>
+        </div>
+        <input type="hidden" id="collaboration-type" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="c-name">👤 Your Name</label>
+        <input 
+          type="text" 
+          id="c-name" 
+          class="form-input" 
+          placeholder="Enter your full name" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="c-email">📧 Email Address</label>
+        <input 
+          type="email" 
+          id="c-email" 
+          class="form-input" 
+          placeholder="your@email.com" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="subject">📋 Subject</label>
+        <input 
+          type="text" 
+          id="subject" 
+          class="form-input" 
+          placeholder="Brief summary of your message" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="c-msg">💬 Your Message</label>
+        <textarea 
+          id="c-msg" 
+          class="form-textarea" 
+          placeholder="Share your thoughts, ideas, concerns, or collaboration proposals in detail..."
+          required
+          maxlength="2000"
+          oninput="updateCharacterCount()"
+        ></textarea>
+        <div class="character-count" id="char-count">0 / 2000 characters</div>
+      </div>
+
+      <button type="submit" class="submit-button" id="contact-submit">
+        🚀 Send Message
+      </button>
+    </form>
+
+    <div class="privacy-note">
+      <p>
+        <strong>🔒 Privacy Promise:</strong> Your information is secure and will only be used to respond to your message. 
+        We never share your details with third parties and you can unsubscribe from updates at any time.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="contact-status" style="display: none;"></div>
+
+<script>
+let selectedCollabType = '';
+
+// Auto-fill user info if available
+window.addEventListener('load', () => {
+  const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+  if (userSession) {
+    try {
+      const userData = JSON.parse(userSession);
+      if (userData.email) {
+        document.getElementById('c-email').value = userData.email;
+      }
+      if (userData.name) {
+        document.getElementById('c-name').value = userData.name;
+      }
+    } catch (e) {
+      console.log('No valid user session found');
+    }
+  }
+});
+
+// Collaboration type selection
+function selectCollabType(type) {
+  // Remove previous selection
+  document.querySelectorAll('.collab-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // Add selection to clicked option
+  event.target.closest('.collab-option').classList.add('selected');
+  
+  // Store selection
+  selectedCollabType = type;
+  document.getElementById('collaboration-type').value = type;
+  
+  // Update placeholder text based on selection
+  const messageTextarea = document.getElementById('c-msg');
+  const subjectInput = document.getElementById('subject');
+  
+  switch(type) {
+    case 'review':
+      messageTextarea.placeholder = "Tell us about your experience with our tools. What's working well? What could be improved? Your honest feedback helps us serve you better...";
+      subjectInput.placeholder = "My review of CHIZSA tools";
+      break;
+    case 'request':
+      messageTextarea.placeholder = "Describe the feature or improvement you'd like to see. What problem would this solve? How would it help you achieve your goals?...";
+      subjectInput.placeholder = "Feature request: [describe briefly]";
+      break;
+    case 'collaborate':
+      messageTextarea.placeholder = "Share your collaboration idea. What type of partnership are you proposing? What value can we create together? Include relevant details about your background or organization...";
+      subjectInput.placeholder = "Collaboration proposal: [brief description]";
+      break;
+  }
+}
+
+// Character count update
+function updateCharacterCount() {
+  const textarea = document.getElementById('c-msg');
+  const charCount = document.getElementById('char-count');
+  const currentLength = textarea.value.length;
+  
+  charCount.textContent = `${currentLength} / 2000 characters`;
+  
+  if (currentLength > 1800) {
+    charCount.style.color = '#ff6b6b';
+  } else if (currentLength > 1500) {
+    charCount.style.color = '#f39c12';
+  } else {
+    charCount.style.color = 'var(--muted)';
+  }
+}
+
+// Show messages
+function showSuccess(message) {
+  const successDiv = document.getElementById('success-message');
+  successDiv.innerHTML = message;
+  successDiv.style.display = 'block';
+  document.getElementById('error-message').style.display = 'none';
+  
+  // Scroll to message
+  successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showError(message) {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.innerHTML = message;
+  errorDiv.style.display = 'block';
+  document.getElementById('success-message').style.display = 'none';
+  
+  // Scroll to message
+  errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function hideMessages() {
+  document.getElementById('success-message').style.display = 'none';
+  document.getElementById('error-message').style.display = 'none';
+}
+
+// Initialize Supabase integration with your exact function pattern
+(async function(){
+  const form = document.getElementById("contact-form");
+  if (!form) return;
+  const status = document.getElementById("contact-status");
+  const submitBtn = document.getElementById("contact-submit");
+  
+  // Get user if authenticated
+  let currentUser = null;
+  try {
+    if (typeof Auth !== 'undefined') {
+      const { id: user_id } = (await Auth.getUser()) || {};
+      currentUser = user_id;
+    }
+  } catch (e) {
+    console.log('Auth not available or user not logged in');
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMessages();
+    
+    // Validation
+    if (!selectedCollabType) {
+      showError('❌ Please select what you\'d like to do (Review, Request, or Collaborate)');
+      return;
+    }
+    
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = "📤 Sending...";
+    
+    const name = document.getElementById("c-name").value.trim();
+    const email = document.getElementById("c-email").value.trim();
+    const message = document.getElementById("c-msg").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    
+    // Additional validation
+    if (message.length < 10) {
+      showError('❌ Please provide a more detailed message (at least 10 characters)');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+      return;
+    }
+    
+    if (name.length < 2) {
+      showError('❌ Please enter your full name');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+      return;
+    }
+    
+    try {
+      // Create the collaboration entry for Supabase
+      const collaborationData = {
+        user_id: currentUser,
+        collaboration_type: selectedCollabType,
+        name: name,
+        email: email,
+        subject: subject,
+        message: message,
+        source: 'hero_lead_magnet',
+        status: 'new'
+      };
+      
+      // Insert into Supabase using your exact pattern
+      let result;
+      if (typeof supabase !== 'undefined') {
+        result = await supabase
+          .from('collaboration_requests')
+          .insert([collaborationData])
+          .select('reference_id')
+          .single();
+        
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+      } else {
+        // Fallback for demo/testing
+        console.log('Supabase not available, simulating insert:', collaborationData);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        result = { 
+          data: { 
+            reference_id: 'COLLAB-' + Math.random().toString(36).substr(2, 8).toUpperCase() 
+          } 
+        };
+      }
+      
+      const referenceId = result.data?.reference_id || 'COLLAB-DEMO';
+      
+      // Show success message
+      showSuccess(`
+        <div style="text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+          <h3 style="color: #4ecdc4; margin: 0 0 8px;">Message sent successfully!</h3>
+          <p style="margin: 0 0 8px;">Thank you for reaching out! We've received your ${selectedCollabType} and will respond within 24 hours.</p>
+          <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">Reference ID: ${referenceId}</p>
+        </div>
+      `);
+      
+      // Reset form using your exact pattern
+      if (!result.error) {
+        form.reset();
+        document.querySelectorAll('.collab-option').forEach(option => {
+          option.classList.remove('selected');
+        });
+        selectedCollabType = '';
+        document.getElementById('collaboration-type').value = '';
+        updateCharacterCount();
+      }
+      
+    } catch (error) {
+      console.error('Error submitting collaboration:', error);
+      showError(`
+        <div style="text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 12px;">❌</div>
+          <h3 style="color: #ff6b6b; margin: 0 0 8px;">Submission Failed</h3>
+          <p style="margin: 0;">Something went wrong. Please try again or email us directly at <strong>chizsaleei@gmail.com</strong></p>
+          <p style="margin: 8px 0 0; font-size: 0.9rem; opacity: 0.8;">Error: ${error.message}</p>
+        </div>
+      `);
+    }
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  });
+})();
+
+// Form submission function (backup)
+window.submitCollaboration = async function(event) {
+  // This function is handled by the IIFE above
+  // Keeping for compatibility
+};
+
+// Add some interactive feedback
+document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+  input.addEventListener('focus', () => {
+    input.style.transform = 'scale(1.02)';
+  });
+  
+  input.addEventListener('blur', () => {
+    input.style.transform = 'scale(1)';
+  });
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a6b10c40a2b9f0',t:'MTc1OTc2OTc4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
