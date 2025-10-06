@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CHIZSA | COACHING</title>
   <style>
     :root{
@@ -17,7 +17,6 @@
       background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);
       line-height:1.6; min-height:100vh;
     }
-
     /* Header */
     .header{position:sticky;top:0;z-index:10;background:rgba(26,61,46,.95);border-bottom:1px solid rgba(212,175,55,.25);backdrop-filter:blur(10px)}
     .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
@@ -35,35 +34,19 @@
     .link-muted:hover{color:var(--gold)}
     .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
     .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
-
     /* Main */
     .main{max-width:1200px;margin:0 auto;padding:48px 20px}
     .hero{text-align:center;margin-bottom:44px}
     .hero h1{font-size:3rem;color:var(--gold);margin:0 0 10px}
     .hero p{max-width:680px;margin:0 auto 18px;color:var(--muted)}
     .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin:44px 0}
-    .card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);transition:.25s}
+    .card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);transition:.25s;position:relative}
     .card:hover{transform:translateY(-4px);border-color:rgba(212,175,55,.48);box-shadow:0 8px 26px rgba(0,0,0,.32)}
     .card h3{color:var(--gold);margin:0 0 8px}
     .card p{color:var(--muted);margin:0 0 12px}
-
-    /* Contact card */
-    .contact{max-width:1000px;margin:38px auto 0;background:var(--glass);border:1px solid rgba(212,175,55,.25);border-radius:14px;padding:22px}
-    .contact-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-    .contact h2{color:var(--gold);margin:0;font-size:1.5rem}
-    .contact small{color:var(--muted)}
-    .contact-form{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:center}
-    .contact-form input,.contact-form textarea{
-      width:100%; padding:12px 14px; border:1px solid #335e50; border-radius:10px; background:#0e2a23; color:#f4f1e8;
-    }
-    .contact-form textarea{min-height:44px;resize:vertical}
-    .contact .btn-gold{height:44px}
-    .muted{color:var(--muted)}
-    .row-note{grid-column:1 / -1}
-    .helper{font-size:.9rem;color:var(--muted)}
-
+    .tag{font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid rgba(212,175,55,.35);color:var(--gold)}
+    .lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,36,25,.45);backdrop-filter:blur(2px)}
     /* Footer */
     .footer{margin-top:48px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
     .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
@@ -73,51 +56,37 @@
     .foot-right{display:flex;gap:14px;justify-content:flex-end;align-items:center}
     .icon{width:22px;height:22px;display:inline-block;vertical-align:middle;fill:currentColor;color:var(--muted)}
     .icon:hover{color:var(--gold)}
-
     /* Mobile */
     @media (max-width:980px){
-      .contact-form{grid-template-columns:1fr 1fr;gap:10px}
-      .contact .btn-gold{grid-column:1 / -1}
-      .row-note{grid-column:1 / -1}
+      .foot{grid-template-columns:1fr;text-align:center}
+      .foot-center,.foot-right{justify-content:center}
     }
     @media (max-width:768px){
       .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
       .menu.active{left:0}
       .hamb{display:flex}
       .hero h1{font-size:2.2rem}
-      .foot{grid-template-columns:1fr;text-align:center}
-      .foot-center,.foot-right{justify-content:center}
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- HEADER -->
   <header class="header">
     <div class="nav">
       <a class="logo" href="/">CHIZSA | COACHING</a>
       <nav>
         <ul class="menu" id="menu">
           <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
-
-          <!-- GATED NAV ITEMS -->
-          <li data-gated="true" style="display:none">
-            <a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a>
-          </li>
-          <li data-gated="true" style="display:none">
-            <a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a>
-          </li>
-
+          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
+          <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
           <li><a href="https://chizsaleei.com/about.html">About</a></li>
           <li><a href="https://chizsaleei.com/training.html">Training</a></li>
-          <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
-          <li><a href="https://chizsaleei.com/dashboard.html" class="link-muted">Dashboard</a></li>
-          <li><a href="https://chizsaleei.com/sessions.html" class="link-muted">Sessions</a></li>
+          <li><a href="https://chizsaleei.com/testimonials.html">Testimonials</a></li>
         </ul>
       </nav>
       <div class="right">
+        <a class="btn btn-gold" href="/support/">Support</a>
         <button id="btn-signin" class="btn btn-outline" type="button">Sign in</button>
-        <button id="btn-signout" class="btn btn-outline" type="button" style="display:none">Sign out</button>
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
         <div class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </div>
@@ -125,103 +94,160 @@
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- MAIN -->
   <main class="main">
+    <!-- HERO -->
     <section class="hero" id="top">
-      <h1>Transform Your Life Journey</h1>
-      <p>Discover your authentic self through simple coaching tools and clear next steps</p>
+      <h1>Find your core and use the exact tools</h1>
+      <p>Quiz is free and shows your archetype instantly. You can preview tools. Sign in to save progress and use tools. Pay monthly with Tools Pass or buy a single tool.</p>
       <div class="cta">
-        <!-- Public -->
         <a class="btn btn-gold" href="https://chizsaleei.com/archetype/quiz/index.html">Take a quiz to find your core</a>
-
-        <!-- Gated CTAs -->
-        <span data-gated="true" style="display:none">
-          <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Choose your Profile Toolkits</a>
-          <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Select your focus</a>
-        </span>
+        <a class="btn btn-outline" href="#tools">Preview tools</a>
       </div>
-      <p class="muted" id="auth-hint" style="margin-top:10px;">
-        Premium toolkits and session links unlock after sign in.
-      </p>
+      <p class="muted" style="margin-top:10px;">Result is free. Saving and using tools requires sign in. One micro tool is free to use after sign in.</p>
     </section>
 
-    <!-- Main cards -->
-    <section class="grid" aria-label="Key sections">
+    <!-- NEXT STEP CARD -->
+    <section class="grid" aria-label="Next step">
       <article class="card">
-        <h3>Choose Your Profile Toolkits</h3>
-        <p>Personalized frameworks for professional growth and everyday clarity.</p>
-        <span data-gated="true" style="display:none">
-          <a class="btn btn-outline" href="https://chizsaleei.com/profiles/index.html">Explore profiles</a>
-        </span>
-        <span class="muted" data-gated="false">Sign in to access</span>
-      </article>
-
-      <article class="card">
-        <h3>Select Your Focus</h3>
-        <p>Targeted resources for career, wellness, and life vision goals.</p>
-        <span data-gated="true" style="display:none">
-          <a class="btn btn-outline" href="https://chizsaleei.com/focus/index.html">Choose focus</a>
-        </span>
-        <span class="muted" data-gated="false">Sign in to access</span>
+        <h3>Next step</h3>
+        <ol class="muted" style="padding-left:18px;margin:8px 0 0">
+          <li>Take the quiz and see your archetype.</li>
+          <li>Sign in to save your result and preview tools.</li>
+          <li>Use the free micro tool after sign in.</li>
+          <li>Unlock all tools with a monthly pass or buy a single tool.</li>
+        </ol>
       </article>
     </section>
 
-    <!-- Contact form (Supabase) -->
-    <section class="contact" aria-label="Contact">
-      <div class="contact-head">
-        <h2>Sign Up for Freebies and Collaboration</h2>
-        <small>Short form, quick reply.</small>
-      </div>
+    <!-- TOOL PREVIEWS -->
+    <section id="tools" class="grid" aria-label="Tool previews">
+      <!-- IELTS Speaking Drills -->
+      <article class="card" data-tool-id="tool-speaking-drills">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>IELTS Speaking Drills</h3>
+          <span class="tag">Preview</span>
+        </div>
+        <p>Timed prompts, band 7 to 8 vocabulary, quick reflection.</p>
+        <div class="lock" data-lock-overlay>
+          <div style="text-align:center">
+            <div>Sign in to preview and use</div>
+            <div style="margin-top:10px">
+              <button class="btn btn-outline" data-signin-cta>Sign in</button>
+              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta" style="justify-content:flex-start;margin-top:12px">
+          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
+          <button class="btn btn-outline" data-buy-one="tool-speaking-drills">Buy this tool</button>
+        </div>
+      </article>
 
-      <form id="contact-form" class="contact-form">
-        <!-- Honeypot -->
+      <!-- Medical English Labs -->
+      <article class="card" data-tool-id="tool-med-english-labs">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Medical English Labs</h3>
+          <span class="tag">Preview</span>
+        </div>
+        <p>SBAR cases, ICU scenarios, differential drills.</p>
+        <div class="lock" data-lock-overlay>
+          <div style="text-align:center">
+            <div>Sign in to preview and use</div>
+            <div style="margin-top:10px">
+              <button class="btn btn-outline" data-signin-cta>Sign in</button>
+              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta" style="justify-content:flex-start;margin-top:12px">
+          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
+          <button class="btn btn-outline" data-buy-one="tool-med-english-labs">Buy this tool</button>
+        </div>
+      </article>
+
+      <!-- Business Briefs -->
+      <article class="card" data-tool-id="tool-business-briefs">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Business Briefs</h3>
+          <span class="tag">Preview</span>
+        </div>
+        <p>Negotiation prompts, critical thinking, email polish.</p>
+        <div class="lock" data-lock-overlay>
+          <div style="text-align:center">
+            <div>Sign in to preview and use</div>
+            <div style="margin-top:10px">
+              <button class="btn btn-outline" data-signin-cta>Sign in</button>
+              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta" style="justify-content:flex-start;margin-top:12px">
+          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
+          <button class="btn btn-outline" data-buy-one="tool-business-briefs">Buy this tool</button>
+        </div>
+      </article>
+
+      <!-- Free micro tool (requires sign in but no payment) -->
+      <article class="card" data-tool-id="tool-free-micro">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Quick Fluency Booster</h3>
+          <span class="tag">Free after sign in</span>
+        </div>
+        <p>One short daily drill. Saves progress for free once signed in.</p>
+        <div class="lock" data-lock-overlay>
+          <div style="text-align:center">
+            <div>Sign in to use this free tool</div>
+            <div style="margin-top:10px">
+              <button class="btn btn-outline" data-signin-cta>Sign in</button>
+            </div>
+          </div>
+        </div>
+        <div class="cta" style="justify-content:flex-start;margin-top:12px">
+          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- CONTACT / LEAD CAPTURE -->
+    <section class="card" style="max-width:1000px;margin:38px auto 0;background:var(--glass)">
+      <div class="contact-head" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;padding:4px 0 0">
+        <h2 style="color:var(--gold);margin:0;font-size:1.5rem">Sign up for updates</h2>
+        <small style="color:var(--muted)">Short form, quick reply</small>
+      </div>
+      <form id="contact-form" class="contact-form" style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:center;padding-bottom:8px">
         <input type="text" id="hp" name="hp" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px">
-
         <input id="c-name" type="text" placeholder="Full name" required aria-label="Full name">
         <input id="c-email" type="email" placeholder="Email" required aria-label="Email">
-        <textarea id="c-msg" placeholder="What do you need? (coaching, collab, freebies)" required aria-label="Your message"></textarea>
+        <textarea id="c-msg" placeholder="What do you need? (tool, coaching, collab)" required aria-label="Your message"></textarea>
         <button id="contact-submit" class="btn btn-gold" type="submit">Send</button>
-
-        <div class="row-note">
-          <p id="contact-status" class="helper"></p>
-        </div>
+        <div class="row-note" style="grid-column:1 / -1"><p id="contact-status" class="helper" style="font-size:.9rem;color:var(--muted)"></p></div>
       </form>
     </section>
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="foot">
       <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
-
       <div class="foot-center">
-        <a href="https://chizsaleei.com/about.html">About</a>
+        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">Gmail</a>
         <span aria-hidden="true">·</span>
-        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
+        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <span aria-hidden="true">·</span>
+        <a href="/support/" aria-label="Support">Support</a>
       </div>
-
       <div class="foot-right">
-        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/>
-          </svg>
-        </a>
-        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/>
-          </svg>
-        </a>
-        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2c-3.1 0-3.5 0-4.7.1-1.1.06-1.7.24-2.1.4-.5.2-.8.4-1.1.8-.3.3-.6.6-.8 1.1-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.06 1.1.24 1.7.4 2.1.2.5.4.8.8 1.1.3.3.6.6 1.1.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.06 1.7-.24 2.1-.4.5-.2.8-.4 1.1-.8.3-.3.6-.6.8-1.1.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.06-1.1-.24-1.7-.4-2.1-.2-.5-.4-.8-.8-1.1-.3-.3-.6-.6-1.1-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Zm0 2.2a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8Zm5-2.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/>
-          </svg>
-        </a>
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
+        <a href="https://chizsaleei.com/terms.html">Terms</a>
+        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
+        <a href="https://chizsaleei.com/accessibility.html">Accessibility</a>
       </div>
     </div>
   </footer>
 
-  <!-- Base scripts -->
+  <!-- SCRIPTS -->
   <script>
     // Mobile menu
     const hamb = document.getElementById('hamb');
@@ -235,11 +261,128 @@
     });
   </script>
 
-  <!-- Supabase + gating + contact -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="/js/supabaseClient.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/gate.js"></script>
-  <script src="/js/contact.js"></script>
+  <!-- Supabase + gating + checkout hooks -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ---------- CONFIG ----------
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co"; // retain your URL here
+    const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";       // retain your anon key here
+
+    // Stripe serverless endpoints (Netlify functions you will add)
+    const API_CHECKOUT = "/api/create-checkout-session"; // POST {priceId|toolId}
+    const API_PORTAL = "/api/customer-portal";           // POST {}
+
+    // Tool path map
+    const TOOL_PATH = (toolId) => `/tools/${toolId}/index.html`;
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const state = { user:null, entitlements:{ hasToolsPass:false, ownedTools:new Set(), canUseFreeMicro:false } };
+
+    async function refreshUser(){
+      const { data:{ user } } = await supabase.auth.getUser();
+      state.user = user;
+      const btnSignin = document.getElementById('btn-signin');
+      if(user){
+        btnSignin.textContent = 'Dashboard';
+        btnSignin.onclick = () => window.location.href = 'https://chizsaleei.com/dashboard.html';
+        await fetchEntitlements();
+      } else {
+        btnSignin.textContent = 'Sign in';
+        btnSignin.onclick = () => window.location.href = 'https://chizsaleei.com/auth/sign-in/';
+        applyLocks();
+      }
+    }
+
+    supabase.auth.onAuthStateChange(()=> refreshUser());
+
+    // Public SQL views you will create in Supabase:
+    // 1) subscriptions_public(user_id uuid, status text, product text)
+    //    where product='tools-pass' and status in ('active','trialing')
+    // 2) purchases_public(user_id uuid, tool_id text)
+    //    one row per purchased tool
+
+    async function fetchEntitlements(){
+      if(!state.user){ applyLocks(); return }
+      const { data:subs } = await supabase
+        .from('subscriptions_public')
+        .select('status, product')
+        .eq('user_id', state.user.id)
+        .maybeSingle();
+      state.entitlements.hasToolsPass = (subs?.product === 'tools-pass') && (subs?.status === 'active' || subs?.status === 'trialing');
+
+      const { data:purchases } = await supabase
+        .from('purchases_public')
+        .select('tool_id')
+        .eq('user_id', state.user.id);
+      state.entitlements.ownedTools = new Set((purchases||[]).map(r=>r.tool_id));
+
+      // Free micro tool allowed for all signed in users without payment
+      state.entitlements.canUseFreeMicro = !!state.user;
+
+      applyLocks();
+    }
+
+    function userOwns(toolId){
+      if(toolId === 'tool-free-micro') return state.entitlements.canUseFreeMicro;
+      return state.entitlements.hasToolsPass || state.entitlements.ownedTools.has(toolId);
+    }
+
+    function applyLocks(){
+      document.querySelectorAll('[data-tool-id]').forEach(card=>{
+        const toolId = card.getAttribute('data-tool-id');
+        const overlay = card.querySelector('[data-lock-overlay]');
+        const launchBtn = card.querySelector('[data-launch-tool]');
+        const signinCtas = card.querySelectorAll('[data-signin-cta]');
+
+        const entitled = userOwns(toolId);
+        overlay.style.display = entitled ? 'none' : 'flex';
+
+        signinCtas.forEach(btn=> btn.onclick = () => window.location.href = 'https://chizsaleei.com/auth/sign-in/');
+
+        launchBtn.onclick = () => {
+          if(!state.user){ window.location.href = 'https://chizsaleei.com/auth/sign-in/'; return }
+          if(entitled){ window.location.href = TOOL_PATH(toolId); }
+          else { openBuyModal(toolId); }
+        };
+      });
+
+      document.querySelectorAll('[data-unlock-all]').forEach(btn=>{
+        btn.onclick = () => beginCheckout({ priceId:'price_tools_pass_monthly' });
+      });
+
+      document.querySelectorAll('[data-buy-one]').forEach(btn=>{
+        btn.onclick = () => beginCheckout({ toolId: btn.getAttribute('data-buy-one') });
+      });
+    }
+
+    async function beginCheckout(payload){
+      if(!state.user){ window.location.href = 'https://chizsaleei.com/auth/sign-in/'; return }
+      try{
+        const res = await fetch(API_CHECKOUT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if(data?.url) window.location.href = data.url; else alert('Checkout error.');
+      }catch(e){ alert('Checkout error.'); }
+    }
+
+    function openBuyModal(toolId){
+      const ok = confirm('Unlock this tool. OK = buy single tool. Cancel = get Tools Pass.');
+      if(ok){ beginCheckout({ toolId }); }
+      else { beginCheckout({ priceId:'price_tools_pass_monthly' }); }
+    }
+
+    refreshUser();
+  </script>
+  <script>
+    // Optional helper for Support page: open Stripe Customer Portal
+    async function openBillingPortal(){
+      try{
+        const res = await fetch('/api/customer-portal', { method:'POST' });
+        const data = await res.json();
+        if(data?.url){ window.location.href = data.url; } else { alert('Unable to open billing portal.'); }
+      }catch(e){ alert('Unable to open billing portal.'); }
+    }
+    window.openBillingPortal = openBillingPortal;
+  </script>
 </body>
 </html>
