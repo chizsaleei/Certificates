@@ -1,238 +1,619 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy | CHIZSA COACHING</title>
-  <style>
-    :root{
-      --deep:#0f2419; --deep2:#1a3d2e;
-      --gold:#d4af37; --gold2:#b8941f;
-      --ink:#f4f1e8; --muted:#c9d1d9;
-      --glass:rgba(26,61,46,.85);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:Georgia, serif; color:var(--ink);
-      background:linear-gradient(135deg,var(--deep2) 0%, var(--deep) 100%);
-      line-height:1.6; min-height:100vh;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy Policy | CHIZSA | COACHING</title>
+<style>
+body {
+  box-sizing: border-box;
+}
 
-    /* Header (uniform) */
-    .header{position:sticky;top:0;z-index:10;background:rgba(26,61,46,.95);border-bottom:1px solid rgba(212,175,55,.25);backdrop-filter:blur(10px)}
-    .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
-    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px}
-    .menu{list-style:none;display:flex;gap:24px;margin:0;padding:0}
-    .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
-    .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
-    .right{display:flex;gap:12px;align-items:center}
-    .btn{display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;transition:.25s;cursor:pointer}
-    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep)}
-    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(212,175,55,.28)}
-    .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
-    .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
+:root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8;--muted:#c9d1d9}
+body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:48px 20px}
+h1,h2{color:var(--gold)}h1{margin:0 0 6px}
+p,li{color:var(--muted);line-height:1.7}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:22px;backdrop-filter:blur(8px);margin-top:18px}
+.small{font-size:.95rem}
 
-    /* Content */
-    .container{max-width:1200px;margin:0 auto;padding:48px 20px}
-    .hero{text-align:center;margin-bottom:30px}
-    .hero h1{color:var(--gold);font-size:2.4rem;margin:0 0 8px}
-    .hero p{color:var(--muted);margin:0 auto;max-width:740px}
+/* Data Types Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
 
-    .updated{background:var(--glass);border:1px solid rgba(212,175,55,.25);border-radius:10px;padding:12px 16px;text-align:center;margin:18px auto 26px;max-width:520px}
-    .updated strong{color:var(--gold)}
+.data-table th,
+.data-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
 
-    .doc{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:14px;padding:28px;backdrop-filter:blur(8px)}
-    .doc h2{color:var(--gold);margin:22px 0 10px;font-size:1.5rem}
-    .doc h3{color:var(--gold);margin:18px 0 8px;font-size:1.15rem}
-    .doc p{color:var(--muted);margin:0 0 12px}
-    .doc ul{margin:8px 0 14px 18px;color:var(--muted)}
-    .note{font-size:.95rem;color:var(--muted)}
+.data-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  font-weight: 600;
+}
 
-    .callout{background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.3);border-radius:10px;padding:14px 16px}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:rgba(0,0,0,.25); padding:2px 6px; border-radius:6px}
+.data-table td {
+  color: var(--muted);
+}
 
-    /* Footer (uniform) */
-    .footer{margin-top:48px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
-    .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
-    .foot a{color:var(--muted);text-decoration:none}
-    .foot a:hover{color:var(--gold)}
-    .foot-center{display:flex;gap:12px;justify-content:center;align-items:center}
-    .foot-right{display:flex;gap:14px;justify-content:flex-end;align-items:center}
-    .icon{width:22px;height:22px;display:inline-block;vertical-align:middle;fill:currentColor;color:var(--muted)}
-    .icon:hover{color:var(--gold)}
+/* Rights Section */
+.rights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
 
-    /* Mobile */
-    @media (max-width:768px){
-      .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
-      .menu.active{left:0}
-      .hamb{display:flex}
-      .hero h1{font-size:2rem}
-      .foot{grid-template-columns:1fr;text-align:center}
-      .foot-center,.foot-right{justify-content:center}
-    }
-  </style>
+.right-item {
+  background: rgba(15, 36, 25, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.right-title {
+  color: var(--gold);
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.right-description {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Agreement Section */
+.agreement-section {
+  position: sticky;
+  bottom: 0;
+  background: rgba(15, 36, 25, 0.95);
+  border-top: 2px solid var(--gold);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
+}
+
+.agreement-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.reading-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.agreement-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox-input.checked {
+  background: var(--gold);
+}
+
+.checkbox-input.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--deep);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.agreement-text {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.agree-button {
+  background: var(--gold);
+  color: var(--deep);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.agree-button.enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.agree-button.enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(26, 61, 46, 0.9);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-link:hover {
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+}
+
+/* Highlight boxes */
+.highlight-box {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.highlight-box h3 {
+  color: var(--gold);
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.highlight-box p {
+  margin: 0;
+  color: var(--ink);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 20px 15px;
+  }
+  
+  .agreement-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .agreement-checkbox {
+    justify-content: center;
+  }
+  
+  .back-link {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  
+  .rights-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .data-table {
+    font-size: 0.9rem;
+  }
+}
+</style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="nav">
-      <a class="logo" href="/">CHIZSA | COACHING</a>
-      <nav>
-        <ul class="menu" id="menu">
-          <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
-          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
-          <li><a href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
-          <li><a href="https://chizsaleei.com/about.html">About</a></li>
-          <li><a href="https://chizsaleei.com/training.html">Training</a></li>
-          <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
-        </ul>
-      </nav>
-      <div class="right">
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
-        <div class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
+<a href="/" class="back-link">← Back to Home</a>
+
+<main class="wrap">
+<h1>Privacy Policy</h1>
+<p class="small">Effective date: December 15, 2024</p>
+
+<div class="highlight-box">
+<h3>Your Privacy Matters</h3>
+<p>We're committed to protecting your personal information and being transparent about how we collect, use, and share your data. This policy explains our practices in plain language.</p>
+</div>
+
+<div class="card">
+<h2>1. Information We Collect</h2>
+<p>We collect different types of information to provide and improve our coaching services:</p>
+
+<table class="data-table">
+<thead>
+<tr>
+<th>Data Type</th>
+<th>What We Collect</th>
+<th>Why We Need It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Information</strong></td>
+<td>Email address, password (encrypted), display name, profile preferences</td>
+<td>Create and secure your account, personalize your experience</td>
+</tr>
+<tr>
+<td><strong>Learning Data</strong></td>
+<td>Quiz results, tool progress, session notes, practice responses, skill assessments</td>
+<td>Track your progress, provide personalized coaching, save your work</td>
+</tr>
+<tr>
+<td><strong>Session Data</strong></td>
+<td>Booking details, session recordings (with consent), uploaded materials, coaching notes</td>
+<td>Deliver coaching services, enable session replay, maintain learning records</td>
+</tr>
+<tr>
+<td><strong>Payment Information</strong></td>
+<td>Billing details processed by Stripe (we don't store card numbers), purchase history</td>
+<td>Process payments, manage subscriptions, provide customer support</td>
+</tr>
+<tr>
+<td><strong>Technical Data</strong></td>
+<td>IP address, browser type, device info, usage analytics, cookies</td>
+<td>Ensure platform security, improve performance, analyze usage patterns</td>
+</tr>
+<tr>
+<td><strong>Communication Data</strong></td>
+<td>Support messages, feedback, survey responses</td>
+<td>Provide customer support, improve our services</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>2. How We Use Your Information</h2>
+<ul>
+<li><strong>Service Delivery:</strong> Provide access to tools, save your progress, deliver coaching sessions</li>
+<li><strong>Personalization:</strong> Customize your learning experience, recommend relevant content</li>
+<li><strong>Payment Processing:</strong> Handle subscriptions, process purchases, manage billing</li>
+<li><strong>Communication:</strong> Send service updates, respond to support requests, share important notices</li>
+<li><strong>Improvement:</strong> Analyze usage patterns, develop new features, enhance user experience</li>
+<li><strong>Security:</strong> Detect fraud, prevent abuse, protect platform integrity</li>
+<li><strong>Legal Compliance:</strong> Meet regulatory requirements, respond to legal requests</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>3. Legal Basis for Processing</h2>
+<p>We process your personal data based on:</p>
+<ul>
+<li><strong>Contract Performance:</strong> To provide the services you've purchased or subscribed to</li>
+<li><strong>Legitimate Interest:</strong> To improve our services, ensure security, and communicate with you</li>
+<li><strong>Consent:</strong> For session recordings, marketing communications, and optional features</li>
+<li><strong>Legal Obligation:</strong> To comply with applicable laws and regulations</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>4. Information Sharing</h2>
+<p>We don't sell your personal information. We may share data with:</p>
+<ul>
+<li><strong>Service Providers:</strong> Stripe (payments), Supabase (database), Daily.co/VooV (video calls), Calendly (scheduling)</li>
+<li><strong>Coaches:</strong> Your assigned coaches receive relevant learning data to provide personalized instruction</li>
+<li><strong>Legal Requirements:</strong> When required by law, court order, or to protect our rights</li>
+<li><strong>Business Transfers:</strong> In case of merger, acquisition, or sale (with notice to users)</li>
+</ul>
+
+<div class="highlight-box">
+<h3>Third-Party Services</h3>
+<p>Our platform integrates with trusted third-party services. Each has their own privacy policies: <a href="https://stripe.com/privacy" target="_blank">Stripe</a>, <a href="https://supabase.com/privacy" target="_blank">Supabase</a>, <a href="https://www.daily.co/privacy/" target="_blank">Daily.co</a>, <a href="https://calendly.com/privacy" target="_blank">Calendly</a>.</p>
+</div>
+</div>
+
+<div class="card">
+<h2>5. Your Privacy Rights</h2>
+<p>You have the following rights regarding your personal data:</p>
+
+<div class="rights-grid">
+<div class="right-item">
+<div class="right-title">Access</div>
+<div class="right-description">Request a copy of all personal data we hold about you</div>
+</div>
+
+<div class="right-item">
+<div class="right-title">Correction</div>
+<div class="right-description">Update or correct inaccurate personal information</div>
+</div>
+
+<div class="right-item">
+<div class="right-title">Deletion</div>
+<div class="right-description">Request deletion of your personal data (subject to legal requirements)</div>
+</div>
+
+<div class="right-item">
+<div class="right-title">Portability</div>
+<div class="right-description">Export your data in a machine-readable format</div>
+</div>
+
+<div class="right-item">
+<div class="right-title">Restriction</div>
+<div class="right-description">Limit how we process your personal information</div>
+</div>
+
+<div class="right-item">
+<div class="right-title">Objection</div>
+<div class="right-description">Object to processing based on legitimate interests</div>
+</div>
+</div>
+
+<p>To exercise these rights, email <a href="mailto:privacy@chizsaleei.com">privacy@chizsaleei.com</a>. We'll respond within 30 days.</p>
+</div>
+
+<div class="card">
+<h2>6. Data Security</h2>
+<p>We implement industry-standard security measures:</p>
+<ul>
+<li><strong>Encryption:</strong> Data encrypted in transit (HTTPS) and at rest</li>
+<li><strong>Access Controls:</strong> Limited access on a need-to-know basis</li>
+<li><strong>Regular Audits:</strong> Security assessments and vulnerability testing</li>
+<li><strong>Secure Infrastructure:</strong> Hosted on secure, compliant cloud platforms</li>
+<li><strong>Incident Response:</strong> Procedures for handling potential data breaches</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>7. Data Retention</h2>
+<p>We retain your data for different periods based on type and purpose:</p>
+<ul>
+<li><strong>Account Data:</strong> Until you delete your account, plus 30 days for recovery</li>
+<li><strong>Learning Progress:</strong> Retained while your account is active to maintain continuity</li>
+<li><strong>Session Recordings:</strong> 1 year after session date (or until you request deletion)</li>
+<li><strong>Payment Records:</strong> 7 years for tax and legal compliance</li>
+<li><strong>Support Communications:</strong> 3 years for quality assurance</li>
+<li><strong>Analytics Data:</strong> Aggregated and anonymized after 2 years</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>8. Cookies and Tracking</h2>
+<p>We use cookies and similar technologies for:</p>
+<ul>
+<li><strong>Essential Cookies:</strong> Required for login, security, and basic functionality</li>
+<li><strong>Performance Cookies:</strong> Help us understand how you use our platform</li>
+<li><strong>Preference Cookies:</strong> Remember your settings and customizations</li>
+</ul>
+<p>You can control cookies through your browser settings, but some features may not work properly if disabled.</p>
+</div>
+
+<div class="card">
+<h2>9. International Data Transfers</h2>
+<p>Your data may be processed in countries outside your residence. We ensure adequate protection through:</p>
+<ul>
+<li>Standard Contractual Clauses approved by relevant authorities</li>
+<li>Adequacy decisions for countries with equivalent privacy laws</li>
+<li>Certification schemes and codes of conduct</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>10. Children's Privacy</h2>
+<p>Our services are not intended for children under 16. We don't knowingly collect personal information from children. If you believe we've collected information from a child, please contact us immediately.</p>
+</div>
+
+<div class="card">
+<h2>11. Session Recording and Consent</h2>
+<p>Coaching sessions may be recorded for educational purposes:</p>
+<ul>
+<li>Recording requires explicit consent from all participants</li>
+<li>You can withdraw consent and request deletion at any time</li>
+<li>Recordings are stored securely and shared only with your assigned coaches</li>
+<li>Automatic deletion after 1 year unless you request earlier removal</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>12. Marketing Communications</h2>
+<p>We may send you:</p>
+<ul>
+<li><strong>Service Updates:</strong> Important notices about your account or services (required)</li>
+<li><strong>Educational Content:</strong> Learning tips, new features, coaching insights (opt-in)</li>
+<li><strong>Promotional Offers:</strong> Special deals and new service announcements (opt-in)</li>
+</ul>
+<p>You can unsubscribe from marketing emails anytime using the link provided or by contacting us.</p>
+</div>
+
+<div class="card">
+<h2>13. Changes to This Policy</h2>
+<p>We may update this Privacy Policy to reflect changes in our practices or legal requirements. We'll notify you of significant changes via:</p>
+<ul>
+<li>Email notification to your registered address</li>
+<li>Prominent notice on our platform</li>
+<li>In-app notification when you next log in</li>
+</ul>
+<p>Continued use after changes constitutes acceptance of the updated policy.</p>
+</div>
+
+<div class="card">
+<h2>14. Contact Information</h2>
+<p>For privacy-related questions or requests:</p>
+<ul>
+<li><strong>General Support:</strong> <a href="mailto:chizsaleei@gmail.com">chizsaleei@gmail.com</a></li>
+<li><strong>Website:</strong> <a href="https://chizsaleei.com">chizsaleei.com</a></li>
+<li><strong>Response Time:</strong> Within 30 days for privacy requests, 48 hours for general inquiries</li>
+</ul>
+</div>
+
+
+</main>
+
+<!-- Agreement Section -->
+<div class="agreement-section">
+  <div class="agreement-content">
+    <div class="reading-progress">
+      <div class="progress-bar" id="progress-bar"></div>
     </div>
-  </header>
-
-  <!-- Main -->
-  <main class="container">
-    <section class="hero">
-      <h1>Privacy Policy</h1>
-      <p>Your privacy and data security are central to how our coaching site and tools are designed.</p>
-    </section>
-
-    <div class="updated"><strong>Last Updated:</strong> October 2025</div>
-
-    <article class="doc">
-      <h2>1) Who we are</h2>
-      <p>CHIZSA COACHING (“we”, “us”) provides simple coaching tools and learning resources at <span class="kbd">chizsaleei.com</span>.</p>
-
-      <h2>2) What we collect</h2>
-      <h3>Information you provide</h3>
-      <ul>
-        <li>Contact details (e.g., email) when you message us or sign up for forms.</li>
-        <li>Inputs you type into our tools (e.g., quiz answers, notes, goals) when you choose to save them.</li>
-      </ul>
-      <h3>Information we automatically receive</h3>
-      <ul>
-        <li>Basic device and usage data (browser, pages viewed, timestamps, approximate location from IP).</li>
-        <li>Cookies needed for site features and (if enabled) anonymous analytics.</li>
-      </ul>
-
-      <h2>3) How the web tools work</h2>
-      <p>Many tools run fully in your browser. Your entries stay locally in memory unless you click a button to save or share. If you choose to save, we store data in our secure database (see Supabase below). You can request deletion anytime.</p>
-
-      <h2>4) Supabase integration</h2>
-      <div class="callout">
-        <p><strong>What is Supabase?</strong> A secure backend platform we use for authentication, database, and file storage.</p>
-      </div>
-      <h3>What we use Supabase for</h3>
-      <ul>
-        <li><strong>Auth (optional):</strong> Account sign-in to sync your tool data across devices.</li>
-        <li><strong>Database:</strong> Saving quiz results, notes, and preferences when you opt in.</li>
-        <li><strong>Storage:</strong> Optional upload features (e.g., importing a plan) if offered.</li>
-      </ul>
-      <h3>How your data is protected</h3>
-      <ul>
-        <li>Transport encryption (HTTPS) for all traffic.</li>
-        <li>Role-Level Security (RLS) so your records are accessible only to your account.</li>
-        <li>Access limited to operational team members with need-to-know.</li>
-      </ul>
-      <h3>What we do <em>not</em> do</h3>
-      <ul>
-        <li>No sale of personal data.</li>
-        <li>No ad retargeting or third-party ad networks.</li>
-        <li>No reading of your private entries without your request or legal requirement.</li>
-      </ul>
-
-      <h2>5) Cookies & analytics</h2>
-      <p>We use essential cookies for things like keeping you signed in. If we run privacy-respecting analytics, we aggregate or anonymize results. You can set your browser to block non-essential cookies; site features may be limited.</p>
-
-      <h2>6) How we use information</h2>
-      <ul>
-        <li>Provide and improve tools you request.</li>
-        <li>Respond to messages and support requests.</li>
-        <li>Understand usage to make the site faster and clearer.</li>
-        <li>Comply with legal obligations.</li>
-      </ul>
-
-      <h2>7) When we share information</h2>
-      <ul>
-        <li><strong>Service providers:</strong> e.g., Supabase, email services—only what’s needed to run the site.</li>
-        <li><strong>Legal:</strong> If required by law or to protect rights and safety.</li>
-        <li><strong>Consent:</strong> If you explicitly ask us to share (e.g., with a collaborator).</li>
-      </ul>
-
-      <h2>8) Data retention</h2>
-      <p>Saved tool data is retained while your account is active or as needed for the purpose it was collected. You can request deletion at any time.</p>
-
-      <h2>9) Your rights</h2>
-      <ul>
-        <li>Access, correct, export, or delete your data.</li>
-        <li>Withdraw consent for optional features (saving, emails).</li>
-        <li>Opt out of non-essential cookies/analytics.</li>
-      </ul>
-
-      <h2>10) Children</h2>
-      <p>Our services are for ages 18+. We don’t knowingly collect data from children under 18.</p>
-
-      <h2>11) International transfers</h2>
-      <p>Data may be processed in regions where our providers operate. We use safeguards consistent with this policy.</p>
-
-      <h2>12) Changes to this policy</h2>
-      <p>We’ll post updates here and refresh the “Last Updated” date. Material changes may be summarized in-app.</p>
-
-      <h2>13) Contact</h2>
-      <p class="note">
-        Email: <a href="mailto:chizsaleei@gmail.com" style="color:var(--gold)">chizsaleei@gmail.com</a> ·
-        LinkedIn: <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" style="color:var(--gold)">/in/chizsaibanez</a>
-      </p>
-    </article>
-  </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="foot">
-      <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
-      <div class="foot-center">
-        <a href="https://chizsaleei.com/about.html">About</a>
-        <span aria-hidden="true">·</span>
-        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
-      </div>
-      <div class="foot-right">
-        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/>
-          </svg>
-        </a>
-        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/>
-          </svg>
-        </a>
-        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
-          <svg class="icon" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2c-3.1 0-3.5 0-4.7.1-1.1.06-1.7.24-2.1.4-.5.2-.8.4-1.1.8-.3.3-.6.6-1.1.8-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.06 1.1.24 1.7.4 2.1.2.5.4.8.8 1.1.3.3.6.6 1.1.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.06 1.7-.24 2.1-.4.5-.2.8-.4 1.1-.8.3-.3.6-.6.8-1.1.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.06-1.1-.24-1.7-.4-2.1-.2-.5-.4-.8-.8-1.1-.3-.3-.6-.6-1.1-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Zm0 2.2a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8Zm5-2.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/>
-          </svg>
-        </a>
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
-      </div>
+    
+    <div class="agreement-checkbox" onclick="toggleAgreement()">
+      <div class="checkbox-input" id="agreement-checkbox"></div>
+      <span class="agreement-text">I have read and understand the Privacy Policy</span>
     </div>
-  </footer>
+    
+    <button class="agree-button" id="agree-button" onclick="proceedWithAgreement()">
+      Continue to Platform
+    </button>
+  </div>
+</div>
 
-  <script>
-    // Mobile menu
-    const hamb = document.getElementById('hamb');
-    const menu = document.getElementById('menu');
-    hamb.addEventListener('click', () => {
-      const open = menu.classList.toggle('active');
-      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    document.querySelectorAll('#menu a').forEach(a=>{
-      a.addEventListener('click', ()=> menu.classList.remove('active'));
-    });
-  </script>
-</body>
+<script>
+let hasAgreed = false;
+let hasScrolledToBottom = false;
+
+// Track reading progress
+function updateReadingProgress() {
+  const scrollTop = window.pageYOffset;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollPercent = (scrollTop / docHeight) * 100;
+  
+  document.getElementById('progress-bar').style.width = Math.min(scrollPercent, 100) + '%';
+  
+  // Check if user has scrolled near the bottom
+  if (scrollPercent > 85 && !hasScrolledToBottom) {
+    hasScrolledToBottom = true;
+    updateButtonState();
+  }
+}
+
+// Toggle agreement checkbox
+function toggleAgreement() {
+  if (!hasScrolledToBottom) {
+    alert('Please read through the privacy policy by scrolling to the bottom first.');
+    return;
+  }
+  
+  hasAgreed = !hasAgreed;
+  const checkbox = document.getElementById('agreement-checkbox');
+  
+  if (hasAgreed) {
+    checkbox.classList.add('checked');
+  } else {
+    checkbox.classList.remove('checked');
+  }
+  
+  updateButtonState();
+}
+
+// Update button state
+function updateButtonState() {
+  const button = document.getElementById('agree-button');
+  
+  if (hasAgreed && hasScrolledToBottom) {
+    button.classList.add('enabled');
+    button.textContent = 'Continue to Platform';
+  } else if (hasScrolledToBottom && !hasAgreed) {
+    button.classList.remove('enabled');
+    button.textContent = 'Please acknowledge to continue';
+  } else {
+    button.classList.remove('enabled');
+    button.textContent = 'Read policy to continue';
+  }
+}
+
+// Proceed with agreement
+function proceedWithAgreement() {
+  if (!hasAgreed || !hasScrolledToBottom) {
+    if (!hasScrolledToBottom) {
+      alert('Please read through the complete privacy policy first.');
+    } else {
+      alert('Please check the acknowledgment box to continue.');
+    }
+    return;
+  }
+  
+  // Store agreement in localStorage
+  localStorage.setItem('privacyAcknowledged', 'true');
+  localStorage.setItem('privacyAcknowledgedDate', new Date().toISOString());
+  
+  // Redirect based on where user came from
+  const urlParams = new URLSearchParams(window.location.search);
+  const returnUrl = urlParams.get('return') || '/dashboard.html';
+  
+  // Show confirmation
+  alert('Thank you for reviewing our Privacy Policy. Redirecting you now...');
+  
+  // Redirect after short delay
+  setTimeout(() => {
+    window.location.href = returnUrl;
+  }, 1000);
+}
+
+// Check if user has already acknowledged
+function checkExistingAcknowledgment() {
+  const acknowledged = localStorage.getItem('privacyAcknowledged');
+  const acknowledgedDate = localStorage.getItem('privacyAcknowledgedDate');
+  
+  if (acknowledged === 'true' && acknowledgedDate) {
+    // Check if acknowledgment is still valid (within 1 year)
+    const ackDate = new Date(acknowledgedDate);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    
+    if (ackDate > oneYearAgo) {
+      // Acknowledgment still valid, redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return') || '/dashboard.html';
+      window.location.href = returnUrl;
+      return;
+    }
+  }
+}
+
+// Event listeners
+window.addEventListener('scroll', updateReadingProgress);
+window.addEventListener('load', () => {
+  checkExistingAcknowledgment();
+  updateReadingProgress();
+  updateButtonState();
+});
+
+// Prevent accidental navigation
+window.addEventListener('beforeunload', (e) => {
+  if (hasScrolledToBottom && !hasAgreed) {
+    e.preventDefault();
+    e.returnValue = 'You haven\'t acknowledged the privacy policy yet. Are you sure you want to leave?';
+  }
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a6203772e2bc3f',t:'MTc1OTc2Mzg0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
