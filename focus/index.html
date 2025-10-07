@@ -9,27 +9,14 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%);line-height:1.6;min-height:100vh}
 
-    /* Header */
-    .header{position:sticky;top:0;z-index:10;background:var(--glass);border-bottom:1px solid rgba(212,175,55,.28);backdrop-filter:blur(10px)}
-    .nav{max-width:1200px;margin:0 auto;padding:0 20px;height:70px;display:flex;align-items:center;justify-content:space-between}
-    .logo{color:var(--gold);text-decoration:none;font-weight:700;letter-spacing:.5px}
-    .menu{list-style:none;display:flex;gap:28px;margin:0;padding:0}
-    .menu a{color:var(--ink);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;transition:.2s}
-    .menu a:hover,.menu a.active{color:var(--gold);border-bottom-color:var(--gold)}
-    .right{display:flex;gap:12px;align-items:center}
-    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700;transition:.25s;cursor:pointer}
-    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep)}
-    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(212,175,55,.28)}
-    .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer}
-    .hamb span{width:26px;height:3px;background:var(--gold);border-radius:2px}
-
-    /* Layout */
     .container{max-width:1200px;margin:0 auto;padding:48px 20px}
     .page-title{font-size:2.6rem;color:var(--gold);margin:0 0 10px}
     .page-sub{color:var(--muted);margin:0 0 22px}
+    .cta-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700;transition:.25s;cursor:pointer;border:2px solid var(--gold);color:var(--gold);background:transparent}
+    .btn.solid{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--deep);border-color:transparent}
 
-    /* Filter panel */
-    .filter{background:rgba(26,61,46,.75);border:1px solid rgba(212,175,55,.25);border-radius:14px;padding:26px;margin:8px 0 30px}
+    .filter{background:rgba(26,61,46,.75);border:1px solid rgba(212,175,55,.25);border-radius:14px;padding:26px;margin:18px 0 30px}
     .filter h3{margin:0 0 14px;color:var(--gold);font-size:1.2rem;text-align:center}
     .filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:14px}
     .filter label{color:var(--gold);font-weight:600;margin-bottom:6px;display:block}
@@ -39,7 +26,6 @@
     .chip{border:1px solid var(--gold);background:transparent;color:var(--gold);padding:8px 14px;border-radius:999px;cursor:pointer}
     .chip:hover,.chip.active{background:var(--gold);color:var(--deep)}
 
-    /* Sections & single cards */
     .focus-grid{display:grid;gap:34px}
     .section{background:rgba(26,61,46,.6);border:1px solid rgba(212,175,55,.22);border-radius:14px;padding:24px;transition:border-color .2s,box-shadow .2s}
     .section:hover{border-color:rgba(212,175,55,.5);box-shadow:0 12px 28px rgba(0,0,0,.28)}
@@ -52,57 +38,32 @@
     .card:hover .arrow{transform:translateX(5px)}
     .muted{color:var(--muted);font-size:.95rem}
 
-    /* Footer */
-    .footer{margin-top:40px;background:rgba(15,36,25,.9);border-top:1px solid rgba(212,175,55,.25)}
-    .foot{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
-    .foot a{color:var(--muted);text-decoration:none}
-    .foot a:hover{color:var(--gold)}
-    .foot-center{display:flex;gap:12px;justify-content:center;align-items:center}
-    .foot-right{display:flex;gap:14px;justify-content:flex-end;align-items:center}
-    .icon{width:22px;height:22px;display:inline-block;fill:currentColor;color:var(--muted)}
-    .icon:hover{color:var(--gold)}
-
-    /* Mobile */
     @media (max-width:768px){
-      .menu{position:fixed;left:-100%;top:70px;flex-direction:column;width:100%;padding:18px 0;background:rgba(26,61,46,.98);text-align:center;transition:.25s}
-      .menu.active{left:0}
-      .hamb{display:flex}
       .filter-grid{grid-template-columns:1fr}
-      .foot{grid-template-columns:1fr;text-align:center}
-      .foot-center,.foot-right{justify-content:center}
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="nav">
-      <a class="logo" href="/">CHIZSA | COACHING</a>
-      <nav aria-label="Primary">
-        <ul class="menu" id="menu">
-          <li><a href="https://chizsaleei.com/archetype/index.html">Find Your Archetype</a></li>
-          <li><a href="https://chizsaleei.com/profiles/index.html">Profile Toolkits</a></li>
-          <li><a class="active" href="https://chizsaleei.com/focus/index.html">Focus Toolkits</a></li>
-          <li><a href="https://chizsaleei.com/about.html">About</a></li>
-          <li><a href="https://chizsaleei.com/training.html">Training</a></li>
-          <li><a href="https://chizsaleei.com/testimonials.html">Testimonial</a></li>
-        </ul>
-      </nav>
-      <div class="right">
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener">Support</a>
-        <button class="hamb" id="hamb" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
-      </div>
-    </div>
-  </header>
+
+  <!-- Shared header -->
+  <div id="header-slot"></div>
 
   <!-- Main -->
   <main class="container" role="main">
     <h1 class="page-title">Select Your Focus</h1>
-    <p class="page-sub">Choose your area of focus to access specialized coaching tools and resources designed to help you achieve your goals.</p>
+    <p class="page-sub">
+      Choose your area of focus to use integrated tools with your progress saved to the dashboard.
+      Focus is included in Pro at $10 per month.
+    </p>
+    <div class="cta-row" style="margin-bottom:12px">
+      <a class="btn" href="https://chizsaleei.com/auth/index.html">Sign in</a>
+      <a class="btn solid" href="https://chizsaleei.com/pricing.html">Unlock all tools</a>
+      <a class="btn" href="https://chizsaleei.com/discover.html" data-auth="required">Preview tools</a>
+    </div>
 
-    <!-- Filters (unchanged) -->
+    <!-- Filters -->
     <section class="filter" aria-label="Filter tools">
-      <h3>Filter Tools by Focus Area & Type</h3>
+      <h3>Filter tools by focus area and type</h3>
       <div class="filter-grid">
         <div>
           <label for="focus-filter">Filter by Focus Area</label>
@@ -143,13 +104,12 @@
       </div>
     </section>
 
-    <!-- One card per focus -->
+    <!-- One card per focus. All links are gated to pro -->
     <div class="focus-grid">
       <section class="section" data-focus="career">
         <h2>Career</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/career/item01/" target="_blank" rel="noopener"
-             data-focus="career" data-tool="planning assessment practice communication">
+          <a class="card" href="https://chizsaleei.com/focus/career/item01/" data-focus="career" data-tool="planning assessment practice communication" data-gate="pro">
             <div class="name">Career Craft, Role Map and Interview Drill <span class="arrow">→</span></div>
             <div class="muted">Career planning, role design and interview practice in one place.</div>
           </a>
@@ -159,8 +119,7 @@
       <section class="section" data-focus="leadership">
         <h2>Leadership</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" target="_blank" rel="noopener"
-             data-focus="leadership" data-tool="planning communication assessment">
+          <a class="card" href="https://chizsaleei.com/focus/leadership/item01/" data-focus="leadership" data-tool="planning communication assessment" data-gate="pro">
             <div class="name">Leader Sync, One-Page Alignment and Feedback Loop <span class="arrow">→</span></div>
             <div class="muted">Alignment, communication and feedback systems for leaders.</div>
           </a>
@@ -170,8 +129,7 @@
       <section class="section" data-focus="business">
         <h2>Business</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/business/item01/" target="_blank" rel="noopener"
-             data-focus="business" data-tool="planning financial communication">
+          <a class="card" href="https://chizsaleei.com/focus/business/item01/" data-focus="business" data-tool="planning financial communication" data-gate="pro">
             <div class="name">Offer Craft, Business Offer Calculator and Customer Calls <span class="arrow">→</span></div>
             <div class="muted">Build offers, price them well, and run confident customer calls.</div>
           </a>
@@ -181,8 +139,7 @@
       <section class="section" data-focus="health-wellness">
         <h2>Health and Wellness</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" target="_blank" rel="noopener"
-             data-focus="health-wellness" data-tool="wellness tracking mindfulness practice">
+          <a class="card" href="https://chizsaleei.com/focus/health-wellness/item01/" data-focus="health-wellness" data-tool="wellness tracking mindfulness practice" data-gate="pro">
             <div class="name">Energy Flow, Energy Diary and Micro Workouts <span class="arrow">→</span></div>
             <div class="muted">Daily energy planning, tracking and quick workout prompts.</div>
           </a>
@@ -192,8 +149,7 @@
       <section class="section" data-focus="financial">
         <h2>Financial</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" target="_blank" rel="noopener"
-             data-focus="financial" data-tool="financial planning tracking">
+          <a class="card" href="https://chizsaleei.com/focus/financial/item01/" data-focus="financial" data-tool="financial planning tracking" data-gate="pro">
             <div class="name">Cashflow Compass, Financial Tracker and Investing Habits <span class="arrow">→</span></div>
             <div class="muted">Plan cashflow, track money, and build investing routines.</div>
           </a>
@@ -203,9 +159,8 @@
       <section class="section" data-focus="life-vision">
         <h2>Life Vision</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" target="_blank" rel="noopener"
-             data-focus="life-vision" data-tool="planning assessment mindfulness">
-            <div class="name">10-Year Backcast &amp; Focus Fence <span class="arrow">→</span></div>
+          <a class="card" href="https://chizsaleei.com/focus/life-vision/item01/" data-focus="life-vision" data-tool="planning assessment mindfulness" data-gate="pro">
+            <div class="name">10-Year Backcast and Focus Fence <span class="arrow">→</span></div>
             <div class="muted">Backcast your vision and protect attention with clear boundaries.</div>
           </a>
         </div>
@@ -214,10 +169,9 @@
       <section class="section" data-focus="spiritual">
         <h2>Spiritual</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" target="_blank" rel="noopener"
-             data-focus="spiritual" data-tool="mindfulness practice tracking">
+          <a class="card" href="https://chizsaleei.com/focus/spiritual/item01/" data-focus="spiritual" data-tool="mindfulness practice tracking" data-gate="pro">
             <div class="name">Stillness Timer and Gratitude Trifecta <span class="arrow">→</span></div>
-            <div class="muted">Guided stillness plus a three-part daily gratitude practice.</div>
+            <div class="muted">Guided stillness plus a three part daily gratitude practice.</div>
           </a>
         </div>
       </section>
@@ -225,8 +179,7 @@
       <section class="section" data-focus="relationship">
         <h2>Relationship</h2>
         <div class="tools">
-          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" target="_blank" rel="noopener"
-             data-focus="relationship" data-tool="communication planning practice">
+          <a class="card" href="https://chizsaleei.com/focus/relationship/item01/" data-focus="relationship" data-tool="communication planning practice" data-gate="pro">
             <div class="name">Connection Cadence and Repair Playbook <span class="arrow">→</span></div>
             <div class="muted">Keep connections warm and repair ruptures with simple steps.</div>
           </a>
@@ -235,37 +188,44 @@
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer" role="contentinfo">
-    <div class="foot">
-      <div><small>chizsaleei | 2025, All Rights Reserved</small></div>
-      <div class="foot-center">
-        <a href="https://chizsaleei.com/about.html">About</a>
-        <span aria-hidden="true">·</span>
-        <a href="https://chizsaleei.com/privacy.html">Privacy</a>
-      </div>
-      <div class="foot-right">
-        <a href="mailto:chizsaleei@gmail.com" aria-label="Email">
-          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.236-8 5.333-8-5.333V6l8 5.333L20 6v2.236Z"/></svg>
-        </a>
-        <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.06 0 4.81 2.67 4.81 6.14V23h-4v-6.6c0-1.57-.03-3.59-2.19-3.59-2.2 0-2.54 1.72-2.54 3.48V23h-3.8V8z"/></svg>
-        </a>
-        <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram">
-          <svg class="icon" viewBox="0 0 24 24" role="img"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.3.06 2 .28 2.5.46.6.24 1 .54 1.5 1 .5.5.8.9 1 1.5.2.5.4 1.2.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.3-.3 2-.5 2.5-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.5.2-1.2.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.3-.1-2-.3-2.5-.5-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.5-.4-1.2-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.3.3-2 .5-2.5.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .5-.2 1.2-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2Zm0 2.2a6.6 6.6 0 1 1 0 13.2 6.6 6.6 0 0 1 0-13.2Z"/></svg>
-        </a>
-        <a class="btn btn-gold" href="https://ko-fi.com/lifebalanceq" target="_blank" rel="noopener" aria-label="Ko-fi Support">Support</a>
-      </div>
-    </div>
-  </footer>
+  <!-- Shared footer -->
+  <div id="footer-slot"></div>
 
+  <!-- Partials inject -->
   <script>
-    // Mobile menu
-    const hamb=document.getElementById('hamb');const menu=document.getElementById('menu');
-    hamb.addEventListener('click',()=>{const open=menu.classList.toggle('active');hamb.setAttribute('aria-expanded',open?'true':'false')});
-    document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('active')));
+    async function inject(id, url, fallback=''){
+      const el = document.getElementById(id);
+      try{
+        const r = await fetch(url, { cache:'no-store' });
+        el.innerHTML = await r.text();
+      }catch(e){ el.innerHTML = fallback; }
+    }
+    inject('header-slot','/Coaching/partials/header.html');
+    inject('footer-slot','/Coaching/partials/footer.html');
+  </script>
 
-    // Filters (same logic, now with one card per focus)
+  <!-- Supabase + gate -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    // Global config for this page
+    window.SUPABASE_URL = "https://gwlwctytwendsixwvnvu.supabase.co";
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo";
+    window.ENTITLEMENTS_URL = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/entitlements";
+    const supabase = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  </script>
+  <script src="/Coaching/js/gate.js" defer></script>
+
+  <!-- Page gating: require Pro access after login -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Require sign in, then require Pro subscription for this section
+      const ok = await window.requireAccess?.("pro");
+      if (!ok) return; // gate.js will redirect to pricing if not entitled
+    });
+  </script>
+
+  <!-- Filters and small UI helpers -->
+  <script>
     const focusFilter=document.getElementById('focus-filter');
     const toolFilter=document.getElementById('tool-filter');
     const filterButtons=document.querySelectorAll('.chip');
@@ -281,8 +241,8 @@
 
         if(showSection && selectedTool!=='all'){
           const card=section.querySelector('.card');
-          const types=card.getAttribute('data-tool');
-          showSection=types && types.includes(selectedTool);
+          const types=card.getAttribute('data-tool') || '';
+          showSection=types.includes(selectedTool);
         }
 
         section.style.display=showSection?'block':'none';
