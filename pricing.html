@@ -1,1 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing • CHIZSA Coaching</title>
+  <style>
+    :root{ --deep:#0f2419; --deep2:#1a3d2e; --gold:#d4af37; --gold2:#b8941f; --ink:#f4f1e8; --muted:#c9d1d9; --glass:rgba(26,61,46,.85); }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:Georgia, serif; color:var(--ink); background:linear-gradient(135deg,var(--deep2) 0%,var(--deep) 100%); line-height:1.6; }
+    a{ color:var(--gold); }
+    .wrap{ max-width:1100px; margin:0 auto; padding:40px 16px; }
+    .hero{ text-align:center; margin:10px 0 24px; }
+    .hero h1{ margin:0 0 8px; color:var(--gold); font-size:2.2rem; }
+    .hero p{ margin:0 auto; color:var(--muted); max-width:780px; }
+    .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:22px; }
+    .card{ background:rgba(26,61,46,.6); border:1px solid rgba(212,175,55,.22); border-radius:12px; padding:18px; backdrop-filter:blur(8px); }
+    .card h2{ margin:0 0 6px; color:var(--gold); font-size:1.4rem; }
+    .price{ font-size:2rem; margin:8px 0; color:#fff; }
+    .muted{ color:var(--muted); }
+    .list{ margin:10px 0 14px; padding-left:18px; }
+    .cta{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{ display:inline-block; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; border:2px solid var(--gold); color:var(--gold); background:transparent; cursor:pointer; }
+    .btn.solid{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--deep); border-color:transparent; }
+    .note{ font-size:.95rem; color:var(--muted); margin-top:8px; }
+    .section{ margin-top:28px; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    select, input[type="text"]{ padding:10px; border-radius:8px; border:1px solid rgba(212,175,55,.25); background:rgba(26,61,46,.4); color:#fff; }
+    .fine{ font-size:.9rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- HEADER PARTIAL -->
+    <div id="header-slot"></div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Choose what fits you</h1>
+      <p>
+        Browse every tool freely. Pick any ONE Archetype tool to try without signup.  
+        Sign in to save progress to your <a href="https://chizsaleei.com/dashboard.html">dashboard</a>.  
+        Go Pro to unlock everything, or buy a single tool for lifetime access.
+      </p>
+      <p class="cta" style="justify-content:center;margin-top:14px;">
+        <a class="btn" href="https://chizsaleei.com/discover.html" data-auth="required">Preview all tools</a>
+        <!-- The two links below go to your auth pages -->
+        <a class="btn" href="https://chizsaleei.com/auth/index.html">Sign in</a>
+        <a class="btn solid" href="https://chizsaleei.com/auth/index.html">Unlock all tools</a>
+      </p>
+      <p class="fine">Auth callback is configured at <code>https://chizsaleei.com/auth/callback.html</code>.</p>
+    </section>
+
+    <!-- PLANS -->
+    <section class="grid">
+      <!-- FREE -->
+      <article class="card">
+        <h2>Free</h2>
+        <div class="price">$0</div>
+        <ul class="list">
+          <li>Browse all tools</li>
+          <li>Take the Archetype quiz without signup</li>
+          <li>Try ONE Archetype tool for free</li>
+          <li>Sign in to save progress</li>
+        </ul>
+        <div class="cta">
+          <a class="btn" href="https://chizsaleei.com/auth/index.html">Sign in free</a>
+          <a class="btn" href="https://chizsaleei.com/archetype/quiz/index.html">Take the quiz</a>
+        </div>
+        <div class="note">When you open a tool we will ask you to sign in if needed.</div>
+      </article>
+
+      <!-- PRO MONTHLY -->
+      <article class="card" id="pro-monthly">
+        <h2>Pro Monthly (all tools)</h2>
+        <div class="price">$10</div>
+        <ul class="list">
+          <li>Full access to Archetype, Choose Your Profile, and Select Your Focus</li>
+          <li>All progress saved to your dashboard</li>
+          <li>Best for ongoing practice</li>
+        </ul>
+        <div class="row">
+          <!-- REPLACE with your Lemon Squeezy Monthly VARIANT ID -->
+          <input id="ls-pro-monthly" type="text" value="REPLACE_WITH_LS_VARIANT_PRO_MONTHLY" aria-label="LS Monthly Variant ID" />
+          <button class="btn solid" id="buy-pro-monthly">Go Pro Monthly</button>
+        </div>
+        <div class="note">International checkout uses Lemon Squeezy.</div>
+      </article>
+
+      <!-- SINGLE TOOL LIFETIME -->
+      <article class="card" id="single-tool">
+        <h2>Single Tool • Lifetime</h2>
+        <div class="price">$7</div>
+        <ul class="list">
+          <li>Lifetime access to any one tool</li>
+          <li>Progress saved to your dashboard</li>
+          <li>Upgrade to Pro anytime</li>
+        </ul>
+        <div class="row">
+          <!-- REPLACE option values with your LS variant IDs for each tool -->
+          <select id="single-tool-variant" aria-label="Select tool">
+            <option value="REPLACE_WITH_LS_VARIANT_SPEAKING">IELTS Speaking Drills</option>
+            <option value="REPLACE_WITH_LS_VARIANT_MED_ENGLISH">Medical English Labs</option>
+            <option value="REPLACE_WITH_LS_VARIANT_BUSINESS">Business Briefs</option>
+          </select>
+          <button class="btn solid" id="buy-single-tool">Buy single tool</button>
+        </div>
+      </article>
+
+      <!-- COACHING SESSIONS -->
+      <article class="card" id="coaching">
+        <h2>1-on-1 Coaching</h2>
+        <div class="price">$25 / 25 minutes</div>
+        <div class="price" style="font-size:1.4rem">$45 / 50 minutes</div>
+        <ul class="list">
+          <li>Focused session on your goals</li>
+          <li>Bring drafts, cases, or prompts</li>
+        </ul>
+        <div class="row">
+          <!-- REPLACE with your LS VARIANT IDs -->
+          <select id="coaching-variant" aria-label="Select session length">
+            <option value="REPLACE_WITH_LS_VARIANT_COACH_25">25 minutes — $25</option>
+            <option value="REPLACE_WITH_LS_VARIANT_COACH_50">50 minutes — $45</option>
+          </select>
+          <button class="btn solid" id="book-coaching">Book session</button>
+        </div>
+        <div class="note">After checkout you will receive a link to schedule.</div>
+      </article>
+    </section>
+
+    <!-- REVIEW / REQUEST / COLLABORATE -->
+    <section class="section card" style="margin-top:28px;">
+      <h2 style="color:var(--gold);margin:0 0 8px;">Review, Request and Collaborate</h2>
+      <p class="muted" style="margin:0 0 10px;">
+        Questions, concerns, requests, or collab ideas. Your message is saved in Supabase and routed to us.
+      </p>
+      <div class="cta">
+        <a class="btn solid" href="https://chizsaleei.com/contact.html">Open contact page</a>
+      </div>
+      <p class="fine">The contact page uses <code>https://chizsaleei.com/js/contact.js</code> to submit name, email, and message.</p>
+    </section>
+
+    <!-- FOOTER PARTIAL -->
+    <div class="section" id="footer-slot"></div>
+  </div>
+
+  <!-- Partials inject -->
+  <script>
+    async function inject(id, url, fallback=''){
+      const el = document.getElementById(id);
+      try{
+        const r = await fetch(url, { cache:'no-store' });
+        el.innerHTML = await r.text();
+      }catch(e){ el.innerHTML = fallback; }
+    }
+    inject('header-slot','/Coaching/partials/header.html');
+    inject('footer-slot','/Coaching/partials/footer.html');
+  </script>
+
+  <!-- Libs and site scripts -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    // Project config (these match your Supabase and function URLs)
+    window.SUPABASE_URL = "https://gwlwctytwendsixwvnvu.supabase.co";
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo";
+    // Your backend functions (read by checkout.js or gate.js)
+    window.API_CHECKOUT = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/create-checkout-session";
+    window.ENTITLEMENTS_URL = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/entitlements";
+  </script>
+  <script src="/Coaching/js/auth.js" defer></script>
+  <script src="/Coaching/js/gate.js" defer></script>
+  <script src="/Coaching/js/checkout.js" defer></script>
+
+  <!-- Page wiring -->
+  <script>
+    // Buttons call your helpers from checkout.js:
+    // buyInternational(variantId)  and  buyPhilippines(amountPhp, desc)
+
+    // Pro Monthly
+    document.getElementById('buy-pro-monthly').addEventListener('click', () => {
+      const input = document.getElementById('ls-pro-monthly');
+      const variantId = input && ('value' in input) ? input.value.trim() : "";
+      if (!variantId || variantId.startsWith('REPLACE_')) {
+        alert('Please set your Lemon Squeezy Monthly variant ID.');
+        return;
+      }
+      // @ts-ignore
+      buyInternational(variantId);
+    });
+
+    // Single Tool Lifetime
+    document.getElementById('buy-single-tool').addEventListener('click', () => {
+      const select = document.getElementById('single-tool-variant');
+      const variantId = select && ('value' in select) ? select.value : "";
+      if (!variantId || variantId.startsWith('REPLACE_')) {
+        alert('Please set your Lemon Squeezy variant IDs for each tool.');
+        return;
+      }
+      // @ts-ignore
+      buyInternational(variantId);
+    });
+
+    // Coaching
+    document.getElementById('book-coaching').addEventListener('click', () => {
+      const select = document.getElementById('coaching-variant');
+      const variantId = select && ('value' in select) ? select.value : "";
+      if (!variantId || variantId.startsWith('REPLACE_')) {
+        alert('Please set your Lemon Squeezy coaching variant IDs.');
+        return;
+      }
+      // @ts-ignore
+      buyInternational(variantId);
+    });
+  </script>
+</body>
+</html>
 
