@@ -44,7 +44,7 @@
       <p>Quiz is free and shows your archetype instantly. You can preview tools. Sign in to save progress and use tools. Pay monthly with Tools Pass or buy a single tool.</p>
       <div class="cta">
         <a class="btn btn-gold" href="https://chizsaleei.com/archetype/quiz/index.html">Take a quiz to find your core</a>
-        <a class="btn btn-outline" href="https://chizsaleei.com/discover.html">Preview tools</a>
+        <a class="btn btn-outline" href="/discover.html" data-auth="required">Discover all tools</a> <!-- requires sign in -->
         <a id="hero-signin" class="btn btn-outline" href="https://chizsaleei.com/auth/index.html">Sign in</a>
       </div>
       <p class="muted" style="margin-top:10px;">Result is free. Saving and using tools requires sign in. One micro tool is free to use after sign in.</p>
@@ -65,7 +65,7 @@
 
     <!-- TOOL PREVIEWS -->
     <section id="tools" class="grid" aria-label="Tool previews">
-      <!-- IELTS Speaking Drills -->
+      <!-- IELTS Speaking Drills (gated) -->
       <article class="card" data-tool-id="tool-speaking-drills">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h3>IELTS Speaking Drills</h3>
@@ -76,18 +76,18 @@
           <div style="text-align:center">
             <div>Sign in to preview and use</div>
             <div style="margin-top:10px">
-              <button class="btn btn-outline" data-signin-cta>Sign in</button>
-              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+              <a class="btn btn-outline" href="/auth/index.html">Sign in</a>
+              <a class="btn btn-gold" href="/pricing.html">Unlock all tools</a>
             </div>
           </div>
         </div>
         <div class="cta" style="justify-content:flex-start;margin-top:12px">
-          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
-          <button class="btn btn-outline" data-buy-one="tool-speaking-drills">Buy this tool</button>
+          <a class="btn btn-gold" href="/tools/tool-speaking-drills/index.html" data-gate="pro">Launch tool</a>
+          <a class="btn btn-outline" href="/pricing.html#singles">Buy this tool</a>
         </div>
       </article>
 
-      <!-- Medical English Labs -->
+      <!-- Medical English Labs (gated) -->
       <article class="card" data-tool-id="tool-med-english-labs">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h3>Medical English Labs</h3>
@@ -98,18 +98,18 @@
           <div style="text-align:center">
             <div>Sign in to preview and use</div>
             <div style="margin-top:10px">
-              <button class="btn btn-outline" data-signin-cta>Sign in</button>
-              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+              <a class="btn btn-outline" href="/auth/index.html">Sign in</a>
+              <a class="btn btn-gold" href="/pricing.html">Unlock all tools</a>
             </div>
           </div>
         </div>
         <div class="cta" style="justify-content:flex-start;margin-top:12px">
-          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
-          <button class="btn btn-outline" data-buy-one="tool-med-english-labs">Buy this tool</button>
+          <a class="btn btn-gold" href="/tools/tool-med-english-labs/index.html" data-gate="pro">Launch tool</a>
+          <a class="btn btn-outline" href="/pricing.html#singles">Buy this tool</a>
         </div>
       </article>
 
-      <!-- Business Briefs -->
+      <!-- Business Briefs (gated) -->
       <article class="card" data-tool-id="tool-business-briefs">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h3>Business Briefs</h3>
@@ -120,18 +120,18 @@
           <div style="text-align:center">
             <div>Sign in to preview and use</div>
             <div style="margin-top:10px">
-              <button class="btn btn-outline" data-signin-cta>Sign in</button>
-              <button class="btn btn-gold" data-unlock-all>Unlock all tools</button>
+              <a class="btn btn-outline" href="/auth/index.html">Sign in</a>
+              <a class="btn btn-gold" href="/pricing.html">Unlock all tools</a>
             </div>
           </div>
         </div>
         <div class="cta" style="justify-content:flex-start;margin-top:12px">
-          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
-          <button class="btn btn-outline" data-buy-one="tool-business-briefs">Buy this tool</button>
+          <a class="btn btn-gold" href="/tools/tool-business-briefs/index.html" data-gate="pro">Launch tool</a>
+          <a class="btn btn-outline" href="/pricing.html#singles">Buy this tool</a>
         </div>
       </article>
 
-      <!-- Free micro tool (requires sign in but no payment) -->
+      <!-- Free micro tool (sign in required, not paid) -->
       <article class="card" data-tool-id="tool-free-micro">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h3>Quick Fluency Booster</h3>
@@ -142,12 +142,12 @@
           <div style="text-align:center">
             <div>Sign in to use this free tool</div>
             <div style="margin-top:10px">
-              <button class="btn btn-outline" data-signin-cta>Sign in</button>
+              <a class="btn btn-outline" href="/auth/index.html">Sign in</a>
             </div>
           </div>
         </div>
         <div class="cta" style="justify-content:flex-start;margin-top:12px">
-          <button class="btn btn-gold" data-launch-tool>Launch tool</button>
+          <a class="btn btn-gold" href="/tools/tool-free-micro/index.html" data-auth="required">Launch tool</a>
         </div>
       </article>
     </section>
@@ -159,7 +159,7 @@
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
         <p style="color:var(--muted);margin:0">Use the contact page to send your name, email, and message. It saves to Supabase and emails us so we can reply fast.</p>
-        <a class="btn btn-gold" href="https://chizsaleei.com/contact.html">Go to contact page</a>
+        <a class="btn btn-gold" href="/contact.html">Go to contact page</a>
       </div>
     </section>
 
@@ -186,111 +186,30 @@
       'footer-slot',
       '/Coaching/partials/footer.html',
       '<footer style="background:#0f2419;border-top:1px solid rgba(212,175,55,.22);padding:18px 16px;text-align:center;font-family:Georgia,serif;color:#f4f1e8">'+
-        '<a href="https://chizsaleei.com/terms.html" style="color:#f4f1e8;margin:0 8px">Terms</a>'+
-        '<a href="https://chizsaleei.com/privacy.html" style="color:#f4f1e8;margin:0 8px">Privacy</a>'+
-        '<a href="https://chizsaleei.com/accessibility.html" style="color:#f4f1e8;margin:0 8px">Accessibility</a>'+
+        '<a href="/terms.html" style="color:#f4f1e8;margin:0 8px">Terms</a>'+
+        '<a href="/privacy.html" style="color:#f4f1e8;margin:0 8px">Privacy</a>'+
+        '<a href="/accessibility.html" style="color:#f4f1e8;margin:0 8px">Accessibility</a>'+
       '</footer>'
     );
   </script>
 
-  <!-- Supabase + gating + checkout -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Include this before closing body -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <!-- Small config layer your JS files can read -->
   <script>
-    // CONFIG
-    const SUPABASE_URL = "https://gwlwctytwendsixwvnvu.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo";
-    const API_CHECKOUT = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/create-checkout-session";
-    const ENTITLEMENTS_URL = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/entitlements";
-    const AUTH_URL = "https://chizsaleei.com/auth/index.html";
-    const TOOL_PATH = toolId => `/tools/${toolId}/index.html`;
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    let currentUser = null;
-
-    // Helpers
-    async function requireLogin() {
-      const { data:{ session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        window.location.href = `${AUTH_URL}?next=${encodeURIComponent(location.pathname)}`;
-        return null;
-      }
-      return session.user;
-    }
-
-    async function checkAccess(productCode) {
-      const user = currentUser || await requireLogin();
-      if (!user) return { allowed:false };
-      const r = await fetch(ENTITLEMENTS_URL, {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({ userId: user.id, productCode })
-      });
-      return r.ok ? r.json() : { allowed:false };
-    }
-
-    function wireLockedCard(card, toolId) {
-      const overlay = card.querySelector("[data-lock-overlay]");
-      const launchBtn = card.querySelector("[data-launch-tool]");
-      const buyOneBtn = card.querySelector("[data-buy-one]");
-      const signins = card.querySelectorAll("[data-signin-cta]");
-
-      // default actions
-      signins.forEach(b => b.onclick = () => window.location.href = AUTH_URL);
-
-      // decide entitlement
-      checkAccess(toolId).then(({ allowed }) => {
-        overlay.style.display = allowed ? "none" : "flex";
-        launchBtn.onclick = async () => {
-          const user = await requireLogin(); if (!user) return;
-          if (allowed) window.location.href = TOOL_PATH(toolId);
-          else openBuyModal(toolId);
-        };
-      });
-
-      if (buyOneBtn) {
-        buyOneBtn.onclick = async () => {
-          const user = await requireLogin(); if (!user) return;
-          beginCheckout({ toolId });
-        };
-      }
-    }
-
-    async function beginCheckout(payload) {
-      const user = await requireLogin(); if (!user) return;
-      try {
-        const res = await fetch(API_CHECKOUT, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data?.url) window.location.href = data.url;
-        else alert("Checkout error");
-      } catch {
-        alert("Checkout error");
-      }
-    }
-
-    function openBuyModal(toolId) {
-      const ok = confirm("Unlock this tool. OK = buy single tool. Cancel = get Tools Pass.");
-      if (ok) beginCheckout({ toolId });
-      else window.location.href = AUTH_URL;
-    }
-
-    async function refreshUser() {
-      const { data:{ user } } = await supabase.auth.getUser();
-      currentUser = user || null;
-      document.querySelectorAll("[data-tool-id]").forEach(card => {
-        const toolId = card.getAttribute("data-tool-id");
-        wireLockedCard(card, toolId);
-      });
-      document.querySelectorAll("#hero-signin,[data-unlock-all]").forEach(btn => {
-        btn.onclick = () => window.location.href = AUTH_URL;
-      });
-    }
-
-    supabase.auth.onAuthStateChange(() => refreshUser());
-    refreshUser();
+    // REPLACE ONLY if you change domains or keys
+    window.SUPABASE_URL = "https://gwlwctytwendsixwvnvu.supabase.co";               /* replace if your project changes */
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3bHdjdHl0d2VuZHNpeHd2bnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzM2ODQsImV4cCI6MjA3NTE0OTY4NH0.0fg92ZPHU4EoLYv6KDxZzlS12y_y54qRfSQ6CPAHhpo"; /* replace if you rotate anon key */
+    window.API_CHECKOUT = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/create-checkout-session"; /* Supabase function URL */
+    window.ENTITLEMENTS_URL = "https://gwlwctytwendsixwvnvu.supabase.co/functions/v1/entitlements";       /* Supabase function URL */
+    window.AUTH_URL = "https://chizsaleei.com/auth/index.html";                                            /* change if auth path moves */
+    window.TOOL_PATH = toolId => `/tools/${toolId}/index.html`;                      /* change if tool folder differs */
   </script>
+
+  <!-- Your site JS (reads values from window.* above) -->
+  <script src="/Coaching/js/auth.js" defer></script>
+  <script src="/Coaching/js/gate.js" defer></script>
+  <script src="/Coaching/js/checkout.js" defer></script>
 </body>
 </html>
