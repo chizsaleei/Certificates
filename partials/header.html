@@ -1,24 +1,32 @@
-<!-- Coaching/partials/footer.html -->
-<footer class="footer">
-  <div class="foot">
-    <div><small>&copy; 2025 chizsaleei. All Rights Reserved</small></div>
+<header class="site-header">
+  <style>
+    :root{--deep:#0f2419;--gold:#d4af37;--ink:#f4f1e8}
+    .site-header{background:linear-gradient(135deg,#1a3d2e 0%,var(--deep) 100%);border-bottom:1px solid rgba(212,175,55,.22)}
+    .nav-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:20px;justify-content:space-between;padding:14px 16px;font-family:Georgia,serif}
+    .brand a{color:var(--gold);font-weight:700;letter-spacing:.5px;text-decoration:none}
+    .nav{display:flex;gap:28px;align-items:center}
+    .nav a{color:var(--ink);text-decoration:none}
+    .nav a:hover{color:var(--gold)}
+    .cta{display:flex;gap:12px;align-items:center}
+    .btn{border:1px solid var(--gold);color:var(--gold);padding:6px 12px;border-radius:8px;text-decoration:none}
+    .btn.solid{background:var(--gold);color:var(--deep);border-color:transparent}
+    @media (max-width:900px){.nav{display:none}}
+  </style>
 
-    <div class="foot-center">
-      <a href="https://chizsaleei.com/terms.html">Terms</a>
-      <a href="https://chizsaleei.com/privacy.html">Privacy</a>
-      <a href="https://chizsaleei.com/accessibility.html">Accessibility</a>
-    </div>
+  <div class="nav-wrap">
+    <div class="brand"><a href="https://chizsaleei.com/">CHIZSA | COACHING</a></div>
 
-    <div class="foot-right">
-      <a href="mailto:chizsaleei@gmail.com" aria-label="Email" title="Email">
-        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-gmail.svg" alt="Gmail" />
-      </a>
-      <a href="https://www.linkedin.com/in/chizsaibanez/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
-        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-linkedin.svg" alt="LinkedIn" />
-      </a>
-      <a href="https://www.instagram.com/lifebalanceq/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
-        <img class="icon-img" src="https://chizsaleei/assets/icons/icons8-instagram.svg" alt="Instagram" />
-      </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="https://chizsaleei.com/discover.html#archetype">Find Your Archetype</a>
+      <a href="https://chizsaleei.com/discover.html#profiles">Profile Toolkits</a>
+      <a href="https://chizsaleei.com/discover.html#focus">Focus Toolkits</a>
+      <a href="https://chizsaleei.com/about.html">About</a>
+      <a href="https://chizsaleei.com/testimonials.html">Testimonials</a>
+    </nav>
+
+    <div class="cta">
+      <a class="btn solid" href="https://chizsaleei.com/support.html">Support</a>
+      <a class="btn" href="https://chizsaleei.com/auth/index.html">Sign in</a>
     </div>
   </div>
-</footer>
+</header>
